@@ -4,7 +4,11 @@
 - Documentação completa no projeto "MÓVEIS PLANEJADOS" do Claude (claude/*.md). Leia `claude/arquitetura.md` e `claude/plano-reestruturacao.md` antes de mudar a estrutura.
 - Reestruturação em etapas (arquitetura.md): uma etapa por vez, o Nathan aprova antes da próxima.
 - **Antes de qualquer commit: `npm run testar` precisa dar IGUAL em todos os casos.** Se algo mudou de propósito, explique ao Nathan o que mudou e só então rode `npm run atualizar-referencia`.
-- Editar só `fonte/configurador.html` e `dados/*.json`; `configurador.html` é **gerado** por `npm run montar` (o `testar` já monta).
+- Editar só `fonte/` e `dados/*.json`; `configurador.html` é **gerado** por `npm run montar` (o `testar` já monta). A fonte é separada por assunto (pedido do Nathan: não misturar código com visual):
+  - `fonte/estilos/tema.css` — cores, fontes e sombras (mudar o visual = só aqui); `fonte/estilos/layout.css` — posições e tamanhos.
+  - `fonte/pagina.html` — estrutura da tela; inclui as outras partes com `/*@inclui:caminho*/`.
+  - `fonte/js/` — lógica: `regras`, `tipos`, `geradores`, `nucleo`, `saidas` (listas, plano, desenhos, Inventor), `tela` (3D, eventos).
+- Visual escolhido para a tela (5a): neomorfismo **só na interface**; o móvel (desenho e 3D) fica nas cores reais do material.
 - `configurador.html` é o arquivo publicado no artifact https://claude.ai/artifact/HsqccQZfs2utTfs3jVHp1Q (publicar sempre a partir dele).
 - Nunca colocar projetos de clientes no repositório (vão para o Google Drive).
 - Não tocar no Visualizador 3D Granfinale (GSA).

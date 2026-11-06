@@ -1,0 +1,164 @@
+<title>Configurador de Móveis</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: visualizador técnico — barra do projeto, coluna de parâmetros/peças à esquerda, palco 3D à direita, listas de corte e ferragens embaixo */
+/*@inclui:estilos/tema.css*/
+/*@inclui:estilos/layout.css*/
+</style>
+
+<header class="topo">
+  <span class="marca">Configurador de Móveis<small>Fase 1 · técnico</small></span>
+  <input id="nomeProjeto" aria-label="Nome do projeto" value="Gabinete do banheiro">
+  <span class="status ok" id="status">Pronto para exportar</span>
+  <div class="acoes">
+    <button class="btn" id="btnAbrir" type="button">Abrir projeto</button>
+    <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
+    <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
+  </div>
+</header>
+
+<main class="app">
+  <aside class="lado">
+    <div class="abas" role="tablist">
+      <button role="tab" id="abaParam" aria-selected="true" aria-controls="painelParam">Parâmetros</button>
+      <button role="tab" id="abaPecas" aria-selected="false" aria-controls="painelPecas">Peças</button>
+    </div>
+    <div class="painel" id="painelParam" role="tabpanel">
+      <div class="campo"><label for="tipoMovel">Tipo de móvel</label><div class="entrada"><select id="tipoMovel"></select></div></div>
+      <div class="alertas" id="alertas"></div>
+      <form id="form" autocomplete="off"></form>
+      <div class="export">
+        <legend>Exportar</legend>
+        <div class="linha">
+          <button class="btn prim" id="btnZip" type="button">Pacote para o Blender (.zip)</button>
+          <button class="btn" id="btnPdf" type="button">Desenhos (.pdf)</button>
+          <button class="btn" id="btnJson" type="button">Projeto (.json)</button>
+          <button class="btn" id="btnIlogic" type="button">Script iLogic (.txt)</button>
+          <button class="btn" id="copIlogic" type="button">Copiar script iLogic</button>
+        </div>
+        <textarea class="copia" id="copiaIlogic" readonly hidden aria-label="Texto do script iLogic"></textarea>
+        <span class="nota" id="notaExport">O pacote leva o modelo 3D (.glb), os desenhos em PDF, o projeto e as listas em planilha.</span>
+      </div>
+    </div>
+    <div class="painel" id="painelPecas" role="tabpanel" hidden>
+      <div class="arvore" id="arvore"></div>
+    </div>
+  </aside>
+
+  <section class="vista" aria-label="Visualização 3D">
+    <div class="barra" role="toolbar" aria-label="Ferramentas do 3D">
+      <div class="grupo">
+        <select id="selVista" aria-label="Vista">
+          <option value="perspectiva">Perspectiva</option>
+          <option value="frente">Frente</option>
+          <option value="lateral">Lateral</option>
+          <option value="topo">Topo</option>
+        </select>
+        <button class="btn" id="bOrto" aria-pressed="false" type="button">Ortogonal</button>
+      </div>
+      <span class="sep"></span>
+      <div class="grupo">
+        <button class="btn" id="bPortas" aria-pressed="false" type="button">Abrir portas</button>
+        <button class="btn" id="bGavetas" aria-pressed="false" type="button">Abrir gavetas</button>
+        <button class="btn" id="bFix" aria-pressed="false" type="button" title="Deixa o MDF transparente e mostra parafusos, cavilhas e pinos">Fixações</button>
+      </div>
+      <span class="sep"></span>
+      <div class="grupo">
+        <button class="btn" id="bCotas" aria-pressed="true" type="button">Cotas</button>
+        <button class="btn" id="bMedir" aria-pressed="false" type="button">Medir</button>
+      </div>
+      <span class="sep"></span>
+      <div class="grupo">
+        <select id="selCorte" aria-label="Corte">
+          <option value="nenhum">Sem corte</option>
+          <option value="x">Corte na largura</option>
+          <option value="z">Corte na profundidade</option>
+          <option value="y">Corte na altura</option>
+        </select>
+        <input type="range" id="rCorte" min="0" max="100" value="50" aria-label="Posição do corte" disabled>
+      </div>
+      <span class="sep"></span>
+      <label class="desl" for="rExplodir">Explodir <input type="range" id="rExplodir" min="0" max="100" value="0"></label>
+      <span class="sep"></span>
+      <div class="grupo">
+        <button class="btn" id="bTampo" aria-pressed="true" type="button">Tampo</button>
+        <button class="btn" id="bFundo" aria-pressed="true" type="button">Fundo</button>
+        <button class="btn" id="bParedes" aria-pressed="true" type="button">Paredes</button>
+        <button class="btn" id="bEsgoto" aria-pressed="false" type="button">Faixa do esgoto</button>
+      </div>
+    </div>
+    <div class="palco" id="palco">
+      <div class="leg-fix" id="legFix" hidden>
+        <span><i style="background:#e8772e"></i>Parafuso 4,0 × 50</span><span><i style="background:#c94f8a"></i>3,5 × 14 (fundo)</span>
+        <span><i style="background:#8e5bd0"></i>3,5 × 25 (frente gaveta)</span><span><i style="background:#d9a21b"></i>4,0 × 30 (espaçador)</span>
+        <span><i style="background:#2f9e6b"></i>Cavilha 8 × 30</span><span><i style="background:#3b82c4"></i>Pino 5 mm</span><span><i style="background:#d8322b"></i>Parede 5 × 60 + bucha</span>
+      </div>
+      <div class="faixa-desat" id="faixaDesat" hidden>Modelo do último projeto válido. Corrija os erros para atualizar.</div>
+      <div class="ficha" id="ficha" hidden>
+        <div class="cab"><strong id="fNome"></strong><button class="fechar" id="fFechar" type="button" aria-label="Fechar ficha">×</button></div>
+        <span class="med" id="fMed"></span>
+        <span class="det" id="fDet"></span>
+        <span class="det" id="fObs"></span>
+        <span class="glb" id="fGlb"></span>
+        <button class="btn" id="fDesenho" type="button" hidden>Ver desenho técnico</button>
+      </div>
+      <span class="dica" id="dica">Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça</span>
+    </div>
+  </section>
+</main>
+
+<section class="listas">
+  <div class="cartao">
+    <div class="cab"><h2>Lista de corte</h2><button class="btn" id="copCorte" type="button">Copiar</button></div>
+    <div class="resumo" id="resumoCorte"></div>
+    <div class="tabela" id="tabCorte"></div>
+    <textarea class="copia" id="copiaCorte" readonly hidden aria-label="Texto da lista de corte"></textarea>
+  </div>
+  <div class="cartao">
+    <div class="cab"><h2>Ferragens e acessórios</h2><button class="btn" id="copFerr" type="button">Copiar</button></div>
+    <div class="tabela" id="tabFerr"></div>
+    <textarea class="copia" id="copiaFerr" readonly hidden aria-label="Texto da lista de ferragens"></textarea>
+  </div>
+</section>
+<section class="cartao plano" aria-labelledby="tPlano">
+  <div class="cab"><h2 id="tPlano">Plano de corte</h2><button class="btn" id="copLoja" type="button">Copiar lista para a loja de corte</button></div>
+  <p class="nota" id="notaPlano"></p>
+  <div class="grade-plano" id="gradePlano"></div>
+  <textarea class="copia" id="copiaLoja" readonly hidden aria-label="Lista para a loja de corte"></textarea>
+</section>
+<section class="cartao plano compras" aria-labelledby="tCompras">
+  <div class="cab"><h2 id="tCompras">Lista de compras</h2><button class="btn" id="copCompras" type="button">Copiar</button></div>
+  <p class="nota">Quantidades em unidade de compra (chapa, par, cento, rolo). Digite o preço unitário que a loja passar: os preços ficam salvos neste navegador e vão junto no projeto exportado.</p>
+  <div class="tabela" id="tabCompras"></div>
+  <textarea class="copia" id="copiaCompras" readonly hidden aria-label="Texto da lista de compras"></textarea>
+</section>
+<section class="cartao desenhos" aria-labelledby="tDes">
+  <div class="cab"><h2 id="tDes">Desenhos técnicos</h2><button class="btn" id="btnPdf2" type="button">Baixar PDF</button></div>
+  <p class="nota">Um desenho por peça de MDF diferente. Medidas em mm. X e Y dos furos a partir do canto inferior esquerdo (0, 0) da vista indicada. <i></i> borda com fita.</p>
+  <div class="grade-des" id="gradeDes"></div>
+</section>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+/*@inclui:js/regras.js*/
+/*@inclui:js/tipos.js*/
+/*@inclui:js/geradores.js*/
+/*@inclui:js/nucleo.js*/
+/*@inclui:js/saidas.js*/
+/*@inclui:js/tela.js*/
+</script>

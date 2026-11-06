@@ -1,9 +1,10 @@
-<!-- ARQUIVO GERADO por ferramentas/montar.js — não editar aqui; edite fonte/configurador.html e dados/*.json -->
+<!-- ARQUIVO GERADO por ferramentas/montar.js — não editar aqui; edite fonte/ (pagina.html, estilos/, js/) e dados/*.json -->
 <title>Configurador de Móveis</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: visualizador técnico — barra do projeto, coluna de parâmetros/peças à esquerda, palco 3D à direita, listas de corte e ferragens embaixo */
+/* TEMA — cores, fontes e sombras. Para mudar o visual, mexa só aqui. */
 :root{
   --bg:#eceff1; --surface:#ffffff; --surface-2:#f5f7f8; --fg:#1b2329; --muted:#5d6a73; --line:#d3dade;
   --accent:#1f5f9e; --accent-fg:#ffffff; --danger:#a8261d; --danger-bg:#fbeceb; --warn:#7a5200; --warn-bg:#fdf3dd; --ok:#22693f; --ok-bg:#e5f3ea;
@@ -27,6 +28,7 @@
   --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387;
   --fita:#f0a050;
   color-scheme:dark}
+/* LAYOUT — posição e tamanho das partes da tela. */
 
 *{box-sizing:border-box}
 html,body{background:var(--bg);color:var(--fg)}
@@ -1068,7 +1070,8 @@ function gerarModuloV3(m) {
   const folga = tipo => tipo === 'externa' ? R.borda : R.entre/2;
   const dp = Dc - R.recuoPrat - R.folgaFundoPrat;
 
-  function percorrer(no, g, nivel) {
+  const regioes = [];                                                   // vãos com posição (para a tela clicar)
+  function percorrer(no, g, nivel, cam = '') {
     if (no.tipo === 'dividir' && no.dir === 'v') {
       const n = no.partes.length, iw = g.ix1 - g.ix0, ns = no.sep === 'divisoria' ? n - 1 : 0;
       const fixas = no.partes.filter(p => p.medida !== 'auto').reduce((s,p) => s + p.medida, 0), nAuto = no.partes.filter(p => p.medida === 'auto').length;
@@ -1080,7 +1083,7 @@ function gerarModuloV3(m) {
         const fx0 = i === 0 ? g.fx0 : x0 - t/2, fx1 = i === n-1 ? g.fx1 : x1 + (ns ? t/2 : 0);
         const sub = { ...g, ix0:x0, ix1:x1, fx0, fx1, b:{ ...g.b, esq: i === 0 ? g.b.esq : 'interna', dir: i === n-1 ? g.b.dir : 'interna' } };
         if (nivel === 0) colunas.push([x0, x1]);
-        percorrer(p.no, sub, nivel + 1);
+        percorrer(p.no, sub, nivel + 1, cam + '.' + i);
         x = x1;
         if (ns && i < n-1) {
           const k = ++cont.divV; juntasFundo.push(x + t/2);
@@ -1101,7 +1104,7 @@ function gerarModuloV3(m) {
         const temSep = no.sep === 'divisoria' && i < n-1;
         const iy0 = i === 0 ? g.iy0 : Math.max(y0, g.iy0), iy1 = temSep ? y1 - t : (i === n-1 ? g.iy1 : Math.min(y1, g.iy1));
         const sub = { ...g, iy0, iy1, fy0:y0, fy1:y1, b:{ ...g.b, baixo: i === 0 ? g.b.baixo : 'interna', cima: i === n-1 ? g.b.cima : 'interna' } };
-        percorrer(p.no, sub, nivel + 1);
+        percorrer(p.no, sub, nivel + 1, cam + '.' + i);
         if (temSep) {
           const k = ++cont.divH, id = k === 1 ? 'divisoria' : `divisoria-h-${k}`;
           add({ id, nome:'Divisória horizontal', nomeLista:'Divisória', cat:'caixa', a:g.ix1-g.ix0, b:Dc, fita:[1,0], box:[g.ix0,g.ix1,y1-t,y1,zf,zFr], des:{ w:g.ix1-g.ix0, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
@@ -1109,7 +1112,7 @@ function gerarModuloV3(m) {
       });
       return;
     }
-    if (no.tipo === 'vao') vao(no, g, nivel);
+    if (no.tipo === 'vao') { regioes.push({ caminho:cam, num:cont.vao + 1, x0:g.ix0, x1:g.ix1, y0:g.iy0, y1:g.iy1, fx0:g.fx0, fx1:g.fx1, fy0:g.fy0, fy1:g.fy1 }); vao(no, g, nivel); }
   }
 
   function porta(g, lado, x0, x1, pivX, puxador) {
@@ -1474,7 +1477,7 @@ function gerarModuloV3(m) {
   if (!montado && fundosT > 3) A.push(`Transporte: com o limite de ${fmt(limT)} mm o fundo ficou em ${fundosT} peças (${fundosT - 1} emendas). Confira se o limite não está baixo demais.`);
   acabamentoPecas(pecas, m.materiais || {});
   const volumes = volumesDe(pecas, { montado, L, H:H0, P, A });
-  return { pecas, erros:E, avisos:A, volumes, compras: comprasV3(pecas) };
+  return { pecas, erros:E, avisos:A, volumes, compras: comprasV3(pecas), vaos: regioes };
 }
 
 /* ACABAMENTO DAS PEÇAS (4e) — material por grupo, veio, fita por lado (C1/C2/L1/L2) e medida de corte.
@@ -1578,6 +1581,30 @@ function moduloDeArmario(p) {
   };
 }
 const CONVERSORES_V3 = { gabinete:moduloDeGabinete, armario:moduloDeArmario };
+
+/* MÓVEL LIVRE (5a) — o móvel montado pela tela: módulo + árvore de vãos, gerado pelo núcleo novo.
+   O resultado ganha ferragens, fixações e medidas no mesmo formato do gabinete e do armário,
+   para as listas, o plano de corte, as compras, os desenhos e o 3D funcionarem igual. */
+function resultadoModulo(r, m) {
+  const c = resolverMetodo(m), soma = new Map(), add = (ref, q) => { if (q > 0 && BIBLIOTECA[ref]) soma.set(ref, (soma.get(ref) || 0) + q); };
+  r.compras.filter(l => BIBLIOTECA[l.ref]?.unid !== 'chapa').forEach(l => add(l.ref, l.qtd));
+  add('pino-5', r.pecas.filter(q => q.papel === 'prateleira').length * 4);
+  const fx = calcularFixacoes(r.pecas), red10 = v => Math.ceil(v*1.2/10)*10;
+  ['paraf-40x50','paraf-40x30','paraf-35x14','paraf-35x25','paraf-50x60-bucha','cavilha-8x30'].forEach(t => { const n = fx.filter(f => f.tipo === t).length; add(t, t.startsWith('paraf-4') || t === 'paraf-35x14' ? red10(n) : n); });
+  const fitaMm = r.pecas.filter(q => q.lista).reduce((s, q) => s + q.fita[0]*q.comp + q.fita[1]*q.larg, 0);
+  add(c.espMDF <= 19 ? 'fita-pvc-22' : 'fita-pvc-35', Math.ceil(fitaMm*R.perdaFita/1000));
+  r.ferragens = [...soma.entries()].map(([ref, qtd]) => { const b = BIBLIOTECA[ref];
+    return { ref, item: b.nome + (b.marca ? ` — ${b.marca}${b.codigo ? ' ' + b.codigo : ''}` : ''), nome:b.nome, marca:b.marca, codigo:b.codigo, qtd, unid: b.metro ? 'm' : (b.unid === 'par' ? 'par' : 'un'), obs: b.metro ? 'metros, com 10% de perda' : (b.obs || ''), var:'' }; });
+  r.fixacoes = fx;
+  r.dims = { L:m.largura, H:m.altura, P:m.profundidade, t:c.espMDF, top:m.altura, faixaEsgoto:null, paredeEsq:!!c.paredeEsq, paredeDir:!!c.paredeDir, alturaTampo:m.altura };
+  if (m.altura > 1800) r.avisos.push('Móvel alto: fixe na parede antes de colocar peso (risco de tombar).');
+  return r;
+}
+TIPOS.modulo = {
+  nomePadrao:'Móvel novo', nome:'Móvel livre (montar pela tela)', grupos:[], editor:true,
+  padrao: JSON.parse(JSON.stringify({ ...moduloDeArmario(TIPOS.armario.padrao), metodo:'padrao-nathan', metodoAjustes:{}, entrega:'desmontado' })),
+  gerar: p => resultadoModulo(gerarModuloV3(p), p),
+};
 
 /* =====================================================================
    4. LISTAS — agrupa peças iguais e calcula chapas e fita
@@ -2079,7 +2106,7 @@ End Function
    5. ESTADO DA PÁGINA
    ===================================================================== */
 const CHAVE = 'configurador-moveis:v2';
-const projetoPadrao = (tipo = 'armario') => ({ tipo, nome:TIPOS[tipo].nomePadrao, parametros:{ ...TIPOS[tipo].padrao } });
+const projetoPadrao = (tipo = 'armario') => ({ tipo, nome:TIPOS[tipo].nomePadrao, parametros:JSON.parse(JSON.stringify(TIPOS[tipo].padrao)) });
 const estado = {
   projeto: projetoPadrao(), res:null, valido:null, sel:null, ocultas:new Set(),
   portas:false, gavetas:false, explode:0, cotas:true, medir:false, corte:'nenhum', cortePos:50,
