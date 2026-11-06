@@ -1,0 +1,18 @@
+{
+  "mdf-ru-branco": {
+    "nome": "MDF RU branco fosco",
+    "cor": "#f3f2ee"
+  },
+  "mdf-branco": {
+    "nome": "MDF branco",
+    "cor": "#ecebe6"
+  },
+  "marmore": {
+    "nome": "Mármore (existente)",
+    "cor": "#f1f1ef"
+  },
+  "cromado": {
+    "nome": "Metal cromado",
+    "cor": "#b9bec2"
+  }
+}

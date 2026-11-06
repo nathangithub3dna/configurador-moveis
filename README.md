@@ -6,14 +6,26 @@ Sistema do Nathan para projetar móveis planejados: 3D, lista de corte, plano de
 
 | Arquivo | O que é |
 |---|---|
-| `configurador.html` | O configurador inteiro (é o que vai publicado no Claude) |
+| `configurador.html` | O configurador pronto (é o que vai publicado no Claude). **Gerado — não editar** |
+| `fonte/configurador.html` | O programa (tela, 3D, cálculos), sem os catálogos |
+| `dados/regras.json` | Regras de marcenaria: folgas, corrediças, dobradiças por altura, chapa, serra, refilo… (cada valor tem explicação em `_explicacao`) |
+| `dados/biblioteca.json` | Chapas, ferragens, fixação e acabamento: nome, marca, código, unidade de compra |
+| `dados/puxadores.json` | Os 5 puxadores escolhíveis: furação, comprimento, largura, saliência, cor |
+| `dados/materiais.json` | Materiais e cor no 3D |
+| `ferramentas/montar.js` | Junta a fonte com os dados e gera o `configurador.html` |
 | `testes/rodar.js` | Testes de referência: gera cada modelo e compara com o resultado guardado |
 | `testes/referencia/` | Resultado "oficial" de cada modelo (peças, lista de corte, plano, ferragens, iLogic) |
 | `package.json` | Lista das ferramentas usadas nos testes |
 
 Projetos de clientes **não** ficam aqui: ficam no Google Drive.
 
-## Como testar (no PC)
+## Mudar uma regra ou um item do catálogo
+
+Editar o arquivo em `dados/` (dá para editar direto no site do GitHub: abrir o arquivo → lápis ✏️ → salvar).
+Exemplo: em `dados/regras.json`, `"folgaPrat": 1` é a folga de cada lado da prateleira.
+Depois o Claude monta, testa e publica. Os preços não ficam aqui: são digitados na lista de compras do configurador.
+
+## Como testar (no PC — opcional; o Claude roda na nuvem)
 
 Precisa do Node.js instalado (nodejs.org, versão LTS). Uma vez só, dentro da pasta:
 

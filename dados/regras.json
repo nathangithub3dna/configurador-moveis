@@ -1,0 +1,62 @@
+{
+  "_explicacao": {
+    "borda": "folga das frentes nas bordas externas",
+    "entre": "folga entre duas frentes",
+    "corredica": "corrediça telescópica 45 mm: desconto de 26 mm na largura da gaveta (13 por lado)",
+    "canecoDiam": "Blum CLIP top BLUMOTION 71B3550: diâmetro, profundidade e centro do caneco a partir da borda; dobradicaBorda = distância da 1ª e da última dobradiça até a ponta da porta",
+    "folgaAltGaveta": "altura da caixa = altura da gaveta − 70 (arredondado a 10)",
+    "faixaEsgoto": "± em volta do centro do esgoto",
+    "serra": "plano de corte: espessura do disco e limpeza das bordas da chapa",
+    "dobradicasPorAltura": "quantidade de dobradiças conforme a altura da porta (null = acima do último valor)"
+  },
+  "borda": 1.5,
+  "entre": 3,
+  "corredica": 13,
+  "corredicas": [
+    250,
+    300,
+    350,
+    400,
+    450,
+    500,
+    550
+  ],
+  "canecoDiam": 35,
+  "canecoProf": 13,
+  "canecoBorda": 22,
+  "dobradicaBorda": 100,
+  "enchimento": 25,
+  "sarrafo": 60,
+  "travessa": 100,
+  "recuoPrat": 20,
+  "folgaPrat": 1,
+  "folgaFundoPrat": 6,
+  "folgaAltGaveta": 70,
+  "folgaPisoGaveta": 12,
+  "faixaEsgoto": 75,
+  "portaMaxLarg": 600,
+  "angMaxDobradica": 105,
+  "puxadorComp": 160,
+  "chapa": [
+    2750,
+    1850
+  ],
+  "aproveitamento": 0.85,
+  "perdaFita": 1.1,
+  "serra": 4,
+  "refilo": 10,
+  "dobradicasPorAltura": [
+    {
+      "ateAltura": 900,
+      "quantidade": 2
+    },
+    {
+      "ateAltura": 1600,
+      "quantidade": 3
+    },
+    {
+      "ateAltura": null,
+      "quantidade": 4
+    }
+  ]
+}

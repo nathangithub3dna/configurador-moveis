@@ -1,0 +1,254 @@
+{
+  "chapa-mdf-ru-branco-18": {
+    "grupo": "Chapas",
+    "nome": "Chapa MDF RU branco fosco 18 mm",
+    "marca": "",
+    "codigo": "",
+    "unid": "chapa",
+    "emb": 1,
+    "mat": "mdf-ru-branco",
+    "esp": 18,
+    "dim": [
+      2750,
+      1850
+    ]
+  },
+  "chapa-mdf-ru-branco-15": {
+    "grupo": "Chapas",
+    "nome": "Chapa MDF RU branco fosco 15 mm",
+    "marca": "",
+    "codigo": "",
+    "unid": "chapa",
+    "emb": 1,
+    "mat": "mdf-ru-branco",
+    "esp": 15,
+    "dim": [
+      2750,
+      1850
+    ]
+  },
+  "chapa-mdf-branco-6": {
+    "grupo": "Chapas",
+    "nome": "Chapa MDF branco 6 mm (fundos)",
+    "marca": "",
+    "codigo": "",
+    "unid": "chapa",
+    "emb": 1,
+    "mat": "mdf-branco",
+    "esp": 6,
+    "dim": [
+      2750,
+      1850
+    ]
+  },
+  "dob-blum-71B3550": {
+    "grupo": "Ferragens",
+    "nome": "Dobradiça CLIP top BLUMOTION 110°, reta, com amortecedor",
+    "marca": "Blum",
+    "codigo": "71B3550",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "canecoDiam": 35,
+      "canecoProf": 13,
+      "canecoCentro": 22,
+      "abertura": 110,
+      "furacao": "45 mm"
+    },
+    "modelo3d": "Dobradica_Blum_71B3550"
+  },
+  "calco-blum-0": {
+    "grupo": "Ferragens",
+    "nome": "Calço reto CLIP, 0 mm (porta sobreposta)",
+    "marca": "Blum",
+    "codigo": "173L6100 (confirmar)",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "recuoFrente": 37,
+      "furos": 32
+    },
+    "modelo3d": "Calco_Blum_0mm"
+  },
+  "corr-tel45-amort": {
+    "grupo": "Ferragens",
+    "nome": "Corrediça telescópica 45 mm com amortecedor, extração total",
+    "marca": "FGV / Telescópica (equivalente)",
+    "codigo": "",
+    "unid": "par",
+    "emb": 1,
+    "dados": {
+      "folgaLado": 13,
+      "altura": 45,
+      "comprimentos": [
+        250,
+        300,
+        350,
+        400,
+        450,
+        500,
+        550
+      ]
+    },
+    "modelo3d": "Corredica_Telescopica_45"
+  },
+  "pux-barra-128": {
+    "grupo": "Ferragens",
+    "nome": "Puxador barra, furação 128 mm",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "furacao": 128,
+      "comp": 160
+    },
+    "modelo3d": "Puxador_Barra_128"
+  },
+  "pux-hettich-brema-128": {
+    "grupo": "Ferragens",
+    "nome": "Puxador Brema 128 mm, inox escovado",
+    "marca": "Hettich",
+    "codigo": "9069890",
+    "unid": "un",
+    "emb": 1
+  },
+  "pux-hettich-como-320": {
+    "grupo": "Ferragens",
+    "nome": "Puxador Como 320 mm, inox escovado",
+    "marca": "Hettich",
+    "codigo": "115078",
+    "unid": "un",
+    "emb": 1
+  },
+  "pux-zen-citizen-96": {
+    "grupo": "Ferragens",
+    "nome": "Puxador Citizen 96 mm, gold escovado",
+    "marca": "Zen Design",
+    "codigo": "ZP5463",
+    "unid": "un",
+    "emb": 1
+  },
+  "pux-zen-elemento-128": {
+    "grupo": "Ferragens",
+    "nome": "Puxador Elemento G 128 mm, preto fosco",
+    "marca": "Zen Design",
+    "codigo": "ZP5455.24",
+    "unid": "un",
+    "emb": 1
+  },
+  "pux-zen-shell-64": {
+    "grupo": "Ferragens",
+    "nome": "Puxador concha Shell 64 mm, gold escovado",
+    "marca": "Zen Design",
+    "codigo": "ZP4318",
+    "unid": "un",
+    "emb": 1
+  },
+  "pino-5": {
+    "grupo": "Ferragens",
+    "nome": "Suporte de prateleira, pino 5 mm",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1
+  },
+  "sapata": {
+    "grupo": "Ferragens",
+    "nome": "Sapata niveladora",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1
+  },
+  "paraf-40x50": {
+    "grupo": "Fixação",
+    "nome": "Parafuso 4,0 × 50 (montagem da caixa)",
+    "marca": "",
+    "codigo": "",
+    "unid": "cento",
+    "emb": 100
+  },
+  "paraf-35x14": {
+    "grupo": "Fixação",
+    "nome": "Parafuso 3,5 × 14 (dobradiças, corrediças, fundos)",
+    "marca": "",
+    "codigo": "",
+    "unid": "cento",
+    "emb": 100
+  },
+  "paraf-35x25": {
+    "grupo": "Fixação",
+    "nome": "Parafuso 3,5 × 25 (frente da gaveta)",
+    "marca": "",
+    "codigo": "",
+    "unid": "cento",
+    "emb": 100
+  },
+  "paraf-40x30": {
+    "grupo": "Fixação",
+    "nome": "Parafuso 4,0 × 30 (espaçador das corrediças)",
+    "marca": "",
+    "codigo": "",
+    "unid": "cento",
+    "emb": 100
+  },
+  "cavilha-8x30": {
+    "grupo": "Fixação",
+    "nome": "Cavilha de madeira 8 × 30 mm + cola (beiral)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1
+  },
+  "paraf-50x60-bucha": {
+    "grupo": "Fixação",
+    "nome": "Parafuso 5,0 × 60 + bucha S8 (parede)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1
+  },
+  "fita-pvc-22": {
+    "grupo": "Acabamento",
+    "nome": "Fita de borda PVC 22 mm branca",
+    "marca": "",
+    "codigo": "",
+    "unid": "rolo 20 m",
+    "emb": 20,
+    "metro": true
+  },
+  "fita-pvc-35": {
+    "grupo": "Acabamento",
+    "nome": "Fita de borda PVC 35 mm branca",
+    "marca": "",
+    "codigo": "",
+    "unid": "rolo 20 m",
+    "emb": 20,
+    "metro": true
+  },
+  "silicone": {
+    "grupo": "Acabamento",
+    "nome": "Silicone neutro",
+    "marca": "",
+    "codigo": "",
+    "unid": "tubo",
+    "emb": 1
+  },
+  "suporte-vassoura": {
+    "grupo": "Ferragens",
+    "nome": "Suporte para vassoura/rodo (garra de pressão)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1
+  },
+  "gancho-aspirador": {
+    "grupo": "Ferragens",
+    "nome": "Gancho duplo para aspirador e mangueira",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1
+  }
+}

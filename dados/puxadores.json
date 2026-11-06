@@ -1,0 +1,54 @@
+{
+  "1": {
+    "ref": "pux-hettich-brema-128",
+    "rot": "Hettich Brema 128 · inox escovado",
+    "modelo": "barra",
+    "furacao": 128,
+    "comp": 140,
+    "larg": 14,
+    "proj": 35,
+    "cor": "#b9bec2"
+  },
+  "2": {
+    "ref": "pux-hettich-como-320",
+    "rot": "Hettich Como 320 · inox escovado",
+    "modelo": "barra",
+    "furacao": 320,
+    "comp": 332,
+    "larg": 26,
+    "proj": 45,
+    "cor": "#b9bec2"
+  },
+  "3": {
+    "ref": "pux-zen-citizen-96",
+    "rot": "Zen Citizen 96 · gold escovado",
+    "modelo": "barra",
+    "furacao": 96,
+    "comp": 130,
+    "larg": 12,
+    "proj": 30,
+    "cor": "#c8a35e",
+    "conf": "largura e saliência"
+  },
+  "4": {
+    "ref": "pux-zen-elemento-128",
+    "rot": "Zen Elemento G 128 · preto fosco",
+    "modelo": "bloco",
+    "furacao": 128,
+    "comp": 192,
+    "larg": 30,
+    "proj": 18,
+    "cor": "#2a2c2e"
+  },
+  "5": {
+    "ref": "pux-zen-shell-64",
+    "rot": "Zen Shell 64 (concha) · gold escovado",
+    "modelo": "concha",
+    "furacao": 64,
+    "comp": 90,
+    "larg": 34,
+    "proj": 24,
+    "cor": "#c8a35e",
+    "conf": "largura e saliência"
+  }
+}

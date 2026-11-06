@@ -1,0 +1,2112 @@
+<title>Configurador de Móveis</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: visualizador técnico — barra do projeto, coluna de parâmetros/peças à esquerda, palco 3D à direita, listas de corte e ferragens embaixo */
+:root{
+  --bg:#eceff1; --surface:#ffffff; --surface-2:#f5f7f8; --fg:#1b2329; --muted:#5d6a73; --line:#d3dade;
+  --accent:#1f5f9e; --accent-fg:#ffffff; --danger:#a8261d; --danger-bg:#fbeceb; --warn:#7a5200; --warn-bg:#fdf3dd; --ok:#22693f; --ok-bg:#e5f3ea;
+  --v-bg:#dde2e5; --v-linha:#28323a; --v-caixa:#e6e9ec; --v-frente:#fbfbf9; --v-gaveta:#cfd7de; --v-fundo:#b7c0c7;
+  --v-enchimento:#d6dccf; --v-ferragem:#6f7a82; --v-tampo:#f2f3f4; --v-parede:#c9cfd3; --v-grade:#b8c0c5; --v-esgoto:#d0503a; --v-referencia:#9fb3c8;
+  --fita:#c4650f;
+  --f-sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171b; --surface:#1a2026; --surface-2:#1f262d; --fg:#e3e8eb; --muted:#93a0a8; --line:#2c353d;
+  --accent:#6ea8e6; --accent-fg:#0d1720; --danger:#f0897f; --danger-bg:#3a1d1b; --warn:#e9b955; --warn-bg:#352a12; --ok:#7fcf9d; --ok-bg:#16301f;
+  --v-bg:#1d2329; --v-linha:#0b0f12; --v-caixa:#7d8890; --v-frente:#a9b2b8; --v-gaveta:#66727c; --v-fundo:#525d66;
+  --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387;
+  --fita:#f0a050;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171b; --surface:#1a2026; --surface-2:#1f262d; --fg:#e3e8eb; --muted:#93a0a8; --line:#2c353d;
+  --accent:#6ea8e6; --accent-fg:#0d1720; --danger:#f0897f; --danger-bg:#3a1d1b; --warn:#e9b955; --warn-bg:#352a12; --ok:#7fcf9d; --ok-bg:#16301f;
+  --v-bg:#1d2329; --v-linha:#0b0f12; --v-caixa:#7d8890; --v-frente:#a9b2b8; --v-gaveta:#66727c; --v-fundo:#525d66;
+  --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387;
+  --fita:#f0a050;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-sans);font-size:14px;line-height:1.45;padding-block:12px 32px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* Barra do projeto */
+.topo{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:12px}
+.marca{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-weight:500;color:var(--muted);font-size:12px;margin-left:6px}
+#nomeProjeto{flex:1 1 220px;min-width:0;max-width:420px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-weight:600}
+.status{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.status.ok{background:var(--ok-bg);color:var(--ok)}
+.status.erro{background:var(--danger-bg);color:var(--danger)}
+.topo .acoes{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid var(--line);border-radius:6px;background:var(--surface);cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.prim{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn:disabled{opacity:.45;cursor:not-allowed;border-color:var(--line)}
+.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+
+/* Área principal */
+.app{display:grid;grid-template-columns:minmax(290px,340px) minmax(0,1fr);gap:12px;height:calc(100dvh - 110px);min-height:560px}
+.lado{display:flex;flex-direction:column;min-height:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.abas{display:flex;border-bottom:1px solid var(--line)}
+.abas button{flex:1;padding:10px;border:0;background:none;cursor:pointer;font-weight:600;font-size:13px;color:var(--muted);border-bottom:2px solid transparent}
+.abas button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.painel{flex:1;overflow:auto;padding:12px 14px 16px;display:flex;flex-direction:column;gap:14px}
+
+.alertas{display:flex;flex-direction:column;gap:6px}
+.alerta{font-size:12.5px;padding:7px 10px;border-radius:6px;line-height:1.4}
+.alerta.erro{background:var(--danger-bg);color:var(--danger)}
+.alerta.aviso{background:var(--warn-bg);color:var(--warn)}
+
+#form{display:flex;flex-direction:column;gap:18px}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+legend{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;padding:0}
+.campo{display:grid;grid-template-columns:minmax(0,1fr) 112px;align-items:center;gap:8px}
+.campo label{font-size:13px;min-width:0}
+.campo .ajuda{grid-column:1/-1;font-size:11.5px;color:var(--muted);margin-top:-4px}
+.campo .entrada{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;background:var(--surface-2);overflow:hidden}
+.campo .entrada:focus-within{border-color:var(--accent)}
+.campo input[type=number],.campo input[type=text],.campo select{width:100%;min-width:0;border:0;background:transparent;padding:6px 8px;font-family:var(--f-mono);font-size:13px;text-align:right}
+.campo select{text-align:left;font-family:var(--f-sans)}
+.campo .unid{font-size:11px;color:var(--muted);padding-right:8px}
+.campo.sim{grid-template-columns:auto minmax(0,1fr);justify-content:start}
+.campo.sim input{width:16px;height:16px;accent-color:var(--accent);margin:0}
+.export{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.export .linha{display:flex;flex-wrap:wrap;gap:6px}
+.export .nota{font-size:12px;color:var(--muted)}
+
+/* Árvore de peças */
+.arvore{display:flex;flex-direction:column;gap:12px}
+.arvore h3{margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
+.arvore ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.arvore li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;align-items:center;gap:6px;padding:3px 4px;border-radius:5px}
+.arvore li.sel{background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.arvore li input{margin:0;accent-color:var(--accent)}
+.arvore li button{border:0;background:none;text-align:left;padding:2px 0;cursor:pointer;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arvore li .num{font-size:11px;color:var(--muted)}
+
+/* Palco 3D */
+.vista{position:relative;display:flex;flex-direction:column;min-height:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.barra{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border-bottom:1px solid var(--line);align-items:center}
+.barra .grupo{display:flex;gap:4px;align-items:center}
+.barra .sep{width:1px;height:22px;background:var(--line);margin:0 2px}
+.barra .btn{padding:5px 9px;font-size:12.5px}
+.barra label.desl{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.barra input[type=range]{width:110px;accent-color:var(--accent)}
+.barra select{padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-size:12.5px}
+.palco{position:relative;flex:1;min-height:0;touch-action:none}
+.palco canvas{display:block}
+.rotulos{position:absolute;inset:0;pointer-events:none}
+.cota-rot{font:500 11px var(--f-mono);color:var(--fg);background:var(--surface);border:1px solid var(--line);padding:1px 5px;border-radius:4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.cota-rot.med{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.cota-rot.esg{color:var(--v-esgoto);border-color:var(--v-esgoto)}
+.faixa-desat{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--danger-bg);color:var(--danger);font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:6px;max-width:calc(100% - 24px);text-align:center}
+.dica{position:absolute;right:10px;bottom:8px;font-size:11.5px;color:var(--muted);pointer-events:none;text-align:right}
+.ficha{position:absolute;left:10px;bottom:10px;width:min(340px,calc(100% - 20px));background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:0 6px 22px rgb(0 0 0 / .12)}
+.ficha .cab{display:flex;justify-content:space-between;align-items:start;gap:8px}
+.ficha strong{font-size:14px}
+.ficha .glb{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);word-break:break-all}
+.ficha .med{font-family:var(--f-mono);font-size:15px;color:var(--accent);font-variant-numeric:tabular-nums}
+.ficha .det{font-size:12px;color:var(--muted)}
+.ficha .fechar{border:0;background:none;cursor:pointer;font-size:18px;line-height:1;color:var(--muted);padding:0 2px}
+
+/* Listas */
+.listas{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px;margin-top:12px}
+.cartao{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.cartao .cab{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}
+.cartao h2{margin:0;font-size:15px;font-weight:600}
+.cartao .resumo{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted)}
+.cartao .resumo b{color:var(--fg);font-family:var(--f-mono);font-weight:500}
+.tabela{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.grupo td{background:var(--surface-2);font-weight:600;font-size:12px}
+td.obs{color:var(--muted);font-size:11.5px;min-width:160px}
+.vazio{font-size:13px;color:var(--muted);padding:10px 0}
+.copia{width:100%;min-height:140px;font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);border-radius:6px;padding:8px;background:var(--surface-2)}
+.plano{margin-top:12px}
+.grade-plano{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:12px}
+.chapa-svg{width:100%;height:auto;display:block}
+.p-chapa{fill:var(--surface-2);stroke:var(--fg);stroke-width:1}
+.p-refilo{fill:none;stroke:var(--muted);stroke-width:.6;stroke-dasharray:4 3}
+.p-peca{fill:color-mix(in srgb,var(--accent) 14%,var(--surface));stroke:var(--accent);stroke-width:1}
+text.p-num{fill:var(--fg);font:600 12px var(--f-mono)}
+text.p-med{fill:var(--muted);font:10px var(--f-mono)}
+.compras input{width:96px;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--surface-2);font-family:var(--f-mono);text-align:right}
+.compras tfoot td{font-weight:600;border-bottom:0}
+.desenhos{margin-top:12px}
+.desenhos .nota{font-size:12.5px;color:var(--muted);margin:0;max-width:75ch}
+.desenhos .nota i{display:inline-block;width:18px;height:4px;background:var(--fita);vertical-align:middle;margin:0 2px}
+.grade-des{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:12px}
+.des{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0;scroll-margin-top:16px}
+.des.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.des h3{margin:0;font-size:14px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.des h3 button{border:0;background:none;color:var(--accent);cursor:pointer;font-size:12px;font-weight:500;padding:0}
+.des .meta{font-size:12px;color:var(--muted)}
+.des .meta b{font-family:var(--f-mono);font-weight:500;color:var(--fg)}
+.des-svg{width:100%;height:auto;display:block;background:var(--surface);overflow:visible}
+.d-peca{fill:var(--surface-2);stroke:var(--fg);stroke-width:1.4;stroke-linejoin:round}
+.d-fita{stroke:var(--fita);stroke-width:4.5}
+.d-furo{fill:var(--surface);stroke:var(--accent);stroke-width:1.2}
+text.d-furo{fill:var(--accent);stroke:none;font-family:var(--f-mono)}
+.d-cota,.d-cota-ext{stroke:var(--muted);stroke-width:.8}
+text.d-cota{fill:var(--fg);stroke:none;font-family:var(--f-mono)}
+.d-eixo{stroke:var(--muted);stroke-width:.8;stroke-dasharray:6 4}
+text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
+.furos table{font-size:11.5px}
+.furos td,.furos th{padding:3px 6px}
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:6px;font-size:13px;z-index:20;max-width:calc(100% - 32px)}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr;height:auto;min-height:0}
+  .vista{order:-1;height:64vh;min-height:380px}
+  .lado{max-height:none}
+  .painel{overflow:visible}
+  .barra{flex-wrap:nowrap;overflow-x:auto}
+  .listas{grid-template-columns:1fr}
+  .dica{display:none}
+  .ficha{padding:8px 10px}
+}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+.btn[hidden] { display:none !important; }
+.leg-fix { position:absolute; top:10px; left:10px; z-index:3; display:flex; flex-wrap:wrap; gap:4px 12px; max-width:calc(100% - 20px); padding:8px 10px; border-radius:8px; background:color-mix(in srgb, var(--surface, #fff) 88%, transparent); font-size:12px; pointer-events:none; }
+.leg-fix[hidden] { display:none; }
+.leg-fix i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
+</style>
+
+<header class="topo">
+  <span class="marca">Configurador de Móveis<small>Fase 1 · técnico</small></span>
+  <input id="nomeProjeto" aria-label="Nome do projeto" value="Gabinete do banheiro">
+  <span class="status ok" id="status">Pronto para exportar</span>
+  <div class="acoes">
+    <button class="btn" id="btnAbrir" type="button">Abrir projeto</button>
+    <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
+    <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
+  </div>
+</header>
+
+<main class="app">
+  <aside class="lado">
+    <div class="abas" role="tablist">
+      <button role="tab" id="abaParam" aria-selected="true" aria-controls="painelParam">Parâmetros</button>
+      <button role="tab" id="abaPecas" aria-selected="false" aria-controls="painelPecas">Peças</button>
+    </div>
+    <div class="painel" id="painelParam" role="tabpanel">
+      <div class="campo"><label for="tipoMovel">Tipo de móvel</label><div class="entrada"><select id="tipoMovel"></select></div></div>
+      <div class="alertas" id="alertas"></div>
+      <form id="form" autocomplete="off"></form>
+      <div class="export">
+        <legend>Exportar</legend>
+        <div class="linha">
+          <button class="btn prim" id="btnZip" type="button">Pacote para o Blender (.zip)</button>
+          <button class="btn" id="btnPdf" type="button">Desenhos (.pdf)</button>
+          <button class="btn" id="btnJson" type="button">Projeto (.json)</button>
+          <button class="btn" id="btnIlogic" type="button">Script iLogic (.txt)</button>
+          <button class="btn" id="copIlogic" type="button">Copiar script iLogic</button>
+        </div>
+        <textarea class="copia" id="copiaIlogic" readonly hidden aria-label="Texto do script iLogic"></textarea>
+        <span class="nota" id="notaExport">O pacote leva o modelo 3D (.glb), os desenhos em PDF, o projeto e as listas em planilha.</span>
+      </div>
+    </div>
+    <div class="painel" id="painelPecas" role="tabpanel" hidden>
+      <div class="arvore" id="arvore"></div>
+    </div>
+  </aside>
+
+  <section class="vista" aria-label="Visualização 3D">
+    <div class="barra" role="toolbar" aria-label="Ferramentas do 3D">
+      <div class="grupo">
+        <select id="selVista" aria-label="Vista">
+          <option value="perspectiva">Perspectiva</option>
+          <option value="frente">Frente</option>
+          <option value="lateral">Lateral</option>
+          <option value="topo">Topo</option>
+        </select>
+        <button class="btn" id="bOrto" aria-pressed="false" type="button">Ortogonal</button>
+      </div>
+      <span class="sep"></span>
+      <div class="grupo">
+        <button class="btn" id="bPortas" aria-pressed="false" type="button">Abrir portas</button>
+        <button class="btn" id="bGavetas" aria-pressed="false" type="button">Abrir gavetas</button>
+        <button class="btn" id="bFix" aria-pressed="false" type="button" title="Deixa o MDF transparente e mostra parafusos, cavilhas e pinos">Fixações</button>
+      </div>
+      <span class="sep"></span>
+      <div class="grupo">
+        <button class="btn" id="bCotas" aria-pressed="true" type="button">Cotas</button>
+        <button class="btn" id="bMedir" aria-pressed="false" type="button">Medir</button>
+      </div>
+      <span class="sep"></span>
+      <div class="grupo">
+        <select id="selCorte" aria-label="Corte">
+          <option value="nenhum">Sem corte</option>
+          <option value="x">Corte na largura</option>
+          <option value="z">Corte na profundidade</option>
+          <option value="y">Corte na altura</option>
+        </select>
+        <input type="range" id="rCorte" min="0" max="100" value="50" aria-label="Posição do corte" disabled>
+      </div>
+      <span class="sep"></span>
+      <label class="desl" for="rExplodir">Explodir <input type="range" id="rExplodir" min="0" max="100" value="0"></label>
+      <span class="sep"></span>
+      <div class="grupo">
+        <button class="btn" id="bTampo" aria-pressed="true" type="button">Tampo</button>
+        <button class="btn" id="bFundo" aria-pressed="true" type="button">Fundo</button>
+        <button class="btn" id="bParedes" aria-pressed="true" type="button">Paredes</button>
+        <button class="btn" id="bEsgoto" aria-pressed="false" type="button">Faixa do esgoto</button>
+      </div>
+    </div>
+    <div class="palco" id="palco">
+      <div class="leg-fix" id="legFix" hidden>
+        <span><i style="background:#e8772e"></i>Parafuso 4,0 × 50</span><span><i style="background:#c94f8a"></i>3,5 × 14 (fundo)</span>
+        <span><i style="background:#8e5bd0"></i>3,5 × 25 (frente gaveta)</span><span><i style="background:#d9a21b"></i>4,0 × 30 (espaçador)</span>
+        <span><i style="background:#2f9e6b"></i>Cavilha 8 × 30</span><span><i style="background:#3b82c4"></i>Pino 5 mm</span><span><i style="background:#d8322b"></i>Parede 5 × 60 + bucha</span>
+      </div>
+      <div class="faixa-desat" id="faixaDesat" hidden>Modelo do último projeto válido. Corrija os erros para atualizar.</div>
+      <div class="ficha" id="ficha" hidden>
+        <div class="cab"><strong id="fNome"></strong><button class="fechar" id="fFechar" type="button" aria-label="Fechar ficha">×</button></div>
+        <span class="med" id="fMed"></span>
+        <span class="det" id="fDet"></span>
+        <span class="det" id="fObs"></span>
+        <span class="glb" id="fGlb"></span>
+        <button class="btn" id="fDesenho" type="button" hidden>Ver desenho técnico</button>
+      </div>
+      <span class="dica" id="dica">Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça</span>
+    </div>
+  </section>
+</main>
+
+<section class="listas">
+  <div class="cartao">
+    <div class="cab"><h2>Lista de corte</h2><button class="btn" id="copCorte" type="button">Copiar</button></div>
+    <div class="resumo" id="resumoCorte"></div>
+    <div class="tabela" id="tabCorte"></div>
+    <textarea class="copia" id="copiaCorte" readonly hidden aria-label="Texto da lista de corte"></textarea>
+  </div>
+  <div class="cartao">
+    <div class="cab"><h2>Ferragens e acessórios</h2><button class="btn" id="copFerr" type="button">Copiar</button></div>
+    <div class="tabela" id="tabFerr"></div>
+    <textarea class="copia" id="copiaFerr" readonly hidden aria-label="Texto da lista de ferragens"></textarea>
+  </div>
+</section>
+<section class="cartao plano" aria-labelledby="tPlano">
+  <div class="cab"><h2 id="tPlano">Plano de corte</h2><button class="btn" id="copLoja" type="button">Copiar lista para a loja de corte</button></div>
+  <p class="nota" id="notaPlano"></p>
+  <div class="grade-plano" id="gradePlano"></div>
+  <textarea class="copia" id="copiaLoja" readonly hidden aria-label="Lista para a loja de corte"></textarea>
+</section>
+<section class="cartao plano compras" aria-labelledby="tCompras">
+  <div class="cab"><h2 id="tCompras">Lista de compras</h2><button class="btn" id="copCompras" type="button">Copiar</button></div>
+  <p class="nota">Quantidades em unidade de compra (chapa, par, cento, rolo). Digite o preço unitário que a loja passar: os preços ficam salvos neste navegador e vão junto no projeto exportado.</p>
+  <div class="tabela" id="tabCompras"></div>
+  <textarea class="copia" id="copiaCompras" readonly hidden aria-label="Texto da lista de compras"></textarea>
+</section>
+<section class="cartao desenhos" aria-labelledby="tDes">
+  <div class="cab"><h2 id="tDes">Desenhos técnicos</h2><button class="btn" id="btnPdf2" type="button">Baixar PDF</button></div>
+  <p class="nota">Um desenho por peça de MDF diferente. Medidas em mm. X e Y dos furos a partir do canto inferior esquerdo (0, 0) da vista indicada. <i></i> borda com fita.</p>
+  <div class="grade-des" id="gradeDes"></div>
+</section>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+/* =====================================================================
+   1. REGRAS DE MARCENARIA (mm) — valem para todos os tipos de móvel
+   ===================================================================== */
+const R = (({ _explicacao, ...r }) => r)(/*@dados:regras*/null);
+// Puxadores reais (medidas do fabricante; "conf" = medida não publicada, estimada — confirmar na loja)
+const PUXADORES = Object.fromEntries(Object.entries(/*@dados:puxadores*/null).map(([k, v]) => [k, { ...v, cor: parseInt(v.cor.slice(1), 16) }]));
+const opcoesPuxador = Object.entries(PUXADORES).map(([k,v]) => [Number(k), v.rot]);
+const dobradicasPorAltura = h => R.dobradicasPorAltura.find(f => f.ateAltura === null || h <= f.ateAltura).quantidade;
+
+const MATERIAIS = /*@dados:materiais*/null;
+/* =====================================================================
+   1b. BIBLIOTECA — chapas e ferragens reais (como os catálogos do Promob).
+   Cada item: o que é, marca/código, unidade e embalagem de compra, dados técnicos
+   que o gerador usa e o nome do modelo 3D na biblioteca do Blender.
+   Preços não vêm daqui: o Nathan preenche na lista de compras.
+   ===================================================================== */
+const BIBLIOTECA = /*@dados:biblioteca*/null;
+const chapaDe = (mat, esp) => Object.entries(BIBLIOTECA).find(([,b]) => b.unid==='chapa' && b.mat===mat && b.esp===esp)?.[0] || null;
+
+const CATS = { caixa:'Caixa', enchimento:'Enchimento', frente:'Frentes', gaveta:'Caixa das gavetas', fundo:'Fundo', ferragem:'Ferragens', tampo:'Tampo', referencia:'Referência (não fabricar)' };
+
+const fmt = v => { const r = Math.round(v*10)/10; return Number.isInteger(r) ? String(r) : r.toFixed(1).replace('.', ','); };
+const fitaTxt = f => { const s = []; if (f[0]) s.push(f[0]+'C'); if (f[1]) s.push(f[1]+'L'); return s.length ? s.join(' ') : '—'; };
+
+/* =====================================================================
+   2. TIPOS DE MÓVEL — cada tipo tem campos, valores padrão e um gerador.
+   Para um novo tipo (aéreo, armário, nicho), acrescente uma entrada aqui.
+   ===================================================================== */
+const TIPOS = {
+  gabinete: {
+    nomePadrao: 'Gabinete do banheiro',
+    nome: 'Gabinete com portas e gavetas',
+    padrao: { largura:800, altura:800, profundidade:450, pes:0, espMDF:18, espFundo:6,
+      tampoLarg:800, tampoProf:450, tampoEsp:20, portas:2, gavetas:1, alturasGavetas:'200', puxadorProj:25,
+      prateleiras:1, recorteLarg:300, recorteProf:150, paredeEsq:true, paredeDir:false, enchimento:true, esgoto:525 },
+    grupos: [
+      { titulo:'Medidas gerais', campos:[
+        { id:'largura', rot:'Largura total', unid:'mm', ajuda:'Inclui o enchimento do lado da parede.' },
+        { id:'altura', rot:'Altura (sem o tampo)', unid:'mm' },
+        { id:'profundidade', rot:'Profundidade total', unid:'mm', ajuda:'Da parede até a frente das portas.' },
+        { id:'pes', rot:'Altura dos pés', unid:'mm', ajuda:'0 = base apoiada no chão.' } ]},
+      { titulo:'Chapas', campos:[
+        { id:'espMDF', rot:'Espessura do MDF', unid:'mm' },
+        { id:'espFundo', rot:'Espessura do fundo', unid:'mm' } ]},
+      { titulo:'Tampo', campos:[
+        { id:'tampoLarg', rot:'Largura do tampo', unid:'mm' },
+        { id:'tampoProf', rot:'Profundidade do tampo', unid:'mm' },
+        { id:'tampoEsp', rot:'Espessura do tampo', unid:'mm' } ]},
+      { titulo:'Frentes', campos:[
+        { id:'portas', rot:'Portas', tipo:'sel', opcoes:[[0,'Sem portas (nicho)'],[1,'1 porta'],[2,'2 portas']] },
+        { id:'gavetas', rot:'Gavetas', unid:'un' },
+        { id:'alturasGavetas', rot:'Altura das gavetas', tipo:'txt', unid:'mm', ajuda:'De baixo para cima, separadas por vírgula. Ex.: 150, 200.' },
+        { id:'puxadorProj', rot:'Saliência do puxador', unid:'mm' } ]},
+      { titulo:'Interno', campos:[
+        { id:'prateleiras', rot:'Prateleiras', unid:'un' },
+        { id:'recorteLarg', rot:'Recorte do sifão: largura', unid:'mm' },
+        { id:'recorteProf', rot:'Recorte do sifão: fundo', unid:'mm' } ]},
+      { titulo:'Parede e instalação', campos:[
+        { id:'paredeEsq', rot:'Parede à esquerda', tipo:'sim' },
+        { id:'paredeDir', rot:'Parede à direita', tipo:'sim' },
+        { id:'enchimento', rot:'Enchimento de 25 mm no lado da parede', tipo:'sim' },
+        { id:'esgoto', rot:'Altura do esgoto (centro)', unid:'mm', ajuda:'Faixa de ±75 mm. Prateleira que cruzar ganha recorte.' } ]},
+    ],
+    gerar: gerarGabinete,
+  },
+  armario: {
+    nomePadrao: 'Armário da área de serviço',
+    nome: 'Armário com vãos (prateleiras, gavetas, vassouras, botijão)',
+    padrao: { largura:1800, altura:2100, profundidade:400, rodape:100, recuoRodape:40, espMDF:18, espFundo:6,
+      vaos:'vassoura, prateleiras, prateleiras, gavetas+botijao', prateleiras:5, alturaPratVassoura:1750,
+      gavetas:4, alturaGaveta:190, alturaBotijao:600, pratAcimaGavetas:1, puxadorPorta:2, puxadorGaveta:4, alturaPuxador:1050,
+      alturaBeiral:80, paredeEsq:false, paredeDir:false },
+    grupos: [
+      { titulo:'Medidas gerais', campos:[
+        { id:'largura', rot:'Largura total', unid:'mm' },
+        { id:'altura', rot:'Altura total', unid:'mm', ajuda:'Do chão até o alto do beiral.' },
+        { id:'alturaBeiral', rot:'Altura do beiral em cima', unid:'mm', ajuda:'Borda em volta do topo para apoiar coisas em cima. 0 = sem beiral.' },
+        { id:'profundidade', rot:'Profundidade total', unid:'mm', ajuda:'Da parede até a frente das portas.' },
+        { id:'rodape', rot:'Altura do rodapé', unid:'mm' },
+        { id:'recuoRodape', rot:'Recuo do rodapé', unid:'mm' } ]},
+      { titulo:'Chapas', campos:[
+        { id:'espMDF', rot:'Espessura do MDF', unid:'mm' },
+        { id:'espFundo', rot:'Espessura do fundo', unid:'mm' } ]},
+      { titulo:'Vãos (da esquerda para a direita)', campos:[
+        { id:'vaos', rot:'Conteúdo dos vãos', tipo:'txt', ajuda:'Separe por vírgula: prateleiras, vassoura, gavetas, gavetas+botijao, vazio. Cada vão tem uma porta.' },
+        { id:'prateleiras', rot:'Prateleiras por vão', unid:'un' },
+        { id:'alturaPratVassoura', rot:'Prateleira do vão de vassouras (topo)', unid:'mm' } ]},
+      { titulo:'Gavetas e botijão', campos:[
+        { id:'gavetas', rot:'Gavetas internas', unid:'un' },
+        { id:'alturaGaveta', rot:'Altura de cada gaveta', unid:'mm' },
+        { id:'alturaBotijao', rot:'Altura livre do botijão', unid:'mm', ajuda:'P13 tem cerca de Ø360 × 480 mm; deixe folga para o regulador.' },
+        { id:'pratAcimaGavetas', rot:'Prateleiras acima das gavetas', unid:'un' } ]},
+      { titulo:'Portas e parede', campos:[
+        { id:'puxadorPorta', rot:'Puxador das portas', tipo:'sel', opcoes:opcoesPuxador },
+        { id:'puxadorGaveta', rot:'Puxador das gavetas internas', tipo:'sel', opcoes:opcoesPuxador, ajuda:'A gaveta fica 45 mm atrás da porta: o puxador precisa sair no máximo 37 mm.' },
+        { id:'alturaPuxador', rot:'Altura do puxador da porta (centro)', unid:'mm' },
+        { id:'paredeEsq', rot:'Parede à esquerda', tipo:'sim' },
+        { id:'paredeDir', rot:'Parede à direita', tipo:'sim' } ]},
+    ],
+    gerar: gerarArmario,
+  },
+};
+
+/* Abertura da porta: gira a porta e testa se ela ou o puxador
+   entram na parede ou no enchimento. Coordenadas a partir da parede. */
+function limiteAbertura({ temParede, eW, u0, u1, uPx, proj, t, P }) {
+  if (!temParede) return { ang: R.angMaxDobradica, motivo: '' };
+  const pts = [[u0,-t,'a porta'],[u0,0,'a porta'],[u1,-t,'a porta'],[u1,0,'a porta'],[uPx,proj,'o puxador']];
+  for (let a = 0; a <= R.angMaxDobradica; a += 0.5) {
+    const r = a*Math.PI/180;
+    for (const [u,v,quem] of pts) {
+      const x = eW + u*Math.cos(r) - v*Math.sin(r);
+      const z = P + u*Math.sin(r) + v*Math.cos(r);
+      if (x < -0.01 || (x < eW - 0.01 && z < P - 0.01)) return { ang: Math.max(0, a - 0.5), motivo: quem + ' bate na parede' };
+    }
+  }
+  return { ang: R.angMaxDobradica, motivo: '' };
+}
+
+/* =====================================================================
+   3. GERADOR DO GABINETE — parâmetros → peças, ferragens, erros
+   Eixos: x = largura (0 à esquerda), y = altura (0 no chão), z = profundidade (0 na parede)
+   ===================================================================== */
+function gerarGabinete(p) {
+  const E = [], A = [], pecas = [];
+  const n = k => Number(p[k]);
+  const L=n('largura'), H=n('altura'), P=n('profundidade'), t=n('espMDF'), tf=n('espFundo'), pes=n('pes');
+  const faixa = (v,a,b,nome) => { if (!(v>=a && v<=b)) E.push(`${nome}: use de ${a} a ${b} mm (está ${isNaN(v)?'vazio':fmt(v)}).`); };
+  faixa(L,300,2400,'Largura'); faixa(H,300,2200,'Altura'); faixa(P,250,800,'Profundidade');
+  faixa(t,12,25,'Espessura do MDF'); faixa(tf,3,15,'Espessura do fundo'); faixa(pes,0,200,'Altura dos pés');
+  faixa(n('tampoLarg'),0,3000,'Largura do tampo'); faixa(n('tampoProf'),0,1000,'Profundidade do tampo'); faixa(n('tampoEsp'),0,60,'Espessura do tampo');
+  faixa(n('puxadorProj'),0,60,'Saliência do puxador'); faixa(n('esgoto'),0,2000,'Altura do esgoto');
+  faixa(n('gavetas'),0,6,'Gavetas (un)'); faixa(n('prateleiras'),0,6,'Prateleiras (un)');
+  if (E.length) return { pecas, erros:E, avisos:A, ferragens:[], dims:null };
+
+  const eE = (p.paredeEsq && p.enchimento) ? R.enchimento : 0;
+  const eD = (p.paredeDir && p.enchimento) ? R.enchimento : 0;
+  const xa=eE, xb=L-eD, W=xb-xa, Wi=W-2*t;
+  const y0=pes, top=H, Hc=H-pes;
+  const zf=tf, Dc=P-t-tf, zFr=zf+Dc;
+  const proj = n('puxadorProj');
+  if (Wi < 150) E.push(`O vão interno fica com ${fmt(Wi)} mm (mínimo 150). Aumente a largura.`);
+  if (Dc < 150) E.push(`A caixa fica com ${fmt(Dc)} mm de fundo (mínimo 150). Aumente a profundidade.`);
+
+  const add = o => {
+    const pc = Object.assign({ lista:true, mov:null, obs:'', esp:t, mat:'mdf-ru-branco', fita:[0,0] }, o);
+    if (o.a !== undefined) {
+      let a=o.a, b=o.b, fa=(o.fita||[0,0])[0], fb=(o.fita||[0,0])[1];
+      if (b > a) { [a,b]=[b,a]; [fa,fb]=[fb,fa]; }
+      pc.comp=a; pc.larg=b; pc.fita=[fa,fb];
+    }
+    pecas.push(pc); return pc;
+  };
+  const ferr = o => add(Object.assign({ cat:'ferragem', mat:'cromado', lista:false }, o));
+
+  // Gavetas
+  const nP=Number(p.portas), nG=Math.max(0,Math.round(n('gavetas'))), nS=Math.max(0,Math.round(n('prateleiras')));
+  let alts = [];
+  if (nG > 0) {
+    const lst = String(p.alturasGavetas).split(/[;,\s]+/).filter(Boolean).map(s => Number(s.replace(',','.')));
+    if (!lst.length || lst.some(isNaN)) E.push('Altura das gavetas: escreva números separados por vírgula, ex.: 150, 200.');
+    else if (lst.length === 1) alts = Array(nG).fill(lst[0]);
+    else if (lst.length === nG) alts = lst;
+    else E.push(`São ${nG} gavetas, mas há ${lst.length} alturas informadas.`);
+  }
+  const somaG = alts.reduce((s,v)=>s+v,0);
+  const zonaSup = Hc - somaG;
+  const temSup = zonaSup > 0.5;
+  if (nP > 0 && zonaSup < 200) E.push(`Sobram só ${fmt(zonaSup)} mm para as portas (mínimo 200). Diminua as gavetas.`);
+  if (nP === 0 && zonaSup < 0) E.push('As gavetas passam da altura do móvel.');
+  alts.forEach((h,i) => { if (h < 100) E.push(`Gaveta ${i+1}: altura ${fmt(h)} mm (mínimo 100).`); });
+  const Lc = [...R.corredicas].reverse().find(c => c <= Dc - 10);
+  if (nG > 0 && !Lc) E.push(`A caixa tem ${fmt(Dc)} mm de fundo: não cabe a menor corrediça (250 mm).`);
+
+  // CAIXA
+  add({ id:'lateral-esq', nome:'Lateral esquerda', nomeLista:'Lateral', cat:'caixa', a:Hc, b:Dc, fita:[1,0], box:[xa,xa+t,y0,top,zf,zFr], obs:'Altura total da caixa.', des:{ w:Dc, h:Hc, fita:['l'], frente:'l', vista:'Vista pela face interna' } });
+  add({ id:'lateral-dir', nome:'Lateral direita',  nomeLista:'Lateral', cat:'caixa', a:Hc, b:Dc, fita:[1,0], box:[xb-t,xb,y0,top,zf,zFr], obs:'Altura total da caixa.', des:{ w:Dc, h:Hc, fita:['r'], frente:'r', vista:'Vista pela face interna' } });
+  add({ id:'base', nome:'Base', nomeLista:'Base', cat:'caixa', a:Wi, b:Dc, fita:[1,0], box:[xa+t,xb-t,y0,y0+t,zf,zFr], obs:'Entre as laterais.', des:{ w:Wi, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+  add({ id:'travessa-frontal', nome:'Travessa superior frontal', nomeLista:'Travessa superior frontal', cat:'caixa', a:Wi, b:R.travessa, fita:[1,0], box:[xa+t,xb-t,top-t,top,zFr-R.travessa,zFr], obs:'Apoia o tampo. Confira a folga da cuba.', des:{ w:Wi, h:R.travessa, fita:['b'], frente:'b', vista:'Vista de cima' } });
+  add({ id:'travessa-traseira', nome:'Travessa superior traseira', nomeLista:'Travessa superior traseira', cat:'caixa', a:Wi, b:R.travessa, box:[xa+t,xb-t,top-t,top,zf,zf+R.travessa], obs:'Apoia o tampo.', des:{ w:Wi, h:R.travessa, vista:'Vista de cima' } });
+  add({ id:'travessa-fixacao', nome:'Travessa de fixação na parede', nomeLista:'Travessa de fixação', cat:'caixa', a:Wi, b:R.travessa, box:[xa+t,xb-t,top-t-R.travessa,top-t,zf,zf+t], obs:'Vertical, atrás. Recebe os parafusos da parede.', des:{ w:Wi, h:R.travessa, vista:'Vista de frente', furos:[50, Wi/2, Wi-50].map(x => ({ x, y:R.travessa/2, d:6, prof:0, tipo:'parede' })) } });
+  add({ id:'fundo', nome:'Fundo do móvel', nomeLista:'Fundo do móvel', cat:'fundo', mat:'mdf-branco', esp:tf, a:Hc, b:W, box:[xa,xb,y0,top,0,tf], obs:'Pregado atrás. Recortar para os canos na obra.', des:{ w:W, h:Hc, vista:'Vista de trás' } });
+
+  const yDiv = y0 + somaG;
+  if (nG > 0 && temSup) add({ id:'divisoria', nome:'Divisória (piso das portas)', nomeLista:'Divisória', cat:'caixa', a:Wi, b:Dc, fita:[1,0], box:[xa+t,xb-t,yDiv-t,yDiv,zf,zFr], obs:`Topo a ${fmt(yDiv)} mm do chão. Separa gavetas e portas.`, des:{ w:Wi, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+
+  // GAVETAS
+  let yAc = y0;
+  alts.forEach((h,i) => {
+    const k=i+1, zy0=yAc, zy1=yAc+h; yAc=zy1;
+    const ultima = i === nG-1;
+    const mov = { tipo:'gaveta', idx:i, curso:(Lc||0)*0.9 };
+    const fy0 = zy0 + (i===0 ? R.borda : R.entre/2);
+    const fy1 = zy1 - ((ultima && !temSup) ? R.borda : R.entre/2);
+    const sufixo = nG>1 ? ' '+k : '';
+    const xm=(xa+xb)/2, ym=(fy0+fy1)/2, wf=W-2*R.borda;
+    const frente = add({ id:`gaveta-${k}-frente`, nome:'Frente da gaveta'+sufixo, nomeLista:'Frente da gaveta', cat:'frente', a:W-2*R.borda, b:fy1-fy0, fita:[2,2], box:[xa+R.borda,xb-R.borda,fy0,fy1,zFr,P], mov, obs:'Presa à caixa da gaveta por dentro (parafuso 3,5 × 25).', des:{ w:wf, h:fy1-fy0, fita:['t','b','l','r'], vista:'Vista pela face interna', furos:[-64,64].map(dx => ({ x:wf/2+dx, y:ym-fy0, d:5, prof:0, tipo:'puxador' })) } });
+    if (!Lc) return;
+    const hb = Math.floor((h - R.folgaAltGaveta)/10)*10;
+    if (hb < 60) { if (h >= 100) E.push(`Gaveta ${k}: a caixa ficaria com ${hb} mm de altura (mínimo 60). Aumente a altura dela.`); return; }
+    const yb = (i===0 ? y0+t : zy0) + R.folgaPisoGaveta;
+    const Wg = Wi - 2*R.corredica, xg0 = xa+t+R.corredica, xg1 = xg0+Wg, zg0 = zFr-Lc;
+    const desLatGav = { w:Lc, h:hb, fita:['t'], vista:'Vista de lado', linhas:[{ x1:0, y1:hb/2, x2:Lc, y2:hb/2, txt:'eixo da corrediça' }] };
+    const yPx = ym - yb, wInt = Wg-2*t;
+    const furosInt = (yPx > 10 && yPx < hb-10) ? [-64,64].map(dx => ({ x:wInt/2+dx, y:yPx, d:5, prof:0, tipo:'puxador' })) : [];
+    add({ id:`gaveta-${k}-lateral-esq`, nome:`Lateral esquerda da gaveta${sufixo}`, nomeLista:'Lateral da gaveta', cat:'gaveta', a:Lc, b:hb, fita:[1,0], box:[xg0,xg0+t,yb,yb+hb,zg0,zFr], mov, expPai:frente.id, des:desLatGav });
+    add({ id:`gaveta-${k}-lateral-dir`, nome:`Lateral direita da gaveta${sufixo}`, nomeLista:'Lateral da gaveta', cat:'gaveta', a:Lc, b:hb, fita:[1,0], box:[xg1-t,xg1,yb,yb+hb,zg0,zFr], mov, expPai:frente.id, des:desLatGav });
+    add({ id:`gaveta-${k}-frente-interna`, nome:`Frente interna da gaveta${sufixo}`, nomeLista:'Frente/traseira da gaveta', cat:'gaveta', a:Wg-2*t, b:hb, fita:[1,0], box:[xg0+t,xg1-t,yb,yb+hb,zFr-t,zFr], mov, expPai:frente.id, obs:'Entre as laterais da gaveta.' + (furosInt.length ? ' Furar o puxador junto com a frente (parafuso M4 longo).' : ''), des:{ w:wInt, h:hb, fita:['t'], vista:'Vista de frente', furos:furosInt } });
+    add({ id:`gaveta-${k}-traseira`, nome:`Traseira da gaveta${sufixo}`, nomeLista:'Frente/traseira da gaveta', cat:'gaveta', a:Wg-2*t, b:hb, fita:[1,0], box:[xg0+t,xg1-t,yb,yb+hb,zg0,zg0+t], mov, expPai:frente.id, obs:'Entre as laterais da gaveta.', des:{ w:wInt, h:hb, fita:['t'], vista:'Vista de frente' } });
+    add({ id:`gaveta-${k}-fundo`, nome:`Fundo da gaveta${sufixo}`, nomeLista:'Fundo da gaveta', cat:'gaveta', mat:'mdf-branco', esp:tf, a:Wg, b:Lc, box:[xg0,xg1,yb-tf,yb,zg0,zFr], mov, expPai:frente.id, obs:'Pregado por baixo.', des:{ w:Wg, h:Lc, vista:'Vista de cima' } });
+    const yc = yb + hb/2;
+    ferr({ id:`gaveta-${k}-corredica-esq`, nome:`Corrediça ${Lc} mm esquerda${sufixo}`, box:[xa+t,xg0,yc-22.5,yc+22.5,zg0,zFr], ref:'corr-tel45-amort', obs:'Telescópica 45 mm com amortecedor, extração total.' });
+    ferr({ id:`gaveta-${k}-corredica-dir`, nome:`Corrediça ${Lc} mm direita${sufixo}`, box:[xg1,xb-t,yc-22.5,yc+22.5,zg0,zFr], ref:'corr-tel45-amort', obs:'Telescópica 45 mm com amortecedor, extração total.' });
+    ferr({ id:`gaveta-${k}-puxador`, nome:`Puxador da gaveta${sufixo}`, forma:{tipo:'puxador',dir:'h'}, box:[xm-R.puxadorComp/2,xm+R.puxadorComp/2,ym-6,ym+6,P,P+proj], mov, expPai:frente.id, obs:'Barra, furação 128 mm.' });
+  });
+
+  // PORTAS
+  if (nP > 0 && temSup) {
+    const yp0 = yDiv + (nG>0 ? R.entre/2 : R.borda), yp1 = top - R.borda, hp = yp1 - yp0;
+    const def = nP === 2
+      ? [{ lado:'esq', x0:xa+R.borda, x1:xa+W/2-R.entre/2 }, { lado:'dir', x0:xa+W/2+R.entre/2, x1:xb-R.borda }]
+      : [{ lado:(p.paredeEsq && !p.paredeDir) ? 'dir' : 'esq', x0:xa+R.borda, x1:xb-R.borda }];
+    def.forEach(d => {
+      const dw = d.x1 - d.x0;
+      const nomeL = nP===2 ? (d.lado==='esq'?' esquerda':' direita') : '';
+      if (dw > R.portaMaxLarg) E.push(`Porta${nomeL} com ${fmt(dw)} mm de largura (máximo ${R.portaMaxLarg}). Use 2 portas.`);
+      const pivX = d.lado==='esq' ? xa : xb;
+      const nd = dobradicasPorAltura(hp);
+      const pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(hp-2*R.dobradicaBorda)/(nd-1));
+      const xp = d.lado==='esq' ? d.x1-35 : d.x0+35;
+      const ypc = hp > 320 ? yp1-120 : (yp0+yp1)/2;
+      const temParede = d.lado==='esq' ? !!p.paredeEsq : !!p.paredeDir;
+      const eW = d.lado==='esq' ? eE : eD;
+      const lim = limiteAbertura({ temParede, eW, u0:R.borda, u1:R.borda+dw, uPx:Math.abs(xp-pivX), proj, t, P });
+      const mov = { tipo:'porta', lado:d.lado, pivX, pivZ:P, angMax:lim.ang };
+      const porta = add({ id:`porta-${d.lado}`, nome:'Porta'+nomeL, nomeLista:'Porta', cat:'frente', a:hp, b:dw, fita:[2,2], box:[d.x0,d.x1,yp0,yp1,P-t,P], mov,
+        obs:`${nd} dobradiças. Caneco Ø35 com centro a 22 mm da borda, a ${pos.map(fmt).join(' / ')} mm da base da porta. Abre até ${fmt(lim.ang)}°.`,
+        des:{ w:dw, h:hp, fita:['t','b','l','r'], vista:'Vista pela face interna', furos:[
+          ...pos.map(py => ({ x: d.lado==='esq' ? dw-R.canecoBorda : R.canecoBorda, y:py, d:35, prof:13, tipo:'caneco' })),
+          ...[-64,64].map(dy => ({ x: dw-(xp-d.x0), y: ypc-yp0+dy, d:5, prof:0, tipo:'puxador' })) ] } });
+      const xc = d.lado==='esq' ? d.x0+R.canecoBorda : d.x1-R.canecoBorda;
+      pos.forEach((py,j) => ferr({ id:`porta-${d.lado}-dobradica-${j+1}`, nome:`Dobradiça ${j+1} da porta${nomeL}`, forma:{tipo:'cil',eixo:'z'},
+        box:[xc-17.5,xc+17.5,yp0+py-17.5,yp0+py+17.5,P-t-1,P-t+12], mov, expPai:porta.id, obs:'Blum CLIP top BLUMOTION 110°, reta (71B3550). Caneco Ø35 × 13.' }));
+      ferr({ id:`porta-${d.lado}-puxador`, nome:'Puxador da porta'+nomeL, forma:{tipo:'puxador',dir:'v'}, box:[xp-6,xp+6,ypc-R.puxadorComp/2,ypc+R.puxadorComp/2,P,P+proj], mov, expPai:porta.id, obs:'Barra, furação 128 mm.' });
+      if (temParede && lim.ang < 90) A.push(`Porta${nomeL} abre só até ${fmt(lim.ang)}°: ${lim.motivo}.${eW ? ' Aumente o enchimento ou use puxador mais baixo.' : ' Ligue o enchimento de 25 mm.'}`);
+    });
+  }
+
+  // PRATELEIRAS
+  if (nS > 0 && !temSup) A.push('Não sobra espaço acima das gavetas: as prateleiras foram ignoradas.');
+  if (nS > 0 && temSup) {
+    const piso = nG>0 ? yDiv : y0+t, teto = top - t;
+    const vao = (teto - piso - nS*t)/(nS+1);
+    if (vao < 100) E.push(`Com ${nS} prateleira${nS>1?'s':''} o vão fica com ${fmt(vao)} mm (mínimo 100). Diminua as prateleiras ou as gavetas.`);
+    const dp = Dc - R.recuoPrat - R.folgaFundoPrat, w = Wi - 2*R.folgaPrat;
+    const fx = [n('esgoto')-R.faixaEsgoto, n('esgoto')+R.faixaEsgoto];
+    for (let i=0; i<nS; i++) {
+      const yb = piso + vao*(i+1) + t*i, yt = yb + t;
+      const cruza = yt > fx[0] && yb < fx[1];
+      let forma = null, obs = `Topo a ${fmt(yt)} mm do chão. Apoiada em 4 pinos.`;
+      if (cruza) {
+        const rl=n('recorteLarg'), rp=n('recorteProf');
+        if (!(rl > 0 && rp > 0) || rl > w-80 || rp > dp-80) E.push(`Recorte do sifão (${fmt(rl)} × ${fmt(rp)}) não cabe na prateleira de ${fmt(w)} × ${fmt(dp)}.`);
+        else { forma = { tipo:'recorte', rl, rp }; obs = `Recorte traseiro ${fmt(rl)} × ${fmt(rp)} mm no centro, para o sifão. ` + obs; }
+        A.push(`Prateleira${nS>1?' '+(i+1):''} cruza a faixa do esgoto (${fmt(fx[0])} a ${fmt(fx[1])} mm do chão) e recebeu recorte.`);
+      }
+      add({ id:`prateleira-${i+1}`, nome:nS>1?`Prateleira ${i+1}`:'Prateleira', nomeLista:forma?'Prateleira com recorte':'Prateleira', cat:'caixa', a:w, b:dp, fita:[1,0],
+        box:[xa+t+R.folgaPrat, xb-t-R.folgaPrat, yb, yt, zf+R.folgaFundoPrat, zf+R.folgaFundoPrat+dp], forma, obs,
+        des:{ w, h:dp, fita:['b'], frente:'b', vista:'Vista de cima', recortes: forma ? [{ x:(w-forma.rl)/2, w:forma.rl, h:forma.rp }] : [] } });
+    }
+  }
+
+  // ENCHIMENTO
+  [['esq',eE,0,eE],['dir',eD,L-eD,L]].forEach(([lado,e,x0,x1]) => {
+    if (!e) return;
+    const nomeL = lado==='esq' ? 'esquerdo' : 'direito';
+    add({ id:`enchimento-${lado}`, nome:`Enchimento ${nomeL} (frontal)`, nomeLista:'Enchimento frontal', cat:'enchimento', a:Hc, b:e, fita:[1,0], box:[x0,x1,y0,top,P-t,P], obs:`Fecha a folga de ${e} mm entre a caixa e a parede.`, des:{ w:e, h:Hc, fita:[lado==='esq'?'r':'l'], vista:'Vista de frente' } });
+    const sx0 = lado==='esq' ? Math.max(0,x1-t) : x0, sx1 = lado==='esq' ? x1 : Math.min(L,x0+t);
+    add({ id:`sarrafo-${lado}`, nome:`Sarrafo do enchimento ${nomeL}`, nomeLista:'Sarrafo do enchimento', cat:'enchimento', a:Hc, b:R.sarrafo, box:[sx0,sx1,y0,top,P-t-R.sarrafo,P-t], obs:'Parafusado na lateral; segura o enchimento.', des:{ w:R.sarrafo, h:Hc, vista:'Vista de lado' } });
+  });
+
+  // TAMPO
+  const tl=n('tampoLarg'), tp=n('tampoProf'), te=n('tampoEsp');
+  if (tl > 0 && tp > 0 && te > 0) {
+    const tx0 = p.paredeEsq ? 0 : p.paredeDir ? L-tl : (L-tl)/2;
+    add({ id:'tampo', nome:'Tampo (existente)', cat:'tampo', mat:'marmore', esp:te, a:tl, b:tp, lista:false, box:[tx0,tx0+tl,top,top+te,0,tp], obs:'Não entra na lista de corte. Colar com silicone neutro.' });
+    if (tl < L) A.push(`O tampo (${fmt(tl)} mm) é mais estreito que o móvel (${fmt(L)} mm).`);
+    if (tl > L + 60) A.push(`O tampo sobra ${fmt(tl-L)} mm além do móvel.`);
+    if (tp < P) A.push(`As frentes ficam ${fmt(P-tp)} mm para fora do tampo.`);
+  }
+
+  // FURAÇÃO DAS LATERAIS (depende das outras peças)
+  ['esq','dir'].forEach(lado => {
+    const lat = pecas.find(q => q.id === 'lateral-'+lado); if (!lat) return;
+    const X = z => lado==='esq' ? zFr - z : z - zf, Y = y => y - y0;
+    const furos = [], linhas = [];
+    const furo = (z,y,d,prof,tipo) => furos.push({ x:X(z), y:Y(y), d, prof, tipo });
+    const q = id => pecas.find(x => x.id === id);
+    ['base','divisoria'].forEach(id => { const b = q(id); if (!b) return; const yc=(b.box[2]+b.box[3])/2; [zFr-50,(zf+zFr)/2,zf+50].forEach(z => furo(z,yc,4,0,'montagem')); });
+    [zFr-25, zFr-75, zf+75, zf+25].forEach(z => furo(z, top-t/2, 4, 0, 'montagem'));
+    [top-t-75, top-t-25].forEach(y => furo(zf+t/2, y, 4, 0, 'montagem'));
+    pecas.filter(x => x.id.startsWith('prateleira-')).forEach(s => [s.box[5]-40, s.box[4]+40].forEach(z => furo(z, s.box[2]-5, 5, 10, 'pino')));
+    pecas.filter(x => x.id.startsWith(`porta-${lado}-dobradica-`)).forEach(h => { const yc=(h.box[2]+h.box[3])/2; [yc-16, yc+16].forEach(y => furo(zFr-37, y, 3, 10, 'calco')); });
+    pecas.filter(x => x.id.endsWith('-corredica-'+lado)).forEach(c => { const yc=(c.box[2]+c.box[3])/2; linhas.push({ x1:X(zFr), y1:Y(yc), x2:X(c.box[4]), y2:Y(yc), txt:'eixo da corrediça' }); [zFr-37, c.box[4]+37].forEach(z => furo(z, yc, 3, 10, 'corredica')); });
+    lat.des.furos = furos; lat.des.linhas = linhas;
+  });
+
+  // FERRAGENS
+  const conta = c => pecas.filter(c).length;
+  const nDob = conta(pc => pc.id.includes('-dobradica-'));
+  const nPux = conta(pc => pc.id.endsWith('-puxador'));
+  const nGv = pecas.filter(pc => pc.id.endsWith('-frente-interna')).length;
+  const nPrat = conta(pc => pc.id.startsWith('prateleira-'));
+  const temDiv = conta(pc => pc.id==='divisoria');
+  const nEnch = (eE?1:0) + (eD?1:0);
+  const red10 = v => Math.ceil(v*1.2/10)*10;
+  const perim = pc => 2*(pc.comp+pc.larg);
+  const fundos = pecas.filter(pc => pc.id==='fundo' || pc.id.endsWith('-fundo'));
+  const fitaMm = pecas.filter(pc=>pc.lista).reduce((s,pc)=>s + pc.fita[0]*pc.comp + pc.fita[1]*pc.larg, 0);
+  const fitaLarg = t <= 19 ? 22 : 35;
+  const ferragens = [];
+  const F = (ref, qtd, obs='', var_='') => {
+    if (!(qtd > 0)) return;
+    const b = BIBLIOTECA[ref];
+    const nome = b.nome + (var_ ? ' ' + var_ : '');
+    ferragens.push({ ref, item: nome + (b.marca ? ` — ${b.marca}${b.codigo ? ' ' + b.codigo : ''}` : ''), nome, marca:b.marca, codigo:b.codigo, qtd, unid: b.metro ? 'm' : (b.unid==='par' ? 'par' : 'un'), obs: b.metro ? 'metros, com 10% de perda' : obs, var:var_ });
+  };
+  F('dob-blum-71B3550', nDob, 'Caneco Ø35 × 13, centro a 22 mm da borda.');
+  F('calco-blum-0', nDob, 'Na lateral, linha a 37 mm da frente.');
+  if (nGv) F('corr-tel45-amort', nGv, 'Gaveta 26 mm mais estreita que o vão.', `${Lc} mm`);
+  F('pux-barra-128', nPux);
+  F('pino-5', nPrat*4);
+  F('paraf-40x50', red10(((2 + (temDiv?2:0) + 6) * 3) + nGv*12 + nEnch*6));
+  F('paraf-35x14', red10(nDob*4 + nGv*12 + fundos.reduce((s,pc)=>s+Math.ceil(perim(pc)/150),0)));
+  F('paraf-35x25', nGv*4);
+  F('paraf-50x60-bucha', 3, 'Na travessa de fixação.');
+  if (pes > 0) F('sapata', L > 1000 ? 6 : 4, `Altura ${fmt(pes)} mm.`);
+  F(fitaLarg === 22 ? 'fita-pvc-22' : 'fita-pvc-35', Math.ceil(fitaMm*R.perdaFita/1000));
+  if (pecas.some(pc=>pc.cat==='tampo')) F('silicone', 1, 'Colar o tampo e vedar.');
+
+  return { pecas, erros:E, avisos:A, ferragens, dims:{ L, H, P, t, top, faixaEsgoto:[n('esgoto')-R.faixaEsgoto, n('esgoto')+R.faixaEsgoto], paredeEsq:!!p.paredeEsq, paredeDir:!!p.paredeDir, alturaTampo:top+(te>0?te:0) } };
+}
+
+
+/* =====================================================================
+   3b. GERADOR DO ARMÁRIO — caixa única com divisórias verticais, uma porta por vão.
+   Conteúdo por vão: prateleiras | vassoura | gavetas | gavetas+botijao | vazio
+   ===================================================================== */
+function gerarArmario(p) {
+  const E = [], A = [], pecas = [];
+  const n = k => Number(p[k]);
+  const L=n('largura'), H0=n('altura'), P=n('profundidade'), t=n('espMDF'), tf=n('espFundo'), RD=n('rodape'), rec=n('recuoRodape'), HB=n('alturaBeiral');
+  const faixa = (v,a,b,nome) => { if (!(v>=a && v<=b)) E.push(`${nome}: use de ${a} a ${b} mm (está ${isNaN(v)?'vazio':fmt(v)}).`); };
+  faixa(L,400,3000,'Largura'); faixa(H0,600,2700,'Altura'); faixa(HB,0,200,'Altura do beiral'); faixa(P,250,700,'Profundidade'); faixa(RD,0,200,'Rodapé'); faixa(rec,0,100,'Recuo do rodapé');
+  faixa(t,12,25,'Espessura do MDF'); faixa(tf,3,15,'Espessura do fundo');
+  const PxP = PUXADORES[n('puxadorPorta')], PxG = PUXADORES[n('puxadorGaveta')];
+  if (!PxP || !PxG) E.push('Escolha os puxadores.');
+  const vaos = String(p.vaos).split(',').map(x => x.trim().toLowerCase().replace(/\s+/g,'')).filter(Boolean).map(x => x === 'botijao+gavetas' ? 'gavetas+botijao' : x);
+  const validos = ['prateleiras','vassoura','gavetas','gavetas+botijao','vazio'];
+  if (!vaos.length || vaos.length > 8) E.push('Informe de 1 a 8 vãos no conteúdo.');
+  vaos.forEach((v,i) => { if (!validos.includes(v)) E.push(`Vão ${i+1}: "${v}" não é reconhecido. Use: ${validos.join(', ')}.`); });
+  if (E.length) return { pecas, erros:E, avisos:A, ferragens:[], dims:null };
+
+  const H = H0 - HB;                                           // altura da caixa (o beiral fica em cima)
+  const nV = vaos.length, zf = tf, Dc = P - t - tf, zFr = zf + Dc;
+  const Wi = L - 2*t, w = (Wi - (nV-1)*t) / nV;
+  const yI0 = RD + t, yI1 = H - t, Hi = yI1 - yI0;
+  const proj = PxP.proj;
+  if (w < 250) E.push(`Cada vão fica com ${fmt(w)} mm (mínimo 250). Diminua o número de vãos ou aumente a largura.`);
+  if (w + t > R.portaMaxLarg) E.push(`Portas de ${fmt(w+t)} mm passam do máximo (${R.portaMaxLarg}). Aumente o número de vãos.`);
+  const add = o => {
+    const pc = Object.assign({ lista:true, mov:null, obs:'', esp:t, mat:'mdf-ru-branco', fita:[0,0] }, o);
+    if (o.a !== undefined) { let a=o.a, b=o.b, fa=(o.fita||[0,0])[0], fb=(o.fita||[0,0])[1]; if (b > a) { [a,b]=[b,a]; [fa,fb]=[fb,fa]; } pc.comp=a; pc.larg=b; pc.fita=[fa,fb]; }
+    pecas.push(pc); return pc;
+  };
+  const ferr = o => add(Object.assign({ cat:'ferragem', mat:'cromado', lista:false }, o));
+  const xv = i => t + i*(w + t);                               // início do vão i
+  const botIdx = vaos.indexOf('gavetas+botijao');
+
+  // ventilação do botijão: rasgos na lateral direita (só se o botijão estiver no último vão)
+  let rasgos = null;
+  if (botIdx >= 0) {
+    if (botIdx !== nV - 1) A.push('O botijão não está no último vão: a ventilação na lateral direita não alcança o compartimento. Coloque "gavetas+botijao" por último.');
+    else if (p.paredeDir) E.push('O botijão precisa de ventilação pela lateral direita, mas ela está marcada como encostada na parede.');
+    else {
+      const hB = n('alturaBotijao'), lista = [], larg = 15, alt = 150, passo = 35;
+      const nR = Math.floor((Dc - 80 + passo - larg) / passo), z0 = zf + (Dc - ((nR-1)*passo + larg)) / 2;
+      for (const ya of [yI0 + 25, yI0 + hB - 25 - alt]) for (let k = 0; k < nR; k++) lista.push({ z0: z0 + k*passo, z1: z0 + k*passo + larg, y0: ya, y1: ya + alt });
+      rasgos = lista;
+    }
+  }
+
+  // CAIXA
+  add({ id:'lateral-esq', nome:'Lateral esquerda', nomeLista:'Lateral', cat:'caixa', a:H, b:Dc, fita:[1,0], box:[0,t,0,H,zf,zFr], obs:'Altura total, até o chão (rodapé recuado).', des:{ w:Dc, h:H, fita:['l'], frente:'l', vista:'Vista pela face interna' } });
+  const latD = add({ id:'lateral-dir', nome: rasgos ? 'Lateral direita com ventilação' : 'Lateral direita', nomeLista: rasgos ? 'Lateral com ventilação' : 'Lateral', cat:'caixa', a:H, b:Dc, fita:[1,0], box:[L-t,L,0,H,zf,zFr],
+    forma: rasgos ? { tipo:'rasgos', lista:rasgos } : null,
+    obs: rasgos ? `Ventilação do botijão: ${rasgos.length} rasgos 15 × 150 passantes, embaixo e em cima do compartimento (usinar na CNC ou com tupia e gabarito). Este lado não pode encostar em parede.` : 'Altura total, até o chão (rodapé recuado).',
+    des:{ w:Dc, h:H, fita:['r'], frente:'r', vista:'Vista pela face interna', rasgos: rasgos ? rasgos.map(r => ({ x:r.z0 - zf, y:r.y0, w:r.z1 - r.z0, h:r.y1 - r.y0 })) : [] } });
+  add({ id:'topo', nome:'Topo', nomeLista:'Topo', cat:'caixa', a:Wi, b:Dc, fita:[1,0], box:[t,L-t,H-t,H,zf,zFr], obs:'Entre as laterais.', des:{ w:Wi, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+  add({ id:'base', nome:'Base', nomeLista:'Base', cat:'caixa', a:Wi, b:Dc, fita:[1,0], box:[t,L-t,RD,RD+t,zf,zFr], obs:`Apoiada no rodapé, a ${fmt(RD)} mm do chão.`, des:{ w:Wi, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+  if (RD > 0) {
+    add({ id:'rodape-frontal', nome:'Rodapé frontal', nomeLista:'Rodapé', cat:'caixa', a:Wi, b:RD, box:[t,L-t,0,RD,zFr-rec-t,zFr-rec], obs:`Recuado ${fmt(rec)} mm da frente da caixa.`, des:{ w:Wi, h:RD, vista:'Vista de frente' } });
+    add({ id:'rodape-traseiro', nome:'Rodapé traseiro', nomeLista:'Rodapé', cat:'caixa', a:Wi, b:RD, box:[t,L-t,0,RD,zf,zf+t], obs:'Apoio da base atrás.', des:{ w:Wi, h:RD, vista:'Vista de frente' } });
+  }
+  if (HB > 0) {
+    add({ id:'beiral-frontal', nome:'Beiral frontal', nomeLista:'Beiral frontal', cat:'caixa', a:L, b:HB, fita:[1,2], box:[0,L,H,H0,zFr-t,zFr], obs:'Em cima do topo, alinhado com a frente da caixa. Parafusado por baixo do topo; cavilhas nas laterais.', des:{ w:L, h:HB, fita:['t','l','r'], vista:'Vista de frente' } });
+    for (const [id, nome, x0] of [['beiral-esq','Beiral lateral esquerdo',0], ['beiral-dir','Beiral lateral direito',L-t]])
+      add({ id, nome, nomeLista:'Beiral lateral', cat:'caixa', a:Dc-t, b:HB, fita:[1,0], box:[x0,x0+t,H,H0,zf,zFr-t], obs:'Sobre a lateral: 2 cavilhas Ø8 × 30 com cola no topo da lateral e 2 no beiral frontal.', des:{ w:Dc-t, h:HB, fita:['t'], vista:'Vista lateral' } });
+  }
+  add({ id:'fundo', nome:'Fundo do móvel', nomeLista:'Fundo do móvel', cat:'fundo', mat:'mdf-branco', esp:tf, a:H-RD, b:L, box:[0,L,RD,H,0,tf], obs:'Parafusado atrás em todo o contorno e nas divisórias.', des:{ w:L, h:H-RD, vista:'Vista de trás' } });
+  for (let i = 1; i < nV; i++) {
+    const x0 = xv(i) - t;
+    add({ id:`divisoria-v-${i}`, nome:`Divisória vertical ${i}`, nomeLista:'Divisória vertical', cat:'caixa', a:Hi, b:Dc, fita:[1,0], box:[x0,x0+t,yI0,yI1,zf,zFr], obs:'Entre base e topo. Recebe dobradiças dos dois lados.', des:{ w:Dc, h:Hi, fita:['l'], frente:'l', vista:'Vista lateral (lado direito)' } });
+  }
+  for (let i = 0; i < nV; i++) {
+    const x0 = xv(i);
+    add({ id:`travessa-fixacao-${i+1}`, nome:`Travessa de fixação ${i+1}`, nomeLista:'Travessa de fixação', cat:'caixa', a:w, b:80, box:[x0,x0+w,yI1-80,yI1,zf,zf+t], obs:'Atrás, sob o topo. 2 parafusos na parede.', des:{ w, h:80, vista:'Vista de frente', furos:[50, w-50].map(x => ({ x, y:40, d:6, prof:0, tipo:'parede' })) } });
+  }
+
+  // PORTAS (uma por vão; em pares abrindo do centro para fora: esq, dir, esq, dir…)
+  const cortes = [0, ...Array.from({length:nV-1}, (_,i) => xv(i+1) - t/2), L];
+  const yp0 = RD + R.borda, yp1 = H - R.borda, hp = yp1 - yp0;
+  const nd = dobradicasPorAltura(hp);
+  const pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(hp-2*R.dobradicaBorda)/(nd-1));
+  const ladoDob = i => (i % 2 === 0) ? 'esq' : 'dir';
+  for (let i = 0; i < nV; i++) {
+    const lado = ladoDob(i);
+    const x0 = cortes[i] + (i === 0 ? R.borda : R.entre/2), x1 = cortes[i+1] - (i === nV-1 ? R.borda : R.entre/2), dw = x1 - x0;
+    const pivX = lado === 'esq' ? cortes[i] : cortes[i+1];
+    const xp = lado === 'esq' ? x1 - 35 : x0 + 35, ypc = Math.min(Math.max(n('alturaPuxador'), yp0 + PxP.comp/2 + 20), yp1 - PxP.comp/2 - 20);
+    const temParede = (i === 0 && lado === 'esq' && p.paredeEsq) || (i === nV-1 && lado === 'dir' && p.paredeDir);
+    const lim = limiteAbertura({ temParede, eW:0, u0:R.borda, u1:R.borda+dw, uPx:Math.abs(xp-pivX), proj, t, P });
+    const mov = { tipo:'porta', lado, pivX, pivZ:P, angMax:lim.ang };
+    const id = `porta-${i+1}`;
+    const porta = add({ id, nome:`Porta ${i+1}`, nomeLista:'Porta', cat:'frente', a:hp, b:dw, fita:[2,2], box:[x0,x1,yp0,yp1,P-t,P], mov,
+      obs:`${nd} dobradiças do lado ${lado === 'esq' ? 'esquerdo' : 'direito'}. Caneco Ø35 × 13 com centro a 22 mm da borda, a ${pos.map(fmt).join(' / ')} mm da base da porta.`,
+      des:{ w:dw, h:hp, fita:['t','b','l','r'], vista:'Vista pela face interna', furos:[
+        ...pos.map(py => ({ x: lado === 'esq' ? dw-R.canecoBorda : R.canecoBorda, y:py, d:35, prof:13, tipo:'caneco' })),
+        ...[-1,1].map(sn => ({ x: dw-(xp-x0), y: ypc-yp0+sn*PxP.furacao/2, d:5, prof:0, tipo:'puxador' })) ] } });
+    const xc = lado === 'esq' ? x0 + R.canecoBorda : x1 - R.canecoBorda;
+    pos.forEach((py,j) => ferr({ id:`${id}-dobradica-${j+1}`, nome:`Dobradiça ${j+1} da porta ${i+1}`, forma:{tipo:'cil',eixo:'z'}, box:[xc-17.5,xc+17.5,yp0+py-17.5,yp0+py+17.5,P-t-1,P-t+12], mov, expPai:porta.id, obs:'Blum CLIP top BLUMOTION 110°, reta (71B3550).' }));
+    ferr({ id:`${id}-puxador`, nome:`Puxador da porta ${i+1}`, forma:{tipo:'puxador',dir:'v',modelo:PxP.modelo,furacao:PxP.furacao}, cor:PxP.cor, ref:PxP.ref, box:[xp-PxP.larg/2,xp+PxP.larg/2,ypc-PxP.comp/2,ypc+PxP.comp/2,P,P+proj], mov, expPai:porta.id, obs:`${PxP.rot}, furação ${PxP.furacao} mm.` });
+    if (temParede && lim.ang < 90) A.push(`Porta ${i+1} abre só até ${fmt(lim.ang)}°: ${lim.motivo}. Use enchimento.`);
+  }
+
+  // CONTEÚDO DOS VÃOS
+  const dp = Dc - R.recuoPrat - R.folgaFundoPrat;
+  const prateleira = (i, k, yb, nome, obs) => add({ id:`prateleira-${i+1}-${k}`, nome, nomeLista:'Prateleira', cat:'caixa', a:w-2*R.folgaPrat, b:dp, fita:[1,0],
+    box:[xv(i)+R.folgaPrat, xv(i)+w-R.folgaPrat, yb, yb+t, zf+R.folgaFundoPrat, zf+R.folgaFundoPrat+dp], obs: obs || `Topo a ${fmt(yb+t)} mm do chão. Apoiada em 4 pinos.`,
+    des:{ w:w-2*R.folgaPrat, h:dp, fita:['b'], frente:'b', vista:'Vista de cima' } });
+  let nGavTotal = 0, nSup = 0, nGancho = 0, Lc = null;
+  vaos.forEach((v, i) => {
+    const x0 = xv(i), x1 = x0 + w, xm = (x0 + x1)/2;
+    if (v === 'prateleiras') {
+      const nS = Math.max(0, Math.round(n('prateleiras'))), vao = (Hi - nS*t)/(nS+1);
+      if (nS && vao < 150) E.push(`Vão ${i+1}: com ${nS} prateleiras o espaço fica ${fmt(vao)} mm (mínimo 150).`);
+      for (let k = 0; k < nS; k++) prateleira(i, k+1, yI0 + vao*(k+1) + t*k, nS > 1 ? `Prateleira ${k+1} do vão ${i+1}` : `Prateleira do vão ${i+1}`);
+    }
+    if (v === 'vassoura') {
+      const yb = n('alturaPratVassoura') - t;
+      if (yb < yI0 + 1200 || yb + t > yI1 - 100) E.push(`Vão ${i+1}: a prateleira das vassouras deve ficar entre ${fmt(yI0+1200+t)} e ${fmt(yI1-100)} mm.`);
+      prateleira(i, 1, yb, `Prateleira do vão ${i+1} (vassouras)`, `Topo a ${fmt(yb+t)} mm. Embaixo fica livre para vassoura, rodo e aspirador.`);
+      [x0 + w*0.22, xm, x1 - w*0.22].forEach((xs, k) => ferr({ id:`vao-${i+1}-suporte-${k+1}`, nome:`Suporte de vassoura/rodo ${k+1}`, box:[xs-25, xs+25, 1250, 1300, zf+t, zf+t+45], obs:'Garra de pressão, parafusada na régua de reforço.' }));
+      ferr({ id:`vao-${i+1}-gancho`, nome:'Gancho do aspirador', box:[xm-30, xm+30, 880, 920, zf+t, zf+t+70], obs:'Gancho duplo para aspirador e mangueira.' });
+      nSup += 3; nGancho += 1;
+      // reforço atrás dos suportes (o fundo de 6 mm não segura parafuso)
+      add({ id:`reforco-vassoura-${i+1}`, nome:`Régua de reforço do gancho (vão ${i+1})`, nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 850, 950, zf, zf+t], obs:'Atrás do fundo não dá para parafusar (6 mm): o gancho é parafusado nesta régua.', des:{ w, h:100, vista:'Vista de frente' } });
+      add({ id:`reforco-vassoura-${i+1}b`, nome:`Régua de reforço dos suportes (vão ${i+1})`, nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 1225, 1325, zf, zf+t], obs:'Os suportes de vassoura são parafusados nesta régua.', des:{ w, h:100, vista:'Vista de frente' } });
+    }
+    if (v === 'gavetas' || v === 'gavetas+botijao') {
+      let yAc = yI0;
+      if (v === 'gavetas+botijao') {
+        const hB = n('alturaBotijao');
+        if (hB < 520) E.push(`Vão ${i+1}: altura livre do botijão de ${fmt(hB)} mm é pouca (mínimo 520 para P13 + regulador).`);
+        if (w < 390) E.push(`Vão ${i+1}: largura de ${fmt(w)} mm não passa o botijão P13 (Ø360 + folga).`);
+        if (Dc < 370) E.push(`Profundidade interna de ${fmt(Dc)} mm não comporta o botijão P13 (Ø360).`);
+        add({ id:`botijao-${i+1}`, nome:'Botijão P13 (referência)', cat:'referencia', mat:'mdf-branco', lista:false, forma:{ tipo:'cil', eixo:'y' }, box:[xm-180, xm+180, yI0, yI0+480, zf+(Dc-360)/2, zf+(Dc+360)/2], obs:'Só para conferir o espaço. Não é fabricado.' });
+        const yf = yI0 + hB;
+        add({ id:`prateleira-fixa-${i+1}`, nome:`Tampo do compartimento do botijão (vão ${i+1})`, nomeLista:'Prateleira fixa', cat:'caixa', a:w, b:Dc, fita:[1,0], box:[x0, x1, yf, yf+t, zf, zFr], obs:`Fixa (parafusada), topo a ${fmt(yf+t)} mm do chão.`, des:{ w, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+        yAc = yf + t;
+      }
+      const nG = Math.max(0, Math.round(n('gavetas'))), gH = n('alturaGaveta');
+      if (nG) {
+        const lado = ladoDob(i), esp = t, recG = 45;               // espaçador do lado da dobradiça; frentes recuadas 45 mm
+        Lc = [...R.corredicas].reverse().find(c => c <= Dc - recG - t - 10);
+        if (!Lc) E.push(`Vão ${i+1}: não cabe corrediça para gaveta interna (fundo útil ${fmt(Dc-recG-t-10)} mm).`);
+        const xr0 = lado === 'esq' ? x0 + esp : x0, xr1 = lado === 'esq' ? x1 : x1 - esp;
+        const ytop = yAc + nG*gH;
+        if (PxG.proj > recG - 8) E.push(`O puxador das gavetas (${PxG.rot}) sai ${PxG.proj} mm e bate na porta: as gavetas ficam ${recG} mm atrás dela. Use um que saia até ${recG-8} mm: ${Object.values(PUXADORES).filter(x => x.proj <= recG-8).map(x => x.rot.split(' · ')[0]).join(', ')}.`);
+        if (PxG.comp > xr1 - xr0 - 40) E.push('O puxador das gavetas é maior que a frente da gaveta.');
+        if (ytop > yI1 - 50) E.push(`Vão ${i+1}: as ${nG} gavetas de ${fmt(gH)} mm não cabem (sobra ${fmt(yI1-yAc)} mm).`);
+        add({ id:`espacador-${i+1}`, nome:`Espaçador das corrediças (vão ${i+1})`, nomeLista:'Espaçador das corrediças', cat:'caixa', a:nG*gH, b:zFr-recG-zf, box:[lado === 'esq' ? x0 : x1-esp, lado === 'esq' ? x0+esp : x1, yAc, ytop, zf, zFr-recG],
+          obs:'Afasta as corrediças das dobradiças. Parafusado na lateral/divisória.', des:{ w:zFr-recG-zf, h:nG*gH, vista:'Vista lateral' } });
+        if (Lc) for (let k = 0; k < nG; k++) {
+          const kk = ++nGavTotal, zy0 = yAc + k*gH, zy1 = zy0 + gH, mov = { tipo:'gaveta', idx:kk-1, curso:Lc*0.9 };
+          const fx0 = xr0 + 3, fx1 = xr1 - 3, fy0 = zy0 + 1.5, fy1 = zy1 - 1.5, zF1 = zFr - recG, zF0 = zF1 - t, wf = fx1 - fx0;
+          const xmf = (fx0+fx1)/2, ymf = (fy0+fy1)/2;
+          const frente = add({ id:`gaveta-${kk}-frente`, nome:`Frente da gaveta ${kk}`, nomeLista:'Frente da gaveta interna', cat:'frente', a:wf, b:fy1-fy0, fita:[2,2], box:[fx0,fx1,fy0,fy1,zF0,zF1], mov,
+            obs:'Gaveta interna, atrás da porta (frente recuada 45 mm).', des:{ w:wf, h:fy1-fy0, fita:['t','b','l','r'], vista:'Vista pela face interna', furos:[-1,1].map(sn => ({ x:wf/2+sn*PxG.furacao/2, y:ymf-fy0, d:5, prof:0, tipo:'puxador' })) } });
+          const hb = Math.floor((gH - 40)/10)*10, yb = zy0 + R.folgaPisoGaveta;
+          if (hb < 60) { E.push(`Gaveta ${kk}: caixa com ${hb} mm (mínimo 60). Aumente a altura das gavetas.`); continue; }
+          const Wg = (xr1 - xr0) - 2*R.corredica, xg0 = xr0 + R.corredica, xg1 = xg0 + Wg, zg1 = zF0, zg0 = zg1 - Lc, wInt = Wg - 2*t;
+          const desLat = { w:Lc, h:hb, fita:['t'], vista:'Vista de lado', linhas:[{ x1:0, y1:hb/2, x2:Lc, y2:hb/2, txt:'eixo da corrediça' }] };
+          add({ id:`gaveta-${kk}-lateral-esq`, nome:`Lateral esquerda da gaveta ${kk}`, nomeLista:'Lateral da gaveta', cat:'gaveta', a:Lc, b:hb, fita:[1,0], box:[xg0,xg0+t,yb,yb+hb,zg0,zg1], mov, expPai:frente.id, des:desLat });
+          add({ id:`gaveta-${kk}-lateral-dir`, nome:`Lateral direita da gaveta ${kk}`, nomeLista:'Lateral da gaveta', cat:'gaveta', a:Lc, b:hb, fita:[1,0], box:[xg1-t,xg1,yb,yb+hb,zg0,zg1], mov, expPai:frente.id, des:desLat });
+          add({ id:`gaveta-${kk}-frente-interna`, nome:`Frente interna da gaveta ${kk}`, nomeLista:'Frente/traseira da gaveta', cat:'gaveta', a:wInt, b:hb, fita:[1,0], box:[xg0+t,xg1-t,yb,yb+hb,zg1-t,zg1], mov, expPai:frente.id, des:{ w:wInt, h:hb, fita:['t'], vista:'Vista de frente' } });
+          add({ id:`gaveta-${kk}-traseira`, nome:`Traseira da gaveta ${kk}`, nomeLista:'Frente/traseira da gaveta', cat:'gaveta', a:wInt, b:hb, fita:[1,0], box:[xg0+t,xg1-t,yb,yb+hb,zg0,zg0+t], mov, expPai:frente.id, des:{ w:wInt, h:hb, fita:['t'], vista:'Vista de frente' } });
+          add({ id:`gaveta-${kk}-fundo`, nome:`Fundo da gaveta ${kk}`, nomeLista:'Fundo da gaveta', cat:'gaveta', mat:'mdf-branco', esp:tf, a:Wg, b:Lc, box:[xg0,xg1,yb-tf,yb,zg0,zg1], mov, expPai:frente.id, des:{ w:Wg, h:Lc, vista:'Vista de cima' } });
+          const yc = yb + hb/2;
+          ferr({ id:`gaveta-${kk}-corredica-esq`, nome:`Corrediça ${Lc} mm esquerda da gaveta ${kk}`, box:[xr0,xg0,yc-22.5,yc+22.5,zg0,zg1], ref:'corr-tel45-amort', obs:'Telescópica 45 mm com amortecedor.' });
+          ferr({ id:`gaveta-${kk}-corredica-dir`, nome:`Corrediça ${Lc} mm direita da gaveta ${kk}`, box:[xg1,xr1,yc-22.5,yc+22.5,zg0,zg1], ref:'corr-tel45-amort', obs:'Telescópica 45 mm com amortecedor.' });
+          ferr({ id:`gaveta-${kk}-puxador`, nome:`Puxador da gaveta ${kk}`, forma:{tipo:'puxador',dir:'h',modelo:PxG.modelo,furacao:PxG.furacao}, cor:PxG.cor, ref:PxG.ref, box:[xmf-PxG.comp/2,xmf+PxG.comp/2,ymf-PxG.larg/2,ymf+PxG.larg/2,zF1,zF1+PxG.proj], mov, expPai:frente.id, obs:`${PxG.rot}. Fica ${fmt(recG-PxG.proj)} mm atrás da porta.` });
+        }
+        const nAc = Math.max(0, Math.round(n('pratAcimaGavetas'))), livre = yI1 - ytop;
+        if (nAc && livre > 250) { const vao = (livre - nAc*t)/(nAc+1); for (let k = 0; k < nAc; k++) prateleira(i, k+1, ytop + vao*(k+1) + t*k, `Prateleira ${k+1} acima das gavetas (vão ${i+1})`); }
+      }
+    }
+  });
+
+  // FERRAGENS
+  const conta = c => pecas.filter(c).length;
+  const nDob = conta(pc => pc.id.includes('-dobradica-'));
+  const nPux = conta(pc => pc.id.endsWith('-puxador'));
+  const nPrat = conta(pc => /^prateleira-\d+-\d+$/.test(pc.id));
+  const juntas = 2 /*topo*/ + 2 /*base*/ + (RD > 0 ? 4 : 0) + 2*(nV-1) + 2*nV /*travessas*/ + 2*conta(pc => pc.id.startsWith('prateleira-fixa')) + 2*conta(pc => pc.id.startsWith('reforco-'));
+  const fundos = pecas.filter(pc => pc.id === 'fundo' || pc.id.endsWith('-fundo'));
+  const perim = pc => 2*(pc.comp + pc.larg);
+  const fitaMm = pecas.filter(pc => pc.lista).reduce((s,pc) => s + pc.fita[0]*pc.comp + pc.fita[1]*pc.larg, 0);
+  const fitaLarg = t <= 19 ? 22 : 35;
+  const red10 = v => Math.ceil(v*1.2/10)*10;
+  const ferragens = [];
+  const F = (ref, qtd, obs='', var_='') => {
+    if (!(qtd > 0)) return; const b = BIBLIOTECA[ref], nome = b.nome + (var_ ? ' ' + var_ : '');
+    ferragens.push({ ref, item: nome + (b.marca ? ` — ${b.marca}${b.codigo ? ' ' + b.codigo : ''}` : ''), nome, marca:b.marca, codigo:b.codigo, qtd, unid: b.metro ? 'm' : (b.unid==='par' ? 'par' : 'un'), obs: b.metro ? 'metros, com 10% de perda' : obs, var:var_ });
+  };
+  F('dob-blum-71B3550', nDob, `${nd} por porta. Caneco Ø35 × 13, centro a 22 mm da borda.`);
+  F('calco-blum-0', nDob, 'Linha a 37 mm da frente da lateral/divisória.');
+  if (nGavTotal) F('corr-tel45-amort', nGavTotal, 'Gaveta interna: 26 mm mais estreita que o espaço entre espaçador e lateral.', `${Lc} mm`);
+  const porRef = {}; pecas.filter(pc => pc.id.endsWith('-puxador')).forEach(pc => porRef[pc.ref] = (porRef[pc.ref]||0) + 1);
+  for (const [ref, q] of Object.entries(porRef)) { const px = Object.values(PUXADORES).find(x => x.ref === ref); F(ref, q, `Furação ${px.furacao} mm, parafuso M4 (vem com o puxador).` + (px.conf ? ` [Suposição] ${px.conf} estimadas: confirmar na loja.` : '')); }
+  F('pino-5', nPrat*4);
+  F('suporte-vassoura', nSup); F('gancho-aspirador', nGancho);
+  const fx = calcularFixacoes(pecas), nF = tipo => fx.filter(f => f.tipo === tipo).length;
+  F('paraf-40x50', red10(nF('paraf-40x50')), `${nF('paraf-40x50')} nas juntas (ver "Fixações" no 3D) + reserva.`);
+  F('paraf-40x30', red10(nF('paraf-40x30')));
+  F('paraf-35x14', red10(nF('paraf-35x14') + nDob*4 + nGavTotal*12 + nSup*2 + nGancho*2), 'Fundos, dobradiças, corrediças e suportes.');
+  F('paraf-35x25', nF('paraf-35x25'));
+  F('cavilha-8x30', Math.ceil(nF('cavilha-8x30')*1.2), 'Com cola PVA.');
+  F('paraf-50x60-bucha', nF('paraf-50x60-bucha'), 'Nas travessas de fixação, 2 por vão.');
+  F(fitaLarg === 22 ? 'fita-pvc-22' : 'fita-pvc-35', Math.ceil(fitaMm*R.perdaFita/1000));
+  if (H > 1800) A.push('Móvel alto: fixe na parede antes de colocar peso (risco de tombar).');
+  return { pecas, erros:E, avisos:A, ferragens, fixacoes:fx, dims:{ L, H:H0, P, t, top:H0, faixaEsgoto:null, paredeEsq:!!p.paredeEsq, paredeDir:!!p.paredeDir, alturaTampo:H0 } };
+}
+
+
+/* =====================================================================
+   3c. FIXAÇÕES — calculadas pelo contato entre as peças (vale para qualquer tipo)
+   Face de uma peça encostada no topo de outra: parafuso atravessa a primeira e entra no topo da segunda.
+   Topo com topo: cavilha. Fundo: parafuso 3,5 × 14 a cada ~150 mm.
+   Cada item: { tipo, p:[x,y,z] entrada, dir:[x,y,z], comp, d, dono }
+   ===================================================================== */
+function calcularFixacoes(pecas) {
+  const F = [], ext = pc => [0,1,2].map(i => pc.box[2*i+1] - pc.box[2*i]);
+  const fino = pc => { const e = ext(pc); return e.indexOf(Math.min(...e)); };
+  const P = pecas.filter(pc => pc.lista && ['caixa','gaveta','enchimento','fundo','frente'].includes(pc.cat) && pc.box);
+  const linha = (a, b, margem, passo) => { const L = b - a, m = Math.min(margem, L*0.25); if (L < 60) return [(a+b)/2];
+    const n = Math.max(2, Math.ceil((L - 2*m)/passo) + 1); return Array.from({ length:n }, (_, i) => a + m + (L - 2*m)*i/(n-1)); };
+  const add = (tipo, p, dir, comp, d, dono) => F.push({ tipo, p, dir, comp, d, dono });
+  for (const A of P) for (const B of P) {
+    if (A === B) continue;
+    for (let ax = 0; ax < 3; ax++) {
+      const lado = Math.abs(A.box[2*ax+1] - B.box[2*ax]) < 0.6 ? 1 : Math.abs(A.box[2*ax] - B.box[2*ax+1]) < 0.6 ? -1 : 0;
+      if (!lado) continue;
+      const o = [0,1,2].filter(i => i !== ax), ov = {};
+      o.forEach(i => ov[i] = [Math.max(A.box[2*i], B.box[2*i]), Math.min(A.box[2*i+1], B.box[2*i+1])]);
+      if (o.some(i => ov[i][1] - ov[i][0] < 1)) continue;
+      const fA = fino(A), fB = fino(B), dir = [0,0,0]; dir[ax] = lado;
+      const xEntrada = lado === 1 ? A.box[2*ax] : A.box[2*ax+1], xContato = lado === 1 ? A.box[2*ax+1] : A.box[2*ax];
+      const pt = (vAx, vals) => { const q = [0,0,0]; q[ax] = vAx; o.forEach(i => q[i] = vals[i]); return q; };
+      const bordaBeiral = A.id.startsWith('beiral') || B.id.startsWith('beiral');
+      if (fA === ax && fB !== ax && A.cat !== 'frente' && B.cat !== 'frente') {
+        // A atravessada, entra no topo de B; linha ao longo do eixo do plano que não é a espessura de B
+        const q = o.find(i => i !== fB), meio = (ov[fB][0] + ov[fB][1]) / 2;
+        if (A.cat === 'fundo') { for (const v of linha(ov[q][0], ov[q][1], 40, 150)) add('paraf-35x14', pt(xEntrada, { [q]:v, [fB]:meio }), dir, 14, 3.5, B.id); }
+        else if (bordaBeiral && A.id.startsWith('beiral')) { for (const v of linha(ov[q][0], ov[q][1], 50, 300)) add('cavilha-8x30', pt(xContato - lado*15, { [q]:v, [fB]:meio }), dir, 30, 8, B.id); }
+        else for (const v of linha(ov[q][0], ov[q][1], 50, 250)) add('paraf-40x50', pt(xEntrada, { [q]:v, [fB]:meio }), dir, 50, 4, B.id);
+      } else if (fA === ax && fB === ax) {
+        // face com face: frente da gaveta (pela frente interna) e espaçador das corrediças
+        const [i, j] = o;
+        if (B.cat === 'frente' && /-frente-interna$/.test(A.id)) {
+          for (const u of linha(ov[i][0], ov[i][1], 60, 1e9)) for (const v of linha(ov[j][0], ov[j][1], 30, 1e9)) add('paraf-35x25', pt(xEntrada, { [i]:u, [j]:v }), dir, 25, 3.5, B.id);
+        } else if (A.id.startsWith('espacador-') && B.cat !== 'frente') {
+          for (const u of linha(ov[i][0], ov[i][1], 60, 300)) for (const v of linha(ov[j][0], ov[j][1], 50, 1e9)) add('paraf-40x30', pt(xEntrada, { [i]:u, [j]:v }), dir, 30, 4, B.id);
+        }
+      } else if (fA !== ax && fB !== ax && A.id < B.id && bordaBeiral) {
+        // topo com topo (beiral sobre a lateral): cavilhas
+        const q = o.find(i => i !== fA), meio = (ov[fA][0] + ov[fA][1]) / 2;
+        for (const v of linha(ov[q][0], ov[q][1], 50, 300)) add('cavilha-8x30', pt(xContato - lado*15, { [q]:v, [fA]:meio }), dir, 30, 8, B.id);
+      }
+    }
+  }
+  // parafusos de parede nas travessas
+  for (const pc of pecas.filter(pc => /^travessa-fixacao/.test(pc.id))) for (const f of (pc.des?.furos || []).filter(f => f.tipo === 'parede'))
+    add('paraf-50x60-bucha', [pc.box[0] + f.x, pc.box[2] + f.y, pc.box[5]], [0,0,-1], 60 + pc.box[5] - pc.box[4], 5, pc.id);
+  // pinos das prateleiras soltas (4 por prateleira, nas paredes do vão)
+  for (const pc of pecas.filter(pc => /^prateleira-\d+-\d+$/.test(pc.id))) {
+    const [x0,x1,y0,,z0,z1] = pc.box;
+    for (const [x, dx] of [[x0 - 1, 1], [x1 + 1, -1]]) for (const z of [z0 + 40, z1 - 40]) add('pino-5', [x - dx*8, y0 - 3, z], [dx,0,0], 18, 5, pc.id);
+  }
+  return F;
+}
+
+/* =====================================================================
+   4. LISTAS — agrupa peças iguais e calcula chapas e fita
+   ===================================================================== */
+function listaDeCorte(pecas) {
+  const ordem = ['caixa','enchimento','frente','gaveta','fundo'];
+  const mapa = new Map();
+  for (const pc of pecas.filter(p=>p.lista)) {
+    const k = [pc.mat, pc.esp, pc.nomeLista||pc.nome, pc.comp, pc.larg, pc.fita.join(), pc.forma?.tipo||''].join('|');
+    if (!mapa.has(k)) mapa.set(k, { ...pc, qtd:0, ids:[] });
+    const it = mapa.get(k); it.qtd++; it.ids.push(pc.id);
+  }
+  const itens = [...mapa.values()].sort((a,b) => (a.esp===b.esp ? 0 : b.esp-a.esp) || ordem.indexOf(a.cat)-ordem.indexOf(b.cat) || b.comp-a.comp);
+  const grupos = new Map();
+  for (const it of itens) { const g = `${MATERIAIS[it.mat].nome} ${fmt(it.esp)} mm`; if (!grupos.has(g)) grupos.set(g, []); grupos.get(g).push(it); }
+  const chapaM2 = R.chapa[0]*R.chapa[1]/1e6;
+  const resumo = [...grupos.entries()].map(([g,its]) => {
+    const area = its.reduce((s,it)=>s+it.qtd*it.comp*it.larg,0)/1e6;
+    return { grupo:g, area, chapas: Math.max(1, Math.ceil(area/(chapaM2*R.aproveitamento))) };
+  });
+  let num = 0; for (const its of grupos.values()) its.forEach(it => it.num = ++num);
+  return { grupos, resumo };
+}
+
+/* =====================================================================
+   4a. PLANO DE CORTE — encaixa as peças nas chapas (cortes em faixas, como a
+   seccionadora da loja faz). MDF liso: a peça pode girar.
+   ===================================================================== */
+function planoDeCorte(pecas) {
+  const lc = listaDeCorte(pecas), numDe = new Map();
+  for (const its of lc.grupos.values()) its.forEach(it => it.ids.forEach(id => numDe.set(id, it)));
+  const porChapa = new Map(), erros = [];
+  for (const pc of pecas.filter(p => p.lista)) {
+    const k = pc.mat + '|' + pc.esp;
+    if (!porChapa.has(k)) porChapa.set(k, []);
+    porChapa.get(k).push({ id:pc.id, num:numDe.get(pc.id).num, nome:pc.nomeLista||pc.nome, a:pc.comp, b:pc.larg });
+  }
+  const res = [];
+  for (const [k, itens] of porChapa) {
+    const [mat, espS] = k.split('|'), esp = Number(espS);
+    const ref = chapaDe(mat, esp), dim = ref ? BIBLIOTECA[ref].dim : R.chapa;
+    const LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo, kf = R.serra;
+    itens.sort((p,q) => (q.b - p.b) || (q.a - p.a));
+    const chapas = [];
+    const novaChapa = () => { const c = { faixas:[], usadoY:0, pecas:[] }; chapas.push(c); return c; };
+    for (const it of itens) {
+      if ((it.a > LU || it.b > WU) && (it.b > LU || it.a > WU)) { erros.push(`${it.nome} (${fmt(it.a)} × ${fmt(it.b)}) não cabe na chapa ${dim[0]} × ${dim[1]}.`); continue; }
+      let ok = false;
+      for (const c of chapas) {
+        for (const f of c.faixas) {
+          if (it.b <= f.h && f.x + it.a <= LU) { c.pecas.push({ ...it, x:f.x, y:f.y, w:it.a, h:it.b }); f.x += it.a + kf; ok = true; break; }
+          if (it.a <= f.h && f.x + it.b <= LU) { c.pecas.push({ ...it, x:f.x, y:f.y, w:it.b, h:it.a, giro:true }); f.x += it.b + kf; ok = true; break; }
+        }
+        if (ok) break;
+        const [w, h, giro] = it.a <= LU ? [it.a, it.b, false] : [it.b, it.a, true];
+        if (c.usadoY + h <= WU) { const f = { y:c.usadoY, h, x:w + kf }; c.faixas.push(f); c.usadoY += h + kf; c.pecas.push({ ...it, x:0, y:f.y, w, h, giro }); ok = true; break; }
+      }
+      if (!ok) { const c = novaChapa(); const [w, h, giro] = it.a <= LU ? [it.a, it.b, false] : [it.b, it.a, true]; const f = { y:0, h, x:w + kf }; c.faixas.push(f); c.usadoY = h + kf; c.pecas.push({ ...it, x:0, y:0, w, h, giro }); }
+    }
+    const areaChapa = dim[0]*dim[1];
+    chapas.forEach(c => c.aproveitamento = c.pecas.reduce((s,p) => s + p.w*p.h, 0) / areaChapa);
+    res.push({ ref, mat, esp, nome: ref ? BIBLIOTECA[ref].nome : `${MATERIAIS[mat].nome} ${fmt(esp)} mm`, dim, refilo:R.refilo, serra:kf, chapas });
+  }
+  res.sort((a,b) => b.esp - a.esp);
+  return { materiais:res, erros };
+}
+
+/* Lista de compras: chapas do plano de corte + ferragens, em unidades de compra */
+function listaDeCompras(res, plano, precos) {
+  const linhas = [];
+  for (const m of plano.materiais) linhas.push({ ref:m.ref || ('chapa-' + m.mat + '-' + m.esp), grupo:'Chapas', nome:m.nome, marca:'', codigo:'', necessario:`${m.chapas.length} chapa${m.chapas.length>1?'s':''}`, compra:m.chapas.length, unid:'chapa', obs:`Aproveitamento médio ${Math.round(100*m.chapas.reduce((s,c)=>s+c.aproveitamento,0)/m.chapas.length)}%. A loja também pode vender só o corte.` });
+  for (const f of res.ferragens) {
+    const b = BIBLIOTECA[f.ref], compra = Math.ceil(f.qtd / b.emb);
+    linhas.push({ ref:f.ref + (f.var ? '-' + f.var.replace(/\s/g,'') : ''), grupo:b.grupo, nome:f.nome, marca:b.marca, codigo:b.codigo, necessario: f.unid==='m' ? `${f.qtd} m` : `${f.qtd} ${f.unid}`, compra, unid:b.unid, obs:f.obs });
+  }
+  linhas.forEach(l => { const pr = Number(precos[l.ref]); l.preco = pr > 0 ? pr : null; l.total = l.preco != null ? l.preco * l.compra : null; });
+  const total = linhas.reduce((s,l) => s + (l.total||0), 0), semPreco = linhas.filter(l => l.preco == null).length;
+  return { linhas, total, semPreco };
+}
+const reais = v => v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+
+/* =====================================================================
+   4b. DESENHOS TÉCNICOS — mesma lista de comandos vira SVG (tela) e PDF
+   ===================================================================== */
+const TIPOS_FURO = {
+  caneco:   { l:'K', nome:'Caneco da dobradiça' },
+  puxador:  { l:'X', nome:'Puxador, passante' },
+  montagem: { l:'M', nome:'Montagem, parafuso 4,0 × 50, passante' },
+  pino:     { l:'P', nome:'Pino de prateleira' },
+  calco:    { l:'D', nome:'Calço da dobradiça, pré-furo' },
+  corredica:{ l:'C', nome:'Corrediça, pré-furo' },
+  parede:   { l:'F', nome:'Fixação na parede, passante' },
+};
+function listaDesenhos(pecas) {
+  const ordem = ['caixa','enchimento','frente','gaveta','fundo'];
+  const mapa = new Map();
+  for (const pc of pecas.filter(p => p.lista && p.des)) {
+    const k = JSON.stringify([pc.nomeLista, pc.comp, pc.larg, pc.esp, pc.mat, pc.des]);
+    if (!mapa.has(k)) mapa.set(k, { pc, ids:[] });
+    mapa.get(k).ids.push(pc.id);
+  }
+  return [...mapa.values()].sort((a,b) => ordem.indexOf(a.pc.cat)-ordem.indexOf(b.pc.cat)).map(g => {
+    const cont = {};
+    const furos = (g.pc.des.furos||[]).map(f => { cont[f.tipo] = (cont[f.tipo]||0)+1; return { ...f, rot: TIPOS_FURO[f.tipo].l + cont[f.tipo] }; });
+    return { ...g, qtd:g.ids.length, titulo: g.ids.length > 1 ? (g.pc.nomeLista || g.pc.nome) : g.pc.nome, furos };
+  });
+}
+function cmdsDesenho(d, furos, W, H, ts) {
+  const c = [];
+  const ml = ts*5.5, mb = ts*5, mt = ts*2.5, mr = ts*3;
+  const s = Math.min((W-ml-mr)/d.w, (H-mt-mb)/d.h);
+  const ox = ml, oy = mt + d.h*s;
+  const X = x => ox + x*s, Y = y => oy - y*s;
+  const pts = [[0,0],[d.w,0],[d.w,d.h]];
+  (d.recortes||[]).slice().sort((a,b)=>b.x-a.x).forEach(r => pts.push([r.x+r.w,d.h],[r.x+r.w,d.h-r.h],[r.x,d.h-r.h],[r.x,d.h]));
+  pts.push([0,d.h]);
+  c.push({ t:'poly', pts:pts.map(([x,y]) => [X(x),Y(y)]), papel:'peca' });
+  const lados = { b:[[0,0],[d.w,0]], t:[[0,d.h],[d.w,d.h]], l:[[0,0],[0,d.h]], r:[[d.w,0],[d.w,d.h]] };
+  (d.fita||[]).forEach(k => { const [a,b] = lados[k]; c.push({ t:'line', a:[X(a[0]),Y(a[1])], b:[X(b[0]),Y(b[1])], papel:'fita' }); });
+  if (d.frente) {
+    const fs = ts*0.75, pad = ts*1.1;
+    const pos = { b:[X(d.w/2), Y(0)-pad*0.6, 0], t:[X(d.w/2), Y(d.h)+pad*1.2, 0], l:[X(0)+pad*1.2, Y(d.h/2), -90], r:[X(d.w)-pad*0.6, Y(d.h/2), -90] }[d.frente];
+    if (d.w*s > ts*8 && d.h*s > ts*3) c.push({ t:'text', p:[pos[0],pos[1]], s:'FRENTE', size:fs, anchor:'middle', rot:pos[2], papel:'frente' });
+  }
+  (d.linhas||[]).forEach(l => {
+    c.push({ t:'line', a:[X(l.x1),Y(l.y1)], b:[X(l.x2),Y(l.y2)], papel:'eixo' });
+    if (l.txt && Math.abs(l.x2-l.x1)*s > ts*10) c.push({ t:'text', p:[(X(l.x1)+X(l.x2))/2, Y(l.y1)-ts*0.45], s:l.txt, size:ts*0.7, anchor:'middle', papel:'eixo' });
+  });
+  if (d.rasgos?.length) {
+    d.rasgos.forEach(r => c.push({ t:'poly', pts:[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h],[r.x,r.y+r.h]].map(([x,y]) => [X(x),Y(y)]), papel:'furo' }));
+    const r0 = d.rasgos[0], ymax = Math.max(...d.rasgos.map(r => r.y + r.h));
+    c.push({ t:'text', p:[X(d.w/2), Y(ymax) - ts*0.6], s:`${d.rasgos.length} rasgos ${fmt(r0.w)} × ${fmt(r0.h)} passantes (ventilação)`, size:ts*0.75, anchor:'middle', papel:'furo' });
+  }
+  (d.recortes||[]).forEach(r => c.push({ t:'text', p:[X(r.x+r.w/2), Y(d.h-r.h)-ts*0.6], s:`recorte ${fmt(r.w)} × ${fmt(r.h)}`, size:ts*0.8, anchor:'middle', papel:'cota' }));
+  furos.forEach(f => {
+    const r = Math.max(f.d/2*s, ts*0.22), cx = X(f.x), cy = Y(f.y);
+    c.push({ t:'circle', c:[cx,cy], r, papel:'furo' });
+    c.push({ t:'text', p:[cx + r + ts*0.15, cy - r*0.3 - ts*0.1], s:f.rot, size:ts*0.72, anchor:'start', papel:'furo' });
+  });
+  const tick = (x,y) => c.push({ t:'line', a:[x-ts*0.35,y+ts*0.35], b:[x+ts*0.35,y-ts*0.35], papel:'cota' });
+  const yc = Y(0) + ts*2.6;
+  c.push({ t:'line', a:[X(0),yc], b:[X(d.w),yc], papel:'cota' }); tick(X(0),yc); tick(X(d.w),yc);
+  [0,d.w].forEach(x => c.push({ t:'line', a:[X(x),Y(0)+ts*0.4], b:[X(x),yc+ts*0.6], papel:'cota-ext' }));
+  c.push({ t:'text', p:[(X(0)+X(d.w))/2, yc+ts*1.35], s:fmt(d.w), size:ts, anchor:'middle', papel:'cota' });
+  const xc = X(0) - ts*2.6;
+  c.push({ t:'line', a:[xc,Y(0)], b:[xc,Y(d.h)], papel:'cota' }); tick(xc,Y(0)); tick(xc,Y(d.h));
+  [0,d.h].forEach(y => c.push({ t:'line', a:[X(0)-ts*0.4,Y(y)], b:[xc-ts*0.6,Y(y)], papel:'cota-ext' }));
+  c.push({ t:'text', p:[xc-ts*0.5, (Y(0)+Y(d.h))/2], s:fmt(d.h), size:ts, anchor:'middle', rot:-90, papel:'cota' });
+  c.push({ t:'text', p:[X(0)-ts*0.3, Y(0)+ts*1.3], s:'0,0', size:ts*0.7, anchor:'end', papel:'eixo' });
+  return { cmds:c, W: ox + d.w*s + mr, H: oy + mb };
+}
+function svgDesenho(cmds, W, H, titulo) {
+  const NS = 'http://www.w3.org/2000/svg', mk = (tag, at) => { const e = document.createElementNS(NS, tag); for (const [k,v] of Object.entries(at)) if (v != null) e.setAttribute(k, v); return e; };
+  const svg = mk('svg', { viewBox:`0 0 ${W.toFixed(1)} ${H.toFixed(1)}`, class:'des-svg', role:'img', 'aria-label':'Desenho de '+titulo });
+  for (const k of cmds) {
+    let e;
+    if (k.t === 'poly') e = mk('polygon', { points:k.pts.map(p => p.map(v=>v.toFixed(2)).join(',')).join(' ') });
+    else if (k.t === 'line') e = mk('line', { x1:k.a[0], y1:k.a[1], x2:k.b[0], y2:k.b[1] });
+    else if (k.t === 'circle') e = mk('circle', { cx:k.c[0], cy:k.c[1], r:k.r });
+    else { e = mk('text', { x:k.p[0], y:k.p[1], 'font-size':k.size, 'text-anchor':k.anchor==='middle'?'middle':k.anchor==='end'?'end':'start', transform:k.rot?`rotate(${k.rot} ${k.p[0]} ${k.p[1]})`:null }); e.textContent = k.s; }
+    e.setAttribute('class', 'd-'+k.papel); svg.append(e);
+  }
+  return svg;
+}
+function mostrarDesenhos(res) {
+  const g = $('gradeDes');
+  if (res.erros.length) { g.replaceChildren(el('p', { class:'vazio', text:'Corrija os erros nos parâmetros para ver os desenhos.' })); return; }
+  g.replaceChildren(...listaDesenhos(res.pecas).map(it => {
+    const pc = it.pc, d = pc.des;
+    const { cmds, W, H } = cmdsDesenho(d, it.furos, 560, 360, 11);
+    const tab = it.furos.length ? el('div', { class:'tabela furos' }, el('table', {},
+      el('thead', {}, el('tr', {}, ...['Furo','X','Y','Ø','Prof.','Tipo'].map((h,i) => el('th', { class:i>0&&i<5?'n':null, text:h })))),
+      el('tbody', {}, ...it.furos.map(f => el('tr', {}, el('td', { class:'mono', text:f.rot }), el('td', { class:'n', text:fmt(f.x) }), el('td', { class:'n', text:fmt(f.y) }), el('td', { class:'n', text:fmt(f.d) }), el('td', { class:'n', text:f.prof ? fmt(f.prof) : 'passa' }), el('td', { class:'obs', text:TIPOS_FURO[f.tipo].nome })))))) : null;
+    return el('article', { class:'des', id:'des-'+pc.id, 'data-ids':it.ids.join(' ') },
+      el('h3', {}, el('span', { text:it.titulo }), el('button', { type:'button', text:'Mostrar no 3D', onclick:() => { selecionar(pc.id); $('palco').scrollIntoView({ behavior:'smooth', block:'center' }); } })),
+      el('div', { class:'meta' }, 'Qtd ', el('b', { text:String(it.qtd) }), ` · ${MATERIAIS[pc.mat].nome} ${fmt(pc.esp)} mm · corte `, el('b', { text:`${fmt(pc.comp)} × ${fmt(pc.larg)}` }), ` · fita ${fitaTxt(pc.fita)} · ${d.vista}`),
+      svgDesenho(cmds, W, H, it.titulo), tab,
+      pc.obs ? el('div', { class:'meta', text:pc.obs }) : null);
+  }));
+  marcarDesenho();
+}
+function marcarDesenho() {
+  document.querySelectorAll('.des[data-ids]').forEach(a => a.classList.toggle('sel', !!estado.sel && a.dataset.ids.split(' ').includes(estado.sel)));
+}
+
+/* ---------- PDF para a marcenaria ---------- */
+const pdfTxt = t => String(t).replace(/[—–]/g,'-').replace(/≈/g,'~').replace(/Δ/g,'d').replace(/[^\x00-\xFF]/g,'');
+const COR_PDF = { peca:[25,30,35], fita:[196,101,15], furo:[31,95,158], cota:[70,78,84], 'cota-ext':[150,158,164], eixo:[120,128,134], frente:[120,128,134] };
+function pdfDesenhar(doc, cmds, ox, oy) {
+  for (const k of cmds) {
+    const cor = COR_PDF[k.papel] || [0,0,0];
+    doc.setDrawColor(...cor); doc.setTextColor(...cor);
+    doc.setLineDashPattern(k.papel==='eixo' ? [2,1.4] : [], 0);
+    doc.setLineWidth({ peca:0.35, fita:1.0, furo:0.25, cota:0.18, 'cota-ext':0.15, eixo:0.18 }[k.papel] || 0.2);
+    if (k.t === 'poly') {
+      doc.setFillColor(246,246,244);
+      const p0 = k.pts[0], del = k.pts.slice(1).map((p,i) => [p[0]-k.pts[i][0], p[1]-k.pts[i][1]]);
+      doc.lines(del, ox+p0[0], oy+p0[1], [1,1], 'FD', true);
+    } else if (k.t === 'line') doc.line(ox+k.a[0], oy+k.a[1], ox+k.b[0], oy+k.b[1]);
+    else if (k.t === 'circle') { doc.setFillColor(255,255,255); doc.circle(ox+k.c[0], oy+k.c[1], k.r, 'FD'); }
+    else {
+      doc.setFontSize(k.size*2.835); const s = pdfTxt(k.s);
+      if (k.rot) { const w = doc.getTextWidth(s); doc.text(s, ox+k.p[0], oy+k.p[1]+w/2, { angle:90 }); }
+      else doc.text(s, ox+k.p[0], oy+k.p[1], { align: k.anchor==='middle'?'center':k.anchor==='end'?'right':'left' });
+    }
+  }
+  doc.setLineDashPattern([], 0);
+}
+function gerarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+  const nome = estado.projeto.nome || 'Projeto', res = estado.res, lc = listaDeCorte(res.pecas), dess = listaDesenhos(res.pecas);
+  const T = (s, x, y, o) => doc.text(Array.isArray(s) ? s.map(pdfTxt) : pdfTxt(s), x, y, o);
+  // Capa: lista de corte e ferragens
+  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(20,24,28); T(nome, 14, 18);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90,98,104);
+  T(`Lista de corte, plano de corte, compras e desenhos técnicos · ${new Date().toLocaleDateString('pt-BR')} · medidas em mm`, 14, 24);
+  let y = 34;
+  const linha = (cols, xs, neg) => { doc.setFont('helvetica', neg?'bold':'normal'); cols.forEach((c,i) => T(c, xs[i], y, { align: i>0 && i<5 ? 'right' : 'left' })); y += 5; if (y > 195) { doc.addPage(); y = 18; } };
+  const xsC = [14, 100, 120, 140, 158, 166];
+  doc.setFontSize(10); doc.setTextColor(20,24,28); linha(['Nº  Peça','Qtd','Comp.','Larg.','Fita','Obs.'], xsC, true);
+  doc.setFontSize(9);
+  for (const [g, its] of lc.grupos) { doc.setTextColor(31,95,158); linha([g,'','','','',''], xsC, true); doc.setTextColor(30,34,38);
+    its.forEach(it => linha([`${String(it.num).padStart(2,' ')}  ${it.nomeLista||it.nome}`, String(it.qtd), fmt(it.comp), fmt(it.larg), fitaTxt(it.fita), (it.forma?.tipo==='recorte' ? `recorte ${fmt(it.forma.rl)} x ${fmt(it.forma.rp)}` : '')], xsC)); }
+  // Lista de compras
+  const comp = estado.compras;
+  if (comp) {
+    y += 4; const xsF = [14, 150, 150, 150, 176, 182];
+    doc.setFontSize(10); doc.setTextColor(20,24,28); linha(['Lista de compras','Comprar','','','Total',''], xsF, true); doc.setFontSize(9);
+    comp.linhas.forEach(l => { doc.setTextColor(30,34,38); linha([l.nome + (l.marca||l.codigo ? ` (${[l.marca,l.codigo].filter(Boolean).join(' ')})` : ''), `${l.compra} ${l.unid}`, '', '', l.total != null ? reais(l.total) : '-', ''], xsF); });
+    linha([comp.semPreco ? `Total (${comp.semPreco} sem preço)` : 'Total', '', '', '', reais(comp.total), ''], xsF, true);
+  }
+  // Plano de corte: uma página por chapa
+  const plano = estado.plano;
+  if (plano) plano.materiais.forEach(m => m.chapas.forEach((c, i) => {
+    doc.addPage();
+    doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(20,24,28); T(`Plano de corte · ${m.nome} · chapa ${i+1} de ${m.chapas.length}`, 12, 15);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90,98,104);
+    T(`Chapa ${m.dim[0]} x ${m.dim[1]} mm · refilo ${m.refilo} mm · serra ${m.serra} mm · ${Math.round(c.aproveitamento*100)}% aproveitado · número = Nº da lista de corte`, 12, 21);
+    const sc = 248 / m.dim[0], ox = (297 - 248) / 2, oy = 27;
+    doc.setDrawColor(25,30,35); doc.setFillColor(246,246,244); doc.setLineWidth(0.3); doc.rect(ox, oy, m.dim[0]*sc, m.dim[1]*sc, 'FD');
+    doc.setLineDashPattern([1.5,1], 0); doc.setDrawColor(150,158,164); doc.rect(ox+m.refilo*sc, oy+m.refilo*sc, (m.dim[0]-2*m.refilo)*sc, (m.dim[1]-2*m.refilo)*sc, 'S'); doc.setLineDashPattern([], 0);
+    c.pecas.forEach(pp => {
+      const x = ox + (m.refilo+pp.x)*sc, yy = oy + (m.refilo+pp.y)*sc, w = pp.w*sc, h = pp.h*sc;
+      doc.setDrawColor(31,95,158); doc.setFillColor(226,236,246); doc.setLineWidth(0.25); doc.rect(x, yy, w, h, 'FD');
+      doc.setTextColor(20,24,28);
+      if (w > 4 && h > 4) { doc.setFont('helvetica','bold'); doc.setFontSize(9); T(String(pp.num), x + w/2, yy + h/2 + (h > 10 ? -0.5 : 1.2), { align:'center' }); }
+      if (w > 22 && h > 10) { doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(90,98,104); T(`${fmt(pp.w)} x ${fmt(pp.h)}`, x + w/2, yy + h/2 + 3.5, { align:'center' }); }
+    });
+  }));
+  // Uma página por peça
+  dess.forEach(it => {
+    doc.addPage();
+    const pc = it.pc;
+    doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(20,24,28); T(it.titulo, 12, 15);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90,98,104);
+    T(`Qtd ${it.qtd} · ${MATERIAIS[pc.mat].nome} ${fmt(pc.esp)} mm · corte ${fmt(pc.comp)} x ${fmt(pc.larg)} · fita ${fitaTxt(pc.fita)} · ${pc.des.vista}`, 12, 21);
+    const { cmds, W, H } = cmdsDesenho(pc.des, it.furos, 188, 168, 3.4);
+    pdfDesenhar(doc, cmds, 8 + (188-W)/2, 26 + (168-H)/2);
+    let ty = 30; const tx = 204;
+    doc.setFontSize(9);
+    if (it.furos.length) {
+      doc.setFont('helvetica','bold'); doc.setTextColor(20,24,28); T('Furação', tx, ty); ty += 5;
+      doc.setFontSize(8); ['Furo','X','Y','Ø','Prof.'].forEach((h,i) => T(h, tx + [0,24,40,52,66][i], ty, { align: i ? 'right' : 'left' })); ty += 1.5;
+      doc.setDrawColor(200,205,208); doc.setLineWidth(0.2); doc.line(tx, ty, tx+80, ty); ty += 3.8;
+      doc.setFont('helvetica','normal'); doc.setTextColor(30,34,38);
+      it.furos.forEach(f => { [f.rot, fmt(f.x), fmt(f.y), fmt(f.d), f.prof ? fmt(f.prof) : 'passa'].forEach((v,i) => T(v, tx + [0,24,40,52,66][i], ty, { align: i ? 'right' : 'left' })); ty += 4; });
+      ty += 2;
+      const tipos = [...new Set(it.furos.map(f => f.tipo))];
+      tipos.forEach(tp => { const lin = doc.splitTextToSize(pdfTxt(`${TIPOS_FURO[tp].l}: ${TIPOS_FURO[tp].nome}`), 82); T(lin, tx, ty); ty += 3.6*lin.length; });
+      ty += 3;
+    }
+    doc.setFontSize(8.5); doc.setTextColor(90,98,104);
+    if (pc.obs) { const lin = doc.splitTextToSize(pdfTxt(pc.obs), 82); T(lin, tx, ty); ty += 3.8*lin.length + 3; }
+    doc.setDrawColor(...COR_PDF.fita); doc.setLineWidth(1); doc.line(tx, ty, tx+8, ty); T('borda com fita', tx+10, ty+1);
+  });
+  const N = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= N; i++) { doc.setPage(i); doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(130,138,144);
+    T(`${nome} · Configurador de Móveis · X e Y a partir do canto inferior esquerdo (0,0) da vista · página ${i} de ${N}`, 12, 203); }
+  return doc.output('arraybuffer');
+}
+
+/* =====================================================================
+   4c. INVENTOR — gera uma regra iLogic com os dados do projeto embutidos
+   Cada peça: desenho no plano XY, chapa extrudada para −Z, furos cortados da face Z=0.
+   Montagem: eixos (u, v) da vista do desenho → eixos do móvel; Z da peça aponta para quem olha a vista.
+   ===================================================================== */
+function oriDe(id) {
+  if (id === 'lateral-esq') return ['-z','+y'];
+  if (id === 'lateral-dir') return ['+z','+y'];
+  if (/^porta-(esq|dir|\d+)$/.test(id) || /^gaveta-\d+-frente$/.test(id) || id === 'fundo') return ['-x','+y'];
+  if (/^divisoria-v-/.test(id) || /^espacador-/.test(id)) return ['-z','+y'];
+  if (/^rodape-/.test(id) || /^travessa-fixacao-/.test(id) || id === 'beiral-frontal') return ['+x','+y'];
+  if (/^beiral-(esq|dir)$/.test(id)) return ['-z','+y'];
+  if (id === 'travessa-fixacao' || /^gaveta-\d+-(frente-interna|traseira)$/.test(id) || id.startsWith('enchimento-')) return ['+x','+y'];
+  if (/^gaveta-\d+-lateral-esq$/.test(id) || id.startsWith('sarrafo-')) return ['+z','+y'];
+  if (/^gaveta-\d+-lateral-dir$/.test(id)) return ['-z','+y'];
+  return ['+x','-z'];
+}
+const EIXO = { x:0, y:1, z:2 };
+const vetor = s => { const v = [0,0,0]; v[EIXO[s[1]]] = s[0]==='-' ? -1 : 1; return v; };
+const cruz = (a,b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+function posicaoInventor(pc) {
+  const [us, vs] = oriDe(pc.id), u = vetor(us), v = vetor(vs), nn = cruz(u, v);
+  const ext = [pc.box[1]-pc.box[0], pc.box[3]-pc.box[2], pc.box[5]-pc.box[4]];
+  const mn = [pc.box[0], pc.box[2], pc.box[4]], mx = [pc.box[1], pc.box[3], pc.box[5]];
+  const ia = u.findIndex(c=>c), ib = v.findIndex(c=>c), ic = nn.findIndex(c=>c);
+  const ok = Math.abs(ext[ia]-pc.des.w) < 0.05 && Math.abs(ext[ib]-pc.des.h) < 0.05 && Math.abs(ext[ic]-pc.esp) < 0.05;
+  const o = [0,0,0];
+  o[ia] = u[ia] > 0 ? mn[ia] : mx[ia];
+  o[ib] = v[ib] > 0 ? mn[ib] : mx[ib];
+  o[ic] = nn[ic] > 0 ? mx[ic] : mn[ic];
+  return { ok, o, u, v, n:nn };
+}
+function gerarILogic() {
+  const res = estado.res, nome = estado.projeto.nome || 'Projeto', base = slug();
+  const dess = listaDesenhos(res.pecas);
+  const limpa = t => String(t).replace(/["|]/g, "'").replace(/[\r\n]+/g, ' ');
+  const arq = t => limpa(t).replace(/[\\/:*?<>]/g, '-');
+  const num = v => String(Math.round(v*1000)/1000);
+  const porId = new Map(res.pecas.map(pc => [pc.id, pc]));
+  const pecasVB = [], ocsVB = [], problemas = [], nomesUsados = new Set();
+  dess.forEach((it, i) => {
+    const pc = it.pc, d = pc.des, cod = String(i+1).padStart(2, '0');
+    const furos = it.furos.map(f => [f.x, f.y, f.d, f.prof].map(num).join(':')).join(';');
+    const rec = (d.recortes||[]).slice().sort((a,b)=>b.x-a.x).map(r => [r.x, r.w, r.h].map(num).join(':')).join(';');
+    const ras = (d.rasgos||[]).map(r => [r.x, r.y, r.w, r.h].map(num).join(':')).join(';');
+    pecasVB.push(`"${[arq(`${cod} - ${it.titulo}`), limpa(it.titulo), `${base.split('-').filter(w=>w.length>2).map(w=>w[0]).join('').toUpperCase().slice(0,4) || 'MOV'}-${cod}`, num(d.w), num(d.h), num(pc.esp), fitaTxt(pc.fita), it.qtd, limpa(MATERIAIS[pc.mat].nome), furos, rec, limpa(pc.obs||''), ras].join('|')}"`);
+    it.ids.forEach(id => {
+      const q = porId.get(id), pos = posicaoInventor(q);
+      if (!pos.ok) { problemas.push(q.nome); return; }
+      let nm = limpa(q.nome); while (nomesUsados.has(nm)) nm += ' b'; nomesUsados.add(nm);
+      ocsVB.push(`"${[i, ...pos.o.map(num), ...pos.u, ...pos.v, ...pos.n, nm].join('|')}"`);
+    });
+  });
+  const lista = arr => arr.map((l, i) => '    ' + l + (i < arr.length-1 ? ', _' : '')).join('\n');
+  return `' =====================================================================
+' Configurador de Móveis — regra iLogic gerada para: ${limpa(nome)}
+' Gerada em ${new Date().toLocaleString('pt-BR')} · ${dess.length} peças diferentes, ${ocsVB.length} na montagem
+' O que faz: cria uma peça .ipt por peça de MDF (contorno, espessura, furos, recortes,
+' iProperties) e a montagem .iam com todas as peças no lugar. Não altera arquivos existentes:
+' se a pasta já tiver arquivos, cria outra com data e hora no nome.
+' Como usar: Inventor > aba Gerenciar > iLogic > Adicionar regra (com uma montagem ou peça aberta,
+' ou como regra externa) > colar este texto > Salvar e executar.
+' Unidades: os dados estão em mm; a API do Inventor trabalha em cm (por isso o /10).
+' =====================================================================
+Imports System.IO
+
+Sub Main()
+  Dim PASTA_BASE As String = "C:\\Moveis"   ' <<< troque pela pasta onde quer salvar
+  Dim NOME As String = "${base}"
+
+  Dim pasta As String = Path.Combine(PASTA_BASE, NOME)
+  If Directory.Exists(pasta) AndAlso Directory.GetFileSystemEntries(pasta).Length > 0 Then
+    pasta = pasta & "_" & DateTime.Now.ToString("yyyyMMdd-HHmmss")
+  End If
+  Directory.CreateDirectory(pasta)
+
+  ' arquivo|nome|código|largura|altura|espessura|fita|qtd|material|furos x:y:Ø:prof (0 = passante)|recortes x:larg:fundo|obs
+  Dim pecas() As String = { _
+${lista(pecasVB)} }
+
+  ' índice da peça|origem x|y|z|eixo X da peça|eixo Y da peça|eixo Z da peça|nome
+  Dim ocorrencias() As String = { _
+${lista(ocsVB)} }
+
+  Dim tg As TransientGeometry = ThisApplication.TransientGeometry
+  Dim tplPeca As String = ThisApplication.FileManager.GetTemplateFile(DocumentTypeEnum.kPartDocumentObject, SystemOfMeasureEnum.kMetricSystemOfMeasure)
+  Dim tplMont As String = ThisApplication.FileManager.GetTemplateFile(DocumentTypeEnum.kAssemblyDocumentObject, SystemOfMeasureEnum.kMetricSystemOfMeasure)
+  Dim arquivos As New List(Of String)
+  Dim erros As New List(Of String)
+
+  For Each linha As String In pecas
+    Try
+      arquivos.Add(CriarPeca(linha, pasta, tplPeca, tg))
+    Catch ex As Exception
+      arquivos.Add("")
+      erros.Add(linha.Split("|"c)(1) & ": " & ex.Message)
+    End Try
+  Next
+
+  Dim mont As AssemblyDocument = ThisApplication.Documents.Add(DocumentTypeEnum.kAssemblyDocumentObject, tplMont, True)
+  For Each linha As String In ocorrencias
+    Dim c() As String = linha.Split("|"c)
+    Dim arqPeca As String = arquivos(CInt(c(0)))
+    If arqPeca = "" Then Continue For
+    Try
+      Dim m As Matrix = tg.CreateMatrix()
+      m.SetCoordinateSystem(tg.CreatePoint(Val(c(1)) / 10, Val(c(2)) / 10, Val(c(3)) / 10), _
+        tg.CreateVector(Val(c(4)), Val(c(5)), Val(c(6))), _
+        tg.CreateVector(Val(c(7)), Val(c(8)), Val(c(9))), _
+        tg.CreateVector(Val(c(10)), Val(c(11)), Val(c(12))))
+      Dim oc As ComponentOccurrence = mont.ComponentDefinition.Occurrences.Add(arqPeca, m)
+      oc.Grounded = True
+      Try
+        oc.Name = c(13)
+      Catch
+      End Try
+    Catch ex As Exception
+      erros.Add("Montagem, " & c(13) & ": " & ex.Message)
+    End Try
+  Next
+  mont.SaveAs(Path.Combine(pasta, NOME & ".iam"), False)
+  ThisApplication.ActiveView.Fit()
+
+  Dim msg As String = "Pronto: " & (arquivos.Count - erros.Count) & " peças e a montagem em" & vbCrLf & pasta
+  If erros.Count > 0 Then msg = msg & vbCrLf & vbCrLf & "Problemas:" & vbCrLf & String.Join(vbCrLf, erros)
+  MessageBox.Show(msg, "Configurador de Móveis")
+End Sub
+
+Function CriarPeca(linha As String, pasta As String, tpl As String, tg As TransientGeometry) As String
+  Dim c() As String = linha.Split("|"c)
+  Dim w As Double = Val(c(3)) / 10, h As Double = Val(c(4)) / 10, e As Double = Val(c(5)) / 10
+  Dim doc As PartDocument = ThisApplication.Documents.Add(DocumentTypeEnum.kPartDocumentObject, tpl, False)
+  Dim def As PartComponentDefinition = doc.ComponentDefinition
+
+  ' Contorno no plano XY (com recortes na borda de cima, se houver)
+  Dim pts As New List(Of Point2d)
+  pts.Add(tg.CreatePoint2d(0, 0)) : pts.Add(tg.CreatePoint2d(w, 0)) : pts.Add(tg.CreatePoint2d(w, h))
+  If c(10) <> "" Then
+    For Each r As String In c(10).Split(";"c)
+      Dim q() As String = r.Split(":"c)
+      Dim rx As Double = Val(q(0)) / 10, rw As Double = Val(q(1)) / 10, rh As Double = Val(q(2)) / 10
+      pts.Add(tg.CreatePoint2d(rx + rw, h)) : pts.Add(tg.CreatePoint2d(rx + rw, h - rh))
+      pts.Add(tg.CreatePoint2d(rx, h - rh)) : pts.Add(tg.CreatePoint2d(rx, h))
+    Next
+  End If
+  pts.Add(tg.CreatePoint2d(0, h))
+  Dim sk As PlanarSketch = def.Sketches.Add(def.WorkPlanes.Item(3))
+  sk.Name = "Contorno"
+  Dim ln As SketchLine = sk.SketchLines.AddByTwoPoints(pts(0), pts(1))
+  Dim inicio As SketchPoint = ln.StartSketchPoint
+  For i As Integer = 2 To pts.Count - 1
+    ln = sk.SketchLines.AddByTwoPoints(ln.EndSketchPoint, pts(i))
+  Next
+  sk.SketchLines.AddByTwoPoints(ln.EndSketchPoint, inicio)
+  Dim ed As ExtrudeDefinition = def.Features.ExtrudeFeatures.CreateExtrudeDefinition(sk.Profiles.AddForSolid(), PartFeatureOperationEnum.kJoinOperation)
+  ed.SetDistanceExtent(e, PartFeatureExtentDirectionEnum.kNegativeExtentDirection)
+  def.Features.ExtrudeFeatures.Add(ed).Name = "Chapa"
+
+  ' Furos: um esboço e um corte por diâmetro + profundidade
+  If c(9) <> "" Then
+    Dim grupos As New Dictionary(Of String, List(Of String))
+    For Each f As String In c(9).Split(";"c)
+      Dim q() As String = f.Split(":"c)
+      Dim k As String = q(2) & ":" & q(3)
+      If Not grupos.ContainsKey(k) Then grupos.Add(k, New List(Of String))
+      grupos(k).Add(f)
+    Next
+    For Each k As String In grupos.Keys
+      Dim dk() As String = k.Split(":"c)
+      Dim diam As Double = Val(dk(0)) / 10, prof As Double = Val(dk(1)) / 10
+      Dim skf As PlanarSketch = def.Sketches.Add(def.WorkPlanes.Item(3))
+      skf.Name = "Furos Ø" & dk(0)
+      For Each f As String In grupos(k)
+        Dim q() As String = f.Split(":"c)
+        skf.SketchCircles.AddByCenterRadius(tg.CreatePoint2d(Val(q(0)) / 10, Val(q(1)) / 10), diam / 2)
+      Next
+      Dim fd As ExtrudeDefinition = def.Features.ExtrudeFeatures.CreateExtrudeDefinition(skf.Profiles.AddForSolid(), PartFeatureOperationEnum.kCutOperation)
+      If prof <= 0 Or prof >= e Then
+        fd.SetThroughAllExtent(PartFeatureExtentDirectionEnum.kNegativeExtentDirection)
+      Else
+        fd.SetDistanceExtent(prof, PartFeatureExtentDirectionEnum.kNegativeExtentDirection)
+      End If
+      def.Features.ExtrudeFeatures.Add(fd).Name = "Furos Ø" & dk(0) & IIf(prof > 0 And prof < e, " x " & dk(1), " passante")
+    Next
+  End If
+
+  ' Rasgos passantes (ventilação), se houver: campo 12 = x:y:largura:altura
+  If c.Length > 12 AndAlso c(12) <> "" Then
+    Dim skr As PlanarSketch = def.Sketches.Add(def.WorkPlanes.Item(3))
+    skr.Name = "Rasgos"
+    For Each r As String In c(12).Split(";"c)
+      Dim q() As String = r.Split(":"c)
+      Dim rx As Double = Val(q(0)) / 10, ry As Double = Val(q(1)) / 10
+      skr.SketchLines.AddAsTwoPointRectangle(tg.CreatePoint2d(rx, ry), tg.CreatePoint2d(rx + Val(q(2)) / 10, ry + Val(q(3)) / 10))
+    Next
+    Dim rd As ExtrudeDefinition = def.Features.ExtrudeFeatures.CreateExtrudeDefinition(skr.Profiles.AddForSolid(), PartFeatureOperationEnum.kCutOperation)
+    rd.SetThroughAllExtent(PartFeatureExtentDirectionEnum.kNegativeExtentDirection)
+    def.Features.ExtrudeFeatures.Add(rd).Name = "Rasgos de ventilação"
+  End If
+
+  ' iProperties
+  doc.PropertySets.Item("Design Tracking Properties").Item("Part Number").Value = c(2)
+  doc.PropertySets.Item("Design Tracking Properties").Item("Description").Value = c(1)
+  doc.PropertySets.Item("Inventor Summary Information").Item("Title").Value = c(1)
+  Dim ud As PropertySet = doc.PropertySets.Item("Inventor User Defined Properties")
+  Dim nomes() As String = {"Largura da vista (mm)", "Altura da vista (mm)", "Espessura (mm)", "Fita", "Qtd", "Material", "Obs"}
+  Dim vals() As String = {c(3), c(4), c(5), c(6), c(7), c(8), c(11)}
+  For i As Integer = 0 To nomes.Length - 1
+    Try
+      ud.Item(nomes(i)).Value = vals(i)
+    Catch
+      ud.Add(vals(i), nomes(i))
+    End Try
+  Next
+
+  Dim caminho As String = Path.Combine(pasta, c(0) & ".ipt")
+  doc.SaveAs(caminho, False)
+  doc.Close(True)
+  Return caminho
+End Function
+` + (problemas.length ? `\n' Atenção: não posicionadas na montagem (medida não bate com a vista): ${problemas.join(', ')}\n` : '');
+}
+
+/* =====================================================================
+   5. ESTADO DA PÁGINA
+   ===================================================================== */
+const CHAVE = 'configurador-moveis:v2';
+const projetoPadrao = (tipo = 'armario') => ({ tipo, nome:TIPOS[tipo].nomePadrao, parametros:{ ...TIPOS[tipo].padrao } });
+const estado = {
+  projeto: projetoPadrao(), res:null, valido:null, sel:null, ocultas:new Set(),
+  portas:false, gavetas:false, explode:0, cotas:true, medir:false, corte:'nenhum', cortePos:50,
+  tampo:true, fundo:true, paredes:true, esgoto:false, fix:false, orto:false, vista:'perspectiva',
+};
+try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...TIPOS[s.tipo].padrao, ...s.parametros } }; } catch(e) {}
+const CHAVE_PRECOS = 'configurador-moveis:precos';
+let precos = {}; try { precos = JSON.parse(localStorage.getItem(CHAVE_PRECOS) || '{}') || {}; } catch(e) {}
+const salvarPrecos = () => { try { localStorage.setItem(CHAVE_PRECOS, JSON.stringify(precos)); } catch(e) {} };
+const salvarLocal = () => { try { localStorage.setItem(CHAVE, JSON.stringify(estado.projeto)); } catch(e) {} };
+
+const $ = id => document.getElementById(id);
+const el = (tag, attrs={}, ...filhos) => { const e = document.createElement(tag); for (const [k,v] of Object.entries(attrs)) { if (k==='class') e.className=v; else if (k==='text') e.textContent=v; else if (k.startsWith('on')) e.addEventListener(k.slice(2),v); else if (v!==false && v!=null) e.setAttribute(k, v===true?'':v); } filhos.flat().forEach(f => f!=null && e.append(f)); return e; };
+let toastT; const toast = msg => { const t=$('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 2600); };
+
+/* ---------- Formulário gerado a partir do tipo ---------- */
+function montarFormulario() {
+  const tipo = TIPOS[estado.projeto.tipo], form = $('form'), par = estado.projeto.parametros;
+  $('tipoMovel').replaceChildren(...Object.entries(TIPOS).map(([k,t]) => el('option', { value:k, selected:k===estado.projeto.tipo }, t.nome)));
+  form.replaceChildren(...tipo.grupos.map(g => el('fieldset', {}, el('legend', { text:g.titulo }), ...g.campos.map(c => {
+    const id = 'p-'+c.id;
+    if (c.tipo === 'sim') return el('div', { class:'campo sim' }, el('input', { type:'checkbox', id, checked:!!par[c.id], 'data-c':c.id }), el('label', { for:id, text:c.rot }));
+    let inp;
+    if (c.tipo === 'sel') inp = el('select', { id, 'data-c':c.id }, ...c.opcoes.map(([v,r]) => el('option', { value:v, selected:Number(par[c.id])===v }, r)));
+    else inp = el('input', { type:c.tipo==='txt'?'text':'number', id, 'data-c':c.id, value:par[c.id], inputmode:c.tipo==='txt'?'text':'decimal', step:'any' });
+    return el('div', { class:'campo' }, el('label', { for:id, text:c.rot }), el('div', { class:'entrada' }, inp, c.unid ? el('span', { class:'unid', text:c.unid }) : null), c.ajuda ? el('span', { class:'ajuda', text:c.ajuda }) : null);
+  }))));
+}
+let debounceT;
+$('form').addEventListener('input', e => {
+  const c = e.target.dataset.c; if (!c) return;
+  const campo = TIPOS[estado.projeto.tipo].grupos.flatMap(g=>g.campos).find(x=>x.id===c);
+  estado.projeto.parametros[c] = e.target.type==='checkbox' ? e.target.checked : (campo.tipo==='txt' ? e.target.value : (e.target.value==='' ? NaN : Number(e.target.value)));
+  clearTimeout(debounceT); debounceT = setTimeout(atualizar, 120);
+});
+$('nomeProjeto').addEventListener('input', e => { estado.projeto.nome = e.target.value; salvarLocal(); });
+
+/* =====================================================================
+   6. CENA 3D TÉCNICA
+   ===================================================================== */
+const palco = $('palco');
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+renderer.localClippingEnabled = true;
+palco.prepend(renderer.domElement);
+const rotulos = new CSS2DRenderer(); rotulos.domElement.className = 'rotulos'; palco.append(rotulos.domElement);
+
+const cena = new THREE.Scene();
+const camP = new THREE.PerspectiveCamera(32, 1, 5, 60000);
+const camO = new THREE.OrthographicCamera(-1, 1, 1, -1, -60000, 60000);
+let cam = camP;
+const controles = new OrbitControls(cam, renderer.domElement);
+controles.enableDamping = true; controles.dampingFactor = 0.12;
+
+cena.add(new THREE.HemisphereLight(0xffffff, 0x9aa3a8, 1.9));
+const luz1 = new THREE.DirectionalLight(0xffffff, 1.5); luz1.position.set(1400, 2200, 2600); cena.add(luz1);
+const luz2 = new THREE.DirectionalLight(0xffffff, 0.5); luz2.position.set(-1600, 900, 800); cena.add(luz2);
+
+const planos = [];
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const matCat = {}; Object.keys(CATS).forEach(c => matCat[c] = new THREE.MeshLambertMaterial({ clippingPlanes:planos, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1 }));
+const matFix = {
+  'paraf-40x50': new THREE.MeshLambertMaterial({ color:0xe8772e, clippingPlanes:planos }),
+  'paraf-40x30': new THREE.MeshLambertMaterial({ color:0xd9a21b, clippingPlanes:planos }),
+  'paraf-35x14': new THREE.MeshLambertMaterial({ color:0xc94f8a, clippingPlanes:planos }),
+  'paraf-35x25': new THREE.MeshLambertMaterial({ color:0x8e5bd0, clippingPlanes:planos }),
+  'paraf-50x60-bucha': new THREE.MeshLambertMaterial({ color:0xd8322b, clippingPlanes:planos }),
+  'cavilha-8x30': new THREE.MeshLambertMaterial({ color:0x2f9e6b, clippingPlanes:planos }),
+  'pino-5': new THREE.MeshLambertMaterial({ color:0x3b82c4, clippingPlanes:planos }),
+};
+const matCor = {};
+const matDe = pc => pc.cor === undefined ? matCat[pc.cat] : (matCor[pc.cor] ||= new THREE.MeshLambertMaterial({ color:pc.cor, clippingPlanes:planos }));
+const geoFix = {}, geoCabeca = new THREE.CylinderGeometry(4, 4, 2, 12);
+let fixObjs = [];
+function aplicarFix() {
+  const on = estado.fix;
+  for (const c of ['caixa','gaveta','enchimento','fundo','frente']) { const m = matCat[c]; if (!m) continue; m.transparent = on; m.opacity = on ? 0.16 : 1; m.depthWrite = !on; m.needsUpdate = true; }
+  fixObjs.forEach(o => o.visible = on);
+  const leg = document.getElementById('legFix'); if (leg) leg.hidden = !on;
+}
+matCat.tampo.transparent = true; matCat.tampo.opacity = 0.5; matCat.tampo.depthWrite = false;
+const matSel = new THREE.MeshLambertMaterial({ clippingPlanes:planos, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1 });
+const matLinha = new THREE.LineBasicMaterial({ clippingPlanes:planos, transparent:true, opacity:0.7 });
+const matCota = new THREE.LineBasicMaterial({ depthTest:false, transparent:true });
+const matMed = new THREE.MeshBasicMaterial({ depthTest:false });
+const matParede = new THREE.MeshLambertMaterial({ side:THREE.DoubleSide, transparent:true, opacity:0.55, depthWrite:false });
+const matEsgoto = new THREE.MeshBasicMaterial({ transparent:true, opacity:0.28, depthWrite:false, side:THREE.DoubleSide });
+
+const raiz = new THREE.Group(); cena.add(raiz);
+const ambiente = new THREE.Group(); cena.add(ambiente);
+const grupoCotas = new THREE.Group(); cena.add(grupoCotas);
+const grupoMedida = new THREE.Group(); cena.add(grupoMedida);
+let nos = new Map(), grade = null, esgotoObj = null, dimsCena = null;
+
+function geometriaDe(pc) {
+  const [x0,x1,y0,y1,z0,z1] = pc.box, w=x1-x0, h=y1-y0, d=z1-z0;
+  const c = [(x0+x1)/2, (y0+y1)/2, (z0+z1)/2];
+  let g;
+  if (pc.forma?.tipo === 'recorte') {
+    const { rl, rp } = pc.forma, a=(w-rl)/2;
+    const s = new THREE.Shape([[0,0],[a,0],[a,rp],[a+rl,rp],[a+rl,0],[w,0],[w,d],[0,d]].map(([u,v])=>new THREE.Vector2(u,v)));
+    g = new THREE.ExtrudeGeometry(s, { depth:h, bevelEnabled:false });
+    g.rotateX(Math.PI/2); g.translate(x0, y1, z0);
+  } else if (pc.forma?.tipo === 'rasgos') {
+    // chapa vertical (espessura em x) com rasgos passantes; contorno no plano (z, y)
+    const sh = new THREE.Shape([[z0,y0],[z1,y0],[z1,y1],[z0,y1]].map(([u,v]) => new THREE.Vector2(u,v)));
+    for (const r of pc.forma.lista) { const f = new THREE.Path([[r.z0,r.y0],[r.z0,r.y1],[r.z1,r.y1],[r.z1,r.y0]].map(([u,v]) => new THREE.Vector2(u,v))); sh.holes.push(f); }
+    g = new THREE.ExtrudeGeometry(sh, { depth:w, bevelEnabled:false }); g.rotateY(-Math.PI/2); g.translate(x1, 0, 0);
+  } else if (pc.forma?.tipo === 'cil' && pc.forma.eixo === 'y') {
+    g = new THREE.CylinderGeometry(w/2, w/2, h, 40); g.translate(...c);
+  } else if (pc.forma?.tipo === 'cil') {
+    g = new THREE.CylinderGeometry(w/2, w/2, d, 28); g.rotateX(Math.PI/2); g.translate(...c);
+  } else if (pc.forma?.tipo === 'puxador') {
+    const v = pc.forma.dir === 'v', comp = v ? h : w, larg = v ? w : h, mod = pc.forma.modelo || 'barra';
+    if (mod === 'bloco') {
+      g = new THREE.BoxGeometry(v?larg:comp, v?comp:larg, d); g.translate(c[0], c[1], z0 + d/2);
+    } else if (mod === 'concha') {
+      // concha: base fina na frente + casca saliente (o dedo entra por baixo)
+      const base = new THREE.BoxGeometry(v?larg:comp, v?comp:larg, 4); base.translate(0, 0, 2);
+      const casca = new THREE.BoxGeometry(v?larg:comp, v?comp:larg*0.55, d - 4); casca.translate(0, v?0:larg*0.22, 4 + (d-4)/2);
+      g = mergeGeometries([base, casca].map(q => q.toNonIndexed())); g.translate(c[0], c[1], z0);
+    } else {
+      const barra = Math.min(10, d*0.3), haste = d - barra, fur = pc.forma.furacao || (comp - 32);
+      const b = new THREE.BoxGeometry(v?larg:comp, v?comp:larg, barra); b.translate(0, 0, haste + barra/2);
+      const parts = [b];
+      [-1,1].forEach(sn => { const hs = new THREE.BoxGeometry(Math.min(8,larg), Math.min(8,larg), haste); hs.translate(v?0:sn*fur/2, v?sn*fur/2:0, haste/2); parts.push(hs); });
+      g = mergeGeometries(parts.map(q => q.toNonIndexed())); g.translate(c[0], c[1], z0);
+    }
+  } else {
+    g = new THREE.BoxGeometry(w, h, d); g.translate(...c);
+  }
+  return g;
+}
+
+function construirCena(res) {
+  raiz.clear(); nos = new Map();
+  const d = res.dims; dimsCena = d;
+  const mid = new THREE.Vector3(d.L/2, d.H/2, d.P/2);
+  const centro = pc => new THREE.Vector3((pc.box[0]+pc.box[1])/2, (pc.box[2]+pc.box[3])/2, (pc.box[4]+pc.box[5])/2);
+  const porId = new Map(res.pecas.map(pc => [pc.id, pc]));
+  for (const pc of res.pecas) {
+    const g = geometriaDe(pc);
+    const mesh = new THREE.Mesh(g, matDe(pc));
+    mesh.userData.peca = pc;
+    if (pc.cat !== 'tampo') mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g, 25), matLinha));
+    const wrapper = new THREE.Group(), mover = new THREE.Group();
+    if (pc.mov?.tipo === 'porta') { mover.position.set(pc.mov.pivX, 0, pc.mov.pivZ); mesh.position.set(-pc.mov.pivX, 0, -pc.mov.pivZ); }
+    mover.add(mesh); wrapper.add(mover); raiz.add(wrapper);
+    const cExp = centro(pc.expPai ? porId.get(pc.expPai) : pc);
+    nos.set(pc.id, { pc, mesh, wrapper, mover, dirExp: cExp.sub(mid), ang:0, slide:0 });
+  }
+  // fixações: ficam dentro do grupo da peça "dona" para acompanhar gaveta/explosão
+  fixObjs = [];
+  const fixs = res.fixacoes || calcularFixacoes(res.pecas), eixoY = new THREE.Vector3(0,1,0);
+  for (const f of fixs) {
+    const no = nos.get(f.dono); if (!no) continue;
+    const chave = f.d + 'x' + f.comp;
+    if (!geoFix[chave]) geoFix[chave] = new THREE.CylinderGeometry(f.d/2, f.d/2, f.comp, 10);
+    const m = new THREE.Mesh(geoFix[chave], matFix[f.tipo] || matFix['paraf-40x50']);
+    const d = new THREE.Vector3(...f.dir);
+    m.quaternion.setFromUnitVectors(eixoY, d);
+    m.position.set(...f.p).addScaledVector(d, f.comp/2).add(no.mesh.position);
+    m.userData.fix = f; no.mover.add(m); fixObjs.push(m);
+    if (f.tipo === 'paraf-40x50' || f.tipo === 'paraf-50x60-bucha') {          // cabeça
+      const c = new THREE.Mesh(geoCabeca, m.material); c.quaternion.copy(m.quaternion);
+      c.position.set(...f.p).addScaledVector(d, 1).add(no.mesh.position); no.mover.add(c); fixObjs.push(c);
+    }
+  }
+  aplicarFix();
+  $('bTampo').hidden = !res.pecas.some(p => p.cat === 'tampo');
+  $('bEsgoto').hidden = !d.faixaEsgoto;
+  construirAmbiente(d);
+  aplicarVisibilidade();
+  if (estado.sel && !nos.has(estado.sel)) estado.sel = null;
+  destacar();
+  construirCotas();
+  limparMedida();
+}
+
+function construirAmbiente(d) {
+  ambiente.clear();
+  const ext = Math.max(d.L, d.P) + 1400;
+  grade = new THREE.GridHelper(ext, Math.round(ext/100), css('--v-grade'), css('--v-grade'));
+  grade.position.set(d.L/2, 0, d.P/2 + 300); grade.material.transparent = true; grade.material.opacity = 0.6;
+  ambiente.add(grade);
+  const pw = d.L + 900, ph = d.alturaTampo + 700;
+  const fundo = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), matParede); fundo.position.set(d.L/2, ph/2, -1); fundo.userData.parede = true; ambiente.add(fundo);
+  const lat = (x) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(d.P + 700, ph), matParede); m.rotation.y = Math.PI/2; m.position.set(x, ph/2, (d.P+700)/2); m.userData.parede = true; ambiente.add(m); };
+  if (d.paredeEsq) lat(-1); if (d.paredeDir) lat(d.L + 1);
+  esgotoObj = null;
+  if (!d.faixaEsgoto) { aplicarVisibilidade(); return; }
+  const [f0, f1] = d.faixaEsgoto;
+  esgotoObj = new THREE.Group();
+  const faixa = new THREE.Mesh(new THREE.PlaneGeometry(d.L + 300, f1 - f0), matEsgoto); faixa.position.set(d.L/2, (f0+f1)/2, 8); esgotoObj.add(faixa);
+  const div = el('div', { class:'cota-rot esg', text:`Esgoto ${fmt(f0)}–${fmt(f1)} mm` });
+  const rot = new CSS2DObject(div); rot.position.set(d.L + 150, (f0+f1)/2, 8); esgotoObj.add(rot);
+  ambiente.add(esgotoObj);
+  aplicarVisibilidade();
+}
+
+function aplicarVisibilidade() {
+  for (const { pc, wrapper } of nos.values()) {
+    wrapper.visible = !estado.ocultas.has(pc.id) && !(pc.cat==='tampo' && !estado.tampo) && !(pc.cat==='fundo' && !estado.fundo);
+  }
+  ambiente.children.forEach(o => { if (o.userData.parede) o.visible = estado.paredes; });
+  if (esgotoObj) { esgotoObj.visible = estado.esgoto; esgotoObj.traverse(o => { if (o.isCSS2DObject) o.visible = estado.esgoto; }); }
+}
+
+function aplicarTema() {
+  renderer.setClearColor(css('--v-bg'));
+  Object.keys(CATS).forEach(c => matCat[c].color.set(css('--v-'+c)));
+  matSel.color.set(css('--accent')); matLinha.color.set(css('--v-linha'));
+  matCota.color.set(css('--accent')); matMed.color.set(css('--accent'));
+  matParede.color.set(css('--v-parede')); matEsgoto.color.set(css('--v-esgoto'));
+  if (dimsCena) construirAmbiente(dimsCena);
+}
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', aplicarTema); } catch(e) {}
+new MutationObserver(aplicarTema).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+
+/* ---------- Cotas ---------- */
+function cota(a, b, desl, texto) {
+  const A = a.clone().add(desl), B = b.clone().add(desl);
+  const ext = desl.clone().multiplyScalar(1.15);
+  const pts = [A, B, a, a.clone().add(ext), b, b.clone().add(ext)];
+  const g = new THREE.BufferGeometry().setFromPoints(pts);
+  const linhas = new THREE.LineSegments(g, matCota); linhas.renderOrder = 10; grupoCotas.add(linhas);
+  const r = new CSS2DObject(el('div', { class:'cota-rot', text:texto })); r.position.copy(A).lerp(B, 0.5); grupoCotas.add(r);
+}
+function construirCotas() {
+  grupoCotas.children.slice().forEach(o => { grupoCotas.remove(o); o.element?.remove(); });
+  if (!estado.cotas || !dimsCena) return;
+  const { L, H, P } = dimsCena, V = (x,y,z) => new THREE.Vector3(x,y,z);
+  cota(V(0,0,P), V(L,0,P), V(0,0,140), `${fmt(L)}`);
+  cota(V(L,0,P), V(L,H,P), V(140,0,0), `${fmt(H)}`);
+  cota(V(L,0,0), V(L,0,P), V(140,0,0), `${fmt(P)}`);
+  const no = estado.sel && nos.get(estado.sel);
+  if (no && estado.explode < 0.01 && !(no.ang > 0.5 || no.slide > 0.5)) {
+    const [x0,x1,y0,y1,z0,z1] = no.pc.box;
+    cota(V(x0,y1,z1), V(x1,y1,z1), V(0,50,30), fmt(x1-x0));
+    cota(V(x1,y0,z1), V(x1,y1,z1), V(50,0,30), fmt(y1-y0));
+    cota(V(x1,y1,z0), V(x1,y1,z1), V(50,50,0), fmt(z1-z0));
+  }
+}
+
+/* ---------- Câmera e vistas ---------- */
+function ajustarOrto() {
+  const w = palco.clientWidth || 1, h = palco.clientHeight || 1, m = dimsCena ? Math.max(dimsCena.L, dimsCena.H, dimsCena.P) : 1000;
+  const asp = w/h, meia = m * 0.85 * (asp < 1.25 ? 1.25/asp : 1);
+  camO.left = -meia*asp; camO.right = meia*asp; camO.top = meia; camO.bottom = -meia; camO.updateProjectionMatrix();
+}
+function aplicarVista(nome) {
+  if (!dimsCena) return;
+  const { L, H, P } = dimsCena, c = new THREE.Vector3(L/2, H/2, P/2), m = Math.max(L, H, P);
+  const dirs = { perspectiva:[0.85,0.6,1.2], frente:[0,0,1], lateral:[1,0,0], topo:[0,1,0.0001] };
+  const d = new THREE.Vector3(...dirs[nome]).normalize();
+  const asp = camP.aspect || 1, dist = m * 2.9 * (asp < 1.25 ? 1.25/asp : 1);
+  camP.position.copy(c).addScaledVector(d, dist);
+  camO.position.copy(c).addScaledVector(d, dist); camO.zoom = 1; ajustarOrto();
+  controles.target.copy(c); cam.updateProjectionMatrix(); controles.update();
+}
+function trocarCamera(orto) {
+  const nova = orto ? camO : camP; if (nova === cam) return;
+  nova.position.copy(cam.position); nova.quaternion.copy(cam.quaternion);
+  cam = nova; controles.object = cam; ajustarOrto(); cam.updateProjectionMatrix(); controles.update();
+}
+
+/* ---------- Seleção e ficha ---------- */
+function destacar() {
+  for (const { pc, mesh } of nos.values()) mesh.material = pc.id === estado.sel ? matSel : matDe(pc);
+  document.querySelectorAll('.arvore li').forEach(li => li.classList.toggle('sel', li.dataset.id === estado.sel));
+  marcarDesenho();
+  const card = estado.sel && [...document.querySelectorAll('.des[data-ids]')].find(a => a.dataset.ids.split(' ').includes(estado.sel));
+  $('fDesenho').hidden = !card;
+  const no = estado.sel && nos.get(estado.sel);
+  if (!no) { if (!medida.pts.length) $('ficha').hidden = true; return; }
+  const pc = no.pc;
+  $('fNome').textContent = pc.nome;
+  if (pc.cat === 'ferragem') { $('fMed').textContent = pc.forma?.tipo==='cil' ? 'Ø 35 mm' : `${fmt(pc.box[1]-pc.box[0])} × ${fmt(pc.box[3]-pc.box[2])} × ${fmt(pc.box[5]-pc.box[4])} mm`; $('fDet').textContent = 'Ferragem · não entra na lista de corte'; }
+  else { $('fMed').textContent = `${fmt(pc.comp)} × ${fmt(pc.larg)} × ${fmt(pc.esp)} mm`; $('fDet').textContent = `${MATERIAIS[pc.mat].nome} · fita ${fitaTxt(pc.fita)}${pc.lista ? '' : ' · fora da lista de corte'}`; }
+  $('fObs').textContent = pc.obs || '';
+  $('fGlb').textContent = `${pc.cat}_${pc.mat}_${pc.id}`;
+  $('ficha').hidden = false;
+}
+function selecionar(id) { estado.sel = id; limparMedida(false); destacar(); construirCotas(); }
+$('fDesenho').addEventListener('click', () => { const card = [...document.querySelectorAll('.des[data-ids]')].find(a => a.dataset.ids.split(' ').includes(estado.sel)); card?.scrollIntoView({ behavior:'smooth', block:'start' }); });
+$('fFechar').addEventListener('click', () => { selecionar(null); limparMedida(); $('ficha').hidden = true; });
+
+/* ---------- Medir ---------- */
+const medida = { pts:[] };
+function limparMedida(fecharFicha = true) {
+  grupoMedida.children.slice().forEach(o => { grupoMedida.remove(o); o.element?.remove(); });
+  medida.pts = [];
+  if (fecharFicha && !estado.sel) $('ficha').hidden = true;
+}
+function pontoMedida(hit) {
+  const box = new THREE.Box3().setFromObject(hit.object);
+  let melhor = hit.point.clone(), dmin = 25;
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
+    const v = new THREE.Vector3(x,y,z), dd = v.distanceTo(hit.point); if (dd < dmin) { dmin = dd; melhor = v; }
+  }
+  if (medida.pts.length >= 2) limparMedida(false);
+  medida.pts.push(melhor);
+  const s = new THREE.Mesh(new THREE.SphereGeometry(5, 12, 8), matMed); s.position.copy(melhor); s.renderOrder = 11; grupoMedida.add(s);
+  if (medida.pts.length === 2) {
+    const [a, b] = medida.pts, dist = a.distanceTo(b);
+    const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints([a,b]), matCota); l.renderOrder = 11; grupoMedida.add(l);
+    const r = new CSS2DObject(el('div', { class:'cota-rot med', text:`${fmt(dist)} mm` })); r.position.copy(a).lerp(b,0.5); grupoMedida.add(r);
+    estado.sel = null; destacar();
+    $('fNome').textContent = 'Medida';
+    $('fMed').textContent = `${fmt(dist)} mm`;
+    $('fDet').textContent = `Δx ${fmt(Math.abs(b.x-a.x))} · Δy ${fmt(Math.abs(b.y-a.y))} · Δz ${fmt(Math.abs(b.z-a.z))} mm`;
+    $('fObs').textContent = 'Pontos perto de um canto grudam no canto.'; $('fGlb').textContent = ''; $('fDesenho').hidden = true;
+    $('ficha').hidden = false;
+  }
+}
+
+/* ---------- Clique no 3D ---------- */
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+let baixo = null;
+renderer.domElement.addEventListener('pointerdown', e => { baixo = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!baixo) return; const dx = e.clientX-baixo[0], dy = e.clientY-baixo[1]; baixo = null;
+  if (dx*dx + dy*dy > 36) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  mouse.set(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(mouse, cam);
+  const alvos = [...nos.values()].filter(n => n.wrapper.visible).map(n => n.mesh);
+  const hit = ray.intersectObjects(alvos, false).find(h => !planos.length || planos[0].distanceToPoint(h.point) >= 0);
+  if (estado.medir) { if (hit) pontoMedida(hit); return; }
+  selecionar(hit ? hit.object.userData.peca.id : null);
+});
+addEventListener('keydown', e => { if (e.key === 'Escape') { limparMedida(); selecionar(null); } });
+
+/* ---------- Barra de ferramentas ---------- */
+const alternar = (id, chave, depois) => $(id).addEventListener('click', () => {
+  estado[chave] = !estado[chave]; $(id).setAttribute('aria-pressed', estado[chave]); depois && depois();
+});
+alternar('bPortas', 'portas', construirCotas);
+alternar('bGavetas', 'gavetas', construirCotas);
+alternar('bCotas', 'cotas', construirCotas);
+alternar('bMedir', 'medir', () => { limparMedida(); $('dica').textContent = estado.medir ? 'Medir: toque em dois pontos. Perto de um canto, o ponto gruda no canto.' : 'Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça'; });
+alternar('bTampo', 'tampo', aplicarVisibilidade);
+alternar('bFix', 'fix', aplicarFix);
+alternar('bFundo', 'fundo', aplicarVisibilidade);
+alternar('bParedes', 'paredes', aplicarVisibilidade);
+alternar('bEsgoto', 'esgoto', aplicarVisibilidade);
+alternar('bOrto', 'orto', () => trocarCamera(estado.orto));
+$('selVista').addEventListener('change', e => { estado.vista = e.target.value; aplicarVista(estado.vista); });
+$('rExplodir').addEventListener('input', e => { estado.explode = Number(e.target.value)/100; });
+$('rExplodir').addEventListener('change', construirCotas);
+function aplicarCorte() {
+  planos.length = 0;
+  if (estado.corte !== 'nenhum' && dimsCena) {
+    const f = estado.cortePos/100, { L, H, P } = dimsCena;
+    if (estado.corte === 'x') planos.push(new THREE.Plane(new THREE.Vector3(-1,0,0), L*f));
+    if (estado.corte === 'y') planos.push(new THREE.Plane(new THREE.Vector3(0,-1,0), dimsCena.alturaTampo*f));
+    if (estado.corte === 'z') planos.push(new THREE.Plane(new THREE.Vector3(0,0,-1), P*f));
+  }
+  [...Object.values(matCat), matSel, matLinha].forEach(m => m.needsUpdate = true);
+  $('rCorte').disabled = estado.corte === 'nenhum';
+}
+$('selCorte').addEventListener('change', e => { estado.corte = e.target.value; aplicarCorte(); });
+$('rCorte').addEventListener('input', e => { estado.cortePos = Number(e.target.value); aplicarCorte(); });
+
+/* ---------- Abas ---------- */
+[['abaParam','painelParam'],['abaPecas','painelPecas']].forEach(([a,p], _, todos) => $(a).addEventListener('click', () => {
+  todos.forEach(([a2,p2]) => { $(a2).setAttribute('aria-selected', a2===a); $(p2).hidden = a2!==a; });
+}));
+
+/* ---------- Árvore de peças ---------- */
+function montarArvore(pecas) {
+  const por = {}; pecas.forEach(pc => (por[pc.cat] ||= []).push(pc));
+  $('arvore').replaceChildren(...Object.keys(CATS).filter(c => por[c]).map(c => el('section', {},
+    el('h3', {}, el('span', { text:CATS[c] }), el('span', { class:'num', text:String(por[c].length) })),
+    el('ul', {}, ...por[c].map(pc => {
+      const li = el('li', { 'data-id':pc.id },
+        el('input', { type:'checkbox', checked:!estado.ocultas.has(pc.id), 'aria-label':'Mostrar '+pc.nome, onchange:e => { e.target.checked ? estado.ocultas.delete(pc.id) : estado.ocultas.add(pc.id); aplicarVisibilidade(); } }),
+        el('button', { type:'button', text:pc.nome, title:pc.nome, onclick:() => selecionar(pc.id) }),
+        el('span', { class:'num', text: pc.comp ? `${fmt(pc.comp)}×${fmt(pc.larg)}` : '' }));
+      return li;
+    })))));
+  destacar();
+}
+
+/* ---------- Alertas e status ---------- */
+function mostrarAlertas(res) {
+  $('alertas').replaceChildren(...res.erros.map(m => el('div', { class:'alerta erro', role:'alert', text:m })), ...res.avisos.map(m => el('div', { class:'alerta aviso', text:m })));
+  const ok = res.erros.length === 0;
+  $('status').className = 'status ' + (ok ? 'ok' : 'erro');
+  $('status').textContent = ok ? (res.avisos.length ? `Pronto · ${res.avisos.length} aviso${res.avisos.length>1?'s':''}` : 'Pronto para exportar') : `${res.erros.length} erro${res.erros.length>1?'s':''} · exportação bloqueada`;
+  $('faixaDesat').hidden = ok || !estado.valido;
+  atualizarBotoesExport();
+}
+
+/* ---------- Listas ---------- */
+function textoCorte(lc, nome) {
+  const ls = [`LISTA DE CORTE — ${nome}`, 'Medidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.', ''];
+  for (const [g, its] of lc.grupos) {
+    ls.push(g.toUpperCase());
+    its.forEach(it => ls.push(`${it.qtd}× ${it.nomeLista||it.nome} — ${fmt(it.comp)} × ${fmt(it.larg)} — fita ${fitaTxt(it.fita)}${it.forma?.tipo==='recorte' ? ` — recorte ${fmt(it.forma.rl)} × ${fmt(it.forma.rp)} no centro de trás` : ''}`));
+    ls.push('');
+  }
+  return ls.join('\n').trim();
+}
+const textoFerr = (fs, nome) => [`FERRAGENS — ${nome}`, '', ...fs.map(f => `${f.qtd}${f.obs.startsWith('metros') ? ' m' : '×'} ${f.item}${f.obs && !f.obs.startsWith('metros') ? ` (${f.obs})` : ''}`)].join('\n');
+
+function mostrarListas(res) {
+  const ok = res.erros.length === 0;
+  ['copCorte','copFerr','copLoja','copCompras'].forEach(id => $(id).disabled = !ok);
+  ['copiaLoja','copiaCompras'].forEach(id => $(id).hidden = true);
+  $('copiaCorte').hidden = true; $('copiaFerr').hidden = true;
+  if (!ok) {
+    const msg = () => el('p', { class:'vazio', text:'Corrija os erros nos parâmetros para ver a lista.' });
+    $('tabCorte').replaceChildren(msg()); $('tabFerr').replaceChildren(msg()); $('resumoCorte').replaceChildren(); $('gradePlano').replaceChildren(msg()); $('tabCompras').replaceChildren(msg()); $('notaPlano').textContent = ''; return;
+  }
+  const lc = listaDeCorte(res.pecas);
+  const linhas = [];
+  for (const [g, its] of lc.grupos) {
+    linhas.push(el('tr', { class:'grupo' }, el('td', { colspan:6, text:g })));
+    its.forEach(it => linhas.push(el('tr', { 'data-ids':it.ids.join(' ') },
+      el('td', { text:it.nomeLista||it.nome }), el('td', { class:'n', text:String(it.qtd) }),
+      el('td', { class:'n', text:fmt(it.comp) }), el('td', { class:'n', text:fmt(it.larg) }),
+      el('td', { class:'n', text:fitaTxt(it.fita) }), el('td', { class:'obs', text:it.obs }))));
+  }
+  $('tabCorte').replaceChildren(el('table', {}, el('thead', {}, el('tr', {}, el('th', { text:'Peça' }), el('th', { class:'n', text:'Qtd' }), el('th', { class:'n', text:'Comp.' }), el('th', { class:'n', text:'Larg.' }), el('th', { class:'n', text:'Fita' }), el('th', { text:'Observação' }))), el('tbody', {}, ...linhas)));
+  const fitaItem = res.ferragens.find(f => f.item.startsWith('Fita'));
+  $('resumoCorte').replaceChildren(
+    ...lc.resumo.map(r => el('span', {}, `${r.grupo}: `, el('b', { text:`${fmt(r.area)} m²` }), ` ≈ ${r.chapas} chapa${r.chapas>1?'s':''}`)),
+    fitaItem ? el('span', {}, 'Fita: ', el('b', { text:`${fitaItem.qtd} m` })) : null,
+    el('span', { text:`Chapa ${R.chapa[0]/1000} × ${R.chapa[1]/1000} m, aproveitamento 85%` }));
+  $('tabFerr').replaceChildren(el('table', {}, el('thead', {}, el('tr', {}, el('th', { text:'Item' }), el('th', { class:'n', text:'Qtd' }), el('th', { text:'Observação' }))),
+    el('tbody', {}, ...res.ferragens.map(f => el('tr', {}, el('td', { text:f.item }), el('td', { class:'n', text: f.obs.startsWith('metros') ? `${f.qtd} m` : String(f.qtd) }), el('td', { class:'obs', text: f.obs.startsWith('metros') ? 'com 10% de perda' : f.obs }))))));
+  estado.textos = { corte: textoCorte(lc, estado.projeto.nome), ferr: textoFerr(res.ferragens, estado.projeto.nome), lc };
+  const plano = planoDeCorte(res.pecas); estado.plano = plano;
+  $('resumoCorte').replaceChildren(
+    ...plano.materiais.map(m => el('span', {}, `${m.nome}: `, el('b', { text:`${m.chapas.length} chapa${m.chapas.length>1?'s':''}` }))),
+    fitaItem ? el('span', {}, 'Fita: ', el('b', { text:`${fitaItem.qtd} m` })) : null,
+    el('span', { text:'Nº = número da peça no plano de corte' }));
+  linhasNum(lc);
+  mostrarPlano(plano); mostrarCompras();
+}
+function linhasNum(lc) {
+  // acrescenta a coluna Nº na tabela da lista de corte
+  const mapa = new Map(); for (const its of lc.grupos.values()) its.forEach(it => mapa.set(it.ids.join(' '), it.num));
+  const th = el('th', { class:'n', text:'Nº' }); $('tabCorte').querySelector('thead tr')?.prepend(th);
+  $('tabCorte').querySelectorAll('tbody tr').forEach(tr => {
+    if (tr.classList.contains('grupo')) { tr.firstChild.colSpan = 7; return; }
+    tr.prepend(el('td', { class:'n', text:String(mapa.get(tr.dataset.ids) ?? '') }));
+  });
+}
+function svgChapa(m, c, idx) {
+  const NS = 'http://www.w3.org/2000/svg', mk = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const [k,v] of Object.entries(a)) e.setAttribute(k, v); if (txt != null) e.textContent = txt; return e; };
+  const W = 640, s = W / m.dim[0], H = m.dim[1]*s;
+  const svg = mk('svg', { viewBox:`0 0 ${W} ${H.toFixed(1)}`, class:'chapa-svg', role:'img', 'aria-label':`Chapa ${idx+1} de ${m.nome}` });
+  svg.append(mk('rect', { x:0, y:0, width:W, height:H, class:'p-chapa' }));
+  svg.append(mk('rect', { x:m.refilo*s, y:m.refilo*s, width:(m.dim[0]-2*m.refilo)*s, height:(m.dim[1]-2*m.refilo)*s, class:'p-refilo' }));
+  for (const p of c.pecas) {
+    const x = (m.refilo + p.x)*s, y = (m.refilo + p.y)*s, w = p.w*s, h = p.h*s;
+    const g = mk('g', { 'data-id':p.id });
+    g.append(mk('rect', { x, y, width:w, height:h, class:'p-peca' }));
+    const tit = mk('title', {}, `${p.num}. ${p.nome} — ${fmt(p.w)} × ${fmt(p.h)}${p.giro ? ' (girada)' : ''}`); g.append(tit);
+    if (w > 18 && h > 14) g.append(mk('text', { x:x+w/2, y:y+h/2 + (h > 34 ? -2 : 4), 'text-anchor':'middle', class:'p-num' }, String(p.num)));
+    if (w > 70 && h > 34) g.append(mk('text', { x:x+w/2, y:y+h/2 + 12, 'text-anchor':'middle', class:'p-med' }, `${fmt(p.w)}×${fmt(p.h)}`));
+    g.addEventListener('click', () => selecionar(p.id));
+    svg.append(g);
+  }
+  return svg;
+}
+function mostrarPlano(plano) {
+  $('notaPlano').textContent = `Chapas de ${R.chapa[0]} × ${R.chapa[1]} mm, refilo de ${R.refilo} mm nas bordas e ${R.serra} mm de serra entre peças. Cortes em faixas; peças podem girar (MDF liso). Toque numa peça para vê-la no 3D.` + (plano.erros.length ? ' Atenção: ' + plano.erros.join(' ') : '');
+  $('gradePlano').replaceChildren(...plano.materiais.flatMap(m => m.chapas.map((c, i) => el('article', { class:'des' },
+    el('h3', {}, el('span', { text:`${m.nome} · chapa ${i+1} de ${m.chapas.length}` }), el('span', { class:'meta', text:`${Math.round(c.aproveitamento*100)}% aproveitado` })),
+    svgChapa(m, c, i),
+    el('div', { class:'meta', text: c.pecas.map(p => p.num).sort((a,b)=>a-b).join(', ').replace(/^/, 'Peças: ') }))))); 
+}
+function mostrarCompras() {
+  if (!estado.res || estado.res.erros.length || !estado.plano) return;
+  const lc = listaDeCompras(estado.res, estado.plano, precos); estado.compras = lc;
+  const grupos = [...new Set(lc.linhas.map(l => l.grupo))];
+  const corpo = [];
+  grupos.forEach(g => {
+    corpo.push(el('tr', { class:'grupo' }, el('td', { colspan:6, text:g })));
+    lc.linhas.filter(l => l.grupo === g).forEach(l => {
+      const inp = el('input', { type:'number', min:'0', step:'0.01', inputmode:'decimal', id:'preco-'+l.ref, 'aria-label':'Preço de '+l.nome, value: l.preco ?? '' });
+      inp.addEventListener('change', () => { const v = Number(inp.value); if (v > 0) precos[l.ref] = v; else delete precos[l.ref]; salvarPrecos(); mostrarCompras(); });
+      corpo.push(el('tr', {},
+        el('td', {}, el('div', { text:l.nome }), (l.marca||l.codigo) ? el('div', { class:'obs', text:[l.marca, l.codigo].filter(Boolean).join(' · ') }) : null),
+        el('td', { class:'n', text:l.necessario }),
+        el('td', { class:'n', text:`${l.compra} ${l.unid}` }),
+        el('td', { class:'n' }, inp),
+        el('td', { class:'n', text: l.total != null ? reais(l.total) : '—' }),
+        el('td', { class:'obs', text:l.obs || '' })));
+    });
+  });
+  $('tabCompras').replaceChildren(el('table', {},
+    el('thead', {}, el('tr', {}, ...['Item','Precisa','Comprar','Preço unit. (R$)','Total',''].map((h,i) => el('th', { class: i>0 && i<5 ? 'n' : null, text:h })))),
+    el('tbody', {}, ...corpo),
+    el('tfoot', {}, el('tr', {}, el('td', { colspan:4, text: lc.semPreco ? `Total (${lc.semPreco} ite${lc.semPreco>1?'ns':'m'} sem preço)` : 'Total' }), el('td', { class:'n', text:reais(lc.total) }), el('td', {})))));
+  estado.textos.compras = textoCompras(lc);
+}
+const textoCompras = lc => [`LISTA DE COMPRAS — ${estado.projeto.nome}`, '', ...lc.linhas.map(l => `${l.compra} ${l.unid} — ${l.nome}${l.marca||l.codigo ? ` (${[l.marca,l.codigo].filter(Boolean).join(' ')})` : ''}${l.total != null ? ` — ${reais(l.total)}` : ''}`), '', `Total: ${reais(lc.total)}${lc.semPreco ? ` (${lc.semPreco} sem preço)` : ''}`].join('\n');
+function linhasLoja() {
+  const lc = listaDeCorte(estado.res.pecas), out = [];
+  for (const its of lc.grupos.values()) its.forEach(it => out.push({ num:it.num, nome:it.nomeLista||it.nome, qtd:it.qtd, comp:it.comp, larg:it.larg, esp:it.esp, mat:MATERIAIS[it.mat].nome, c1:it.fita[0]>=1, c2:it.fita[0]>=2, l1:it.fita[1]>=1, l2:it.fita[1]>=2, obs:it.forma?.tipo==='recorte' ? `recorte ${fmt(it.forma.rl)}x${fmt(it.forma.rp)} centro de trás` : '' }));
+  return out;
+}
+const textoLoja = () => [`PEDIDO DE CORTE — ${estado.projeto.nome}`, 'Medidas em mm (comprimento × largura). Fita: C1/C2 nos lados do comprimento, L1/L2 nos lados da largura.', '',
+  ...linhasLoja().map(l => `Nº ${l.num} · ${l.qtd}× ${l.nome} · ${fmt(l.comp)} × ${fmt(l.larg)} · ${l.mat} ${fmt(l.esp)} mm · fita: ${[l.c1&&'C1',l.c2&&'C2',l.l1&&'L1',l.l2&&'L2'].filter(Boolean).join(' ') || 'nenhuma'}${l.obs ? ' · ' + l.obs : ''}`)].join('\n');
+const csvLoja = () => '\ufeff' + ['Nº;Peça;Qtd;Comprimento;Largura;Espessura;Material;Fita C1;Fita C2;Fita L1;Fita L2;Observação',
+  ...linhasLoja().map(l => [l.num, l.nome, l.qtd, csvNum(l.comp), csvNum(l.larg), csvNum(l.esp), l.mat, l.c1?'sim':'', l.c2?'sim':'', l.l1?'sim':'', l.l2?'sim':'', l.obs].join(';'))].join('\r\n');
+const csvCompras = () => '\ufeff' + ['Grupo;Item;Marca;Código;Precisa;Comprar;Unidade;Preço unit.;Total;Observação',
+  ...estado.compras.linhas.map(l => [l.grupo, l.nome, l.marca, l.codigo, l.necessario, l.compra, l.unid, l.preco != null ? csvNum(l.preco) : '', l.total != null ? csvNum(l.total) : '', l.obs||''].join(';'))].join('\r\n');
+$('copLoja').addEventListener('click', () => { if (estado.res && !estado.res.erros.length) copiar(textoLoja(), 'copiaLoja'); });
+$('copCompras').addEventListener('click', () => { if (estado.textos?.compras) copiar(estado.textos.compras, 'copiaCompras'); });
+$('tabCorte').addEventListener('click', e => { const tr = e.target.closest('tr[data-ids]'); if (tr) selecionar(tr.dataset.ids.split(' ')[0]); });
+function copiar(texto, areaId) {
+  const fallback = () => { const a = $(areaId); a.value = texto; a.hidden = false; a.focus(); a.select(); toast('Selecionei o texto: copie com Ctrl+C ou segurando o dedo.'); };
+  try { navigator.clipboard.writeText(texto).then(() => toast('Copiado.'), fallback); } catch(e) { fallback(); }
+}
+$('copCorte').addEventListener('click', () => estado.textos && copiar(estado.textos.corte, 'copiaCorte'));
+$('copFerr').addEventListener('click', () => estado.textos && copiar(estado.textos.ferr, 'copiaFerr'));
+
+/* =====================================================================
+   7. EXPORTAÇÃO — projeto (.json) e pacote para o Blender (.zip)
+   ===================================================================== */
+let downloads = null, downloadsPronto = false;
+(async () => { try { downloads = window.claude?.use ? await window.claude.use('downloads') : null; } catch(e) { downloads = null; } downloadsPronto = true; atualizarBotoesExport(); })();
+function atualizarBotoesExport() {
+  const ok = estado.res && estado.res.erros.length === 0;
+  const disp = downloadsPronto ? !!downloads : true;
+  $('btnZip').disabled = !ok || !disp || !window.JSZip; $('btnJson').disabled = !ok || !disp;
+  $('btnPdf').disabled = $('btnPdf2').disabled = !ok || !disp || !window.jspdf;
+  $('btnIlogic').disabled = !ok || !disp; $('copIlogic').disabled = !ok;
+  $('notaExport').textContent = !ok ? 'Exportação bloqueada até corrigir os erros.' : !disp ? 'Exportar só funciona com a página aberta no Claude.' : !window.JSZip ? 'O pacote .zip não carregou; o projeto .json continua disponível.' : 'O pacote leva o modelo 3D (.glb), os desenhos em PDF, o projeto e as listas em planilha.';
+}
+const slug = () => (estado.projeto.nome || 'projeto').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'projeto';
+function dadosProjeto() {
+  const r = estado.res;
+  return { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), unidade:'mm',
+    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros,
+    pecas: r.pecas.map(pc => ({ id:pc.id, nomeGLB:`${pc.cat}_${pc.mat}_${pc.id}`, nome:pc.nome, categoria:pc.cat, material:pc.mat, espessura:pc.esp, comprimento:pc.comp ?? null, largura:pc.larg ?? null, fita:pc.fita, listaDeCorte:pc.lista, caixa_mm:pc.box, forma:pc.forma||null, movimento:pc.mov, obs:pc.obs })),
+    ferragens: r.ferragens,
+    planoDeCorte: estado.plano, listaDeCompras: estado.compras, precos, biblioteca: BIBLIOTECA };
+}
+const csvNum = v => String(Math.round(v*10)/10).replace('.', ',');
+function csvCorte() {
+  const lc = listaDeCorte(estado.res.pecas), ls = ['Material;Espessura;Peça;Qtd;Comprimento;Largura;Fita;Observação'];
+  for (const its of lc.grupos.values()) its.forEach(it => ls.push([MATERIAIS[it.mat].nome, csvNum(it.esp), it.nomeLista||it.nome, it.qtd, csvNum(it.comp), csvNum(it.larg), fitaTxt(it.fita), (it.obs||'').replace(/;/g,',')].join(';')));
+  return '﻿' + ls.join('\r\n');
+}
+const csvFerr = () => '﻿' + ['Item;Qtd;Observação', ...estado.res.ferragens.map(f => [f.item, f.qtd, f.obs].join(';'))].join('\r\n');
+async function gerarGLB() {
+  const c = new THREE.Scene(), mats = {};
+  for (const pc of estado.res.pecas) {
+    const g = geometriaDe(pc);
+    const ct = new THREE.Vector3((pc.box[0]+pc.box[1])/2, (pc.box[2]+pc.box[3])/2, (pc.box[4]+pc.box[5])/2);
+    g.translate(-ct.x, -ct.y, -ct.z); g.scale(0.001, 0.001, 0.001);
+    mats[pc.mat] ||= new THREE.MeshStandardMaterial({ name:pc.mat, color:MATERIAIS[pc.mat].cor, roughness: pc.mat==='cromado' ? 0.2 : 0.75, metalness: pc.mat==='cromado' ? 1 : 0 });
+    const m = new THREE.Mesh(g, mats[pc.mat]);
+    m.name = `${pc.cat}_${pc.mat}_${pc.id}`; m.position.copy(ct.multiplyScalar(0.001));
+    m.userData = { nome:pc.nome, categoria:pc.cat, comprimento_mm:pc.comp ?? null, largura_mm:pc.larg ?? null, espessura_mm:pc.esp, fita:pc.fita,
+      movimento: pc.mov ? (pc.mov.tipo==='porta' ? { tipo:'porta', lado:pc.mov.lado, pivo_m:[pc.mov.pivX/1000, 0, pc.mov.pivZ/1000], eixo:'y', angulo_max:pc.mov.angMax } : { tipo:'gaveta', curso_m:pc.mov.curso/1000, eixo:'z' }) : null };
+    c.add(m);
+  }
+  return await new GLTFExporter().parseAsync(c, { binary:true });
+}
+async function salvar(nome, dados) {
+  try { await downloads.save({ filename:nome, data:dados }); toast('Arquivo salvo.'); }
+  catch(e) { toast(e?.code === 'declined' ? 'Download cancelado.' : `Não foi possível salvar (${e?.code || 'erro'}).`); }
+}
+const baixarPDF = () => { if (!downloads || estado.res.erros.length || !window.jspdf) return; try { salvar(slug()+'-desenhos.pdf', gerarPDF()); } catch(e) { toast('Falha ao montar o PDF.'); } };
+$('btnIlogic').addEventListener('click', () => { if (!downloads || estado.res.erros.length) return; salvar(slug()+'-inventor-ilogic.txt', gerarILogic()); });
+$('copIlogic').addEventListener('click', () => { if (!estado.res.erros.length) copiar(gerarILogic(), 'copiaIlogic'); });
+$('btnPdf').addEventListener('click', baixarPDF); $('btnPdf2').addEventListener('click', baixarPDF);
+$('btnJson').addEventListener('click', () => { if (!downloads || estado.res.erros.length) return; salvar(slug()+'.json', JSON.stringify(dadosProjeto(), null, 2)); });
+$('btnZip').addEventListener('click', async () => {
+  if (!downloads || estado.res.erros.length || !window.JSZip) return;
+  $('btnZip').disabled = true; $('notaExport').textContent = 'Montando o pacote…';
+  try {
+    const zip = new JSZip();
+    zip.file('modelo.glb', await gerarGLB());
+    zip.file('projeto.json', JSON.stringify(dadosProjeto(), null, 2));
+    zip.file('lista-de-corte.csv', csvCorte());
+    zip.file('ferragens.csv', csvFerr());
+    zip.file('pedido-loja-de-corte.csv', csvLoja());
+    zip.file('lista-de-compras.csv', csvCompras());
+    if (window.jspdf) zip.file('desenhos-tecnicos.pdf', gerarPDF());
+    zip.file('inventor-gerar-pecas.iLogicVb', gerarILogic());
+    zip.file('LEIA-ME.txt', `${estado.projeto.nome}\n\nmodelo.glb — abrir no Blender: File > Import > glTF 2.0. Unidade: metro.\nCada peça se chama categoria_material_id (ex.: frente_mdf-ru-branco_porta-esq).\nPortas e gavetas levam o pivô e o curso nas propriedades personalizadas (Custom Properties).\nprojeto.json — reabre no Configurador (botão Abrir projeto).\ndesenhos-tecnicos.pdf — lista de corte, ferragens e um desenho cotado por peça, para a marcenaria.\ninventor-gerar-pecas.iLogicVb — regra iLogic: cria as peças .ipt e a montagem .iam no Inventor.\nlista-de-corte.csv e ferragens.csv — abrem no Excel.\n`);
+    await salvar(slug()+'.zip', await zip.generateAsync({ type:'blob' }));
+  } catch(e) { toast('Falha ao montar o pacote.'); }
+  atualizarBotoesExport();
+});
+
+/* ---------- Abrir projeto / padrão ---------- */
+$('btnAbrir').addEventListener('click', () => $('arqProjeto').click());
+$('arqProjeto').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const d = JSON.parse(fr.result);
+      if (!TIPOS[d.tipo] || typeof d.parametros !== 'object') throw 0;
+      estado.projeto = { tipo:d.tipo, nome:d.nome || 'Projeto', parametros:{ ...TIPOS[d.tipo].padrao, ...d.parametros } };
+      if (d.precos && typeof d.precos === 'object') { precos = { ...precos, ...d.precos }; salvarPrecos(); }
+      carregarProjeto(); toast('Projeto aberto.');
+    } catch(err) { toast('Esse arquivo não é um projeto do Configurador.'); }
+    e.target.value = '';
+  };
+  fr.readAsText(f);
+});
+$('btnPadrao').addEventListener('click', () => { estado.projeto = projetoPadrao(estado.projeto.tipo); estado.ocultas.clear(); carregarProjeto(); toast('Medidas padrão restauradas.'); });
+$('tipoMovel').addEventListener('change', e => { estado.projeto = projetoPadrao(e.target.value); estado.ocultas.clear(); carregarProjeto(); });
+
+/* =====================================================================
+   8. CICLO: parâmetros → peças → 3D e listas
+   ===================================================================== */
+function atualizar(primeira = false) {
+  let res;
+  try { res = TIPOS[estado.projeto.tipo].gerar(estado.projeto.parametros); }
+  catch(err) { res = { pecas:[], erros:['Combinação de medidas que o gerador não conseguiu montar. Revise os campos.'], avisos:[], ferragens:[], dims:null }; console.error(err); }
+  estado.res = res;
+  if (res.erros.length === 0) {
+    const mudouTam = !estado.valido || ['L','H','P'].some(k => estado.valido.dims[k] !== res.dims[k]);
+    estado.valido = res; construirCena(res); aplicarCorte(); montarArvore(res.pecas);
+    if (primeira || mudouTam) aplicarVista(estado.vista);
+  }
+  mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal();
+}
+function carregarProjeto() { $('nomeProjeto').value = estado.projeto.nome; montarFormulario(); estado.valido = null; atualizar(true); }
+
+/* ---------- Tamanho e animação ---------- */
+function redimensionar() {
+  const w = palco.clientWidth, h = palco.clientHeight; if (!w || !h) return;
+  renderer.setSize(w, h); rotulos.setSize(w, h);
+  camP.aspect = w/h; camP.updateProjectionMatrix(); ajustarOrto();
+}
+new ResizeObserver(redimensionar).observe(palco);
+const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let expAtual = 0;
+function quadro() {
+  const k = reduz ? 1 : 0.14;
+  expAtual += (estado.explode - expAtual) * k;
+  for (const no of nos.values()) {
+    const m = no.pc.mov;
+    if (m?.tipo === 'porta') { const alvo = estado.portas ? m.angMax : 0; no.ang += (alvo - no.ang)*k; no.mover.rotation.y = (m.lado==='esq' ? -1 : 1) * no.ang*Math.PI/180; }
+    if (m?.tipo === 'gaveta') { const alvo = estado.gavetas ? m.curso : 0; no.slide += (alvo - no.slide)*k; no.mover.position.z = no.slide; }
+    no.wrapper.position.copy(no.dirExp).multiplyScalar(expAtual*0.9);
+  }
+  controles.update();
+  renderer.render(cena, cam); rotulos.render(cena, cam);
+  requestAnimationFrame(quadro);
+}
+aplicarTema();
+carregarProjeto();
+redimensionar();
+quadro();
+window.__configurador = { estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+</script>
