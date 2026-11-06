@@ -7,6 +7,7 @@
 /*@inclui:estilos/layout.css*/
 /*@inclui:estilos/componentes.css*/
 /*@inclui:estilos/editor.css*/
+/*@inclui:estilos/ambiente.css*/
 </style>
 
 <header class="topo">
@@ -156,6 +157,10 @@
 
 <!-- MODELOS DO EDITOR DO MÓVEL LIVRE (5a): a estrutura fica aqui; js/tela-modulo.js só preenche -->
 <template id="tplEditor">
+  <div class="ed-voltar" data-se="dentroAmbiente">
+    <button type="button" class="btn" data-acao="voltar-ambiente">← Voltar ao ambiente</button>
+    <strong data-texto="nomeModulo"></strong>
+  </div>
   <fieldset class="ed-bloco">
     <legend>Medidas do móvel</legend>
     <div class="ed-grade2">
@@ -200,6 +205,69 @@
     <button type="button" class="btn ed-remover" data-acao="remover" data-se="podeRemover">Juntar com o vizinho</button>
   </fieldset>
 </template>
+<!-- MODELOS DO AMBIENTE (5b) -->
+<template id="tplAmbiente">
+  <fieldset class="ed-bloco">
+    <legend>Paredes</legend>
+    <label class="ed-linha">Formato<select data-amb="formato"><option value="reta">Parede reta</option><option value="L">Em L (canto)</option></select></label>
+    <div class="amb-lista" data-lista="paredes"></div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Módulos</legend>
+    <label class="ed-linha">Adicionar na<select data-amb="paredeAdd"></select></label>
+    <div class="ed-grade2">
+      <button type="button" class="btn" data-acao="add" data-modelo="balcao">+ Balcão</button>
+      <button type="button" class="btn" data-acao="add" data-modelo="gaveteiro">+ Gaveteiro</button>
+      <button type="button" class="btn" data-acao="add" data-modelo="aereo">+ Aéreo</button>
+      <button type="button" class="btn" data-acao="add" data-modelo="torre">+ Torre</button>
+    </div>
+    <div class="amb-lista" data-lista="modulos"></div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Pontos na parede</legend>
+    <div class="amb-lista" data-lista="pontos"></div>
+    <button type="button" class="btn" data-acao="add-ponto">+ Ponto (água, esgoto, gás, tomada)</button>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Tampo (pedra, orçado à parte)</legend>
+    <div class="ed-grade2">
+      <label class="ed-campo">Espessura<input type="number" inputmode="decimal" data-amb="tampoEsp"></label>
+      <label class="ed-campo">Balanço na frente<input type="number" inputmode="decimal" data-amb="tampoBalanco"></label>
+    </div>
+  </fieldset>
+</template>
+<template id="tplParede">
+  <div class="amb-item">
+    <strong data-texto="nome"></strong>
+    <div class="ed-grade2">
+      <label class="ed-campo">Comprimento<input type="number" inputmode="decimal" data-parede="comprimento"></label>
+      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-parede="altura"></label>
+    </div>
+  </div>
+</template>
+<template id="tplModuloAmb">
+  <div class="amb-item">
+    <div class="amb-cab"><strong data-texto="nome"></strong><span data-texto="onde"></span></div>
+    <div class="ed-grade3">
+      <label class="ed-campo">Do canto<input type="number" inputmode="decimal" data-mod="x"></label>
+      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-mod="largura"></label>
+      <label class="ed-campo">Do chão<input type="number" inputmode="decimal" data-mod="y"></label>
+    </div>
+    <div class="ed-grade2">
+      <button type="button" class="btn" data-acao="abrir">Abrir (por dentro)</button>
+      <button type="button" class="btn" data-acao="remover-mod">Remover</button>
+    </div>
+  </div>
+</template>
+<template id="tplPonto">
+  <div class="amb-item amb-ponto">
+    <select data-ponto="tipo" aria-label="Tipo do ponto"><option value="esgoto">Esgoto</option><option value="agua">Água</option><option value="gas">Gás</option><option value="tomada">Tomada</option></select>
+    <select data-ponto="parede" aria-label="Parede do ponto"></select>
+    <label class="ed-campo">Do canto<input type="number" inputmode="decimal" data-ponto="x"></label>
+    <label class="ed-campo">Do chão<input type="number" inputmode="decimal" data-ponto="altura"></label>
+    <button type="button" class="btn" data-acao="remover-ponto" aria-label="Remover ponto">×</button>
+  </div>
+</template>
 <template id="tplEspaco"><li><button type="button" class="ed-espaco" data-acao="selecionar"><strong data-texto="nome"></strong><span data-texto="desc"></span></button></li></template>
 <template id="tplOpcao"><button type="button" class="btn ed-op" data-acao="frente"></button></template>
 
@@ -222,8 +290,10 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /*@inclui:js/tipos.js*/
 /*@inclui:js/geradores.js*/
 /*@inclui:js/nucleo.js*/
+/*@inclui:js/ambiente.js*/
 /*@inclui:js/saidas.js*/
 /*@inclui:js/editor-modulo.js*/
 /*@inclui:js/tela.js*/
 /*@inclui:js/tela-modulo.js*/
+/*@inclui:js/tela-ambiente.js*/
 </script>

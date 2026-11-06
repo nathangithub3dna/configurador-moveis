@@ -13,12 +13,18 @@ function preencherModelo(raiz, dados) {
 }
 function modeloDe(id) { return $(id).content.cloneNode(true); }
 
+// o módulo que está sendo editado: o próprio projeto (móvel livre) ou um módulo aberto dentro do ambiente
+function moduloEmEdicao() {
+  const p = estado.projeto.parametros;
+  return TIPOS[estado.projeto.tipo].editor === 'ambiente' ? (p.modulos?.[estado.modAberto]?.modulo || null) : p;
+}
 function montarEditorModulo() {
-  const m = estado.projeto.parametros, ed = modeloDe('tplEditor');
+  const m = moduloEmEdicao(), ed = modeloDe('tplEditor'), noAmbiente = TIPOS[estado.projeto.tipo].editor === 'ambiente';
   const espacos = ED.espacos(m.raiz), vaos = espacos.filter(e => !e.divisao);
   if (!vaos.some(v => v.cam === estado.vaoSel)) estado.vaoSel = vaos[0]?.cam ?? '';
   const sel = vaos.find(v => v.cam === estado.vaoSel), no = sel.no, info = ED.parte(m, sel.cam);
-  const reg = (estado.res?.vaos || []).find(r => r.caminho === sel.cam);
+  const rLocal = noAmbiente ? resultadoLocal() : estado.res;
+  const reg = (rLocal?.vaos || []).find(r => r.caminho === sel.cam);
 
   // medidas e construção do módulo
   const valor = { largura:m.largura, altura:m.altura, profundidade:m.profundidade, beiral:m.construcao?.beiral ?? 0,
@@ -53,6 +59,7 @@ function montarEditorModulo() {
     temMedida: !!info, rotMedida: info?.divisao.dir === 'v' ? 'Largura (mm ou auto)' : 'Altura (mm ou auto)',
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: !!info,
+    dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
   const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
   ed.querySelector('[data-vao="lado"]').value = no.frente?.lado || 'auto';
@@ -67,12 +74,15 @@ function montarEditorModulo() {
 }
 
 // toda mudança: altera o módulo, refaz o editor e as peças
-function mudarModulo(fn) { fn(estado.projeto.parametros); montarFormulario(); atualizar(); }
-function ehModulo() { return !!TIPOS[estado.projeto.tipo].editor; }   // funções (não const): a tela chama antes deste arquivo terminar de carregar
+function mudarModulo(fn) { fn(moduloEmEdicao()); montarFormulario(); atualizar(); }
+// resultado só do módulo aberto (no ambiente, as peças do projeto são do ambiente todo)
+function resultadoLocal() { const m = moduloEmEdicao(); try { return resultadoModulo(gerarModuloV3(m), m); } catch (e) { return null; } }
+function ehModulo() { const ed = TIPOS[estado.projeto.tipo].editor; return ed === 'modulo' || (ed === 'ambiente' && !!moduloEmEdicao()); }   // funções (não const): a tela chama antes deste arquivo terminar de carregar
 
 $('form').addEventListener('click', e => {
   const b = e.target.closest('[data-acao]'); if (!b || !ehModulo()) return;
   const cam = estado.vaoSel, a = b.dataset.acao;
+  if (a === 'voltar-ambiente') return;                                 // tela-ambiente.js cuida
   if (a === 'selecionar') { estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema(); return; }
   mudarModulo(m => {
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
@@ -106,13 +116,14 @@ $('form').addEventListener('change', e => {
 /* ---------- Esquema de frente (clicar nos vãos) ---------- */
 estado.esquema = true;
 function atualizarEsquema() {
-  const caixa = $('esquema'), mod = ehModulo();
-  $('grupoEsquema').hidden = !mod;
-  caixa.hidden = !(mod && estado.esquema);
+  const caixa = $('esquema'), amb = TIPOS[estado.projeto.tipo].editor === 'ambiente', mod = ehModulo();
+  $('grupoEsquema').hidden = !(mod || amb);
+  caixa.hidden = !((mod || amb) && estado.esquema);
   $('palco').classList.toggle('com-esquema', !caixa.hidden);
   $('bEsquema').setAttribute('aria-pressed', String(estado.esquema)); $('b3D').setAttribute('aria-pressed', String(!estado.esquema));
   if (caixa.hidden) return;
-  const r = estado.res?.dims ? estado.res : estado.valido; if (!r?.dims) { caixa.replaceChildren(); return; }   // mesmo com erro, mostra os vãos para corrigir
+  if (amb && !mod) { desenharPlanta(caixa); return; }                  // ambiente: planta vista de cima (js/tela-ambiente.js)
+  const r = amb ? resultadoLocal() : (estado.res?.dims ? estado.res : estado.valido); if (!r?.dims) { caixa.replaceChildren(); return; }   // mesmo com erro, mostra os vãos para corrigir
   const L = r.dims.L, H = r.dims.H, margem = 32;
   const esc = Math.min((caixa.clientWidth - 2*margem) / L, (caixa.clientHeight - 2*margem) / H) || 0.25;
   const x0 = (caixa.clientWidth - L*esc) / 2, y0 = (caixa.clientHeight - H*esc) / 2;

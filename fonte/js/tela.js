@@ -22,7 +22,8 @@ let toastT; const toast = msg => { const t=$('toast'); t.textContent=msg; t.hidd
 function montarFormulario() {
   const tipo = TIPOS[estado.projeto.tipo], form = $('form'), par = estado.projeto.parametros;
   $('tipoMovel').replaceChildren(...Object.entries(TIPOS).map(([k,t]) => el('option', { value:k, selected:k===estado.projeto.tipo }, t.nome)));
-  if (tipo.editor) { montarEditorModulo(); return; }                  // móvel livre: editor próprio (js/tela-modulo.js)
+  if (tipo.editor === 'ambiente' && !moduloEmEdicao()) { montarEditorAmbiente(); return; }   // ambiente (js/tela-ambiente.js)
+  if (tipo.editor) { montarEditorModulo(); return; }                  // móvel livre ou módulo aberto do ambiente (js/tela-modulo.js)
   form.replaceChildren(...tipo.grupos.map(g => el('fieldset', {}, el('legend', { text:g.titulo }), ...g.campos.map(c => {
     const id = 'p-'+c.id;
     if (c.tipo === 'sim') return el('div', { class:'campo sim' }, el('input', { type:'checkbox', id, checked:!!par[c.id], 'data-c':c.id }), el('label', { for:id, text:c.rot }));

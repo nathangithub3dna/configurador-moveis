@@ -1,0 +1,27 @@
+/* AMBIENTE (5b) — aparência do painel do ambiente e da planta vista de cima.
+   Estrutura em pagina.html (tplAmbiente, tplParede, tplModuloAmb, tplPonto); lógica em js/ambiente.js. */
+.amb-lista{display:flex;flex-direction:column;gap:10px}
+.amb-item{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:var(--raio-p);box-shadow:var(--sombra-fora-p)}
+.amb-item[aria-current]{box-shadow:var(--sombra-dentro)}
+.amb-item[aria-current] .amb-cab strong{color:var(--accent)}
+.amb-cab{display:flex;flex-direction:column;gap:1px}
+.amb-cab span{font-size:12px;color:var(--muted)}
+.amb-item .btn{justify-content:center}
+.amb-ponto{display:grid;grid-template-columns:1fr 1fr;align-items:end}
+.amb-ponto select{height:36px;border:0;border-radius:var(--raio-p);padding:0 8px;background:var(--surface);box-shadow:var(--sombra-dentro);font-size:13px}
+.amb-ponto .btn{grid-column:2;justify-self:end;padding:6px 12px}
+.ed-voltar{display:flex;flex-direction:column;gap:6px}
+.ed-voltar .btn{justify-content:center}
+
+/* planta: paredes em cinza escuro, módulos na cor do material, aéreo tracejado */
+.pl-parede{position:absolute;background:var(--v-parede);border:1px solid var(--v-linha);display:flex;align-items:center;justify-content:flex-end;padding:0 8px}
+.pl-parede span{font:700 11px var(--f-sans);color:var(--fg);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:1px 6px;border-radius:999px;white-space:nowrap}
+.pl-vertical{justify-content:center;align-items:flex-end;padding:8px 0}
+.pl-vertical span{transform:rotate(-90deg);transform-origin:center}
+.pl-modulo{position:absolute;box-sizing:border-box;border:1.5px solid var(--v-linha);background:var(--v-caixa);cursor:pointer;display:flex;align-items:center;justify-content:center;font:800 12px var(--f-sans);color:var(--fg);padding:0 0 6px;align-items:flex-end}
+.pl-aereo{background:transparent;border-style:dashed;align-items:flex-start;padding:4px 0 0}
+.pl-torre{background:var(--v-frente)}
+.pl-modulo[aria-current]{outline:3px solid var(--accent);outline-offset:1px;color:var(--accent)}
+.pl-ponto{position:absolute;border-radius:50%;border:2px solid var(--surface)}
+.pl-esgoto{background:#7a5230}.pl-agua{background:#2f7fd0}.pl-gas{background:#d9a21b}.pl-tomada{background:#c0392b}
+.pl-legenda{position:absolute;left:16px;bottom:12px;right:16px;font-size:12px;color:var(--muted)}

@@ -281,6 +281,27 @@ function diferencas(a, b, caminho = '') {
     const ok5 = !inicio.erros.length && inicio.vaos === 4 && inicio.botoesEsquema === 4 && inicio.espacos === 4 && inicio.ferragens > 0 && !inicio.semFuncao.length
       && depois.vaos === 5 && depois.gavetas === inicio.gavetas + 1 && !depois.semFuncao.length && juntou.vaos === 4 && abas.montar && !abas.plano && !erros.length;
     if (!ok5) { falhas++; console.log('TELA DO MÓVEL LIVRE (5a) ERRADO  ' + JSON.stringify(t5)); } else console.log('TELA DO MÓVEL LIVRE (5a) OK  ' + JSON.stringify(t5));
+    // 5b: ambiente — cozinha em L de teste
+    await passo('#etapas [data-etapa="montar"]');
+    await page.selectOption('#tipoMovel', 'ambiente'); await page.waitForTimeout(800);
+    const fotoA = () => page.evaluate(() => { const r = window.__configurador.estado.res;
+      return { erros: r.erros, avisos: r.avisos.length, canto: r.avisos.some(x => /^Canto/.test(x)), esgoto: r.avisos.some(x => /cobre o esgoto/.test(x)), recorte: r.pecas.some(p => p.forma?.tipo === 'recorte'),
+        modulos: new Set(r.pecas.filter(p => p.modulo !== undefined).map(p => p.modulo)).size, tampos: r.pecas.filter(p => p.papel === 'tampo').length, semFuncao: r.pecas.filter(p => !p.papel).map(p => p.id).slice(0, 5),
+        naPlanta: document.querySelectorAll('#esquema .pl-modulo').length, chapas: (window.__configurador.estado.plano?.materiais || []).length }; });
+    const cozinha = await fotoA();
+    await page.click('#form [data-acao="abrir"][data-i="1"]'); await page.waitForTimeout(300);           // abre o balcão da pia por dentro
+    const dentro = await page.evaluate(() => ({ editor: !!document.querySelector('#form [data-acao="voltar-ambiente"]'), vaosEsquema: document.querySelectorAll('#esquema button[data-cam]').length }));
+    await passo('[data-acao="frente"][data-valor="gaveta"]');
+    const mudouDentro = await page.evaluate(() => window.__configurador.estado.res.pecas.filter(p => p.modulo === 1 && p.papel === 'frente-gaveta').length);
+    await passo('[data-acao="voltar-ambiente"]');
+    for (let k = 0; k < 3; k++) await passo('#form [data-acao="add"][data-modelo="balcao"]');                 // passa do fim da parede A
+    const estourou = await fotoA();
+    await page.selectOption('#form [data-amb="formato"]', 'reta'); await page.waitForTimeout(400);
+    const reta = await fotoA();
+    const t5b = { cozinha, dentro, mudouDentro, estourou: estourou.erros, reta: reta.erros.slice(0, 3), paginaErros: erros };
+    const ok5b = !cozinha.erros.length && cozinha.canto && cozinha.esgoto && cozinha.recorte && cozinha.modulos === 8 && cozinha.tampos === 2 && !cozinha.semFuncao.length && cozinha.naPlanta === 8 && cozinha.chapas > 0
+      && dentro.editor && dentro.vaosEsquema === 1 && mudouDentro === 1 && estourou.erros.some(x => /passa .* do fim da parede A/.test(x)) && reta.erros.some(x => /parede que não existe/.test(x)) && !erros.length;
+    if (!ok5b) { falhas++; console.log('AMBIENTE (5b) ERRADO  ' + JSON.stringify(t5b)); } else console.log('AMBIENTE (5b) OK  ' + JSON.stringify(t5b));
     await page.close();
   }
   await b.close();
