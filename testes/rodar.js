@@ -137,11 +137,11 @@ function diferencas(a, b, caminho = '') {
       const peca = (r_, papel, lado) => r_.pecas.find(p => p.papel === papel && (!lado || p.lado === lado));
       const comMetodo = (nome, aj) => c.gerarModuloV3({ ...m, metodo:nome, metodoAjustes:{ ...m.metodoAjustes, ...aj } });
       const e1 = comMetodo('topo-base-passantes', {}), e2 = comMetodo('fundo-rasgo', {}), e3 = comMetodo('armario-atual', { prateleira:{ furacao:'faixa32' } });
-      // fundo dividido pela chapa: armário 1800 de largura com 4 vãos em chapa de fibra 1220 de largura → 2 peças com emenda na divisória do meio
+      // fundo pela chapa de mercado: armário 1800 × 1920 cabe inteiro na chapa de fibra 2750 × 2130 (a que dá menos peças)
       const armL = c.gerarModuloV3({ ...c.CONVERSORES_V3.armario({ ...c.TIPOS.armario.padrao }), metodo:'fundo-hdf', metodoAjustes:{ rodape:{ altura:100, recuo:40 }, apoio:'rodape', topo:'inteiro', fixacao:'por-vao' } });
       const fundosL = armL.pecas.filter(p => p.papel === 'fundo').map(p => [p.mat, p.esp, r(p.comp), r(p.larg), r(p.box[0]), r(p.box[1])]);
-      // sem divisória no caminho (1 vão de 2000): montante de emenda
-      const sem = c.gerarModuloV3({ ...m, largura:2000, metodo:'fundo-hdf', raiz:{ tipo:'vao', frente:{ tipo:'nenhuma' }, conteudo:[] } });
+      // sem divisória no caminho (1 vão de 3000): 2 peças iguais com perfil H plástico
+      const sem = c.gerarModuloV3({ ...m, largura:3000, metodo:'fundo-hdf', raiz:{ tipo:'vao', frente:{ tipo:'nenhuma' }, conteudo:[] } });
       // pés reguláveis + rodapé de encaixe
       const pes = c.gerarModuloV3({ ...m, metodo:'padrao-nathan-cozinha-banheiro', metodoAjustes:{} });
       const pinos = r_ => peca(r_, 'lateral', 'esq').des.furos.filter(f => f.tipo === 'pino').length;
@@ -150,7 +150,7 @@ function diferencas(a, b, caminho = '') {
         rasgo: { fundo: [peca(e2,'fundo').comp, peca(e2,'fundo').larg], fundoZ: peca(e2,'fundo').box.slice(4), lateralFundo: peca(e2,'lateral','esq').larg, divisoria: peca(e2,'divisoria-vertical').larg, canais: e2.pecas.filter(p => p.des?.canais?.length).length, erros: e2.erros.length },
         pinos: { quatroFuros: pinos(res), faixa32: pinos(e3) },
         origem: c.resolverMetodo({ ...m, metodo:'fundo-rasgo' }).origem.fundo,
-        fundoDividido: fundosL, montante: sem.pecas.filter(p => p.id.startsWith('reforco-emenda')).length, fundosSem: sem.pecas.filter(p => p.papel === 'fundo').map(p => r(p.larg)),
+        fundoDividido: fundosL, perfilH: sem.pecas.filter(p => p.papel === 'emenda-fundo').length, montante: sem.pecas.filter(p => p.id.startsWith('reforco-emenda')).length, chapaFundo: [armL, sem].map(x => x.pecas.find(p => p.papel === 'fundo').chapaRef), fundosSem: sem.pecas.filter(p => p.papel === 'fundo').map(p => r(p.larg)),
         pes: pes.pecas.filter(p => p.papel === 'pe').length, rodapeEncaixe: pes.pecas.some(p => p.id === 'rodape-encaixe'), semFuncao: [...armL.pecas, ...sem.pecas, ...pes.pecas].filter(p => !p.papel).map(p => p.id),
       };
       return { metodo, erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
@@ -159,9 +159,9 @@ function diferencas(a, b, caminho = '') {
     const esp = { passantes: { topo:1200, base:1200, lateral:1864, erros:0 }, rasgo: { fundo:[1879, 1179], fundoZ:[10, 16], lateralFundo:482, divisoria:466, canais:4, erros:0 } };
     const dm = diferencas(esp, { passantes: atual.metodo.passantes, rasgo: atual.metodo.rasgo });
     const mt = atual.metodo;
-    const fundoOk = JSON.stringify(mt.fundoDividido) === JSON.stringify([['hdf-cru',3,1920,900,0,900],['hdf-cru',3,1920,900,900,1800]]) && mt.montante === 1 && mt.fundosSem.every(w => w <= 1200) && mt.pes >= 4 && mt.rodapeEncaixe && !mt.semFuncao.length;
-    if (!fundoOk) { falhas++; console.log('FUNDO/PÉS ERRADO', JSON.stringify({ fundoDividido: mt.fundoDividido, montante: mt.montante, fundosSem: mt.fundosSem, pes: mt.pes, rodape: mt.rodapeEncaixe, semFuncao: mt.semFuncao })); }
-    else console.log('FUNDO DIVIDIDO PELA CHAPA E PÉS OK  ' + JSON.stringify({ fundoDividido: mt.fundoDividido, fundosSem: mt.fundosSem, pes: mt.pes }));
+    const fundoOk = JSON.stringify(mt.fundoDividido) === JSON.stringify([['hdf-cru',3,1920,1800,0,1800]]) && mt.montante === 0 && mt.perfilH === 1 && JSON.stringify(mt.fundosSem) === JSON.stringify([1499.5,1499.5]) && mt.chapaFundo.every(x => x === 'chapa-hdf-cru-3-2750x2130') && mt.pes >= 4 && mt.rodapeEncaixe && !mt.semFuncao.length;
+    if (!fundoOk) { falhas++; console.log('FUNDO/PÉS ERRADO', JSON.stringify({ fundoDividido: mt.fundoDividido, montante: mt.montante, perfilH: mt.perfilH, chapa: mt.chapaFundo, fundosSem: mt.fundosSem, pes: mt.pes, rodape: mt.rodapeEncaixe, semFuncao: mt.semFuncao })); }
+    else console.log('FUNDO PELA CHAPA DE MERCADO E PÉS OK  ' + JSON.stringify({ fundoDividido: mt.fundoDividido, chapa: mt.chapaFundo, fundosSem: mt.fundosSem, perfilH: mt.perfilH, pes: mt.pes }));
     if (dm.length || !(atual.metodo.pinos.faixa32 > atual.metodo.pinos.quatroFuros) || atual.metodo.origem !== 'método "Fundo em rasgo"') { falhas++; console.log('MÉTODO DE CONSTRUÇÃO ERRADO', JSON.stringify(atual.metodo)); dm.forEach(x => console.log('   ' + x)); }
     else console.log('MÉTODO DE CONSTRUÇÃO OK  ' + JSON.stringify(atual.metodo));
     const arq = path.join(__dirname, 'referencia', 'nucleo-armario-misto.json');

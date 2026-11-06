@@ -11,7 +11,8 @@
     "dim": [
       2750,
       1850
-    ]
+    ],
+    "obs": "Medida da chapa por fabricante: Guararapes, Arauco e Berneck 2750 × 1850; Duratex 2750 × 1840; formatos maiores (2750 × 2100/2200) só sob encomenda. Confirmar a marca da loja."
   },
   "chapa-mdf-ru-branco-15": {
     "grupo": "Chapas",
@@ -25,7 +26,8 @@
     "dim": [
       2750,
       1850
-    ]
+    ],
+    "obs": "Medida da chapa por fabricante: Guararapes, Arauco e Berneck 2750 × 1850; Duratex 2750 × 1840; formatos maiores (2750 × 2100/2200) só sob encomenda. Confirmar a marca da loja."
   },
   "chapa-mdf-branco-6": {
     "grupo": "Chapas",
@@ -39,11 +41,12 @@
     "dim": [
       2750,
       1850
-    ]
+    ],
+    "obs": "Medida da chapa por fabricante: Guararapes, Arauco e Berneck 2750 × 1850; Duratex 2750 × 1840; formatos maiores (2750 × 2100/2200) só sob encomenda. Confirmar a marca da loja."
   },
-  "chapa-hdf-cru-3": {
+  "chapa-hdf-cru-3-2750x1220": {
     "grupo": "Chapas",
-    "nome": "Chapa de fibra (HDF) para fundo de móveis, crua, 3 mm",
+    "nome": "Chapa de fibra (HDF) para fundo de móveis, crua, 3 mm (2750 × 1220)",
     "marca": "",
     "codigo": "",
     "unid": "chapa",
@@ -54,11 +57,41 @@
       2750,
       1220
     ],
-    "obs": "Qualquer fabricante (ex.: Eucatex, Duratex). Medidas comuns: 2440 × 1220, 2750 × 1220, 2750 × 2130. Espessura 3 mm [Provável — confirmar na loja]."
+    "obs": "Qualquer fabricante (ex.: Eucatex, Duratex). Medidas de mercado da chapa de fibra para fundo: 2440 × 1220, 2750 × 1220 e 2750 × 2130; espessura 2,5 ou 3 mm (usamos 3). Confirmar na loja quais medidas ela tem."
   },
-  "chapa-hdf-branco-3": {
+  "chapa-hdf-cru-3-2440x1220": {
     "grupo": "Chapas",
-    "nome": "Chapa de fibra (HDF) para fundo de móveis, branca, 3 mm",
+    "nome": "Chapa de fibra (HDF) para fundo de móveis, crua, 3 mm (2440 × 1220)",
+    "marca": "",
+    "codigo": "",
+    "unid": "chapa",
+    "emb": 1,
+    "mat": "hdf-cru",
+    "esp": 3,
+    "dim": [
+      2440,
+      1220
+    ],
+    "obs": "Qualquer fabricante (ex.: Eucatex, Duratex). Medidas de mercado da chapa de fibra para fundo: 2440 × 1220, 2750 × 1220 e 2750 × 2130; espessura 2,5 ou 3 mm (usamos 3). Confirmar na loja quais medidas ela tem."
+  },
+  "chapa-hdf-cru-3-2750x2130": {
+    "grupo": "Chapas",
+    "nome": "Chapa de fibra (HDF) para fundo de móveis, crua, 3 mm (2750 × 2130)",
+    "marca": "",
+    "codigo": "",
+    "unid": "chapa",
+    "emb": 1,
+    "mat": "hdf-cru",
+    "esp": 3,
+    "dim": [
+      2750,
+      2130
+    ],
+    "obs": "Qualquer fabricante (ex.: Eucatex, Duratex). Medidas de mercado da chapa de fibra para fundo: 2440 × 1220, 2750 × 1220 e 2750 × 2130; espessura 2,5 ou 3 mm (usamos 3). Confirmar na loja quais medidas ela tem."
+  },
+  "chapa-hdf-branco-3-2750x1220": {
+    "grupo": "Chapas",
+    "nome": "Chapa de fibra (HDF) para fundo de móveis, branca, 3 mm (2750 × 1220)",
     "marca": "",
     "codigo": "",
     "unid": "chapa",
@@ -69,7 +102,37 @@
       2750,
       1220
     ],
-    "obs": "Qualquer fabricante. [Provável] confirmar espessura e medidas na loja."
+    "obs": "Qualquer fabricante (ex.: Eucatex, Duratex). Medidas de mercado da chapa de fibra para fundo: 2440 × 1220, 2750 × 1220 e 2750 × 2130; espessura 2,5 ou 3 mm (usamos 3). Confirmar na loja quais medidas ela tem."
+  },
+  "chapa-hdf-branco-3-2440x1220": {
+    "grupo": "Chapas",
+    "nome": "Chapa de fibra (HDF) para fundo de móveis, branca, 3 mm (2440 × 1220)",
+    "marca": "",
+    "codigo": "",
+    "unid": "chapa",
+    "emb": 1,
+    "mat": "hdf-branco",
+    "esp": 3,
+    "dim": [
+      2440,
+      1220
+    ],
+    "obs": "Qualquer fabricante (ex.: Eucatex, Duratex). Medidas de mercado da chapa de fibra para fundo: 2440 × 1220, 2750 × 1220 e 2750 × 2130; espessura 2,5 ou 3 mm (usamos 3). Confirmar na loja quais medidas ela tem."
+  },
+  "chapa-hdf-branco-3-2750x2130": {
+    "grupo": "Chapas",
+    "nome": "Chapa de fibra (HDF) para fundo de móveis, branca, 3 mm (2750 × 2130)",
+    "marca": "",
+    "codigo": "",
+    "unid": "chapa",
+    "emb": 1,
+    "mat": "hdf-branco",
+    "esp": 3,
+    "dim": [
+      2750,
+      2130
+    ],
+    "obs": "Qualquer fabricante (ex.: Eucatex, Duratex). Medidas de mercado da chapa de fibra para fundo: 2440 × 1220, 2750 × 1220 e 2750 × 2130; espessura 2,5 ou 3 mm (usamos 3). Confirmar na loja quais medidas ela tem."
   },
   "dob-blum-71B3550": {
     "grupo": "Ferragens",
@@ -296,5 +359,19 @@
     "codigo": "",
     "unid": "un",
     "emb": 1
+  },
+  "perfil-h-emenda-fundo-3": {
+    "grupo": "Acessórios",
+    "nome": "Perfil H plástico para emenda de fundo (chapa de fibra 3 mm)",
+    "marca": "",
+    "codigo": "",
+    "unid": "barra",
+    "emb": 1,
+    "dados": {
+      "espChapa": 3,
+      "alma": 1,
+      "barra": 3000
+    },
+    "obs": "Une duas chapas de fundo onde não há divisória. Vendido em barra (PS ou PVC, branco ou preto). [Provável] alma de 1 mm e barra de 3 m — confirmar na loja."
   }
 }

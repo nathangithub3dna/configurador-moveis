@@ -357,7 +357,7 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^lateral-(esq|dir)$/, 'lateral'], [/^topo$/, 'topo'], [/^base$/, 'base'],
   [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'],
   [/^travessa-(frontal|traseira)$/, 'travessa'], [/^travessa-fixacao(-\d+)?$/, 'travessa-fixacao'],
-  [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'],
+  [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'],
   [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-\d+$/, 'prateleira-fixa'],
   [/^reforco-/, 'reforco'], [/^beiral-frontal$/, 'beiral-frontal'], [/^beiral-(esq|dir)$/, 'beiral-lateral'],
   [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+$/, 'espacador'],
@@ -380,7 +380,8 @@ const ORIENTACAO = {
   'frente-interna-gaveta': ['+x','+y'], 'traseira-gaveta': ['+x','+y'], 'enchimento': ['+x','+y'],
   'lateral-gaveta:esq': ['+z','+y'], 'lateral-gaveta:dir': ['-z','+y'], 'sarrafo': ['+z','+y'],
 };
-const chapaDe = (mat, esp) => Object.entries(BIBLIOTECA).find(([,b]) => b.unid==='chapa' && b.mat===mat && b.esp===esp)?.[0] || null;
+const chapasDe = (mat, esp) => Object.entries(BIBLIOTECA).filter(([,b]) => b.unid==='chapa' && b.mat===mat && b.esp===esp).map(([k]) => k);
+const chapaDe = (mat, esp) => chapasDe(mat, esp)[0] || null;
 
 const CATS = { caixa:'Caixa', enchimento:'Enchimento', frente:'Frentes', gaveta:'Caixa das gavetas', fundo:'Fundo', ferragem:'Ferragens', tampo:'Tampo', referencia:'Referência (não fabricar)' };
 
@@ -1253,31 +1254,38 @@ function gerarModuloV3(m) {
 
   percorrer(m.raiz, regiao0, 0);
 
-  // FUNDO SOBREPOSTO — dividido quando não cabe na chapa; emenda sempre sobre divisória (ou montante de emenda)
+  // FUNDO SOBREPOSTO — usa a chapa de mercado que dá menos peças; emenda sobre divisória ou, sem divisória, com perfil H plástico
   if (fundoPendente) {
-    const matF = c.fundo.material || 'mdf-branco', espF = matF.startsWith('hdf') ? 3 : tf;
-    const ref = chapaDe(matF, espF), dim = ref ? BIBLIOTECA[ref].dim : R.chapa, LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo;
-    const hF = H - yBase, cabe = w => (w <= LU && hF <= WU) || (w <= WU && hF <= LU);
-    const cortes = [xa]; let ini = xa, kEm = 0;
-    if (!cabe(W)) {
-      if (hF > LU) E.push(`O fundo tem ${fmt(hF)} mm de altura e não cabe na chapa ${dim[0]} × ${dim[1]} nem em pé.`);
-      else while (!cabe(xb - ini)) {
-        const lim = ini + (hF <= WU ? LU : WU), opc = juntasFundo.filter(x => x > ini + 1 && x <= lim);
-        let x = opc.length ? Math.max(...opc) : null;
-        if (x === null) {                                   // sem divisória ao alcance: montante de emenda atrás
-          x = Math.min(lim, xb - t) - 30; kEm++;
-          add({ id:`reforco-emenda-${kEm}`, nome:`Montante de emenda do fundo ${kEm}`, nomeLista:'Montante de emenda', cat:'caixa', a:H-t-(yBase+t), b:60, box:[x-30, x+30, yBase+t, H-t, zf, zf+t], obs:'Recebe a emenda do fundo (não há divisória nesse ponto).', des:{ w:60, h:H-t-(yBase+t), vista:'Vista de frente' } });
-          A.push('O fundo não cabe numa chapa: foi incluído um montante de emenda (não há divisória no ponto da emenda).');
-        }
-        cortes.push(x); ini = x;
+    const matF = c.fundo.material || 'mdf-branco', espF = matF.startsWith('hdf') ? 3 : tf, hF = H - yBase;
+    const PH = BIBLIOTECA['perfil-h-emenda-fundo-3'], alma = matF.startsWith('hdf') && PH ? PH.dados.alma : 0;
+    const dividir = dim => {                                         // cortes [x0,x1,emendaH?] para uma chapa
+      const LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo;
+      if (hF > LU) return null;
+      const maxW = hF <= WU ? LU : WU, cortes = []; let ini = xa;
+      while (xb - ini > maxW) {
+        const opc = juntasFundo.filter(x => x > ini + 1 && x <= ini + maxW);
+        if (opc.length) { const x = Math.max(...opc); cortes.push([ini, x, false]); ini = x; continue; }
+        if (!matF.startsWith('hdf')) return null;                    // MDF sem divisória: não há emenda padrão
+        const prox = juntasFundo.find(x => x > ini + maxW) ?? xb, n = Math.ceil((prox - ini) / maxW), w = (prox - ini) / n;
+        for (let k = 0; k < n; k++) cortes.push([ini + k*w, ini + (k+1)*w, k < n-1]);
+        ini = prox;
       }
-    }
-    cortes.push(xb);
-    const nF = cortes.length - 1;
-    for (let k = 0; k < nF; k++) {
-      const x0 = cortes[k], x1 = cortes[k+1], id = nF > 1 ? `fundo-${k+1}` : 'fundo';
-      add({ id, nome: nF > 1 ? `Fundo do móvel ${k+1} de ${nF}` : 'Fundo do móvel', nomeLista:'Fundo do móvel', cat:'fundo', mat:matF, esp:espF, a:hF, b:x1-x0, box:[x0,x1,yBase,H,tf-espF,tf], des:{ w:x1-x0, h:hF, vista:'Vista de trás' },
-        obs: nF > 1 ? 'Emenda no meio da divisória (ou do montante): parafusar as duas peças nela.' : '' });
+      if (ini < xb) cortes.push([ini, xb, false]);
+      return cortes;
+    };
+    const opcoes = chapasDe(matF, espF).map(ref => ({ ref, dim:BIBLIOTECA[ref].dim, cortes:dividir(BIBLIOTECA[ref].dim) })).filter(o => o.cortes)
+      .sort((a, b) => a.cortes.length - b.cortes.length || a.dim[0]*a.dim[1] - b.dim[0]*b.dim[1]);
+    const esc = opcoes[0] || (chapasDe(matF, espF).length ? null : { ref:null, dim:R.chapa, cortes:dividir(R.chapa) });
+    if (!esc || !esc.cortes) E.push(`O fundo (${fmt(W)} × ${fmt(hF)} mm) não cabe em nenhuma chapa de ${MATERIAIS[matF].nome} disponível, nem dividido sobre as divisórias.`);
+    else {
+      const cortes = esc.cortes, nF = cortes.length;
+      cortes.forEach(([x0, x1, emH], k) => {
+        const antH = k > 0 && cortes[k-1][2], g0 = antH ? alma/2 : 0, g1 = emH ? alma/2 : 0, id = nF > 1 ? `fundo-${k+1}` : 'fundo', w = x1 - x0 - g0 - g1;
+        add({ id, nome: nF > 1 ? `Fundo do móvel ${k+1} de ${nF}` : 'Fundo do móvel', nomeLista:'Fundo do móvel', cat:'fundo', mat:matF, esp:espF, a:hF, b:w, chapaRef:esc.ref, box:[x0+g0,x1-g1,yBase,H,tf-espF,tf], des:{ w, h:hF, vista:'Vista de trás' },
+          obs: nF > 1 ? ((antH || emH) ? 'Emenda com perfil H plástico onde não há divisória; nas divisórias, parafusar as duas peças nelas.' : 'Emenda no meio da divisória: parafusar as duas peças nela.') : '' });
+        if (emH) ferr({ id:`perfil-h-fundo-${k+1}`, nome:`Perfil H de emenda do fundo ${k+1}`, ref:'perfil-h-emenda-fundo-3', mat:'hdf-branco', box:[x1-6, x1+6, yBase, H, tf-espF-0.5, tf+0.5] });
+      });
+      if (cortes.some(x => x[2])) A.push('O fundo não cabe numa chapa e não há divisória no ponto da emenda: emenda com perfil H plástico.');
     }
   }
 
@@ -1437,12 +1445,12 @@ function planoDeCorte(pecas) {
   for (const pc of pecas.filter(p => p.lista)) {
     const k = pc.mat + '|' + pc.esp;
     if (!porChapa.has(k)) porChapa.set(k, []);
-    porChapa.get(k).push({ id:pc.id, num:numDe.get(pc.id).num, nome:pc.nomeLista||pc.nome, a:pc.comp, b:pc.larg });
+    porChapa.get(k).push({ id:pc.id, num:numDe.get(pc.id).num, nome:pc.nomeLista||pc.nome, a:pc.comp, b:pc.larg, chapaRef:pc.chapaRef });
   }
   const res = [];
   for (const [k, itens] of porChapa) {
     const [mat, espS] = k.split('|'), esp = Number(espS);
-    const ref = chapaDe(mat, esp), dim = ref ? BIBLIOTECA[ref].dim : R.chapa;
+    const ref = itens.find(i => i.chapaRef)?.chapaRef || chapaDe(mat, esp), dim = ref ? BIBLIOTECA[ref].dim : R.chapa;   // chapa escolhida pelo fundo, se houver
     const LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo, kf = R.serra;
     itens.sort((p,q) => (q.b - p.b) || (q.a - p.a));
     const chapas = [];

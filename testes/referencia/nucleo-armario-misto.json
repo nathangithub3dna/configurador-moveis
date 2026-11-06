@@ -30,23 +30,20 @@
     "hdf-cru",
     3,
     1920,
-    900,
+    1800,
     0,
-    900
-   ],
-   [
-    "hdf-cru",
-    3,
-    1920,
-    900,
-    900,
     1800
    ]
   ],
-  "montante": 1,
+  "perfilH": 1,
+  "montante": 0,
+  "chapaFundo": [
+   "chapa-hdf-cru-3-2750x2130",
+   "chapa-hdf-cru-3-2750x2130"
+  ],
   "fundosSem": [
-   1170,
-   830
+   1499.5,
+   1499.5
   ],
   "pes": 6,
   "rodapeEncaixe": true,
