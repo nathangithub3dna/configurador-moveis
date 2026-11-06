@@ -1,0 +1,838 @@
+{
+ "erros": [],
+ "avisos": [],
+ "semPapel": [],
+ "pecas": [
+  {
+   "id": "lateral-esq",
+   "papel": "lateral",
+   "lado": "esq",
+   "nome": "Lateral esquerda",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 800,
+   "larg": 426,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    25,
+    43,
+    0,
+    800,
+    6,
+    432
+   ],
+   "furos": [
+    [
+     50,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     213,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     376,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     25,
+     791,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     75,
+     791,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     351,
+     791,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     401,
+     791,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     417,
+     707,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     417,
+     757,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     60,
+     386,
+     5,
+     10,
+     "pino"
+    ],
+    [
+     380,
+     386,
+     5,
+     10,
+     "pino"
+    ],
+    [
+     37,
+     85.5,
+     3,
+     10,
+     "calco"
+    ],
+    [
+     37,
+     117.5,
+     3,
+     10,
+     "calco"
+    ],
+    [
+     37,
+     682.5,
+     3,
+     10,
+     "calco"
+    ],
+    [
+     37,
+     714.5,
+     3,
+     10,
+     "calco"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "lateral-dir",
+   "papel": "lateral",
+   "lado": "dir",
+   "nome": "Lateral direita",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 800,
+   "larg": 426,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    782,
+    800,
+    0,
+    800,
+    6,
+    432
+   ],
+   "furos": [
+    [
+     376,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     213,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     50,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     401,
+     791,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     351,
+     791,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     75,
+     791,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     25,
+     791,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     9,
+     707,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     9,
+     757,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     366,
+     386,
+     5,
+     10,
+     "pino"
+    ],
+    [
+     46,
+     386,
+     5,
+     10,
+     "pino"
+    ],
+    [
+     389,
+     85.5,
+     3,
+     10,
+     "calco"
+    ],
+    [
+     389,
+     117.5,
+     3,
+     10,
+     "calco"
+    ],
+    [
+     389,
+     682.5,
+     3,
+     10,
+     "calco"
+    ],
+    [
+     389,
+     714.5,
+     3,
+     10,
+     "calco"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "base",
+   "papel": "base",
+   "lado": null,
+   "nome": "Base",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 739,
+   "larg": 426,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    43,
+    782,
+    0,
+    18,
+    6,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "travessa-frontal",
+   "papel": "travessa",
+   "lado": null,
+   "nome": "Travessa superior frontal",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 739,
+   "larg": 100,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    43,
+    782,
+    782,
+    800,
+    332,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "travessa-traseira",
+   "papel": "travessa",
+   "lado": null,
+   "nome": "Travessa superior traseira",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 739,
+   "larg": 100,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    43,
+    782,
+    782,
+    800,
+    6,
+    106
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "travessa-fixacao",
+   "papel": "travessa-fixacao",
+   "lado": null,
+   "nome": "Travessa de fixação na parede",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 739,
+   "larg": 100,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    43,
+    782,
+    682,
+    782,
+    6,
+    24
+   ],
+   "furos": [
+    [
+     50,
+     50,
+     6,
+     0,
+     "parede"
+    ],
+    [
+     369.5,
+     50,
+     6,
+     0,
+     "parede"
+    ],
+    [
+     689,
+     50,
+     6,
+     0,
+     "parede"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "fundo",
+   "papel": "fundo",
+   "lado": null,
+   "nome": "Fundo do móvel",
+   "cat": "fundo",
+   "lista": true,
+   "comp": 800,
+   "larg": 775,
+   "esp": 6,
+   "mat": "mdf-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    25,
+    800,
+    0,
+    800,
+    0,
+    6
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-esq",
+   "papel": "porta",
+   "lado": null,
+   "nome": "Porta esquerda",
+   "cat": "frente",
+   "lista": true,
+   "comp": 797,
+   "larg": 384.5,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    2,
+    2
+   ],
+   "box": [
+    26.5,
+    411,
+    1.5,
+    798.5,
+    432,
+    450
+   ],
+   "furos": [
+    [
+     362.5,
+     100,
+     35,
+     13,
+     "caneco"
+    ],
+    [
+     362.5,
+     697,
+     35,
+     13,
+     "caneco"
+    ],
+    [
+     35,
+     613,
+     5,
+     0,
+     "puxador"
+    ],
+    [
+     35,
+     741,
+     5,
+     0,
+     "puxador"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-esq-dobradica-1",
+   "papel": "dobradica",
+   "lado": null,
+   "nome": "Dobradiça 1 da porta esquerda",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    31,
+    66,
+    84,
+    119,
+    431,
+    444
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-esq-dobradica-2",
+   "papel": "dobradica",
+   "lado": null,
+   "nome": "Dobradiça 2 da porta esquerda",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    31,
+    66,
+    681,
+    716,
+    431,
+    444
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-esq-puxador",
+   "papel": "puxador",
+   "lado": null,
+   "nome": "Puxador da porta esquerda",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    370,
+    382,
+    598.5,
+    758.5,
+    450,
+    475
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-dir",
+   "papel": "porta",
+   "lado": null,
+   "nome": "Porta direita",
+   "cat": "frente",
+   "lista": true,
+   "comp": 797,
+   "larg": 384.5,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    2,
+    2
+   ],
+   "box": [
+    414,
+    798.5,
+    1.5,
+    798.5,
+    432,
+    450
+   ],
+   "furos": [
+    [
+     22,
+     100,
+     35,
+     13,
+     "caneco"
+    ],
+    [
+     22,
+     697,
+     35,
+     13,
+     "caneco"
+    ],
+    [
+     349.5,
+     613,
+     5,
+     0,
+     "puxador"
+    ],
+    [
+     349.5,
+     741,
+     5,
+     0,
+     "puxador"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-dir-dobradica-1",
+   "papel": "dobradica",
+   "lado": null,
+   "nome": "Dobradiça 1 da porta direita",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    759,
+    794,
+    84,
+    119,
+    431,
+    444
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-dir-dobradica-2",
+   "papel": "dobradica",
+   "lado": null,
+   "nome": "Dobradiça 2 da porta direita",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    759,
+    794,
+    681,
+    716,
+    431,
+    444
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-dir-puxador",
+   "papel": "puxador",
+   "lado": null,
+   "nome": "Puxador da porta direita",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    443,
+    455,
+    598.5,
+    758.5,
+    450,
+    475
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "prateleira-1",
+   "papel": "prateleira",
+   "lado": null,
+   "nome": "Prateleira",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 737,
+   "larg": 400,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    44,
+    781,
+    391,
+    409,
+    12,
+    412
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "enchimento-esq",
+   "papel": "enchimento",
+   "lado": "esq",
+   "nome": "Enchimento esquerdo (frontal)",
+   "cat": "enchimento",
+   "lista": true,
+   "comp": 800,
+   "larg": 25,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    0,
+    25,
+    0,
+    800,
+    432,
+    450
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "sarrafo-esq",
+   "papel": "sarrafo",
+   "lado": "esq",
+   "nome": "Sarrafo do enchimento esquerdo",
+   "cat": "enchimento",
+   "lista": true,
+   "comp": 800,
+   "larg": 60,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    7,
+    25,
+    0,
+    800,
+    372,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "tampo",
+   "papel": "tampo",
+   "lado": null,
+   "nome": "Tampo (existente)",
+   "cat": "tampo",
+   "lista": false,
+   "comp": 800,
+   "larg": 450,
+   "esp": 20,
+   "mat": "marmore",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    0,
+    800,
+    800,
+    820,
+    0,
+    450
+   ],
+   "furos": [],
+   "rasgos": 0
+  }
+ ],
+ "listaDeCorte": "LISTA DE CORTE — Gabinete do banheiro\nMedidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.\n\nMDF RU BRANCO FOSCO 18 MM\n2× Lateral — 800 × 426 — fita 1C\n1× Base — 739 × 426 — fita 1C\n1× Travessa superior frontal — 739 × 100 — fita 1C\n1× Travessa superior traseira — 739 × 100 — fita —\n1× Travessa de fixação — 739 × 100 — fita —\n1× Prateleira — 737 × 400 — fita 1C\n1× Enchimento frontal — 800 × 25 — fita 1C\n1× Sarrafo do enchimento — 800 × 60 — fita —\n2× Porta — 797 × 384,5 — fita 2C 2L\n\nMDF BRANCO 6 MM\n1× Fundo do móvel — 800 × 775 — fita —",
+ "ferragens": [
+  "4 un Dobradiça CLIP top BLUMOTION 110°, reta, com amortecedor — Blum 71B3550",
+  "4 un Calço reto CLIP, 0 mm (porta sobreposta) — Blum 173L6100 (confirmar)",
+  "2 un Puxador barra, furação 128 mm",
+  "4 un Suporte de prateleira, pino 5 mm",
+  "40 un Parafuso 4,0 × 50 (montagem da caixa)",
+  "50 un Parafuso 3,5 × 14 (dobradiças, corrediças, fundos)",
+  "3 un Parafuso 5,0 × 60 + bucha S8 (parede)",
+  "11 m Fita de borda PVC 22 mm branca",
+  "1 un Silicone neutro"
+ ],
+ "plano": [
+  {
+   "material": "Chapa MDF RU branco fosco 18 mm",
+   "chapas": 1,
+   "pecasPorChapa": [
+    11
+   ]
+  },
+  {
+   "material": "Chapa MDF branco 6 mm (fundos)",
+   "chapas": 1,
+   "pecasPorChapa": [
+    1
+   ]
+  }
+ ],
+ "compras": 11,
+ "ilogic": [
+  "  Dim pecas() As String = { _",
+  "    \"01 - Lateral esquerda|Lateral esquerda|GB-01|426|800|18|1C|1|MDF RU branco fosco|50:9:4:0;213:9:4:0;376:9:4:0;25:791:4:0;75:791:4:0;351:791:4:0;401:791:4:0;417:707:4:0;417:757:4:0;60:386:5:10;380:386:5:10;37:85.5:3:10;37:117.5:3:10;37:682.5:3:10;37:714.5:3:10||Altura total da caixa.|\", _",
+  "    \"02 - Lateral direita|Lateral direita|GB-02|426|800|18|1C|1|MDF RU branco fosco|376:9:4:0;213:9:4:0;50:9:4:0;401:791:4:0;351:791:4:0;75:791:4:0;25:791:4:0;9:707:4:0;9:757:4:0;366:386:5:10;46:386:5:10;389:85.5:3:10;389:117.5:3:10;389:682.5:3:10;389:714.5:3:10||Altura total da caixa.|\", _",
+  "    \"03 - Base|Base|GB-03|739|426|18|1C|1|MDF RU branco fosco|||Entre as laterais.|\", _",
+  "    \"04 - Travessa superior frontal|Travessa superior frontal|GB-04|739|100|18|1C|1|MDF RU branco fosco|||Apoia o tampo. Confira a folga da cuba.|\", _",
+  "    \"05 - Travessa superior traseira|Travessa superior traseira|GB-05|739|100|18|—|1|MDF RU branco fosco|||Apoia o tampo.|\", _",
+  "    \"06 - Travessa de fixação na parede|Travessa de fixação na parede|GB-06|739|100|18|—|1|MDF RU branco fosco|50:50:6:0;369.5:50:6:0;689:50:6:0||Vertical, atrás. Recebe os parafusos da parede.|\", _",
+  "    \"07 - Prateleira|Prateleira|GB-07|737|400|18|1C|1|MDF RU branco fosco|||Topo a 409 mm do chão. Apoiada em 4 pinos.|\", _",
+  "    \"08 - Enchimento esquerdo (frontal)|Enchimento esquerdo (frontal)|GB-08|25|800|18|1C|1|MDF RU branco fosco|||Fecha a folga de 25 mm entre a caixa e a parede.|\", _",
+  "    \"09 - Sarrafo do enchimento esquerdo|Sarrafo do enchimento esquerdo|GB-09|60|800|18|—|1|MDF RU branco fosco|||Parafusado na lateral; segura o enchimento.|\", _",
+  "    \"10 - Porta esquerda|Porta esquerda|GB-10|384.5|797|18|2C 2L|1|MDF RU branco fosco|362.5:100:35:13;362.5:697:35:13;35:613:5:0;35:741:5:0||2 dobradiças. Caneco Ø35 com centro a 22 mm da borda, a 100 / 697 mm da base da porta. Abre até 90°.|\", _",
+  "    \"11 - Porta direita|Porta direita|GB-11|384.5|797|18|2C 2L|1|MDF RU branco fosco|22:100:35:13;22:697:35:13;349.5:613:5:0;349.5:741:5:0||2 dobradiças. Caneco Ø35 com centro a 22 mm da borda, a 100 / 697 mm da base da porta. Abre até 105°.|\", _",
+  "    \"12 - Fundo do móvel|Fundo do móvel|GB-12|775|800|6|—|1|MDF branco|||Pregado atrás. Recortar para os canos na obra.|\" }",
+  "    \"0|43|0|432|0|0|-1|0|1|0|1|0|0|Lateral esquerda\", _",
+  "    \"1|782|0|6|0|0|1|0|1|0|-1|0|0|Lateral direita\", _",
+  "    \"2|43|18|432|1|0|0|0|0|-1|0|1|0|Base\", _",
+  "    \"3|43|800|432|1|0|0|0|0|-1|0|1|0|Travessa superior frontal\", _",
+  "    \"4|43|800|106|1|0|0|0|0|-1|0|1|0|Travessa superior traseira\", _",
+  "    \"5|43|682|24|1|0|0|0|1|0|0|0|1|Travessa de fixação na parede\", _",
+  "    \"6|44|409|412|1|0|0|0|0|-1|0|1|0|Prateleira\", _",
+  "    \"7|0|0|450|1|0|0|0|1|0|0|0|1|Enchimento esquerdo (frontal)\", _",
+  "    \"8|7|0|372|0|0|1|0|1|0|-1|0|0|Sarrafo do enchimento esquerdo\", _",
+  "    \"9|411|1.5|432|-1|0|0|0|1|0|0|0|-1|Porta esquerda\", _",
+  "    \"10|798.5|1.5|432|-1|0|0|0|1|0|0|0|-1|Porta direita\", _",
+  "    \"11|800|0|0|-1|0|0|0|1|0|0|0|-1|Fundo do móvel\" }"
+ ],
+ "fixacoes": {}
+}

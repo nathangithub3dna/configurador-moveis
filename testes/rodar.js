@@ -14,6 +14,11 @@ const CASOS = [
   { nome: 'gabinete-padrao', tipo: 'gabinete', mudar: {} },
   { nome: 'armario-padrao', tipo: 'armario', mudar: {} },
   { nome: 'armario-3-vaos', tipo: 'armario', mudar: { vaos: 'vassoura, prateleiras, gavetas+botijao', alturaBeiral: 0 } },
+  { nome: 'gabinete-1-porta-parede-esq', tipo: 'gabinete', mudar: { portas: 1, paredeEsq: true, enchimento: true, largura: 600, prateleiras: 2 } },
+  { nome: 'gabinete-3-gavetas-sem-portas', tipo: 'gabinete', mudar: { portas: 0, gavetas: 3, alturasGavetas: '150, 200, 250', pes: 100, paredeDir: true, enchimento: true } },
+  { nome: 'gabinete-so-portas', tipo: 'gabinete', mudar: { gavetas: 0, prateleiras: 1, esgoto: 1500 } },
+  { nome: 'armario-2-vaos-gavetas', tipo: 'armario', mudar: { vaos: 'gavetas, prateleiras', largura: 900, paredeEsq: true, rodape: 0, alturaBeiral: 0 } },
+  { nome: 'armario-1-vao', tipo: 'armario', mudar: { vaos: 'prateleiras', largura: 500, altura: 900, prateleiras: 2 } },
 ];
 
 function resumo() {
@@ -69,6 +74,24 @@ function diferencas(a, b, caminho = '') {
     const atual = await page.evaluate(resumo);
     if (erros.length) atual.errosDaPagina = erros;
     if (atual.semPapel.length) { falhas++; console.log(`SEM FUNÇÃO  ${caso.nome}: ${atual.semPapel.join(', ')}`); }
+    // Sub-etapa 4a: o núcleo novo precisa gerar as mesmas peças (geometria, medidas, fita, furos) que o gerador atual
+    const v3 = await page.evaluate(() => {
+      const c = window.__configurador, e = c.estado, r = v => typeof v === 'number' ? Math.round(v * 10) / 10 : v;
+      const norm = ps => ps.map(p => JSON.stringify([p.papel, p.cat, p.lista, r(p.comp), r(p.larg), p.esp, p.mat, p.fita, (p.box||[]).map(r),
+        (p.des?.furos||[]).map(f => [r(f.x), r(f.y), f.d, f.prof, f.tipo]).sort((a,b) => JSON.stringify(a) < JSON.stringify(b) ? -1 : 1),
+        (p.des?.rasgos||[]).length, (p.des?.recortes||[]).map(x => [r(x.x), r(x.w), r(x.h)]), (p.des?.linhas||[]).length])).sort();
+      const conv = c.CONVERSORES_V3[e.projeto.tipo]; if (!conv) return { erro: 'sem conversor' };
+      const novo = c.gerarModuloV3(conv(e.projeto.parametros));
+      const a = norm(e.res.pecas), b = norm(novo.pecas);
+      const so = (x, y) => x.filter(v => !y.includes(v));
+      return { erros: novo.erros, nErrosAtual: e.res.erros.length, faltam: so(a, b), sobram: so(b, a) };
+    });
+    if (v3.erro || v3.erros.length !== v3.nErrosAtual || v3.faltam.length || v3.sobram.length) {
+      falhas++; console.log(`NÚCLEO NOVO DIFERENTE  ${caso.nome}  (${v3.erro || ''} erros: ${v3.erros?.length}, faltam ${v3.faltam?.length}, sobram ${v3.sobram?.length})`);
+      (v3.erros || []).slice(0, 5).forEach(x => console.log('   erro: ' + x));
+      (v3.faltam || []).slice(0, 6).forEach(x => console.log('   falta: ' + x.slice(0, 260)));
+      (v3.sobram || []).slice(0, 6).forEach(x => console.log('   sobra: ' + x.slice(0, 260)));
+    } else console.log(`NÚCLEO NOVO IGUAL  ${caso.nome}`);
     const arq = path.join(__dirname, 'referencia', caso.nome + '.json');
     if (atualizar || !fs.existsSync(arq)) {
       fs.writeFileSync(arq, JSON.stringify(atual, null, 1));
@@ -78,6 +101,45 @@ function diferencas(a, b, caminho = '') {
       if (d.length) { falhas++; console.log(`MUDOU    ${caso.nome}  (${d.length} diferenças)`); d.slice(0, 15).forEach(x => console.log('   ' + x)); }
       else console.log(`IGUAL    ${caso.nome}`);
     }
+    await page.close();
+  }
+  // Móvel montado só pelo núcleo novo (não existe nos tipos antigos): armário 1200 × 2000 × 500 com 2 vãos;
+  // vão 1 = porta + 4 prateleiras; vão 2 = gaveta 200 + gaveta 200 + porta em cima
+  {
+    const page = await ctx.newPage(); const erros = [];
+    page.on('pageerror', e => erros.push(e.message));
+    await page.addInitScript(() => { try { localStorage.clear(); } catch (e) {} });
+    await page.route('**/*', route => {
+      const u = route.request().url();
+      if (u.startsWith('http://teste/')) return route.fulfill({ body: pagina, contentType: 'text/html' });
+      const m = u.match(/three@0\.160\.0\/(.*)$/);
+      if (m) return route.fulfill({ path: nm('three/' + m[1]), contentType: 'application/javascript' });
+      if (u.includes('jspdf')) return route.fulfill({ path: nm('jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript' });
+      if (u.includes('jszip')) return route.fulfill({ path: nm('jszip/dist/jszip.min.js'), contentType: 'application/javascript' });
+      return route.abort();
+    });
+    await page.goto('http://teste/');
+    await page.waitForFunction(() => window.__configurador?.estado?.res, null, { timeout: 20000 });
+    const atual = await page.evaluate(() => {
+      const c = window.__configurador, r = v => typeof v === 'number' ? Math.round(v * 10) / 10 : v;
+      const pux = { ...c.CONVERSORES_V3.armario({ ...c.TIPOS.armario.padrao }).puxadorPorta };
+      const m = { largura:1200, altura:2000, profundidade:500,
+        construcao:{ espMDF:18, espFundo:6, apoio:'rodape', rodape:{ altura:100, recuo:40 }, topo:'inteiro', fixacao:'por-vao', beiral:0, paredeEsq:false, paredeDir:false, enchimento:false, furarLaterais:true },
+        ambiente:{}, puxadorPorta:pux, puxadorGaveta:{ ...pux, altura:'topo-120' },
+        raiz:{ tipo:'dividir', dir:'v', sep:'divisoria', partes:[
+          { medida:'auto', no:{ tipo:'vao', frente:{ tipo:'porta', lado:'esq' }, conteudo:[{ tipo:'prateleiras', n:4, min:150 }] } },
+          { medida:'auto', no:{ tipo:'dividir', dir:'h', sep:'divisoria', partes:[
+            { medida:400, no:{ tipo:'dividir', dir:'h', sep:'nenhum', partes:[{ medida:200, no:{ tipo:'vao', frente:{ tipo:'gaveta' } } }, { medida:200, no:{ tipo:'vao', frente:{ tipo:'gaveta' } } }] } },
+            { medida:'auto', no:{ tipo:'vao', frente:{ tipo:'porta', lado:'dir' }, conteudo:[{ tipo:'prateleiras', n:2, min:150 }] } } ] } } ] } };
+      const res = c.gerarModuloV3(m);
+      return { erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
+    });
+    if (erros.length) atual.errosDaPagina = erros;
+    const arq = path.join(__dirname, 'referencia', 'nucleo-armario-misto.json');
+    const semFuncao = atual.pecas.filter(p => !p.papel).map(p => p.id);
+    if (semFuncao.length || atual.erros.length || erros.length) { falhas++; console.log('NÚCLEO (móvel novo) COM PROBLEMA', JSON.stringify({ semFuncao, erros: atual.erros, pagina: erros })); }
+    else if (atualizar || !fs.existsSync(arq)) { fs.writeFileSync(arq, JSON.stringify(atual, null, 1)); console.log(`GRAVADO  nucleo-armario-misto  (${atual.pecas.length} peças)`); }
+    else { const d = diferencas(JSON.parse(fs.readFileSync(arq, 'utf8')), atual); if (d.length) { falhas++; console.log(`MUDOU    nucleo-armario-misto  (${d.length})`); d.slice(0, 10).forEach(x => console.log('   ' + x)); } else console.log('IGUAL    nucleo-armario-misto'); }
     await page.close();
   }
   await b.close();

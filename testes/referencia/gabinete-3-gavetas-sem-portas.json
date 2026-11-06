@@ -1,0 +1,1541 @@
+{
+ "erros": [
+  "Com 1 prateleira o vão fica com 32 mm (mínimo 100). Diminua as prateleiras ou as gavetas."
+ ],
+ "avisos": [],
+ "semPapel": [],
+ "pecas": [
+  {
+   "id": "lateral-esq",
+   "papel": "lateral",
+   "lado": "esq",
+   "nome": "Lateral esquerda",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 700,
+   "larg": 426,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    25,
+    43,
+    100,
+    800,
+    6,
+    432
+   ],
+   "furos": [
+    [
+     50,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     213,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     376,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     50,
+     591,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     213,
+     591,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     376,
+     591,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     25,
+     691,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     75,
+     691,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     351,
+     691,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     401,
+     691,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     417,
+     607,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     417,
+     657,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     60,
+     627,
+     5,
+     10,
+     "pino"
+    ],
+    [
+     380,
+     627,
+     5,
+     10,
+     "pino"
+    ],
+    [
+     37,
+     70,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     363,
+     70,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     37,
+     227,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     363,
+     227,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     37,
+     452,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     363,
+     452,
+     3,
+     10,
+     "corredica"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "lateral-dir",
+   "papel": "lateral",
+   "lado": "dir",
+   "nome": "Lateral direita",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 700,
+   "larg": 426,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    757,
+    775,
+    100,
+    800,
+    6,
+    432
+   ],
+   "furos": [
+    [
+     376,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     213,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     50,
+     9,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     376,
+     591,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     213,
+     591,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     50,
+     591,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     401,
+     691,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     351,
+     691,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     75,
+     691,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     25,
+     691,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     9,
+     607,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     9,
+     657,
+     4,
+     0,
+     "montagem"
+    ],
+    [
+     366,
+     627,
+     5,
+     10,
+     "pino"
+    ],
+    [
+     46,
+     627,
+     5,
+     10,
+     "pino"
+    ],
+    [
+     389,
+     70,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     63,
+     70,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     389,
+     227,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     63,
+     227,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     389,
+     452,
+     3,
+     10,
+     "corredica"
+    ],
+    [
+     63,
+     452,
+     3,
+     10,
+     "corredica"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "base",
+   "papel": "base",
+   "lado": null,
+   "nome": "Base",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 714,
+   "larg": 426,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    43,
+    757,
+    100,
+    118,
+    6,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "travessa-frontal",
+   "papel": "travessa",
+   "lado": null,
+   "nome": "Travessa superior frontal",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 714,
+   "larg": 100,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    43,
+    757,
+    782,
+    800,
+    332,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "travessa-traseira",
+   "papel": "travessa",
+   "lado": null,
+   "nome": "Travessa superior traseira",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 714,
+   "larg": 100,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    43,
+    757,
+    782,
+    800,
+    6,
+    106
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "travessa-fixacao",
+   "papel": "travessa-fixacao",
+   "lado": null,
+   "nome": "Travessa de fixação na parede",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 714,
+   "larg": 100,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    43,
+    757,
+    682,
+    782,
+    6,
+    24
+   ],
+   "furos": [
+    [
+     50,
+     50,
+     6,
+     0,
+     "parede"
+    ],
+    [
+     357,
+     50,
+     6,
+     0,
+     "parede"
+    ],
+    [
+     664,
+     50,
+     6,
+     0,
+     "parede"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "fundo",
+   "papel": "fundo",
+   "lado": null,
+   "nome": "Fundo do móvel",
+   "cat": "fundo",
+   "lista": true,
+   "comp": 750,
+   "larg": 700,
+   "esp": 6,
+   "mat": "mdf-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    25,
+    775,
+    100,
+    800,
+    0,
+    6
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "divisoria",
+   "papel": "divisoria",
+   "lado": null,
+   "nome": "Divisória (piso das portas)",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 714,
+   "larg": 426,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    43,
+    757,
+    682,
+    700,
+    6,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-1-frente",
+   "papel": "frente-gaveta",
+   "lado": null,
+   "nome": "Frente da gaveta 1",
+   "cat": "frente",
+   "lista": true,
+   "comp": 747,
+   "larg": 147,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    2,
+    2
+   ],
+   "box": [
+    26.5,
+    773.5,
+    101.5,
+    248.5,
+    432,
+    450
+   ],
+   "furos": [
+    [
+     309.5,
+     73.5,
+     5,
+     0,
+     "puxador"
+    ],
+    [
+     437.5,
+     73.5,
+     5,
+     0,
+     "puxador"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-1-lateral-esq",
+   "papel": "lateral-gaveta",
+   "lado": "esq",
+   "nome": "Lateral esquerda da gaveta 1",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 400,
+   "larg": 80,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    56,
+    74,
+    130,
+    210,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-1-lateral-dir",
+   "papel": "lateral-gaveta",
+   "lado": "dir",
+   "nome": "Lateral direita da gaveta 1",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 400,
+   "larg": 80,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    726,
+    744,
+    130,
+    210,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-1-frente-interna",
+   "papel": "frente-interna-gaveta",
+   "lado": null,
+   "nome": "Frente interna da gaveta 1",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 652,
+   "larg": 80,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    74,
+    726,
+    130,
+    210,
+    414,
+    432
+   ],
+   "furos": [
+    [
+     262,
+     45,
+     5,
+     0,
+     "puxador"
+    ],
+    [
+     390,
+     45,
+     5,
+     0,
+     "puxador"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-1-traseira",
+   "papel": "traseira-gaveta",
+   "lado": null,
+   "nome": "Traseira da gaveta 1",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 652,
+   "larg": 80,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    74,
+    726,
+    130,
+    210,
+    32,
+    50
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-1-fundo",
+   "papel": "fundo-gaveta",
+   "lado": null,
+   "nome": "Fundo da gaveta 1",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 688,
+   "larg": 400,
+   "esp": 6,
+   "mat": "mdf-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    56,
+    744,
+    124,
+    130,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-1-corredica-esq",
+   "papel": "corredica",
+   "lado": "esq",
+   "nome": "Corrediça 400 mm esquerda 1",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    43,
+    56,
+    147.5,
+    192.5,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-1-corredica-dir",
+   "papel": "corredica",
+   "lado": "dir",
+   "nome": "Corrediça 400 mm direita 1",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    744,
+    757,
+    147.5,
+    192.5,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-1-puxador",
+   "papel": "puxador",
+   "lado": null,
+   "nome": "Puxador da gaveta 1",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    320,
+    480,
+    169,
+    181,
+    450,
+    475
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-2-frente",
+   "papel": "frente-gaveta",
+   "lado": null,
+   "nome": "Frente da gaveta 2",
+   "cat": "frente",
+   "lista": true,
+   "comp": 747,
+   "larg": 197,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    2,
+    2
+   ],
+   "box": [
+    26.5,
+    773.5,
+    251.5,
+    448.5,
+    432,
+    450
+   ],
+   "furos": [
+    [
+     309.5,
+     98.5,
+     5,
+     0,
+     "puxador"
+    ],
+    [
+     437.5,
+     98.5,
+     5,
+     0,
+     "puxador"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-2-lateral-esq",
+   "papel": "lateral-gaveta",
+   "lado": "esq",
+   "nome": "Lateral esquerda da gaveta 2",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 400,
+   "larg": 130,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    56,
+    74,
+    262,
+    392,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-2-lateral-dir",
+   "papel": "lateral-gaveta",
+   "lado": "dir",
+   "nome": "Lateral direita da gaveta 2",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 400,
+   "larg": 130,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    726,
+    744,
+    262,
+    392,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-2-frente-interna",
+   "papel": "frente-interna-gaveta",
+   "lado": null,
+   "nome": "Frente interna da gaveta 2",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 652,
+   "larg": 130,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    74,
+    726,
+    262,
+    392,
+    414,
+    432
+   ],
+   "furos": [
+    [
+     262,
+     88,
+     5,
+     0,
+     "puxador"
+    ],
+    [
+     390,
+     88,
+     5,
+     0,
+     "puxador"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-2-traseira",
+   "papel": "traseira-gaveta",
+   "lado": null,
+   "nome": "Traseira da gaveta 2",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 652,
+   "larg": 130,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    74,
+    726,
+    262,
+    392,
+    32,
+    50
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-2-fundo",
+   "papel": "fundo-gaveta",
+   "lado": null,
+   "nome": "Fundo da gaveta 2",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 688,
+   "larg": 400,
+   "esp": 6,
+   "mat": "mdf-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    56,
+    744,
+    256,
+    262,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-2-corredica-esq",
+   "papel": "corredica",
+   "lado": "esq",
+   "nome": "Corrediça 400 mm esquerda 2",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    43,
+    56,
+    304.5,
+    349.5,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-2-corredica-dir",
+   "papel": "corredica",
+   "lado": "dir",
+   "nome": "Corrediça 400 mm direita 2",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    744,
+    757,
+    304.5,
+    349.5,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-2-puxador",
+   "papel": "puxador",
+   "lado": null,
+   "nome": "Puxador da gaveta 2",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    320,
+    480,
+    344,
+    356,
+    450,
+    475
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-3-frente",
+   "papel": "frente-gaveta",
+   "lado": null,
+   "nome": "Frente da gaveta 3",
+   "cat": "frente",
+   "lista": true,
+   "comp": 747,
+   "larg": 247,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    2,
+    2
+   ],
+   "box": [
+    26.5,
+    773.5,
+    451.5,
+    698.5,
+    432,
+    450
+   ],
+   "furos": [
+    [
+     309.5,
+     123.5,
+     5,
+     0,
+     "puxador"
+    ],
+    [
+     437.5,
+     123.5,
+     5,
+     0,
+     "puxador"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-3-lateral-esq",
+   "papel": "lateral-gaveta",
+   "lado": "esq",
+   "nome": "Lateral esquerda da gaveta 3",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 400,
+   "larg": 180,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    56,
+    74,
+    462,
+    642,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-3-lateral-dir",
+   "papel": "lateral-gaveta",
+   "lado": "dir",
+   "nome": "Lateral direita da gaveta 3",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 400,
+   "larg": 180,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    726,
+    744,
+    462,
+    642,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-3-frente-interna",
+   "papel": "frente-interna-gaveta",
+   "lado": null,
+   "nome": "Frente interna da gaveta 3",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 652,
+   "larg": 180,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    74,
+    726,
+    462,
+    642,
+    414,
+    432
+   ],
+   "furos": [
+    [
+     262,
+     113,
+     5,
+     0,
+     "puxador"
+    ],
+    [
+     390,
+     113,
+     5,
+     0,
+     "puxador"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-3-traseira",
+   "papel": "traseira-gaveta",
+   "lado": null,
+   "nome": "Traseira da gaveta 3",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 652,
+   "larg": 180,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    74,
+    726,
+    462,
+    642,
+    32,
+    50
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-3-fundo",
+   "papel": "fundo-gaveta",
+   "lado": null,
+   "nome": "Fundo da gaveta 3",
+   "cat": "gaveta",
+   "lista": true,
+   "comp": 688,
+   "larg": 400,
+   "esp": 6,
+   "mat": "mdf-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    56,
+    744,
+    456,
+    462,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-3-corredica-esq",
+   "papel": "corredica",
+   "lado": "esq",
+   "nome": "Corrediça 400 mm esquerda 3",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    43,
+    56,
+    529.5,
+    574.5,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-3-corredica-dir",
+   "papel": "corredica",
+   "lado": "dir",
+   "nome": "Corrediça 400 mm direita 3",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    744,
+    757,
+    529.5,
+    574.5,
+    32,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "gaveta-3-puxador",
+   "papel": "puxador",
+   "lado": null,
+   "nome": "Puxador da gaveta 3",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    320,
+    480,
+    569,
+    581,
+    450,
+    475
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "prateleira-1",
+   "papel": "prateleira",
+   "lado": null,
+   "nome": "Prateleira",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 712,
+   "larg": 400,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    44,
+    756,
+    732,
+    750,
+    12,
+    412
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "enchimento-esq",
+   "papel": "enchimento",
+   "lado": "esq",
+   "nome": "Enchimento esquerdo (frontal)",
+   "cat": "enchimento",
+   "lista": true,
+   "comp": 700,
+   "larg": 25,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    0,
+    25,
+    100,
+    800,
+    432,
+    450
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "sarrafo-esq",
+   "papel": "sarrafo",
+   "lado": "esq",
+   "nome": "Sarrafo do enchimento esquerdo",
+   "cat": "enchimento",
+   "lista": true,
+   "comp": 700,
+   "larg": 60,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    7,
+    25,
+    100,
+    800,
+    372,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "enchimento-dir",
+   "papel": "enchimento",
+   "lado": "dir",
+   "nome": "Enchimento direito (frontal)",
+   "cat": "enchimento",
+   "lista": true,
+   "comp": 700,
+   "larg": 25,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    775,
+    800,
+    100,
+    800,
+    432,
+    450
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "sarrafo-dir",
+   "papel": "sarrafo",
+   "lado": "dir",
+   "nome": "Sarrafo do enchimento direito",
+   "cat": "enchimento",
+   "lista": true,
+   "comp": 700,
+   "larg": 60,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    775,
+    793,
+    100,
+    800,
+    372,
+    432
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "tampo",
+   "papel": "tampo",
+   "lado": null,
+   "nome": "Tampo (existente)",
+   "cat": "tampo",
+   "lista": false,
+   "comp": 800,
+   "larg": 450,
+   "esp": 20,
+   "mat": "marmore",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    0,
+    800,
+    800,
+    820,
+    0,
+    450
+   ],
+   "furos": [],
+   "rasgos": 0
+  }
+ ],
+ "listaDeCorte": "LISTA DE CORTE — Gabinete do banheiro\nMedidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.\n\nMDF RU BRANCO FOSCO 18 MM\n2× Lateral — 800 × 426 — fita 1C\n1× Base — 739 × 426 — fita 1C\n1× Travessa superior frontal — 739 × 100 — fita 1C\n1× Travessa superior traseira — 739 × 100 — fita —\n1× Travessa de fixação — 739 × 100 — fita —\n1× Divisória — 739 × 426 — fita 1C\n1× Prateleira com recorte — 737 × 400 — fita 1C — recorte 300 × 150 no centro de trás\n1× Enchimento frontal — 800 × 25 — fita 1C\n1× Sarrafo do enchimento — 800 × 60 — fita —\n1× Frente da gaveta — 772 × 197 — fita 2C 2L\n2× Frente/traseira da gaveta — 677 × 130 — fita 1C\n2× Lateral da gaveta — 400 × 130 — fita 1C\n\nMDF BRANCO 6 MM\n1× Fundo da gaveta — 713 × 400 — fita —\n1× Fundo do móvel — 800 × 775 — fita —",
+ "ferragens": [
+  "3 par Corrediça telescópica 45 mm com amortecedor, extração total 400 mm — FGV / Telescópica (equivalente)",
+  "3 un Puxador barra, furação 128 mm",
+  "4 un Suporte de prateleira, pino 5 mm",
+  "100 un Parafuso 4,0 × 50 (montagem da caixa)",
+  "130 un Parafuso 3,5 × 14 (dobradiças, corrediças, fundos)",
+  "12 un Parafuso 3,5 × 25 (frente da gaveta)",
+  "3 un Parafuso 5,0 × 60 + bucha S8 (parede)",
+  "4 un Sapata niveladora",
+  "20 m Fita de borda PVC 22 mm branca",
+  "1 un Silicone neutro"
+ ],
+ "plano": [
+  {
+   "material": "Chapa MDF RU branco fosco 18 mm",
+   "chapas": 1,
+   "pecasPorChapa": [
+    15
+   ]
+  },
+  {
+   "material": "Chapa MDF branco 6 mm (fundos)",
+   "chapas": 1,
+   "pecasPorChapa": [
+    2
+   ]
+  }
+ ],
+ "compras": 11,
+ "ilogic": [
+  "  Dim pecas() As String = { _",
+  "    \"01 - Lateral esquerda|Lateral esquerda|GB-01|426|700|18|1C|1|MDF RU branco fosco|50:9:4:0;213:9:4:0;376:9:4:0;50:591:4:0;213:591:4:0;376:591:4:0;25:691:4:0;75:691:4:0;351:691:4:0;401:691:4:0;417:607:4:0;417:657:4:0;60:627:5:10;380:627:5:10;37:70:3:10;363:70:3:10;37:227:3:10;363:227:3:10;37:452:3:10;363:452:3:10||Altura total da caixa.|\", _",
+  "    \"02 - Lateral direita|Lateral direita|GB-02|426|700|18|1C|1|MDF RU branco fosco|376:9:4:0;213:9:4:0;50:9:4:0;376:591:4:0;213:591:4:0;50:591:4:0;401:691:4:0;351:691:4:0;75:691:4:0;25:691:4:0;9:607:4:0;9:657:4:0;366:627:5:10;46:627:5:10;389:70:3:10;63:70:3:10;389:227:3:10;63:227:3:10;389:452:3:10;63:452:3:10||Altura total da caixa.|\", _",
+  "    \"03 - Base|Base|GB-03|714|426|18|1C|1|MDF RU branco fosco|||Entre as laterais.|\", _",
+  "    \"04 - Travessa superior frontal|Travessa superior frontal|GB-04|714|100|18|1C|1|MDF RU branco fosco|||Apoia o tampo. Confira a folga da cuba.|\", _",
+  "    \"05 - Travessa superior traseira|Travessa superior traseira|GB-05|714|100|18|—|1|MDF RU branco fosco|||Apoia o tampo.|\", _",
+  "    \"06 - Travessa de fixação na parede|Travessa de fixação na parede|GB-06|714|100|18|—|1|MDF RU branco fosco|50:50:6:0;357:50:6:0;664:50:6:0||Vertical, atrás. Recebe os parafusos da parede.|\", _",
+  "    \"07 - Divisória (piso das portas)|Divisória (piso das portas)|GB-07|714|426|18|1C|1|MDF RU branco fosco|||Topo a 700 mm do chão. Separa gavetas e portas.|\", _",
+  "    \"08 - Prateleira|Prateleira|GB-08|712|400|18|1C|1|MDF RU branco fosco|||Topo a 750 mm do chão. Apoiada em 4 pinos.|\", _",
+  "    \"09 - Enchimento esquerdo (frontal)|Enchimento esquerdo (frontal)|GB-09|25|700|18|1C|1|MDF RU branco fosco|||Fecha a folga de 25 mm entre a caixa e a parede.|\", _",
+  "    \"10 - Sarrafo do enchimento|Sarrafo do enchimento|GB-10|60|700|18|—|2|MDF RU branco fosco|||Parafusado na lateral; segura o enchimento.|\", _",
+  "    \"11 - Enchimento direito (frontal)|Enchimento direito (frontal)|GB-11|25|700|18|1C|1|MDF RU branco fosco|||Fecha a folga de 25 mm entre a caixa e a parede.|\", _",
+  "    \"12 - Frente da gaveta 1|Frente da gaveta 1|GB-12|747|147|18|2C 2L|1|MDF RU branco fosco|309.5:73.5:5:0;437.5:73.5:5:0||Presa à caixa da gaveta por dentro (parafuso 3,5 × 25).|\", _",
+  "    \"13 - Frente da gaveta 2|Frente da gaveta 2|GB-13|747|197|18|2C 2L|1|MDF RU branco fosco|309.5:98.5:5:0;437.5:98.5:5:0||Presa à caixa da gaveta por dentro (parafuso 3,5 × 25).|\", _",
+  "    \"14 - Frente da gaveta 3|Frente da gaveta 3|GB-14|747|247|18|2C 2L|1|MDF RU branco fosco|309.5:123.5:5:0;437.5:123.5:5:0||Presa à caixa da gaveta por dentro (parafuso 3,5 × 25).|\", _",
+  "    \"15 - Lateral da gaveta|Lateral da gaveta|GB-15|400|80|18|1C|2|MDF RU branco fosco||||\", _",
+  "    \"16 - Frente interna da gaveta 1|Frente interna da gaveta 1|GB-16|652|80|18|1C|1|MDF RU branco fosco|262:45:5:0;390:45:5:0||Entre as laterais da gaveta. Furar o puxador junto com a frente (parafuso M4 longo).|\", _",
+  "    \"17 - Traseira da gaveta 1|Traseira da gaveta 1|GB-17|652|80|18|1C|1|MDF RU branco fosco|||Entre as laterais da gaveta.|\", _",
+  "    \"18 - Fundo da gaveta|Fundo da gaveta|GB-18|688|400|6|—|3|MDF branco|||Pregado por baixo.|\", _",
+  "    \"19 - Lateral da gaveta|Lateral da gaveta|GB-19|400|130|18|1C|2|MDF RU branco fosco||||\", _",
+  "    \"20 - Frente interna da gaveta 2|Frente interna da gaveta 2|GB-20|652|130|18|1C|1|MDF RU branco fosco|262:88:5:0;390:88:5:0||Entre as laterais da gaveta. Furar o puxador junto com a frente (parafuso M4 longo).|\", _",
+  "    \"21 - Traseira da gaveta 2|Traseira da gaveta 2|GB-21|652|130|18|1C|1|MDF RU branco fosco|||Entre as laterais da gaveta.|\", _",
+  "    \"22 - Lateral da gaveta|Lateral da gaveta|GB-22|400|180|18|1C|2|MDF RU branco fosco||||\", _",
+  "    \"23 - Frente interna da gaveta 3|Frente interna da gaveta 3|GB-23|652|180|18|1C|1|MDF RU branco fosco|262:113:5:0;390:113:5:0||Entre as laterais da gaveta. Furar o puxador junto com a frente (parafuso M4 longo).|\", _",
+  "    \"24 - Traseira da gaveta 3|Traseira da gaveta 3|GB-24|652|180|18|1C|1|MDF RU branco fosco|||Entre as laterais da gaveta.|\", _",
+  "    \"25 - Fundo do móvel|Fundo do móvel|GB-25|750|700|6|—|1|MDF branco|||Pregado atrás. Recortar para os canos na obra.|\" }",
+  "    \"0|43|100|432|0|0|-1|0|1|0|1|0|0|Lateral esquerda\", _",
+  "    \"1|757|100|6|0|0|1|0|1|0|-1|0|0|Lateral direita\", _",
+  "    \"2|43|118|432|1|0|0|0|0|-1|0|1|0|Base\", _",
+  "    \"3|43|800|432|1|0|0|0|0|-1|0|1|0|Travessa superior frontal\", _",
+  "    \"4|43|800|106|1|0|0|0|0|-1|0|1|0|Travessa superior traseira\", _",
+  "    \"5|43|682|24|1|0|0|0|1|0|0|0|1|Travessa de fixação na parede\", _",
+  "    \"6|43|700|432|1|0|0|0|0|-1|0|1|0|Divisória (piso das portas)\", _",
+  "    \"7|44|750|412|1|0|0|0|0|-1|0|1|0|Prateleira\", _",
+  "    \"8|0|100|450|1|0|0|0|1|0|0|0|1|Enchimento esquerdo (frontal)\", _",
+  "    \"9|7|100|372|0|0|1|0|1|0|-1|0|0|Sarrafo do enchimento esquerdo\", _",
+  "    \"9|775|100|372|0|0|1|0|1|0|-1|0|0|Sarrafo do enchimento direito\", _",
+  "    \"10|775|100|450|1|0|0|0|1|0|0|0|1|Enchimento direito (frontal)\", _",
+  "    \"11|773.5|101.5|432|-1|0|0|0|1|0|0|0|-1|Frente da gaveta 1\", _",
+  "    \"12|773.5|251.5|432|-1|0|0|0|1|0|0|0|-1|Frente da gaveta 2\", _",
+  "    \"13|773.5|451.5|432|-1|0|0|0|1|0|0|0|-1|Frente da gaveta 3\", _",
+  "    \"14|56|130|32|0|0|1|0|1|0|-1|0|0|Lateral esquerda da gaveta 1\", _",
+  "    \"14|744|130|432|0|0|-1|0|1|0|1|0|0|Lateral direita da gaveta 1\", _",
+  "    \"15|74|130|432|1|0|0|0|1|0|0|0|1|Frente interna da gaveta 1\", _",
+  "    \"16|74|130|50|1|0|0|0|1|0|0|0|1|Traseira da gaveta 1\", _",
+  "    \"17|56|130|432|1|0|0|0|0|-1|0|1|0|Fundo da gaveta 1\", _",
+  "    \"17|56|262|432|1|0|0|0|0|-1|0|1|0|Fundo da gaveta 2\", _",
+  "    \"17|56|462|432|1|0|0|0|0|-1|0|1|0|Fundo da gaveta 3\", _",
+  "    \"18|56|262|32|0|0|1|0|1|0|-1|0|0|Lateral esquerda da gaveta 2\", _",
+  "    \"18|744|262|432|0|0|-1|0|1|0|1|0|0|Lateral direita da gaveta 2\", _",
+  "    \"19|74|262|432|1|0|0|0|1|0|0|0|1|Frente interna da gaveta 2\", _",
+  "    \"20|74|262|50|1|0|0|0|1|0|0|0|1|Traseira da gaveta 2\", _",
+  "    \"21|56|462|32|0|0|1|0|1|0|-1|0|0|Lateral esquerda da gaveta 3\", _",
+  "    \"21|744|462|432|0|0|-1|0|1|0|1|0|0|Lateral direita da gaveta 3\", _",
+  "    \"22|74|462|432|1|0|0|0|1|0|0|0|1|Frente interna da gaveta 3\", _",
+  "    \"23|74|462|50|1|0|0|0|1|0|0|0|1|Traseira da gaveta 3\", _",
+  "    \"24|775|100|0|-1|0|0|0|1|0|0|0|-1|Fundo do móvel\" }"
+ ],
+ "fixacoes": {}
+}

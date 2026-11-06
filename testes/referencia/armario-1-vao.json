@@ -1,0 +1,551 @@
+{
+ "erros": [],
+ "avisos": [],
+ "semPapel": [],
+ "pecas": [
+  {
+   "id": "lateral-esq",
+   "papel": "lateral",
+   "lado": "esq",
+   "nome": "Lateral esquerda",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 820,
+   "larg": 376,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    0,
+    18,
+    0,
+    820,
+    6,
+    382
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "lateral-dir",
+   "papel": "lateral",
+   "lado": "dir",
+   "nome": "Lateral direita",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 820,
+   "larg": 376,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    482,
+    500,
+    0,
+    820,
+    6,
+    382
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "topo",
+   "papel": "topo",
+   "lado": null,
+   "nome": "Topo",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 464,
+   "larg": 376,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    18,
+    482,
+    802,
+    820,
+    6,
+    382
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "base",
+   "papel": "base",
+   "lado": null,
+   "nome": "Base",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 464,
+   "larg": 376,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    18,
+    482,
+    100,
+    118,
+    6,
+    382
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "rodape-frontal",
+   "papel": "rodape",
+   "lado": null,
+   "nome": "Rodapé frontal",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 464,
+   "larg": 100,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    18,
+    482,
+    0,
+    100,
+    324,
+    342
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "rodape-traseiro",
+   "papel": "rodape",
+   "lado": null,
+   "nome": "Rodapé traseiro",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 464,
+   "larg": 100,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    18,
+    482,
+    0,
+    100,
+    6,
+    24
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "beiral-frontal",
+   "papel": "beiral-frontal",
+   "lado": null,
+   "nome": "Beiral frontal",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 500,
+   "larg": 80,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    2
+   ],
+   "box": [
+    0,
+    500,
+    820,
+    900,
+    364,
+    382
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "beiral-esq",
+   "papel": "beiral-lateral",
+   "lado": "esq",
+   "nome": "Beiral lateral esquerdo",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 358,
+   "larg": 80,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    0,
+    18,
+    820,
+    900,
+    6,
+    364
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "beiral-dir",
+   "papel": "beiral-lateral",
+   "lado": "dir",
+   "nome": "Beiral lateral direito",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 358,
+   "larg": 80,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    482,
+    500,
+    820,
+    900,
+    6,
+    364
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "fundo",
+   "papel": "fundo",
+   "lado": null,
+   "nome": "Fundo do móvel",
+   "cat": "fundo",
+   "lista": true,
+   "comp": 720,
+   "larg": 500,
+   "esp": 6,
+   "mat": "mdf-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    0,
+    500,
+    100,
+    820,
+    0,
+    6
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "travessa-fixacao-1",
+   "papel": "travessa-fixacao",
+   "lado": null,
+   "nome": "Travessa de fixação 1",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 464,
+   "larg": 80,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    18,
+    482,
+    722,
+    802,
+    6,
+    24
+   ],
+   "furos": [
+    [
+     50,
+     40,
+     6,
+     0,
+     "parede"
+    ],
+    [
+     414,
+     40,
+     6,
+     0,
+     "parede"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-1",
+   "papel": "porta",
+   "lado": null,
+   "nome": "Porta 1",
+   "cat": "frente",
+   "lista": true,
+   "comp": 717,
+   "larg": 497,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    2,
+    2
+   ],
+   "box": [
+    1.5,
+    498.5,
+    101.5,
+    818.5,
+    382,
+    400
+   ],
+   "furos": [
+    [
+     475,
+     100,
+     35,
+     13,
+     "caneco"
+    ],
+    [
+     475,
+     617,
+     35,
+     13,
+     "caneco"
+    ],
+    [
+     35,
+     371,
+     5,
+     0,
+     "puxador"
+    ],
+    [
+     35,
+     691,
+     5,
+     0,
+     "puxador"
+    ]
+   ],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-1-dobradica-1",
+   "papel": "dobradica",
+   "lado": null,
+   "nome": "Dobradiça 1 da porta 1",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    6,
+    41,
+    184,
+    219,
+    381,
+    394
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-1-dobradica-2",
+   "papel": "dobradica",
+   "lado": null,
+   "nome": "Dobradiça 2 da porta 1",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    6,
+    41,
+    701,
+    736,
+    381,
+    394
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "porta-1-puxador",
+   "papel": "puxador",
+   "lado": null,
+   "nome": "Puxador da porta 1",
+   "cat": "ferragem",
+   "lista": false,
+   "esp": 18,
+   "mat": "cromado",
+   "fita": [
+    0,
+    0
+   ],
+   "box": [
+    450.5,
+    476.5,
+    466.5,
+    798.5,
+    400,
+    445
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "prateleira-1-1",
+   "papel": "prateleira",
+   "lado": null,
+   "nome": "Prateleira 1 do vão 1",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 462,
+   "larg": 350,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    19,
+    481,
+    334,
+    352,
+    12,
+    362
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
+   "id": "prateleira-1-2",
+   "papel": "prateleira",
+   "lado": null,
+   "nome": "Prateleira 2 do vão 1",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 462,
+   "larg": 350,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    19,
+    481,
+    568,
+    586,
+    12,
+    362
+   ],
+   "furos": [],
+   "rasgos": 0
+  }
+ ],
+ "listaDeCorte": "LISTA DE CORTE — Armário da área de serviço\nMedidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.\n\nMDF RU BRANCO FOSCO 18 MM\n2× Lateral — 820 × 376 — fita 1C\n1× Beiral frontal — 500 × 80 — fita 1C 2L\n1× Topo — 464 × 376 — fita 1C\n1× Base — 464 × 376 — fita 1C\n2× Rodapé — 464 × 100 — fita —\n1× Travessa de fixação — 464 × 80 — fita —\n2× Prateleira — 462 × 350 — fita 1C\n2× Beiral lateral — 358 × 80 — fita 1C\n1× Porta — 717 × 497 — fita 2C 2L\n\nMDF BRANCO 6 MM\n1× Fundo do móvel — 720 × 500 — fita —",
+ "ferragens": [
+  "2 un Dobradiça CLIP top BLUMOTION 110°, reta, com amortecedor — Blum 71B3550",
+  "2 un Calço reto CLIP, 0 mm (porta sobreposta) — Blum 173L6100 (confirmar)",
+  "1 un Puxador Como 320 mm, inox escovado — Hettich 115078",
+  "8 un Suporte de prateleira, pino 5 mm",
+  "50 un Parafuso 4,0 × 50 (montagem da caixa)",
+  "40 un Parafuso 3,5 × 14 (dobradiças, corrediças, fundos)",
+  "12 un Cavilha de madeira 8 × 30 mm + cola (beiral)",
+  "2 un Parafuso 5,0 × 60 + bucha S8 (parede)",
+  "9 m Fita de borda PVC 22 mm branca"
+ ],
+ "plano": [
+  {
+   "material": "Chapa MDF RU branco fosco 18 mm",
+   "chapas": 1,
+   "pecasPorChapa": [
+    13
+   ]
+  },
+  {
+   "material": "Chapa MDF branco 6 mm (fundos)",
+   "chapas": 1,
+   "pecasPorChapa": [
+    1
+   ]
+  }
+ ],
+ "compras": 11,
+ "ilogic": [
+  "  Dim pecas() As String = { _",
+  "    \"01 - Lateral esquerda|Lateral esquerda|AAS-01|376|820|18|1C|1|MDF RU branco fosco|||Altura total, até o chão (rodapé recuado).|\", _",
+  "    \"02 - Lateral direita|Lateral direita|AAS-02|376|820|18|1C|1|MDF RU branco fosco|||Altura total, até o chão (rodapé recuado).|\", _",
+  "    \"03 - Topo|Topo|AAS-03|464|376|18|1C|1|MDF RU branco fosco|||Entre as laterais.|\", _",
+  "    \"04 - Base|Base|AAS-04|464|376|18|1C|1|MDF RU branco fosco|||Apoiada no rodapé, a 100 mm do chão.|\", _",
+  "    \"05 - Rodapé|Rodapé|AAS-05|464|100|18|—|2|MDF RU branco fosco|||Recuado 40 mm da frente da caixa.|\", _",
+  "    \"06 - Beiral frontal|Beiral frontal|AAS-06|500|80|18|1C 2L|1|MDF RU branco fosco|||Em cima do topo, alinhado com a frente da caixa. Parafusado por baixo do topo; cavilhas nas laterais.|\", _",
+  "    \"07 - Beiral lateral|Beiral lateral|AAS-07|358|80|18|1C|2|MDF RU branco fosco|||Sobre a lateral: 2 cavilhas Ø8 × 30 com cola no topo da lateral e 2 no beiral frontal.|\", _",
+  "    \"08 - Travessa de fixação 1|Travessa de fixação 1|AAS-08|464|80|18|—|1|MDF RU branco fosco|50:40:6:0;414:40:6:0||Atrás, sob o topo. 2 parafusos na parede.|\", _",
+  "    \"09 - Prateleira|Prateleira|AAS-09|462|350|18|1C|2|MDF RU branco fosco|||Topo a 352 mm do chão. Apoiada em 4 pinos.|\", _",
+  "    \"10 - Porta 1|Porta 1|AAS-10|497|717|18|2C 2L|1|MDF RU branco fosco|475:100:35:13;475:617:35:13;35:371:5:0;35:691:5:0||2 dobradiças do lado esquerdo. Caneco Ø35 × 13 com centro a 22 mm da borda, a 100 / 617 mm da base da porta.|\", _",
+  "    \"11 - Fundo do móvel|Fundo do móvel|AAS-11|500|720|6|—|1|MDF branco|||Parafusado atrás em todo o contorno e nas divisórias.|\" }",
+  "    \"0|18|0|382|0|0|-1|0|1|0|1|0|0|Lateral esquerda\", _",
+  "    \"1|482|0|6|0|0|1|0|1|0|-1|0|0|Lateral direita\", _",
+  "    \"2|18|820|382|1|0|0|0|0|-1|0|1|0|Topo\", _",
+  "    \"3|18|118|382|1|0|0|0|0|-1|0|1|0|Base\", _",
+  "    \"4|18|0|342|1|0|0|0|1|0|0|0|1|Rodapé frontal\", _",
+  "    \"4|18|0|24|1|0|0|0|1|0|0|0|1|Rodapé traseiro\", _",
+  "    \"5|0|820|382|1|0|0|0|1|0|0|0|1|Beiral frontal\", _",
+  "    \"6|18|820|364|0|0|-1|0|1|0|1|0|0|Beiral lateral esquerdo\", _",
+  "    \"6|500|820|364|0|0|-1|0|1|0|1|0|0|Beiral lateral direito\", _",
+  "    \"7|18|722|24|1|0|0|0|1|0|0|0|1|Travessa de fixação 1\", _",
+  "    \"8|19|352|362|1|0|0|0|0|-1|0|1|0|Prateleira 1 do vão 1\", _",
+  "    \"8|19|586|362|1|0|0|0|0|-1|0|1|0|Prateleira 2 do vão 1\", _",
+  "    \"9|498.5|101.5|382|-1|0|0|0|1|0|0|0|-1|Porta 1\", _",
+  "    \"10|500|100|0|-1|0|0|0|1|0|0|0|-1|Fundo do móvel\" }"
+ ],
+ "fixacoes": {
+  "paraf-40x50": 36,
+  "cavilha-8x30": 10,
+  "paraf-35x14": 20,
+  "paraf-50x60-bucha": 2,
+  "pino-5": 8
+ }
+}
