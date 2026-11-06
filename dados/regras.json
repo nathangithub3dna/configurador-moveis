@@ -7,7 +7,8 @@
     "folgaAltGaveta": "altura da caixa = altura da gaveta − 70 (arredondado a 10)",
     "faixaEsgoto": "± em volta do centro do esgoto",
     "serra": "plano de corte: espessura do disco e limpeza das bordas da chapa",
-    "dobradicasPorAltura": "quantidade de dobradiças conforme a altura da porta (null = acima do último valor)"
+    "dobradicasPorAltura": "quantidade de dobradiças conforme a altura da porta (null = acima do último valor)",
+    "transporteMenorLado": "transporte: o menor lado de uma peça grande não passa disto (a mesma largura da chapa de 1220 que já se carrega). [Suposição — confirmar com o veículo e as portas/escadas da obra]"
   },
   "borda": 1.5,
   "entre": 3,
@@ -58,5 +59,6 @@
       "ateAltura": null,
       "quantidade": 4
     }
-  ]
+  ],
+  "transporteMenorLado": 1220
 }

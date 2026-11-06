@@ -334,7 +334,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /* =====================================================================
    1. REGRAS DE MARCENARIA (mm) — valem para todos os tipos de móvel
    ===================================================================== */
-const R = (({ _explicacao, ...r }) => r)({"_explicacao":{"borda":"folga das frentes nas bordas externas","entre":"folga entre duas frentes","corredica":"corrediça telescópica 45 mm: desconto de 26 mm na largura da gaveta (13 por lado)","canecoDiam":"Blum CLIP top BLUMOTION 71B3550: diâmetro, profundidade e centro do caneco a partir da borda; dobradicaBorda = distância da 1ª e da última dobradiça até a ponta da porta","folgaAltGaveta":"altura da caixa = altura da gaveta − 70 (arredondado a 10)","faixaEsgoto":"± em volta do centro do esgoto","serra":"plano de corte: espessura do disco e limpeza das bordas da chapa","dobradicasPorAltura":"quantidade de dobradiças conforme a altura da porta (null = acima do último valor)"},"borda":1.5,"entre":3,"corredica":13,"corredicas":[250,300,350,400,450,500,550],"canecoDiam":35,"canecoProf":13,"canecoBorda":22,"dobradicaBorda":100,"enchimento":25,"sarrafo":60,"travessa":100,"recuoPrat":20,"folgaPrat":1,"folgaFundoPrat":6,"folgaAltGaveta":70,"folgaPisoGaveta":12,"faixaEsgoto":75,"portaMaxLarg":600,"angMaxDobradica":105,"puxadorComp":160,"chapa":[2750,1850],"aproveitamento":0.85,"perdaFita":1.1,"serra":4,"refilo":10,"dobradicasPorAltura":[{"ateAltura":900,"quantidade":2},{"ateAltura":1600,"quantidade":3},{"ateAltura":null,"quantidade":4}]});
+const R = (({ _explicacao, ...r }) => r)({"_explicacao":{"borda":"folga das frentes nas bordas externas","entre":"folga entre duas frentes","corredica":"corrediça telescópica 45 mm: desconto de 26 mm na largura da gaveta (13 por lado)","canecoDiam":"Blum CLIP top BLUMOTION 71B3550: diâmetro, profundidade e centro do caneco a partir da borda; dobradicaBorda = distância da 1ª e da última dobradiça até a ponta da porta","folgaAltGaveta":"altura da caixa = altura da gaveta − 70 (arredondado a 10)","faixaEsgoto":"± em volta do centro do esgoto","serra":"plano de corte: espessura do disco e limpeza das bordas da chapa","dobradicasPorAltura":"quantidade de dobradiças conforme a altura da porta (null = acima do último valor)","transporteMenorLado":"transporte: o menor lado de uma peça grande não passa disto (a mesma largura da chapa de 1220 que já se carrega). [Suposição — confirmar com o veículo e as portas/escadas da obra]"},"borda":1.5,"entre":3,"corredica":13,"corredicas":[250,300,350,400,450,500,550],"canecoDiam":35,"canecoProf":13,"canecoBorda":22,"dobradicaBorda":100,"enchimento":25,"sarrafo":60,"travessa":100,"recuoPrat":20,"folgaPrat":1,"folgaFundoPrat":6,"folgaAltGaveta":70,"folgaPisoGaveta":12,"faixaEsgoto":75,"portaMaxLarg":600,"angMaxDobradica":105,"puxadorComp":160,"chapa":[2750,1850],"aproveitamento":0.85,"perdaFita":1.1,"serra":4,"refilo":10,"dobradicasPorAltura":[{"ateAltura":900,"quantidade":2},{"ateAltura":1600,"quantidade":3},{"ateAltura":null,"quantidade":4}],"transporteMenorLado":1220});
 // Puxadores reais (medidas do fabricante; "conf" = medida não publicada, estimada — confirmar na loja)
 const PUXADORES = Object.fromEntries(Object.entries({"1":{"ref":"pux-hettich-brema-128","rot":"Hettich Brema 128 · inox escovado","modelo":"barra","furacao":128,"comp":140,"larg":14,"proj":35,"cor":"#b9bec2"},"2":{"ref":"pux-hettich-como-320","rot":"Hettich Como 320 · inox escovado","modelo":"barra","furacao":320,"comp":332,"larg":26,"proj":45,"cor":"#b9bec2"},"3":{"ref":"pux-zen-citizen-96","rot":"Zen Citizen 96 · gold escovado","modelo":"barra","furacao":96,"comp":130,"larg":12,"proj":30,"cor":"#c8a35e","conf":"largura e saliência"},"4":{"ref":"pux-zen-elemento-128","rot":"Zen Elemento G 128 · preto fosco","modelo":"bloco","furacao":128,"comp":192,"larg":30,"proj":18,"cor":"#2a2c2e"},"5":{"ref":"pux-zen-shell-64","rot":"Zen Shell 64 (concha) · gold escovado","modelo":"concha","furacao":64,"comp":90,"larg":34,"proj":24,"cor":"#c8a35e","conf":"largura e saliência"}}).map(([k, v]) => [k, { ...v, cor: parseInt(v.cor.slice(1), 16) }]));
 const opcoesPuxador = Object.entries(PUXADORES).map(([k,v]) => [Number(k), v.rot]);
@@ -1255,14 +1255,15 @@ function gerarModuloV3(m) {
 
   percorrer(m.raiz, regiao0, 0);
 
-  // FUNDO SOBREPOSTO — usa a chapa de mercado que dá menos peças; emenda sobre divisória ou, sem divisória, com perfil H plástico
+  // FUNDO SOBREPOSTO — peças limitadas pelo transporte; usa a chapa de mercado que dá menos chapas; emenda sobre divisória ou, sem divisória, com perfil H plástico
   if (fundoPendente) {
     const matF = c.fundo.material || 'mdf-branco', espF = matF.startsWith('hdf') ? 3 : tf, hF = H - yBase;
     const PH = BIBLIOTECA['perfil-h-emenda-fundo-3'], alma = matF.startsWith('hdf') && PH ? PH.dados.alma : 0;
     const dividir = dim => {                                         // cortes [x0,x1,emendaH?] para uma chapa
       const LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo;
       if (hF > LU) return null;
-      const maxW = hF <= WU ? LU : WU, cortes = []; let ini = xa;
+      const T = R.transporteMenorLado || Infinity;                     // transporte: o menor lado da peça não passa de T
+      const maxW = Math.min(hF <= WU ? LU : WU, hF > T ? T : Infinity), cortes = []; let ini = xa;
       while (xb - ini > maxW) {
         const opc = juntasFundo.filter(x => x > ini + 1 && x <= ini + maxW);
         if (opc.length) { const x = Math.max(...opc); cortes.push([ini, x, false]); ini = x; continue; }
@@ -1274,8 +1275,13 @@ function gerarModuloV3(m) {
       if (ini < xb) cortes.push([ini, xb, false]);
       return cortes;
     };
-    const opcoes = chapasDe(matF, espF).map(ref => ({ ref, dim:BIBLIOTECA[ref].dim, cortes:dividir(BIBLIOTECA[ref].dim) })).filter(o => o.cortes)
-      .sort((a, b) => a.cortes.length - b.cortes.length || a.dim[0]*a.dim[1] - b.dim[0]*b.dim[1]);
+    const nChapas = (dim, cortes) => {                               // quantas chapas os pedaços do fundo ocupam (faixas lado a lado)
+      const LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo, ws = cortes.map(([a, b]) => b - a);
+      const conta = (lado, cabeH) => { if (!cabeH) return Infinity; let n = 0, livre = -1; for (const w of ws) { if (w > lado) return Infinity; if (livre < w) { n++; livre = lado; } livre -= w + R.serra; } return n; };
+      return Math.min(conta(WU, hF <= LU), conta(LU, hF <= WU));
+    };
+    const opcoes = chapasDe(matF, espF).map(ref => { const dim = BIBLIOTECA[ref].dim, cortes = dividir(dim); return { ref, dim, cortes, n: cortes ? nChapas(dim, cortes) : Infinity }; }).filter(o => o.cortes)
+      .sort((a, b) => a.n - b.n || a.dim[0]*a.dim[1]*a.n - b.dim[0]*b.dim[1]*b.n || a.cortes.length - b.cortes.length);
     const esc = opcoes[0] || (chapasDe(matF, espF).length ? null : { ref:null, dim:R.chapa, cortes:dividir(R.chapa) });
     if (!esc || !esc.cortes) E.push(`O fundo (${fmt(W)} × ${fmt(hF)} mm) não cabe em nenhuma chapa de ${MATERIAIS[matF].nome} disponível, nem dividido sobre as divisórias.`);
     else {

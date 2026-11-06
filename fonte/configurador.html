@@ -1254,14 +1254,15 @@ function gerarModuloV3(m) {
 
   percorrer(m.raiz, regiao0, 0);
 
-  // FUNDO SOBREPOSTO — usa a chapa de mercado que dá menos peças; emenda sobre divisória ou, sem divisória, com perfil H plástico
+  // FUNDO SOBREPOSTO — peças limitadas pelo transporte; usa a chapa de mercado que dá menos chapas; emenda sobre divisória ou, sem divisória, com perfil H plástico
   if (fundoPendente) {
     const matF = c.fundo.material || 'mdf-branco', espF = matF.startsWith('hdf') ? 3 : tf, hF = H - yBase;
     const PH = BIBLIOTECA['perfil-h-emenda-fundo-3'], alma = matF.startsWith('hdf') && PH ? PH.dados.alma : 0;
     const dividir = dim => {                                         // cortes [x0,x1,emendaH?] para uma chapa
       const LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo;
       if (hF > LU) return null;
-      const maxW = hF <= WU ? LU : WU, cortes = []; let ini = xa;
+      const T = R.transporteMenorLado || Infinity;                     // transporte: o menor lado da peça não passa de T
+      const maxW = Math.min(hF <= WU ? LU : WU, hF > T ? T : Infinity), cortes = []; let ini = xa;
       while (xb - ini > maxW) {
         const opc = juntasFundo.filter(x => x > ini + 1 && x <= ini + maxW);
         if (opc.length) { const x = Math.max(...opc); cortes.push([ini, x, false]); ini = x; continue; }
@@ -1273,8 +1274,13 @@ function gerarModuloV3(m) {
       if (ini < xb) cortes.push([ini, xb, false]);
       return cortes;
     };
-    const opcoes = chapasDe(matF, espF).map(ref => ({ ref, dim:BIBLIOTECA[ref].dim, cortes:dividir(BIBLIOTECA[ref].dim) })).filter(o => o.cortes)
-      .sort((a, b) => a.cortes.length - b.cortes.length || a.dim[0]*a.dim[1] - b.dim[0]*b.dim[1]);
+    const nChapas = (dim, cortes) => {                               // quantas chapas os pedaços do fundo ocupam (faixas lado a lado)
+      const LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo, ws = cortes.map(([a, b]) => b - a);
+      const conta = (lado, cabeH) => { if (!cabeH) return Infinity; let n = 0, livre = -1; for (const w of ws) { if (w > lado) return Infinity; if (livre < w) { n++; livre = lado; } livre -= w + R.serra; } return n; };
+      return Math.min(conta(WU, hF <= LU), conta(LU, hF <= WU));
+    };
+    const opcoes = chapasDe(matF, espF).map(ref => { const dim = BIBLIOTECA[ref].dim, cortes = dividir(dim); return { ref, dim, cortes, n: cortes ? nChapas(dim, cortes) : Infinity }; }).filter(o => o.cortes)
+      .sort((a, b) => a.n - b.n || a.dim[0]*a.dim[1]*a.n - b.dim[0]*b.dim[1]*b.n || a.cortes.length - b.cortes.length);
     const esc = opcoes[0] || (chapasDe(matF, espF).length ? null : { ref:null, dim:R.chapa, cortes:dividir(R.chapa) });
     if (!esc || !esc.cortes) E.push(`O fundo (${fmt(W)} × ${fmt(hF)} mm) não cabe em nenhuma chapa de ${MATERIAIS[matF].nome} disponível, nem dividido sobre as divisórias.`);
     else {
