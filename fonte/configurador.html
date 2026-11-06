@@ -361,7 +361,8 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-\d+$/, 'prateleira-fixa'],
   [/^reforco-/, 'reforco'], [/^beiral-frontal$/, 'beiral-frontal'], [/^beiral-(esq|dir)$/, 'beiral-lateral'],
   [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+$/, 'espacador'],
-  [/^porta-(esq|dir|\d+)$/, 'porta'], [/^gaveta-\d+-frente$/, 'frente-gaveta'],
+  [/^porta-(esq|dir|\d+)$/, 'porta'], [/^porta-correr-\d+$/, 'porta-correr'], [/^porta-basculante-\d+$/, 'porta-basculante'],
+  [/-kit-correr$/, 'kit-correr'], [/-desempenador-\d+$/, 'desempenador'], [/^trilho-(superior|inferior)-\d+$/, 'trilho-correr'], [/-pistao-\d+$/, 'pistao'], [/^gaveta-\d+-frente$/, 'frente-gaveta'],
   [/^gaveta-\d+-frente-interna$/, 'frente-interna-gaveta'], [/^gaveta-\d+-traseira$/, 'traseira-gaveta'],
   [/^gaveta-\d+-lateral-(esq|dir)$/, 'lateral-gaveta'], [/^gaveta-\d+-fundo$/, 'fundo-gaveta'],
   [/-dobradica-\d+$/, 'dobradica'], [/-puxador$/, 'puxador'], [/-corredica-(esq|dir)$/, 'corredica'],
@@ -374,7 +375,7 @@ function papelDe(id) {
 // Orientação da peça no Inventor (eixo da largura do desenho, eixo da altura do desenho), por papel
 const ORIENTACAO = {
   'lateral:esq': ['-z','+y'], 'lateral:dir': ['+z','+y'],
-  'porta': ['-x','+y'], 'frente-gaveta': ['-x','+y'], 'fundo': ['-x','+y'],
+  'porta': ['-x','+y'], 'porta-correr': ['-x','+y'], 'porta-basculante': ['-x','+y'], 'frente-gaveta': ['-x','+y'], 'fundo': ['-x','+y'],
   'divisoria-vertical': ['-z','+y'], 'espacador': ['-z','+y'], 'beiral-lateral': ['-z','+y'],
   'rodape': ['+x','+y'], 'travessa-fixacao': ['+x','+y'], 'beiral-frontal': ['+x','+y'],
   'frente-interna-gaveta': ['+x','+y'], 'traseira-gaveta': ['+x','+y'], 'enchimento': ['+x','+y'],
@@ -1150,9 +1151,21 @@ function gerarModuloV3(m) {
     // FRENTE
     if (fr.tipo === 'porta') {
       const x0 = g.fx0 + folga(g.b.esq), x1 = g.fx1 - folga(g.b.dir);
-      ladoFrente = fr.lado;
-      porta(g, fr.lado, x0, x1, fr.lado === 'esq' ? g.fx0 : g.fx1, m.puxadorPorta);
-    } else if (fr.tipo === '2portas') {
+      // lado automático: dobradiça longe da parede (a porta abre sem bater nela)
+      const lado = fr.lado && fr.lado !== 'auto' ? fr.lado : ((g.b.esq === 'externa' && c.paredeEsq) ? 'dir' : 'esq');
+      ladoFrente = lado;
+      porta(g, lado, x0, x1, lado === 'esq' ? g.fx0 : g.fx1, m.puxadorPorta);
+    } else if (fr.tipo === 'portas') {
+      // quantidade automática pela largura máxima de porta; portas iguais, em pares que se encontram no meio
+      const x0 = g.fx0 + folga(g.b.esq), x1 = g.fx1 - folga(g.b.dir);
+      const n = fr.n && fr.n !== 'auto' ? fr.n : Math.max(1, Math.ceil((x1 - x0) / R.portaMaxLarg)), w = (x1 - x0 - (n - 1)*R.entre) / n;
+      for (let i = 0; i < n; i++) {
+        const a = x0 + i*(w + R.entre), b = a + w, lado = n === 1 ? 'esq' : (i % 2 === 0 ? 'esq' : 'dir');
+        porta(g, lado, a, b, lado === 'esq' ? a - (i === 0 ? folga(g.b.esq) : R.entre/2) : b + (i === n-1 ? folga(g.b.dir) : R.entre/2), m.puxadorPorta);
+      }
+    } else if (fr.tipo === 'correr') portasCorrer(g, fr, V);
+    else if (fr.tipo === 'basculante') basculante(g, fr);
+    else if (fr.tipo === '2portas') {
       const meio = (g.fx0 + g.fx1)/2;
       porta(g, 'esq', g.fx0 + folga(g.b.esq), meio - R.entre/2, g.fx0, m.puxadorPorta);
       porta(g, 'dir', meio + R.entre/2, g.fx1 - folga(g.b.dir), g.fx1, m.puxadorPorta);
@@ -1193,6 +1206,57 @@ function gerarModuloV3(m) {
       }
       if (ct.tipo === 'gavetas-internas') y = gavetasInternas(ct, g, y, ladoFrente, V);
     }
+  }
+
+  // PORTA DE CORRER — sistema da biblioteca: desconto de altura, transpasse, peso máximo, desempenador
+  function portasCorrer(g, fr, V) {
+    const sisRef = fr.sistema || 'correr-rometal-ro27', sis = BIBLIOTECA[sisRef];
+    if (!sis) { E.push(`Vão ${V}: sistema de correr "${sisRef}" não está na biblioteca.`); return; }
+    const d = sis.dados, emb = (fr.montagem || 'embutido') === 'embutido', tp = t;
+    if (tp < d.espMin || tp > d.espMax) E.push(`Vão ${V}: o sistema ${sis.nome} aceita porta de ${d.espMin} a ${d.espMax} mm (a porta tem ${fmt(tp)}).`);
+    // embutido: dentro do vão (entre laterais, base e topo); sobreposto: cobre a frente do vão
+    const X0 = emb ? g.ix0 : g.fx0, X1 = emb ? g.ix1 : g.fx1, Y0 = emb ? g.iy0 : g.fy0, Y1 = emb ? g.iy1 : g.fy1;
+    const n = fr.n && fr.n !== 'auto' ? fr.n : Math.max(2, Math.ceil((X1 - X0) / 1000)), tr = d.transpasse;
+    const w = (X1 - X0 + (n - 1)*tr) / n, h = (Y1 - Y0) - d.descAltura[emb ? 'embutido' : 'sobreposto'];
+    const z1 = emb ? zFr : P, gapTr = 5;                               // 2 trilhos: frente e trás [Suposição: 5 mm entre as folhas — conferir no sistema]
+    if (d.largMin && w < d.largMin) E.push(`Vão ${V}: porta de correr com ${fmt(w)} mm de largura (mínimo ${d.largMin} no ${sis.nome}).`);
+    if (d.proporcaoMax && h > d.proporcaoMax * w) E.push(`Vão ${V}: porta de correr ${fmt(h)} × ${fmt(w)} passa da proporção máxima ${d.proporcaoMax}:1.`);
+    if (!emb) A.push(`Vão ${V}: portas de correr sobrepostas — a folha de trás fica no plano das frentes e a da frente ${fmt(tp + gapTr)} mm à frente do móvel.`);
+    for (let i = 0; i < n; i++) {
+      const k = ++cont.porta, id = `porta-correr-${k}`, xa0 = X0 + i*(w - tr), frenteTr = i % 2 === 1;
+      const zz1 = frenteTr ? z1 + (emb ? 0 : tp + gapTr) : z1 - (emb ? tp + gapTr : 0), zz0 = zz1 - tp;
+      const peso = pesoPeca({ comp:h, larg:w, esp:tp, mat:'mdf' });
+      if (peso > d.pesoMax) E.push(`Porta de correr ${k}: ${fmt(peso)} kg passa do máximo de ${d.pesoMax} kg do ${sis.nome}.`);
+      add({ id, nome:`Porta de correr ${k}`, nomeLista:'Porta de correr', cat:'frente', a:h, b:w, fita:[2,2], box:[xa0, xa0 + w, Y0 + (emb ? d.descAltura.embutido/2 : 0), Y0 + (emb ? d.descAltura.embutido/2 : 0) + h, zz0, zz1],
+        mov:{ tipo:'correr', eixo:'x', curso: (X1 - X0) - w, sentido: i === 0 ? 1 : -1 }, obs:`${sis.nome}. Peso ${fmt(peso)} kg. Trilho da ${frenteTr ? 'frente' : 'trás'}.`,
+        des:{ w, h, fita:['t','b','l','r'], vista:'Vista pela face interna' } });
+      ferr({ id:`${id}-kit-correr`, nome:`Kit do sistema de correr da porta ${k}`, ref:sisRef, box:[xa0 + 40, xa0 + w - 40, Y0, Y0 + 20, zz0, zz1], expPai:id, obs:d.kitPorPorta || '' });
+      const nDes = d.desempenadorObrigatorio || h > 2*w ? 2 : 0;
+      for (let j = 0; j < nDes; j++) ferr({ id:`${id}-desempenador-${j+1}`, nome:`Desempenador ${j+1} da porta ${k}`, ref:'desempenador-dp100', box:[xa0 + w*(j ? 0.75 : 0.25) - 10, xa0 + w*(j ? 0.75 : 0.25) + 10, Y0 + 100, Y0 + h - 100, zz0 - 8, zz0], expPai:id });
+    }
+    ['superior','inferior'].forEach(q => ferr({ id:`trilho-${q}-${V}`, nome:`Trilho ${q} do vão ${V}`, ref:sisRef, box:[X0, X1, q === 'superior' ? Y1 - 10 : Y0, q === 'superior' ? Y1 : Y0 + 10, z1 - 2*tp - gapTr - (emb ? 0 : -tp - gapTr), z1 + (emb ? 0 : tp + gapTr)] }));
+  }
+
+  // BASCULANTE — porta que abre para cima, dobradiças em cima, pistão a gás pelo peso (regra Soprano/Completa)
+  function basculante(g, fr) {
+    const k = ++cont.porta, id = `porta-basculante-${k}`, Rb = R.basculante;
+    const x0 = g.fx0 + folga(g.b.esq), x1 = g.fx1 - folga(g.b.dir), y0 = g.fy0 + folga(g.b.baixo), y1 = g.fy1 - folga(g.b.cima), w = x1 - x0, h = y1 - y0;
+    const peso = pesoPeca({ comp:Math.max(w,h), larg:Math.min(w,h), esp:t, mat:'mdf' });
+    const nP = w >= Rb.larguraDoisPistoes ? 2 : 1, forcaKg = peso * ((h/2) / Rb.cursoPistao) * Rb.fatorSeguranca, porPistaoN = forcaKg * 10 / nP;
+    const forca = Rb.forcas.find(f => f >= porPistaoN);
+    if (!forca) E.push(`Basculante ${k}: precisa de ${fmt(porPistaoN)} N por pistão (máximo de mercado ${Rb.forcas.at(-1)} N). Use articulador (ex.: Blum AVENTOS) ou divida a porta.`);
+    const nd = dobradicasPorAltura(w), pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(w - 2*R.dobradicaBorda)/(nd - 1));
+    const px = m.puxadorPorta, xm = (x0 + x1)/2, yp = y0 + 40;
+    const pt = add({ id, nome:`Porta basculante ${k}`, nomeLista:'Porta basculante', cat:'frente', a:w, b:h, fita:[2,2], box:[x0, x1, y0, y1, zFr, P],
+      mov:{ tipo:'basculante', eixo:'x', pivY:y1, pivZ:P, angMax:90 }, obs:`Peso ${fmt(peso)} kg; ${nP} pistão(ões) de ${forca || '?'} N.`,
+      des:{ w, h, fita:['t','b','l','r'], vista:'Vista pela face interna', furos:[
+        ...pos.map(px_ => ({ x:px_, y:h - R.canecoBorda, d:35, prof:13, tipo:'caneco' })),
+        ...[-1,1].map(sn => ({ x:w/2 + sn*px.furacao/2, y:yp - y0, d:5, prof:0, tipo:'puxador' })) ] } });
+    pos.forEach((px_, j) => ferr({ id:`${id}-dobradica-${j+1}`, nome:`Dobradiça ${j+1} da basculante ${k}`, forma:{tipo:'cil',eixo:'z'}, box:[x0+px_-17.5, x0+px_+17.5, y1-R.canecoBorda-17.5, y1-R.canecoBorda+17.5, zFr-1, zFr+12], expPai:id }));
+    for (let j = 0; j < nP; j++) { const xs = nP === 1 ? (fr.ladoPistao === 'dir' ? g.ix1 - 30 : g.ix0 + 30) : (j ? g.ix1 - 30 : g.ix0 + 30);
+      ferr({ id:`${id}-pistao-${j+1}`, nome:`Pistão a gás ${j+1} da basculante ${k}`, ref: forca ? `pistao-gas-${forca}` : null, box:[xs - 10, xs + 10, y1 - 255, y1 - 30, zFr - 120, zFr - 100], expPai:id, obs: forca ? `${forca} N` : 'força fora de mercado' }); }
+    ferr({ id:`${id}-puxador`, nome:`Puxador da basculante ${k}`, forma:{ tipo:'puxador', dir:'h', modelo:px.modelo, furacao:px.furacao }, cor:px.cor, ref:px.ref, box:[xm-px.comp/2, xm+px.comp/2, yp-px.larg/2, yp+px.larg/2, P, P+px.proj], expPai:id });
+    return pt;
   }
 
   function gavetaExterna(g) {

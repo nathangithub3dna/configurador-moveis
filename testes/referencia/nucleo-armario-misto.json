@@ -200,6 +200,46 @@
    "avisoLateral": true
   }
  },
+ "frentes": {
+  "correrDominus": {
+   "erros": [],
+   "portas": [
+    [
+     2257,
+     894.5
+    ],
+    [
+     2257,
+     894.5
+    ]
+   ],
+   "desempenadores": 4,
+   "trilhos": 2,
+   "semFuncao": []
+  },
+  "correrRO27": {
+   "erroPeso": true
+  },
+  "basculante": {
+   "erros": [],
+   "pistoes": [
+    "pistao-gas-60",
+    "pistao-gas-60"
+   ],
+   "semFuncao": []
+  },
+  "portasAuto": [
+   [
+    597,
+    "esq"
+   ],
+   [
+    597,
+    "dir"
+   ]
+  ],
+  "ladoAuto": "dir"
+ },
  "erros": [],
  "avisos": [],
  "pecas": [

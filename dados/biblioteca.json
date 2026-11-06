@@ -373,5 +373,126 @@
       "barra": 3000
     },
     "obs": "Une duas chapas de fundo onde não há divisória. Vendido em barra (PS ou PVC, branco ou preto). [Provável] alma de 1 mm e barra de 3 m — confirmar na loja."
+  },
+  "correr-rometal-ro27": {
+    "grupo": "Ferragens",
+    "nome": "Sistema de porta de correr RO-27 (kit por porta)",
+    "marca": "Rometal",
+    "codigo": "RO-27",
+    "unid": "kit",
+    "emb": 1,
+    "dados": {
+      "tipo": "correr",
+      "descAltura": {
+        "embutido": 7,
+        "sobreposto": 15
+      },
+      "transpasse": 25,
+      "pesoMax": 20,
+      "espMin": 15,
+      "espMax": 25,
+      "kitPorPorta": "2 carros inferiores, 2 superiores, 2 freios",
+      "furoCarro": [
+        35,
+        12
+      ]
+    },
+    "obs": "Altura da folha = vão − 7 (embutido) ou − 15 (sobreposto); transpasse 20–30 (usamos 25); até 20 kg por porta; porta de 15 a 25 mm."
+  },
+  "correr-rometal-dominus": {
+    "grupo": "Ferragens",
+    "nome": "Sistema de porta de correr Dominus (guarda-roupa)",
+    "marca": "Rometal",
+    "codigo": "Dominus",
+    "unid": "kit",
+    "emb": 1,
+    "dados": {
+      "tipo": "correr",
+      "descAltura": {
+        "embutido": 7,
+        "sobreposto": 15
+      },
+      "transpasse": 25,
+      "pesoMax": 80,
+      "espMin": 15,
+      "espMax": 25,
+      "largMin": 600,
+      "proporcaoMax": 4,
+      "desempenadorObrigatorio": true,
+      "trilhos": [
+        "RM-264 superior",
+        "RM-265 inferior"
+      ]
+    },
+    "obs": "Faixas de amortecedor: até 20, 20–50 e 50–80 kg. Largura mínima 600; altura até 4 × largura; desempenador DP 100 obrigatório. [Provável] desconto de altura e transpasse iguais ao RO-27 — o manual do Dominus fala em porta 90 mm maior que o vão externo (montagem suspensa): conferir no manual antes de cortar."
+  },
+  "desempenador-dp100": {
+    "grupo": "Ferragens",
+    "nome": "Desempenador de porta DP 100 (madeira)",
+    "marca": "Rometal",
+    "codigo": "DP 100",
+    "unid": "un",
+    "emb": 1,
+    "obs": "Evita empenamento. Duratex: 2 por porta quando a altura passa de 2 × a largura; Dominus: obrigatório."
+  },
+  "pistao-gas-60": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 60 N, força normal (abre para cima)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 60,
+      "cursoUtil": 91
+    }
+  },
+  "pistao-gas-80": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 80 N, força normal (abre para cima)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 80,
+      "cursoUtil": 91
+    }
+  },
+  "pistao-gas-100": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 100 N, força normal (abre para cima)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 100,
+      "cursoUtil": 91
+    }
+  },
+  "pistao-gas-120": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 120 N, força normal (abre para cima)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 120,
+      "cursoUtil": 91
+    }
+  },
+  "pistao-gas-140": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 140 N, força normal (abre para cima)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 140,
+      "cursoUtil": 91
+    }
   }
 }
