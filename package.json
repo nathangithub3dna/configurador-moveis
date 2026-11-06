@@ -1,0 +1,16 @@
+{
+  "name": "configurador-moveis",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Configurador de móveis planejados do Nathan",
+  "scripts": {
+    "testar": "node testes/rodar.js",
+    "atualizar-referencia": "node testes/rodar.js --atualizar"
+  },
+  "devDependencies": {
+    "jspdf": "2.5.1",
+    "jszip": "3.10.1",
+    "playwright": "1.48.2",
+    "three": "0.160.0"
+  }
+}

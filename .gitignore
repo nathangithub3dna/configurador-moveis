@@ -1,0 +1,4 @@
+node_modules/
+testes/saida/
+projetos/
+*.log
