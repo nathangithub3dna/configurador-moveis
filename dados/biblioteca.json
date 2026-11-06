@@ -494,5 +494,70 @@
       "forca": 140,
       "cursoUtil": 91
     }
+  },
+  "minifix-15": {
+    "grupo": "Ferragens",
+    "nome": "Minifix 15 mm (tambor + pino 34)",
+    "marca": "Häfele (ou equivalente)",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "obs": "Tambor Ø15 + pino de rosca. Comprar em kits de tambor e pino."
+  },
+  "kit-dobradica-blum-reta": {
+    "grupo": "Kits",
+    "nome": "Kit dobradiça Blum reta: dobradiça + calço 0 + 4 parafusos 3,5 × 14",
+    "marca": "Blum",
+    "codigo": "",
+    "unid": "kit",
+    "emb": 1,
+    "componentes": [
+      [
+        "dob-blum-71B3550",
+        1
+      ],
+      [
+        "calco-blum-0",
+        1
+      ],
+      [
+        "paraf-35x14",
+        4
+      ]
+    ]
+  },
+  "kit-corredica-45": {
+    "grupo": "Kits",
+    "nome": "Kit corrediça telescópica 45: par + 12 parafusos 3,5 × 14",
+    "marca": "",
+    "codigo": "",
+    "unid": "kit",
+    "emb": 1,
+    "componentes": [
+      [
+        "corr-tel45-amort",
+        1
+      ],
+      [
+        "paraf-35x14",
+        12
+      ]
+    ],
+    "contaPor": 2,
+    "obs": "As duas corrediças (esquerda e direita) formam 1 kit."
+  },
+  "kit-minifix-15": {
+    "grupo": "Kits",
+    "nome": "Kit minifix: minifix 15 + cavilha 8 × 30",
+    "marca": "",
+    "codigo": "",
+    "unid": "kit",
+    "emb": 1,
+    "componentes": [
+      [
+        "minifix-15",
+        1
+      ]
+    ]
   }
 }

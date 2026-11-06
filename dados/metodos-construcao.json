@@ -7,7 +7,7 @@
     "fixacao": "unica = uma travessa de fixação na parede; por-vao = uma travessa em cada vão",
     "furarLaterais": "gera a furação de montagem, pinos, calços e corrediças nas laterais",
     "prateleira": "furacao: 4-furos (só na altura da prateleira), faixa32 (sistema 32 com 'faixa' furos acima e abaixo), sistema32 (linha inteira a cada 32 mm)",
-    "juncao": "parafuso, minifix ou cavilha (aplicado nas fixações — sub-etapa 4d)"
+    "juncao": "parafuso (padrão), minifix, cavilha ou cavilha+minifix — entre laterais e base, topo e divisórias: furos na face da lateral e na face + topo da peça que encosta"
   },
   "metodoPadrao": "padrao-nathan",
   "padrao": {

@@ -240,6 +240,61 @@
   ],
   "ladoAuto": "dir"
  },
+ "ferragem": {
+  "dobradicas": {
+   "alta": [
+    2297,
+    497,
+    5
+   ],
+   "baixa": [
+    697,
+    447,
+    2
+   ],
+   "larga": [
+    697,
+    697,
+    4
+   ]
+  },
+  "minifix": {
+   "lateral": {
+    "minifix-pino": 6,
+    "montagem": 2,
+    "pino": 8,
+    "calco": 8
+   },
+   "base": {
+    "minifix-tambor": 6,
+    "minifix-canal": 6
+   },
+   "compra": 15,
+   "semFuncao": []
+  },
+  "cavMinifix": {
+   "lateral": {
+    "minifix-pino": 4,
+    "cavilha": 6,
+    "montagem": 2,
+    "pino": 8,
+    "calco": 8
+   },
+   "cavilhas": 15,
+   "minifix": 10
+  },
+  "kits": {
+   "dob": 8,
+   "calco": 8,
+   "paraf": 56,
+   "corredicas": 2,
+   "nCorr": 4
+  },
+  "concha": [
+   "pux-zen-shell-64",
+   "pux-zen-shell-64"
+  ]
+ },
  "erros": [],
  "avisos": [],
  "pecas": [
@@ -271,7 +326,7 @@
     6,
     482
    ],
-   "furos": 22
+   "furos": 24
   },
   {
    "id": "base",
@@ -774,7 +829,7 @@
     482,
     500
    ],
-   "furos": 5
+   "furos": 6
   },
   {
    "id": "porta-2-dobradica-1",
@@ -795,8 +850,8 @@
    "box": [
     1159,
     1194,
-    1232.5,
-    1267.5,
+    1016.3,
+    1051.3,
     481,
     494
    ],
@@ -804,6 +859,19 @@
   },
   {
    "id": "porta-2-dobradica-3",
+   "papel": "dobradica",
+   "box": [
+    1159,
+    1194,
+    1448.7,
+    1483.7,
+    481,
+    494
+   ],
+   "furos": 0
+  },
+  {
+   "id": "porta-2-dobradica-4",
    "papel": "dobradica",
    "box": [
     1159,

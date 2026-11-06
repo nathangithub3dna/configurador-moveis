@@ -86,16 +86,20 @@ function diferencas(a, b, caminho = '') {
       const juntaFundo = ps => { const f = ps.filter(p => p.papel === 'fundo' && p.cat === 'fundo'); if (f.length < 2) return ps;
         const bx = [Math.min(...f.map(p => p.box[0])), Math.max(...f.map(p => p.box[1])), ...f[0].box.slice(2)], w = bx[1] - bx[0];
         return [...ps.filter(p => !f.includes(p)), { ...f[0], comp: Math.max(w, f[0].comp), larg: Math.min(w, f[0].comp), box: bx }]; };
-      const a = norm(juntaFundo(e.res.pecas)), b = norm(juntaFundo(novo.pecas));
+      // regra nova de dobradiça (4d: altura, peso e no máximo 600 entre elas) pode dar mais dobradiças que o gerador antigo:
+      // compara portas sem os canecos e confere à parte que o núcleo nunca põe menos dobradiças
+      const semDob = ps => ps.filter(p => p.papel !== 'dobradica').map(p => p.papel === 'porta' ? { ...p, des:{ ...p.des, furos:(p.des?.furos||[]).filter(f => f.tipo !== 'caneco') } } : p.papel === 'lateral' ? { ...p, des:{ ...p.des, furos:(p.des?.furos||[]).filter(f => f.tipo !== 'calco') } } : p);
+      const nDob = ps => ps.filter(p => p.papel === 'dobradica').length, dobMenos = nDob(novo.pecas) < nDob(e.res.pecas);
+      const a = norm(semDob(juntaFundo(e.res.pecas))), b = norm(semDob(juntaFundo(novo.pecas)));
       const so = (x, y) => x.filter(v => !y.includes(v));
-      return { erros: novo.erros, nErrosAtual: e.res.erros.length, faltam: so(a, b), sobram: so(b, a) };
+      return { erros: novo.erros, nErrosAtual: e.res.erros.length, faltam: so(a, b).concat(dobMenos ? ['menos dobradiças que o gerador antigo'] : []), sobram: so(b, a), dobradicas: [nDob(e.res.pecas), nDob(novo.pecas)] };
     });
     if (v3.erro || v3.erros.length !== v3.nErrosAtual || v3.faltam.length || v3.sobram.length) {
       falhas++; console.log(`NÚCLEO NOVO DIFERENTE  ${caso.nome}  (${v3.erro || ''} erros: ${v3.erros?.length}, faltam ${v3.faltam?.length}, sobram ${v3.sobram?.length})`);
       (v3.erros || []).slice(0, 5).forEach(x => console.log('   erro: ' + x));
       (v3.faltam || []).slice(0, 6).forEach(x => console.log('   falta: ' + x.slice(0, 260)));
       (v3.sobram || []).slice(0, 6).forEach(x => console.log('   sobra: ' + x.slice(0, 260)));
-    } else console.log(`NÚCLEO NOVO IGUAL  ${caso.nome}`);
+    } else console.log(`NÚCLEO NOVO IGUAL  ${caso.nome}` + (v3.dobradicas[0] !== v3.dobradicas[1] ? `  (dobradiças: antigo ${v3.dobradicas[0]} → núcleo ${v3.dobradicas[1]}, regra 4d)` : ''));
     const arq = path.join(__dirname, 'referencia', caso.nome + '.json');
     if (atualizar || !fs.existsSync(arq)) {
       fs.writeFileSync(arq, JSON.stringify(atual, null, 1));
@@ -172,6 +176,18 @@ function diferencas(a, b, caminho = '') {
         portasAuto: pAuto.pecas.filter(p => p.papel === 'porta').map(p => [r(p.larg), p.mov.lado]),
         ladoAuto: pLado.pecas.find(p => p.papel === 'porta')?.mov.lado,
       };
+      // 4d: dobradiças por altura/peso/largura, junção minifix/cavilha, kits nas compras
+      const portaDe = (o) => { const r_ = vaoCom({ tipo:'porta', lado:'esq' }, o), pt = r_.pecas.find(p => p.papel === 'porta'); return [r(pt.comp), r(pt.larg), r_.pecas.filter(p => p.papel === 'dobradica').length]; };
+      const jMf = c.gerarModuloV3({ ...m, metodoAjustes:{ ...m.metodoAjustes, juncao:'minifix' } }), jCv = c.gerarModuloV3({ ...m, metodoAjustes:{ ...m.metodoAjustes, juncao:'cavilha+minifix' } });
+      const tipos = (r_, papel, lado) => { const p = r_.pecas.find(q => q.papel === papel && (!lado || q.lado === lado)); return (p?.des?.furos || []).reduce((a, f) => (a[f.tipo] = (a[f.tipo] || 0) + 1, a), {}); };
+      const cmp = (r_, ref) => r_.compras.find(x => x.ref === ref)?.qtd || 0;
+      const ferragem = {
+        dobradicas: { alta: portaDe({ largura:500, altura:2400, profundidade:600 }), baixa: portaDe({ largura:450, altura:800 }), larga: portaDe({ largura:700, altura:800 }) },
+        minifix: { lateral: tipos(jMf, 'lateral', 'esq'), base: tipos(jMf, 'base'), compra: cmp(jMf, 'minifix-15'), semFuncao: jMf.pecas.filter(p => !p.papel).map(p => p.id) },
+        cavMinifix: { lateral: tipos(jCv, 'lateral', 'esq'), cavilhas: cmp(jCv, 'cavilha-8x30'), minifix: cmp(jCv, 'minifix-15') },
+        kits: { dob: cmp(res, 'dob-blum-71B3550'), calco: cmp(res, 'calco-blum-0'), paraf: cmp(res, 'paraf-35x14'), corredicas: cmp(res, 'corr-tel45-amort'), nCorr: res.pecas.filter(p => p.papel === 'corredica').length },
+        concha: gr.pecas.filter(p => p.papel === 'puxador').map(p => p.ref),
+      };
       const pinos = r_ => peca(r_, 'lateral', 'esq').des.furos.filter(f => f.tipo === 'pino').length;
       const metodo = {
         passantes: { topo: peca(e1,'topo').comp, base: peca(e1,'base').comp, lateral: peca(e1,'lateral','esq').comp, erros: e1.erros.length },
@@ -181,13 +197,19 @@ function diferencas(a, b, caminho = '') {
         fundoDividido: fundosL, perfilH: sem.pecas.filter(p => p.papel === 'emenda-fundo').length, montante: sem.pecas.filter(p => p.id.startsWith('reforco-emenda')).length, chapaFundo: [armL, sem].map(x => x.pecas.find(p => p.papel === 'fundo').chapaRef), fundosSem: sem.pecas.filter(p => p.papel === 'fundo').map(p => r(p.larg)),
         pes: pes.pecas.filter(p => p.papel === 'pe').length, rodapeEncaixe: pes.pecas.some(p => p.id === 'rodape-encaixe'), semFuncao: [...armL.pecas, ...sem.pecas, ...pes.pecas].filter(p => !p.papel).map(p => p.id),
       };
-      return { metodo, transporte, frentes, erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
+      return { metodo, transporte, frentes, ferragem, erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
     });
     if (erros.length) atual.errosDaPagina = erros;
     const esp = { passantes: { topo:1200, base:1200, lateral:1864, erros:0 }, rasgo: { fundo:[1879, 1179], fundoZ:[10, 16], lateralFundo:482, divisoria:466, canais:4, erros:0 } };
     const dm = diferencas(esp, { passantes: atual.metodo.passantes, rasgo: atual.metodo.rasgo });
     const mt = atual.metodo;
     const fundoOk = JSON.stringify(mt.fundoDividido) === JSON.stringify([['hdf-cru',3,1920,900,0,900],['hdf-cru',3,1920,900,900,1800]]) && mt.montante === 0 && mt.perfilH === 2 && mt.fundosSem.length === 3 && mt.fundosSem.every(w => w <= 1220) && mt.chapaFundo.every(x => x === 'chapa-hdf-cru-3-2750x2130') && mt.pes >= 4 && mt.rodapeEncaixe && !mt.semFuncao.length;
+    const fg = atual.ferragem;
+    const fgOk = fg.dobradicas.alta[2] === 5 && fg.dobradicas.baixa[2] === 2 && fg.dobradicas.larga[2] === 4
+      && fg.minifix.base['minifix-tambor'] === fg.minifix.base['minifix-canal'] && fg.minifix.base['minifix-tambor'] > 0 && !fg.minifix.lateral.montagem_base && fg.minifix.compra > 0 && !fg.minifix.semFuncao.length
+      && fg.cavMinifix.cavilhas > 0 && fg.cavMinifix.minifix > 0 && fg.kits.dob === fg.kits.calco && fg.kits.paraf === 4*fg.kits.dob + 12*fg.kits.corredicas && fg.kits.corredicas * 2 === fg.kits.nCorr
+      && fg.concha.length === 2 && fg.concha.every(x => x === 'pux-zen-shell-64');
+    if (!fgOk) { falhas++; console.log('FERRAGEM (4d) ERRADO  ' + JSON.stringify(fg)); } else console.log('FERRAGEM (4d) OK  ' + JSON.stringify(fg));
     const fr4c = atual.frentes;
     const frOk = !fr4c.correrDominus.erros.length && fr4c.correrDominus.portas.length === 2 && fr4c.correrDominus.desempenadores === 4 && fr4c.correrDominus.trilhos === 2 && !fr4c.correrDominus.semFuncao.length
       && fr4c.correrRO27.erroPeso && !fr4c.basculante.erros.length && fr4c.basculante.pistoes.length === 2 && fr4c.basculante.pistoes.every(x => /^pistao-gas-\d+$/.test(x)) && !fr4c.basculante.semFuncao.length

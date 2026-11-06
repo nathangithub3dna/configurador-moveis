@@ -338,6 +338,13 @@ const R = (({ _explicacao, ...r }) => r)(/*@dados:regras*/null);
 const PUXADORES = Object.fromEntries(Object.entries(/*@dados:puxadores*/null).map(([k, v]) => [k, { ...v, cor: parseInt(v.cor.slice(1), 16) }]));
 const opcoesPuxador = Object.entries(PUXADORES).map(([k,v]) => [Number(k), v.rot]);
 const dobradicasPorAltura = h => R.dobradicasPorAltura.find(f => f.ateAltura === null || h <= f.ateAltura).quantidade;
+// REGRA DE DOBRADIÇA (núcleo novo): o maior entre altura, peso (Blum) e distância máxima (Duratex); +1 se a porta passa de 600 de largura
+function dobradicasRegra(h, w, esp) {
+  const peso = h * w * esp * R.densidade.mdf / 1e9, tab = R.dobradicasPorPeso, fPeso = tab.find(f => peso <= f.atePeso);
+  const porDist = Math.ceil((h - 2*R.dobradicaBorda) / R.dobradicaDistMax) + 1;
+  const n = Math.max(dobradicasPorAltura(h), fPeso ? fPeso.quantidade : tab.at(-1).quantidade + 1, porDist, 2) + (w > R.dobradicaLarguraExtra ? 1 : 0);
+  return { n, peso, acimaTabela: !fPeso };
+}
 
 const MATERIAIS = /*@dados:materiais*/null;
 /* =====================================================================
@@ -366,7 +373,7 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^gaveta-\d+-frente-interna$/, 'frente-interna-gaveta'], [/^gaveta-\d+-traseira$/, 'traseira-gaveta'],
   [/^gaveta-\d+-lateral-(esq|dir)$/, 'lateral-gaveta'], [/^gaveta-\d+-fundo$/, 'fundo-gaveta'],
   [/-dobradica-\d+$/, 'dobradica'], [/-puxador$/, 'puxador'], [/-corredica-(esq|dir)$/, 'corredica'],
-  [/-suporte-\d+$/, 'suporte-vassoura'], [/-gancho$/, 'gancho'], [/^botijao-/, 'botijao'], [/^tampo$/, 'tampo'],
+  [/-suporte-\d+$/, 'suporte-vassoura'], [/^minifix-/, 'minifix'], [/^cavilha-/, 'cavilha'], [/-gancho$/, 'gancho'], [/^botijao-/, 'botijao'], [/^tampo$/, 'tampo'],
 ];
 function papelDe(id) {
   for (const [re, papel] of PAPEIS) if (re.test(id)) { const m = id.match(/(?:^|-)(esq|dir)(?:-|$)/); return { papel, lado: m && papel !== 'porta' && papel !== 'dobradica' && papel !== 'puxador' ? m[1] : null }; }
@@ -1108,7 +1115,8 @@ function gerarModuloV3(m) {
     const k = ++cont.porta, id = `porta-${k}`;
     const y0 = g.fy0 + folga(g.b.baixo), y1 = g.fy1 - folga(g.b.cima), hp = y1 - y0, dw = x1 - x0;
     if (dw > R.portaMaxLarg) E.push(`Porta ${k} com ${fmt(dw)} mm de largura (máximo ${R.portaMaxLarg}).`);
-    const nd = dobradicasPorAltura(hp);
+    const dr = dobradicasRegra(hp, dw, t), nd = dr.n;
+    if (dr.acimaTabela) A.push(`Porta ${k}: ${fmt(dr.peso)} kg passa da tabela de dobradiças (32 kg) — conferir com o fabricante.`);
     const pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(hp-2*R.dobradicaBorda)/(nd-1));
     const px = puxador, proj = px.proj;
     const xp = lado === 'esq' ? x1 - 35 : x0 + 35;
@@ -1122,7 +1130,7 @@ function gerarModuloV3(m) {
         ...pos.map(py => ({ x: lado === 'esq' ? dw-R.canecoBorda : R.canecoBorda, y:py, d:35, prof:13, tipo:'caneco' })),
         ...[-1,1].map(sn => ({ x: dw-(xp-x0), y: ypc-y0+sn*px.furacao/2, d:5, prof:0, tipo:'puxador' })) ] } });
     const xc = lado === 'esq' ? x0 + R.canecoBorda : x1 - R.canecoBorda;
-    pos.forEach((py,j) => ferr({ id:`${id}-dobradica-${j+1}`, nome:`Dobradiça ${j+1} da porta ${k}`, forma:{tipo:'cil',eixo:'z'}, box:[xc-17.5,xc+17.5,y0+py-17.5,y0+py+17.5,P-t-1,P-t+12], mov, expPai:id }));
+    pos.forEach((py,j) => ferr({ id:`${id}-dobradica-${j+1}`, nome:`Dobradiça ${j+1} da porta ${k}`, ref:'kit-dobradica-blum-reta', forma:{tipo:'cil',eixo:'z'}, box:[xc-17.5,xc+17.5,y0+py-17.5,y0+py+17.5,P-t-1,P-t+12], mov, expPai:id }));
     ferr({ id:`${id}-puxador`, nome:`Puxador da porta ${k}`, forma:{ tipo:'puxador', dir:'v', modelo:px.modelo, furacao:px.furacao }, cor:px.cor, ref:px.ref, box:[xp-px.larg/2,xp+px.larg/2,ypc-px.comp/2,ypc+px.comp/2,P,P+proj], mov, expPai:id });
     if (temParede && lim.ang < 90) A.push(`Porta ${k} abre só até ${fmt(lim.ang)}°: ${lim.motivo}.`);
     return pt;
@@ -1230,6 +1238,8 @@ function gerarModuloV3(m) {
       add({ id, nome:`Porta de correr ${k}`, nomeLista:'Porta de correr', cat:'frente', a:h, b:w, fita:[2,2], box:[xa0, xa0 + w, Y0 + (emb ? d.descAltura.embutido/2 : 0), Y0 + (emb ? d.descAltura.embutido/2 : 0) + h, zz0, zz1],
         mov:{ tipo:'correr', eixo:'x', curso: (X1 - X0) - w, sentido: i === 0 ? 1 : -1 }, obs:`${sis.nome}. Peso ${fmt(peso)} kg. Trilho da ${frenteTr ? 'frente' : 'trás'}.`,
         des:{ w, h, fita:['t','b','l','r'], vista:'Vista pela face interna' } });
+      { const pc = Object.values(PUXADORES).find(x => x.modelo === 'concha'), ypc = Y0 + h/2, xpc = i === 0 ? xa0 + 50 : xa0 + w - 50;
+        if (pc) ferr({ id:`${id}-puxador`, nome:`Puxador concha da porta de correr ${k}`, forma:{ tipo:'puxador', dir:'v', modelo:pc.modelo, furacao:pc.furacao }, cor:pc.cor, ref:pc.ref, box:[xpc-pc.larg/2, xpc+pc.larg/2, ypc-pc.comp/2, ypc+pc.comp/2, zz1, zz1 + Math.min(pc.proj, 5)], expPai:id, obs:'Concha: na porta de correr o puxador não pode sair da face (bate na outra folha).' }); }
       ferr({ id:`${id}-kit-correr`, nome:`Kit do sistema de correr da porta ${k}`, ref:sisRef, box:[xa0 + 40, xa0 + w - 40, Y0, Y0 + 20, zz0, zz1], expPai:id, obs:d.kitPorPorta || '' });
       const nDes = d.desempenadorObrigatorio || h > 2*w ? 2 : 0;
       for (let j = 0; j < nDes; j++) ferr({ id:`${id}-desempenador-${j+1}`, nome:`Desempenador ${j+1} da porta ${k}`, ref:'desempenador-dp100', box:[xa0 + w*(j ? 0.75 : 0.25) - 10, xa0 + w*(j ? 0.75 : 0.25) + 10, Y0 + 100, Y0 + h - 100, zz0 - 8, zz0], expPai:id });
@@ -1245,14 +1255,14 @@ function gerarModuloV3(m) {
     const nP = w >= Rb.larguraDoisPistoes ? 2 : 1, forcaKg = peso * ((h/2) / Rb.cursoPistao) * Rb.fatorSeguranca, porPistaoN = forcaKg * 10 / nP;
     const forca = Rb.forcas.find(f => f >= porPistaoN);
     if (!forca) E.push(`Basculante ${k}: precisa de ${fmt(porPistaoN)} N por pistão (máximo de mercado ${Rb.forcas.at(-1)} N). Use articulador (ex.: Blum AVENTOS) ou divida a porta.`);
-    const nd = dobradicasPorAltura(w), pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(w - 2*R.dobradicaBorda)/(nd - 1));
+    const nd = dobradicasRegra(w, h, t).n, pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(w - 2*R.dobradicaBorda)/(nd - 1));
     const px = m.puxadorPorta, xm = (x0 + x1)/2, yp = y0 + 40;
     const pt = add({ id, nome:`Porta basculante ${k}`, nomeLista:'Porta basculante', cat:'frente', a:w, b:h, fita:[2,2], box:[x0, x1, y0, y1, zFr, P],
       mov:{ tipo:'basculante', eixo:'x', pivY:y1, pivZ:P, angMax:90 }, obs:`Peso ${fmt(peso)} kg; ${nP} pistão(ões) de ${forca || '?'} N.`,
       des:{ w, h, fita:['t','b','l','r'], vista:'Vista pela face interna', furos:[
         ...pos.map(px_ => ({ x:px_, y:h - R.canecoBorda, d:35, prof:13, tipo:'caneco' })),
         ...[-1,1].map(sn => ({ x:w/2 + sn*px.furacao/2, y:yp - y0, d:5, prof:0, tipo:'puxador' })) ] } });
-    pos.forEach((px_, j) => ferr({ id:`${id}-dobradica-${j+1}`, nome:`Dobradiça ${j+1} da basculante ${k}`, forma:{tipo:'cil',eixo:'z'}, box:[x0+px_-17.5, x0+px_+17.5, y1-R.canecoBorda-17.5, y1-R.canecoBorda+17.5, zFr-1, zFr+12], expPai:id }));
+    pos.forEach((px_, j) => ferr({ id:`${id}-dobradica-${j+1}`, nome:`Dobradiça ${j+1} da basculante ${k}`, ref:'kit-dobradica-blum-reta', forma:{tipo:'cil',eixo:'z'}, box:[x0+px_-17.5, x0+px_+17.5, y1-R.canecoBorda-17.5, y1-R.canecoBorda+17.5, zFr-1, zFr+12], expPai:id }));
     for (let j = 0; j < nP; j++) { const xs = nP === 1 ? (fr.ladoPistao === 'dir' ? g.ix1 - 30 : g.ix0 + 30) : (j ? g.ix1 - 30 : g.ix0 + 30);
       ferr({ id:`${id}-pistao-${j+1}`, nome:`Pistão a gás ${j+1} da basculante ${k}`, ref: forca ? `pistao-gas-${forca}` : null, box:[xs - 10, xs + 10, y1 - 255, y1 - 30, zFr - 120, zFr - 100], expPai:id, obs: forca ? `${forca} N` : 'força fora de mercado' }); }
     ferr({ id:`${id}-puxador`, nome:`Puxador da basculante ${k}`, forma:{ tipo:'puxador', dir:'h', modelo:px.modelo, furacao:px.furacao }, cor:px.cor, ref:px.ref, box:[xm-px.comp/2, xm+px.comp/2, yp-px.larg/2, yp+px.larg/2, P, P+px.proj], expPai:id });
@@ -1280,8 +1290,8 @@ function gerarModuloV3(m) {
     add({ id:`gaveta-${k}-traseira`, nome:`Traseira da gaveta ${k}`, nomeLista:'Frente/traseira da gaveta', cat:'gaveta', a:wInt, b:hb, fita:[1,0], box:[xg0+t,xg1-t,yb,yb+hb,zg0,zg0+t], mov, expPai:frente.id, des:{ w:wInt, h:hb, fita:['t'], vista:'Vista de frente' } });
     add({ id:`gaveta-${k}-fundo`, nome:`Fundo da gaveta ${k}`, nomeLista:'Fundo da gaveta', cat:'gaveta', mat:'mdf-branco', esp:tf, a:Wg, b:Lc, box:[xg0,xg1,yb-tf,yb,zg0,zFr], mov, expPai:frente.id, des:{ w:Wg, h:Lc, vista:'Vista de cima' } });
     const yc = yb + hb/2;
-    ferr({ id:`gaveta-${k}-corredica-esq`, nome:`Corrediça ${Lc} mm esquerda`, box:[g.ix0,xg0,yc-22.5,yc+22.5,zg0,zFr], ref:'corr-tel45-amort' });
-    ferr({ id:`gaveta-${k}-corredica-dir`, nome:`Corrediça ${Lc} mm direita`, box:[xg1,g.ix1,yc-22.5,yc+22.5,zg0,zFr], ref:'corr-tel45-amort' });
+    ferr({ id:`gaveta-${k}-corredica-esq`, nome:`Corrediça ${Lc} mm esquerda`, box:[g.ix0,xg0,yc-22.5,yc+22.5,zg0,zFr], ref:'kit-corredica-45' });
+    ferr({ id:`gaveta-${k}-corredica-dir`, nome:`Corrediça ${Lc} mm direita`, box:[xg1,g.ix1,yc-22.5,yc+22.5,zg0,zFr], ref:'kit-corredica-45' });
     ferr({ id:`gaveta-${k}-puxador`, nome:`Puxador da gaveta ${k}`, forma:{ tipo:'puxador', dir:'h', modelo:px.modelo, furacao:px.furacao }, cor:px.cor, ref:px.ref, box:[xm-px.comp/2,xm+px.comp/2,ym-px.larg/2,ym+px.larg/2,P,P+proj], mov, expPai:frente.id });
   }
 
@@ -1311,8 +1321,8 @@ function gerarModuloV3(m) {
       add({ id:`gaveta-${kk}-traseira`, nome:`Traseira da gaveta ${kk}`, nomeLista:'Frente/traseira da gaveta', cat:'gaveta', a:wInt, b:hb, fita:[1,0], box:[xg0+t,xg1-t,yb,yb+hb,zg0,zg0+t], mov, expPai:frente.id, des:{ w:wInt, h:hb, fita:['t'], vista:'Vista de frente' } });
       add({ id:`gaveta-${kk}-fundo`, nome:`Fundo da gaveta ${kk}`, nomeLista:'Fundo da gaveta', cat:'gaveta', mat:'mdf-branco', esp:tf, a:Wg, b:Lc, box:[xg0,xg1,yb-tf,yb,zg0,zg1], mov, expPai:frente.id, des:{ w:Wg, h:Lc, vista:'Vista de cima' } });
       const yc = yb + hb/2;
-      ferr({ id:`gaveta-${kk}-corredica-esq`, nome:`Corrediça ${Lc} mm esquerda`, box:[xr0,xg0,yc-22.5,yc+22.5,zg0,zg1], ref:'corr-tel45-amort' });
-      ferr({ id:`gaveta-${kk}-corredica-dir`, nome:`Corrediça ${Lc} mm direita`, box:[xg1,xr1,yc-22.5,yc+22.5,zg0,zg1], ref:'corr-tel45-amort' });
+      ferr({ id:`gaveta-${kk}-corredica-esq`, nome:`Corrediça ${Lc} mm esquerda`, box:[xr0,xg0,yc-22.5,yc+22.5,zg0,zg1], ref:'kit-corredica-45' });
+      ferr({ id:`gaveta-${kk}-corredica-dir`, nome:`Corrediça ${Lc} mm direita`, box:[xg1,xr1,yc-22.5,yc+22.5,zg0,zg1], ref:'kit-corredica-45' });
       ferr({ id:`gaveta-${kk}-puxador`, nome:`Puxador da gaveta ${kk}`, forma:{ tipo:'puxador', dir:'h', modelo:PxG.modelo, furacao:PxG.furacao }, cor:PxG.cor, ref:PxG.ref, box:[xmf-PxG.comp/2,xmf+PxG.comp/2,ymf-PxG.larg/2,ymf+PxG.larg/2,zF1,zF1+PxG.proj], mov, expPai:frente.id });
     }
     return ytop;
@@ -1413,7 +1423,26 @@ function gerarModuloV3(m) {
     const X = z => lado === 'esq' ? zFr - z : z - zfC, Y = y => y - yLat0;
     const furos = [], linhas = [], furo = (z,y,d,prof,tipo) => furos.push({ x:X(z), y:Y(y), d, prof, tipo });
     const xIn = lado === 'esq' ? xa + t : xb - t, encosta = pc => Math.abs((lado === 'esq' ? pc.box[0] : pc.box[1]) - xIn) < 0.6;
-    pecas.filter(q => ((q.papel === 'base' && !entre) || q.papel === 'divisoria') && encosta(q)).forEach(b => { const yc = (b.box[2]+b.box[3])/2; [zFr-50,(zfC+zFr)/2,zfC+50].forEach(z => furo(z,yc,4,0,'montagem')); });
+    pecas.filter(q => ((q.papel === 'base' && !entre) || q.papel === 'divisoria' || (q.papel === 'topo' && !entre)) && encosta(q)).forEach(b => {
+      const yc = (b.box[2]+b.box[3])/2, zs = [zFr-50,(zfC+zFr)/2,zfC+50], J = c.juncao || 'parafuso';
+      if (J === 'parafuso') { if (b.papel !== 'topo') zs.forEach(z => furo(z,yc,4,0,'montagem')); return; }
+      // JUNÇÃO por minifix e/ou cavilha: furos na lateral (face) e na peça que encosta (face + topo)
+      const mf = R.minifix, cv = R.cavilha, fb = b.des.furos = b.des.furos || [], eixoX = lado === 'esq' ? 0 : b.box[1] - b.box[0], dirX = lado === 'esq' ? 1 : -1;
+      const pontaB = lado === 'esq' ? 'topo-esq' : 'topo-dir', faceB = b.papel === 'topo' ? 'inferior' : 'superior';
+      const minifixEm = J.includes('minifix') ? (J.includes('cavilha') ? [zs[0], zs[2]] : zs) : [];
+      const cavilhaEm = J === 'cavilha' ? zs : J.includes('cavilha') ? [zs[0] - cv.desvio, (zs[0]+zs[2])/2, zs[2] + cv.desvio] : [];
+      minifixEm.forEach(z => {
+        furos.push({ x:X(z), y:Y(yc), d:mf.pinoFaceDiam, prof:mf.pinoFaceProf, tipo:'minifix-pino', face:'interna' });
+        fb.push({ x:eixoX + dirX*mf.distancia, y:zFr - z, d:mf.tamborDiam, prof:mf.tamborProf[t >= 18 ? '18' : '15'], tipo:'minifix-tambor', face:faceB });
+        fb.push({ x:eixoX, y:zFr - z, d:mf.canalTopoDiam, prof:mf.distancia, tipo:'minifix-canal', face:pontaB });
+        ferr({ id:`minifix-${b.id}-${lado}-${Math.round(z)}`, nome:`Minifix ${b.nome} × lateral ${lado}`, ref:'kit-minifix-15', box:[(lado === 'esq' ? xIn : xIn) - 7.5 + dirX*mf.distancia, xIn + 7.5 + dirX*mf.distancia, yc - 7.5, yc + 7.5, z - 7.5, z + 7.5] });
+      });
+      cavilhaEm.forEach(z => {
+        furos.push({ x:X(z), y:Y(yc), d:cv.diam, prof:cv.profFace, tipo:'cavilha', face:'interna' });
+        fb.push({ x:eixoX, y:zFr - z, d:cv.diam, prof:cv.profTopo, tipo:'cavilha', face:pontaB });
+        ferr({ id:`cavilha-${b.id}-${lado}-${Math.round(z)}`, nome:`Cavilha ${b.nome} × lateral ${lado}`, ref:'cavilha-8x30', box:[xIn - (lado === 'esq' ? cv.profFace : cv.profTopo), xIn + (lado === 'esq' ? cv.profTopo : cv.profFace), yc - 4, yc + 4, z - 4, z + 4] });
+      });
+    });
     if (c.topo === 'travessas' && !entre) [zFr-25, zFr-75, zfC+75, zfC+25].forEach(z => furo(z, H-t/2, 4, 0, 'montagem'));
     pecas.filter(q => q.papel === 'travessa-fixacao' && encosta(q)).forEach(tr => { const yc = (tr.box[2]+tr.box[3])/2; [yc-25, yc+25].forEach(y => furo(zf+t/2, y, 4, 0, 'montagem')); });
     const pf = c.prateleira.furacao, vistos = new Set();
@@ -1443,7 +1472,20 @@ function gerarModuloV3(m) {
   const fundosT = pecas.filter(q => q.papel === 'fundo').length;
   if (!montado && fundosT > 3) A.push(`Transporte: com o limite de ${fmt(limT)} mm o fundo ficou em ${fundosT} peças (${fundosT - 1} emendas). Confira se o limite não está baixo demais.`);
   const volumes = volumesDe(pecas, { montado, L, H:H0, P, A });
-  return { pecas, erros:E, avisos:A, volumes };
+  return { pecas, erros:E, avisos:A, volumes, compras: comprasV3(pecas) };
+}
+
+/* COMPRAS DO NÚCLEO — conta as ferragens pelas referências da biblioteca e abre os kits nos componentes */
+function comprasV3(pecas) {
+  const conta = new Map(), soma = (ref, q) => conta.set(ref, (conta.get(ref) || 0) + q);
+  const refs = new Map(); pecas.filter(q => q.ref).forEach(q => refs.set(q.ref, (refs.get(q.ref) || 0) + 1));
+  for (const [ref, n] of refs) {
+    const it = BIBLIOTECA[ref]; if (!it) { soma(ref, n); continue; }
+    const q = Math.ceil(n / (it.contaPor || 1));
+    if (it.componentes) it.componentes.forEach(([cr, cq]) => soma(cr, q * cq)); else soma(ref, q);
+  }
+  return [...conta.entries()].map(([ref, qtd]) => { const it = BIBLIOTECA[ref] || {}; const emb = it.emb || 1;
+    return { ref, nome: it.nome || ref, qtd, unid: it.unid || 'un', compra: Math.ceil(qtd / emb) }; }).sort((a, b) => a.nome.localeCompare(b.nome));
 }
 
 /* VOLUMES — embalagem simulada (versão simples): frentes num volume próprio, caixa em pilhas
