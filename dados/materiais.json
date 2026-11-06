@@ -14,5 +14,13 @@
   "cromado": {
     "nome": "Metal cromado",
     "cor": "#b9bec2"
+  },
+  "hdf-cru": {
+    "nome": "Fibra (HDF) crua",
+    "cor": "#8a6a4f"
+  },
+  "hdf-branco": {
+    "nome": "Fibra (HDF) branca",
+    "cor": "#efeee9"
   }
 }

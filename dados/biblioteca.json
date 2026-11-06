@@ -41,6 +41,36 @@
       1850
     ]
   },
+  "chapa-hdf-cru-3": {
+    "grupo": "Chapas",
+    "nome": "Chapa de fibra (HDF) para fundo de móveis, crua, 3 mm",
+    "marca": "",
+    "codigo": "",
+    "unid": "chapa",
+    "emb": 1,
+    "mat": "hdf-cru",
+    "esp": 3,
+    "dim": [
+      2750,
+      1220
+    ],
+    "obs": "Qualquer fabricante (ex.: Eucatex, Duratex). Medidas comuns: 2440 × 1220, 2750 × 1220, 2750 × 2130. Espessura 3 mm [Provável — confirmar na loja]."
+  },
+  "chapa-hdf-branco-3": {
+    "grupo": "Chapas",
+    "nome": "Chapa de fibra (HDF) para fundo de móveis, branca, 3 mm",
+    "marca": "",
+    "codigo": "",
+    "unid": "chapa",
+    "emb": 1,
+    "mat": "hdf-branco",
+    "esp": 3,
+    "dim": [
+      2750,
+      1220
+    ],
+    "obs": "Qualquer fabricante. [Provável] confirmar espessura e medidas na loja."
+  },
   "dob-blum-71B3550": {
     "grupo": "Ferragens",
     "nome": "Dobradiça CLIP top BLUMOTION 110°, reta, com amortecedor",
@@ -156,6 +186,22 @@
   "sapata": {
     "grupo": "Ferragens",
     "nome": "Sapata niveladora",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1
+  },
+  "pe-regulavel": {
+    "grupo": "Ferragens",
+    "nome": "Pé regulável plástico para móvel (100–150 mm)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1
+  },
+  "clip-rodape": {
+    "grupo": "Ferragens",
+    "nome": "Clip de rodapé para pé regulável",
     "marca": "",
     "codigo": "",
     "unid": "un",

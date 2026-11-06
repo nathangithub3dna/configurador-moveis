@@ -357,7 +357,7 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^lateral-(esq|dir)$/, 'lateral'], [/^topo$/, 'topo'], [/^base$/, 'base'],
   [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'],
   [/^travessa-(frontal|traseira)$/, 'travessa'], [/^travessa-fixacao(-\d+)?$/, 'travessa-fixacao'],
-  [/^rodape-(frontal|traseiro)$/, 'rodape'], [/^fundo$/, 'fundo'],
+  [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'],
   [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-\d+$/, 'prateleira-fixa'],
   [/^reforco-/, 'reforco'], [/^beiral-frontal$/, 'beiral-frontal'], [/^beiral-(esq|dir)$/, 'beiral-lateral'],
   [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+$/, 'espacador'],
@@ -1023,6 +1023,7 @@ function gerarModuloV3(m) {
   const ferr = o => add(Object.assign({ cat:'ferragem', mat:'cromado', lista:false }, o));
   const cont = { porta:0, gaveta:0, vao:0, divV:0, divH:0, trav:0 };
 
+  let fundoPendente = false;
   // CAIXA
   const Hl = yLat1 - yLat0, xC0 = entre ? xa : xa + t, xC1 = entre ? xb : xb - t, WC = xC1 - xC0;
   add({ id:'lateral-esq', nome:'Lateral esquerda', nomeLista:'Lateral', cat:'caixa', a:Hl, b:DcC, fita:[1,0], box:[xa,xa+t,yLat0,yLat1,zfC,zFr], des:{ w:DcC, h:Hl, fita:['l'], frente:'l', vista:'Vista pela face interna' } });
@@ -1046,10 +1047,10 @@ function gerarModuloV3(m) {
     // fundo encaixado: entra 'prof' mm no rasgo das laterais, base e topo (com folga), recuado da parede
     const pr = c.fundo.prof, fo = c.fundo.folga, fx0 = xa + t - pr + fo, fx1 = xb - t + pr - fo, fy0 = yBase + t - pr + fo, fy1 = H - t + pr - fo;
     add({ id:'fundo', nome:'Fundo do móvel (em rasgo)', nomeLista:'Fundo do móvel', cat:'fundo', mat:'mdf-branco', esp:tf, a:fy1-fy0, b:fx1-fx0, box:[fx0,fx1,fy0,fy1,zFundo,zFundo+tf], des:{ w:fx1-fx0, h:fy1-fy0, vista:'Vista de trás' } });
-  } else add({ id:'fundo', nome:'Fundo do móvel', nomeLista:'Fundo do móvel', cat:'fundo', mat:'mdf-branco', esp:tf, a:H-yBase, b:W, box:[xa,xb,yBase,H,0,tf], des:{ w:W, h:H-yBase, vista:'Vista de trás' } });
+  } else fundoPendente = true;   // fundo sobreposto: criado depois da árvore, dividido conforme a chapa
 
   // ÁRVORE DE VÃOS
-  const colunas = [];                                            // vãos de 1º nível na horizontal (travessas de fixação)
+  const colunas = [], juntasFundo = [];                                            // vãos de 1º nível na horizontal (travessas de fixação)
   const ventilacao = [];
   const regiao0 = { ix0:xa+t, ix1:xb-t, iy0:yBase+t, iy1:H-t, fx0:xa, fx1:xb, fy0:yBase, fy1:H, b:{ esq:'externa', dir:'externa', baixo:'externa', cima:'externa' } };
   const folga = tipo => tipo === 'externa' ? R.borda : R.entre/2;
@@ -1070,7 +1071,7 @@ function gerarModuloV3(m) {
         percorrer(p.no, sub, nivel + 1);
         x = x1;
         if (ns && i < n-1) {
-          const k = ++cont.divV;
+          const k = ++cont.divV; juntasFundo.push(x + t/2);
           add({ id:`divisoria-v-${k}`, nome:`Divisória vertical ${k}`, nomeLista:'Divisória vertical', cat:'caixa', a:g.iy1-g.iy0, b:Dc, fita:[1,0], box:[x,x+t,g.iy0,g.iy1,zf,zFr], des:{ w:Dc, h:g.iy1-g.iy0, fita:['l'], frente:'l', vista:'Vista lateral (lado direito)' } });
           x += t;
         }
@@ -1252,6 +1253,34 @@ function gerarModuloV3(m) {
 
   percorrer(m.raiz, regiao0, 0);
 
+  // FUNDO SOBREPOSTO — dividido quando não cabe na chapa; emenda sempre sobre divisória (ou montante de emenda)
+  if (fundoPendente) {
+    const matF = c.fundo.material || 'mdf-branco', espF = matF.startsWith('hdf') ? 3 : tf;
+    const ref = chapaDe(matF, espF), dim = ref ? BIBLIOTECA[ref].dim : R.chapa, LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo;
+    const hF = H - yBase, cabe = w => (w <= LU && hF <= WU) || (w <= WU && hF <= LU);
+    const cortes = [xa]; let ini = xa, kEm = 0;
+    if (!cabe(W)) {
+      if (hF > LU) E.push(`O fundo tem ${fmt(hF)} mm de altura e não cabe na chapa ${dim[0]} × ${dim[1]} nem em pé.`);
+      else while (!cabe(xb - ini)) {
+        const lim = ini + (hF <= WU ? LU : WU), opc = juntasFundo.filter(x => x > ini + 1 && x <= lim);
+        let x = opc.length ? Math.max(...opc) : null;
+        if (x === null) {                                   // sem divisória ao alcance: montante de emenda atrás
+          x = Math.min(lim, xb - t) - 30; kEm++;
+          add({ id:`reforco-emenda-${kEm}`, nome:`Montante de emenda do fundo ${kEm}`, nomeLista:'Montante de emenda', cat:'caixa', a:H-t-(yBase+t), b:60, box:[x-30, x+30, yBase+t, H-t, zf, zf+t], obs:'Recebe a emenda do fundo (não há divisória nesse ponto).', des:{ w:60, h:H-t-(yBase+t), vista:'Vista de frente' } });
+          A.push('O fundo não cabe numa chapa: foi incluído um montante de emenda (não há divisória no ponto da emenda).');
+        }
+        cortes.push(x); ini = x;
+      }
+    }
+    cortes.push(xb);
+    const nF = cortes.length - 1;
+    for (let k = 0; k < nF; k++) {
+      const x0 = cortes[k], x1 = cortes[k+1], id = nF > 1 ? `fundo-${k+1}` : 'fundo';
+      add({ id, nome: nF > 1 ? `Fundo do móvel ${k+1} de ${nF}` : 'Fundo do móvel', nomeLista:'Fundo do móvel', cat:'fundo', mat:matF, esp:espF, a:hF, b:x1-x0, box:[x0,x1,yBase,H,tf-espF,tf], des:{ w:x1-x0, h:hF, vista:'Vista de trás' },
+        obs: nF > 1 ? 'Emenda no meio da divisória (ou do montante): parafusar as duas peças nela.' : '' });
+    }
+  }
+
   // FIXAÇÃO NA PAREDE
   if (c.fixacao === 'unica') {
     add({ id:'travessa-fixacao', nome:'Travessa de fixação na parede', nomeLista:'Travessa de fixação', cat:'caixa', a:Wi, b:R.travessa, box:[xa+t,xb-t,H-t-R.travessa,H-t,zf,zf+t], des:{ w:Wi, h:R.travessa, vista:'Vista de frente', furos:[50, Wi/2, Wi-50].map(x => ({ x, y:R.travessa/2, d:6, prof:0, tipo:'parede' })) } });
@@ -1270,6 +1299,17 @@ function gerarModuloV3(m) {
     for (const ya of [v.y0 + 25, v.y0 + v.hB - 25 - alt]) for (let k = 0; k < nR; k++) lista.push({ z0: z0 + k*passo, z1: z0 + k*passo + larg, y0: ya, y1: ya + alt });
     lat.forma = { tipo:'rasgos', lista }; lat.nome = 'Lateral direita com ventilação'; lat.nomeLista = 'Lateral com ventilação';
     lat.des.rasgos = lista.map(r => ({ x:r.z0 - zfC, y:r.y0 - yLat0, w:r.z1 - r.z0, h:r.y1 - r.y0 }));
+  }
+
+  // PÉS REGULÁVEIS + RODAPÉ DE ENCAIXE
+  if (!rod && c.rodapeEncaixe && yBase > 0) {
+    const nx = Math.max(2, Math.ceil(W / 600) + 1), recR = c.rodapeEncaixe.recuo;
+    let kp = 0;
+    for (let i = 0; i < nx; i++) for (const z of [zf + 60, zFr - recR - 40]) {
+      const x = xa + 50 + i * (W - 100) / (nx - 1);
+      ferr({ id:`pe-regulavel-${++kp}`, nome:`Pé regulável ${kp}`, forma:{ tipo:'cil', eixo:'y' }, box:[x-20, x+20, 0, yBase, z-20, z+20], ref:'pe-regulavel' });
+    }
+    add({ id:'rodape-encaixe', nome:'Rodapé de encaixe', nomeLista:'Rodapé', cat:'caixa', a:W, b:yBase-3, box:[xa, xb, 3, yBase, zFr-recR-t, zFr-recR], obs:`Preso nos pés com clip; recuado ${recR} mm; 3 mm de folga do piso.`, des:{ w:W, h:yBase-3, vista:'Vista de frente' } });
   }
 
   // ENCHIMENTO

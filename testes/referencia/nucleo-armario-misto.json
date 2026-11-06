@@ -24,7 +24,33 @@
    "quatroFuros": 8,
    "faixa32": 56
   },
-  "origem": "método \"Fundo em rasgo\""
+  "origem": "método \"Fundo em rasgo\"",
+  "fundoDividido": [
+   [
+    "hdf-cru",
+    3,
+    1920,
+    900,
+    0,
+    900
+   ],
+   [
+    "hdf-cru",
+    3,
+    1920,
+    900,
+    900,
+    1800
+   ]
+  ],
+  "montante": 1,
+  "fundosSem": [
+   1170,
+   830
+  ],
+  "pes": 6,
+  "rodapeEncaixe": true,
+  "semFuncao": []
  },
  "erros": [],
  "avisos": [],
@@ -116,21 +142,6 @@
     100,
     6,
     24
-   ],
-   "furos": 0
-  },
-  {
-   "id": "fundo",
-   "papel": "fundo",
-   "comp": 1900,
-   "larg": 1200,
-   "box": [
-    0,
-    1200,
-    100,
-    2000,
-    0,
-    6
    ],
    "furos": 0
   },
@@ -656,6 +667,21 @@
     1500,
     12,
     462
+   ],
+   "furos": 0
+  },
+  {
+   "id": "fundo",
+   "papel": "fundo",
+   "comp": 1900,
+   "larg": 1200,
+   "box": [
+    0,
+    1200,
+    100,
+    2000,
+    0,
+    6
    ],
    "furos": 0
   },

@@ -2,30 +2,121 @@
   "_explicacao": {
     "lateral": "passante = topo e base entram entre as laterais; entre = topo e base passam por cima/baixo e as laterais ficam entre eles",
     "topo": "inteiro = uma chapa; travessas = travessa frontal + traseira (ex.: gabinete com tampo de pedra)",
-    "apoio": "rodape = laterais até o chão com rodapé recuado; pes = móvel apoiado em pés (altura em 'pes')",
-    "fundo": "sobreposto = parafusado atrás; rasgo = encaixado em canal das laterais/base/topo (recuo da parede, profundidade do canal, folga)",
+    "apoio": "rodape = laterais até o chão com rodapé recuado; pes = móvel apoiado em pés (altura em 'pes'); pes com rodapeEncaixe = pés reguláveis + rodapé de encaixe (clip), recuado",
+    "fundo": "sobreposto = parafusado atrás; rasgo = encaixado em canal das laterais/base/topo (recuo da parede, profundidade do canal, folga); material/espessura do fundo; o fundo é dividido em mais de uma peça quando não cabe na chapa, com emenda sobre divisória (ou montante de emenda)",
     "fixacao": "unica = uma travessa de fixação na parede; por-vao = uma travessa em cada vão",
     "furarLaterais": "gera a furação de montagem, pinos, calços e corrediças nas laterais",
     "prateleira": "furacao: 4-furos (só na altura da prateleira), faixa32 (sistema 32 com 'faixa' furos acima e abaixo), sistema32 (linha inteira a cada 32 mm)",
     "juncao": "parafuso, minifix ou cavilha (aplicado nas fixações — sub-etapa 4d)"
   },
-  "metodoPadrao": "armario-atual",
+  "metodoPadrao": "padrao-nathan",
   "padrao": {
     "lateral": "passante",
     "topo": "inteiro",
     "apoio": "rodape",
-    "rodape": { "altura": 100, "recuo": 40 },
+    "rodape": {
+      "altura": 100,
+      "recuo": 40
+    },
     "pes": 0,
-    "fundo": { "tipo": "sobreposto", "recuo": 10, "prof": 8, "folga": 0.5 },
+    "fundo": {
+      "tipo": "sobreposto",
+      "recuo": 10,
+      "prof": 8,
+      "folga": 0.5,
+      "material": "mdf-branco"
+    },
     "fixacao": "por-vao",
     "furarLaterais": true,
-    "prateleira": { "furacao": "4-furos", "faixa": 3 },
+    "prateleira": {
+      "furacao": "4-furos",
+      "faixa": 3
+    },
     "juncao": "parafuso"
   },
   "metodos": {
-    "gabinete-atual": { "nome": "Gabinete (como hoje)", "ajustes": { "apoio": "pes", "topo": "travessas", "fixacao": "unica", "furarLaterais": true } },
-    "armario-atual":  { "nome": "Armário (como hoje)", "ajustes": { "apoio": "rodape", "topo": "inteiro", "fixacao": "por-vao", "furarLaterais": false } },
-    "fundo-rasgo":    { "nome": "Fundo em rasgo", "ajustes": { "fundo": { "tipo": "rasgo" } } },
-    "topo-base-passantes": { "nome": "Topo e base passantes", "ajustes": { "lateral": "entre" } }
-  }
+    "gabinete-atual": {
+      "nome": "Gabinete (como hoje)",
+      "ajustes": {
+        "apoio": "pes",
+        "topo": "travessas",
+        "fixacao": "unica",
+        "furarLaterais": true
+      }
+    },
+    "armario-atual": {
+      "nome": "Armário (como hoje)",
+      "ajustes": {
+        "apoio": "rodape",
+        "topo": "inteiro",
+        "fixacao": "por-vao",
+        "furarLaterais": false
+      }
+    },
+    "fundo-rasgo": {
+      "nome": "Fundo em rasgo",
+      "ajustes": {
+        "fundo": {
+          "tipo": "rasgo"
+        }
+      }
+    },
+    "topo-base-passantes": {
+      "nome": "Topo e base passantes",
+      "ajustes": {
+        "lateral": "entre"
+      }
+    },
+    "padrao-nathan": {
+      "nome": "Padrão Nathan",
+      "ajustes": {
+        "lateral": "passante",
+        "fundo": {
+          "tipo": "sobreposto"
+        },
+        "apoio": "rodape",
+        "rodape": {
+          "altura": 100,
+          "recuo": 40
+        },
+        "prateleira": {
+          "furacao": "faixa32",
+          "faixa": 3
+        },
+        "furarLaterais": true,
+        "fixacao": "por-vao",
+        "topo": "inteiro"
+      }
+    },
+    "padrao-nathan-cozinha-banheiro": {
+      "nome": "Padrão Nathan — cozinha e banheiro (pés reguláveis)",
+      "ajustes": {
+        "lateral": "passante",
+        "fundo": {
+          "tipo": "sobreposto"
+        },
+        "apoio": "pes",
+        "pes": 100,
+        "rodapeEncaixe": {
+          "recuo": 50
+        },
+        "prateleira": {
+          "furacao": "faixa32",
+          "faixa": 3
+        },
+        "furarLaterais": true,
+        "fixacao": "por-vao",
+        "topo": "inteiro"
+      }
+    },
+    "fundo-hdf": {
+      "nome": "Fundo em chapa de fibra (HDF) 3 mm",
+      "ajustes": {
+        "fundo": {
+          "material": "hdf-cru"
+        }
+      }
+    }
+  },
+  "decisoesNathan": "06/11/2026: laterais passantes; fundo sobreposto (dividido conforme a chapa); apoio por tipo (pés reguláveis em cozinha e banheiro, rodapé recuado no resto); prateleira com faixa do sistema 32."
 }
