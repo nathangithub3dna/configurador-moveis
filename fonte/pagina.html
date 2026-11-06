@@ -1,10 +1,12 @@
 <title>Configurador de Móveis</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap">
 <style>
 /* Layout: visualizador técnico — barra do projeto, coluna de parâmetros/peças à esquerda, palco 3D à direita, listas de corte e ferragens embaixo */
 /*@inclui:estilos/tema.css*/
 /*@inclui:estilos/layout.css*/
+/*@inclui:estilos/componentes.css*/
+/*@inclui:estilos/editor.css*/
 </style>
 
 <header class="topo">
@@ -16,9 +18,16 @@
     <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
     <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
   </div>
+  <nav class="etapas" id="etapas" aria-label="Etapas">
+    <button type="button" data-etapa="montar" aria-current="page">Montar</button>
+    <button type="button" data-etapa="corte">Lista de corte</button>
+    <button type="button" data-etapa="plano">Plano de corte</button>
+    <button type="button" data-etapa="compras">Compras e orçamento</button>
+    <button type="button" data-etapa="desenhos">Desenhos</button>
+  </nav>
 </header>
 
-<main class="app">
+<main class="app" data-secao="montar">
   <aside class="lado">
     <div class="abas" role="tablist">
       <button role="tab" id="abaParam" aria-selected="true" aria-controls="painelParam">Parâmetros</button>
@@ -48,6 +57,10 @@
 
   <section class="vista" aria-label="Visualização 3D">
     <div class="barra" role="toolbar" aria-label="Ferramentas do 3D">
+      <div class="grupo" id="grupoEsquema" hidden>
+        <button class="btn" id="bEsquema" aria-pressed="true" type="button" title="Desenho de frente: clique num vão para editar">Esquema</button>
+        <button class="btn" id="b3D" aria-pressed="false" type="button">3D</button>
+      </div>
       <div class="grupo">
         <select id="selVista" aria-label="Vista">
           <option value="perspectiva">Perspectiva</option>
@@ -89,6 +102,7 @@
       </div>
     </div>
     <div class="palco" id="palco">
+      <div class="esquema" id="esquema" hidden aria-label="Esquema do móvel visto de frente"></div>
       <div class="leg-fix" id="legFix" hidden>
         <span><i style="background:#e8772e"></i>Parafuso 4,0 × 50</span><span><i style="background:#c94f8a"></i>3,5 × 14 (fundo)</span>
         <span><i style="background:#8e5bd0"></i>3,5 × 25 (frente gaveta)</span><span><i style="background:#d9a21b"></i>4,0 × 30 (espaçador)</span>
@@ -108,7 +122,7 @@
   </section>
 </main>
 
-<section class="listas">
+<section class="listas" data-secao="corte" hidden>
   <div class="cartao">
     <div class="cab"><h2>Lista de corte</h2><button class="btn" id="copCorte" type="button">Copiar</button></div>
     <div class="resumo" id="resumoCorte"></div>
@@ -121,24 +135,73 @@
     <textarea class="copia" id="copiaFerr" readonly hidden aria-label="Texto da lista de ferragens"></textarea>
   </div>
 </section>
-<section class="cartao plano" aria-labelledby="tPlano">
+<section class="cartao plano" aria-labelledby="tPlano" data-secao="plano" hidden>
   <div class="cab"><h2 id="tPlano">Plano de corte</h2><button class="btn" id="copLoja" type="button">Copiar lista para a loja de corte</button></div>
   <p class="nota" id="notaPlano"></p>
   <div class="grade-plano" id="gradePlano"></div>
   <textarea class="copia" id="copiaLoja" readonly hidden aria-label="Lista para a loja de corte"></textarea>
 </section>
-<section class="cartao plano compras" aria-labelledby="tCompras">
+<section class="cartao plano compras" aria-labelledby="tCompras" data-secao="compras" hidden>
   <div class="cab"><h2 id="tCompras">Lista de compras</h2><button class="btn" id="copCompras" type="button">Copiar</button></div>
   <p class="nota">Quantidades em unidade de compra (chapa, par, cento, rolo). Digite o preço unitário que a loja passar: os preços ficam salvos neste navegador e vão junto no projeto exportado.</p>
   <div class="tabela" id="tabCompras"></div>
   <textarea class="copia" id="copiaCompras" readonly hidden aria-label="Texto da lista de compras"></textarea>
 </section>
-<section class="cartao desenhos" aria-labelledby="tDes">
+<section class="cartao desenhos" aria-labelledby="tDes" data-secao="desenhos" hidden>
   <div class="cab"><h2 id="tDes">Desenhos técnicos</h2><button class="btn" id="btnPdf2" type="button">Baixar PDF</button></div>
   <p class="nota">Um desenho por peça de MDF diferente. Medidas em mm. X e Y dos furos a partir do canto inferior esquerdo (0, 0) da vista indicada. <i></i> borda com fita.</p>
   <div class="grade-des" id="gradeDes"></div>
 </section>
 <div class="toast" id="toast" hidden></div>
+
+<!-- MODELOS DO EDITOR DO MÓVEL LIVRE (5a): a estrutura fica aqui; js/tela-modulo.js só preenche -->
+<template id="tplEditor">
+  <fieldset class="ed-bloco">
+    <legend>Medidas do móvel</legend>
+    <div class="ed-grade2">
+      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-modulo="largura"></label>
+      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-modulo="altura"></label>
+      <label class="ed-campo">Profundidade<input type="number" inputmode="decimal" data-modulo="profundidade"></label>
+      <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
+    </div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Construção</legend>
+    <label class="ed-linha">Método<select data-modulo="metodo"></select></label>
+    <label class="ed-linha">Entrega<select data-modulo="entrega"><option value="desmontado">Desmontado (volumes)</option><option value="montado">Montado</option></select></label>
+    <label class="ed-linha">Puxador das portas<select data-modulo="puxador"></select></label>
+    <label class="ed-linha">Material das frentes<select data-modulo="materialFrentes"></select></label>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Espaços</legend>
+    <ul class="ed-arvore" data-lista="espacos"></ul>
+  </fieldset>
+  <fieldset class="ed-bloco ed-vao">
+    <legend data-texto="titulo"></legend>
+    <span class="ed-nota" data-texto="medida"></span>
+    <label class="ed-linha" data-se="temMedida"><span data-texto="rotMedida"></span><input type="text" data-vao="medida" placeholder="auto"></label>
+    <div class="ed-sub">O que fecha este espaço?</div>
+    <div class="ed-grade3" data-lista="frentes"></div>
+    <label class="ed-linha" data-se="porta">Dobradiça<select data-vao="lado"><option value="auto">Automática</option><option value="esq">Esquerda</option><option value="dir">Direita</option></select></label>
+    <label class="ed-linha" data-se="correr">Sistema<select data-vao="sistema"><option value="correr-rometal-dominus">Rometal Dominus (até 80 kg)</option><option value="correr-rometal-ro27">Rometal RO-27 (até 20 kg)</option></select></label>
+    <div class="ed-sub">O que tem dentro?</div>
+    <select class="ed-select" data-vao="conteudo" aria-label="Conteúdo do espaço"></select>
+    <div class="ed-contador" data-se="prateleiras">
+      <span>Prateleiras</span>
+      <button type="button" class="btn" data-acao="prat-menos" aria-label="Menos uma prateleira">−</button>
+      <strong data-texto="nPrat"></strong>
+      <button type="button" class="btn" data-acao="prat-mais" aria-label="Mais uma prateleira">+</button>
+    </div>
+    <div class="ed-sub">Dividir em mais espaços</div>
+    <div class="ed-grade2">
+      <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
+      <button type="button" class="btn" data-acao="dividir-h">▤ Deitado</button>
+    </div>
+    <button type="button" class="btn ed-remover" data-acao="remover" data-se="podeRemover">Juntar com o vizinho</button>
+  </fieldset>
+</template>
+<template id="tplEspaco"><li><button type="button" class="ed-espaco" data-acao="selecionar"><strong data-texto="nome"></strong><span data-texto="desc"></span></button></li></template>
+<template id="tplOpcao"><button type="button" class="btn ed-op" data-acao="frente"></button></template>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -160,5 +223,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /*@inclui:js/geradores.js*/
 /*@inclui:js/nucleo.js*/
 /*@inclui:js/saidas.js*/
+/*@inclui:js/editor-modulo.js*/
 /*@inclui:js/tela.js*/
+/*@inclui:js/tela-modulo.js*/
 </script>

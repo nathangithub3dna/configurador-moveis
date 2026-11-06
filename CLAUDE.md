@@ -13,4 +13,4 @@
 - Nunca colocar projetos de clientes no repositório (vão para o Google Drive).
 - Não tocar no Visualizador 3D Granfinale (GSA).
 - O Nathan não quer ficar preso a um PC: nada instalado nos computadores dele; testes rodam na nuvem do Claude.
-- Toda peça nova precisa ter uma função na tabela `PAPEIS` (fonte/configurador.html); orientação no Inventor vem de `ORIENTACAO` por função. O teste falha com "SEM FUNÇÃO" se faltar.
+- Toda peça nova precisa ter uma função na tabela `PAPEIS` (fonte/js/regras.js); orientação no Inventor vem de `ORIENTACAO` por função. O teste falha com "SEM FUNÇÃO" se faltar.

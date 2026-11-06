@@ -1,0 +1,35 @@
+/* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
+   Estrutura em pagina.html (modelos tplEditor, tplEspaco, tplOpcao); lógica em js/editor-modulo.js. */
+.ed-bloco{display:flex;flex-direction:column;gap:8px}
+.ed-grade2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ed-grade3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ed-campo{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.ed-linha{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);align-items:center;gap:8px;font-size:13px}
+.ed-campo input,.ed-linha input,.ed-linha select,.ed-select{width:100%;min-width:0;height:36px;border:0;border-radius:var(--raio-p);padding:0 10px;background:var(--surface);box-shadow:var(--sombra-dentro);font-size:13px}
+.ed-campo input{font-family:var(--f-mono);text-align:right}
+.ed-sub{font-weight:800;font-size:13px;margin-top:4px}
+.ed-nota{font-size:12px;color:var(--muted)}
+.ed-op{justify-content:center;padding:9px 4px;font-size:12.5px}
+.ed-arvore{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ed-espaco{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:9px 12px;margin-left:calc((var(--nivel,0) - 1) * 12px);max-width:calc(100% - (var(--nivel,0) - 1) * 12px);
+  border:0;border-radius:var(--raio-p);background:var(--surface);box-shadow:var(--sombra-fora-p);cursor:pointer;text-align:left}
+.ed-espaco span{font-size:12px;color:var(--muted)}
+.ed-espaco[aria-current]{color:var(--accent);box-shadow:var(--sombra-dentro)}
+.ed-espaco.divisao{box-shadow:none;cursor:default;padding:4px 12px;margin-left:calc(var(--nivel,0) * 12px - 12px)}
+.ed-espaco.divisao:first-child{margin-left:0}
+.ed-contador{display:grid;grid-template-columns:minmax(0,1fr) 38px 32px 38px;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro)}
+.ed-contador .btn{justify-content:center;padding:6px 0}
+.ed-contador strong{text-align:center;font-size:16px}
+.ed-remover{justify-content:center}
+
+/* Esquema de frente: o móvel nas cores do material; os vãos são botões por cima */
+.esquema{position:absolute;inset:0;z-index:2;background:var(--v-bg);overflow:hidden}
+.esq-peca{position:absolute;box-sizing:border-box;border:1px solid var(--v-linha);background:var(--v-caixa)}
+.esq-frente{background:var(--v-frente)}
+.esq-gaveta{background:var(--v-gaveta)}
+.esq-enchimento{background:var(--v-enchimento)}
+.esq-vao{position:absolute;box-sizing:border-box;border:0;padding:6px 0 0;background:transparent;cursor:pointer;display:flex;justify-content:center;align-items:flex-start;font:700 12px var(--f-sans);color:var(--muted)}
+.esq-vao span{padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--surface) 85%,transparent)}
+.esq-vao:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.esq-vao[aria-current]{outline:3px solid var(--accent);outline-offset:-3px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
+[data-se][hidden]{display:none!important}

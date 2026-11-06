@@ -1,0 +1,22 @@
+/* COMPONENTES — o formato de painéis, botões e campos (neomorfismo).
+   As cores e sombras vêm de tema.css; aqui só se diz quem usa qual. */
+.lado,.vista,.cartao{border:0;border-radius:var(--raio);box-shadow:var(--sombra-fora)}
+.vista .barra,.abas{border-bottom:0}
+.btn{border:0;border-radius:var(--raio-p);background:var(--surface);box-shadow:var(--sombra-fora-p);font-weight:700;padding:8px 12px}
+.btn:hover{border:0;color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--surface);color:var(--accent);box-shadow:var(--sombra-dentro)}
+.btn.prim{background:var(--accent);color:var(--accent-fg)}
+.btn.prim:hover{color:var(--accent-fg);filter:brightness(1.08)}
+.btn:disabled{box-shadow:none}
+#nomeProjeto,.campo .entrada,.barra select,.copia,.compras input{border:0;border-radius:var(--raio-p);background:var(--surface);box-shadow:var(--sombra-dentro)}
+.abas button[aria-selected="true"]{border-bottom-color:transparent;color:var(--accent);box-shadow:var(--sombra-dentro);border-radius:var(--raio-p)}
+.abas{gap:6px;padding:8px}
+.alerta{border-radius:var(--raio-p)}
+
+/* Abas das etapas (Montar, Lista de corte, Plano, Compras, Desenhos) */
+.etapas{display:flex;flex-wrap:wrap;gap:8px;width:100%}
+.etapas button{border:0;border-radius:var(--raio-p);padding:9px 14px;background:var(--surface);box-shadow:var(--sombra-fora-p);font-weight:700;cursor:pointer;white-space:nowrap}
+.etapas button[aria-current]{color:var(--accent);box-shadow:var(--sombra-dentro)}
+[data-secao][hidden]{display:none!important}
+.painel[hidden]{display:none}
+.palco.com-esquema .rotulos,.palco.com-esquema .dica{display:none}

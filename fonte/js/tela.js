@@ -8,7 +8,7 @@ const estado = {
   portas:false, gavetas:false, explode:0, cotas:true, medir:false, corte:'nenhum', cortePos:50,
   tampo:true, fundo:true, paredes:true, esgoto:false, fix:false, orto:false, vista:'perspectiva',
 };
-try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...TIPOS[s.tipo].padrao, ...s.parametros } }; } catch(e) {}
+try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros } }; } catch(e) {}
 const CHAVE_PRECOS = 'configurador-moveis:precos';
 let precos = {}; try { precos = JSON.parse(localStorage.getItem(CHAVE_PRECOS) || '{}') || {}; } catch(e) {}
 const salvarPrecos = () => { try { localStorage.setItem(CHAVE_PRECOS, JSON.stringify(precos)); } catch(e) {} };
@@ -22,6 +22,7 @@ let toastT; const toast = msg => { const t=$('toast'); t.textContent=msg; t.hidd
 function montarFormulario() {
   const tipo = TIPOS[estado.projeto.tipo], form = $('form'), par = estado.projeto.parametros;
   $('tipoMovel').replaceChildren(...Object.entries(TIPOS).map(([k,t]) => el('option', { value:k, selected:k===estado.projeto.tipo }, t.nome)));
+  if (tipo.editor) { montarEditorModulo(); return; }                  // móvel livre: editor próprio (js/tela-modulo.js)
   form.replaceChildren(...tipo.grupos.map(g => el('fieldset', {}, el('legend', { text:g.titulo }), ...g.campos.map(c => {
     const id = 'p-'+c.id;
     if (c.tipo === 'sim') return el('div', { class:'campo sim' }, el('input', { type:'checkbox', id, checked:!!par[c.id], 'data-c':c.id }), el('label', { for:id, text:c.rot }));
@@ -630,7 +631,7 @@ function atualizar(primeira = false) {
     estado.valido = res; construirCena(res); aplicarCorte(); montarArvore(res.pecas);
     if (primeira || mudouTam) aplicarVista(estado.vista);
   }
-  mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal();
+  mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal(); atualizarEsquema();
 }
 function carregarProjeto() { $('nomeProjeto').value = estado.projeto.nome; montarFormulario(); estado.valido = null; atualizar(true); }
 
@@ -660,4 +661,4 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { ED, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };

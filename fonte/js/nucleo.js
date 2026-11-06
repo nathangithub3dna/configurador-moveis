@@ -610,7 +610,7 @@ function resultadoModulo(r, m) {
   return r;
 }
 TIPOS.modulo = {
-  nomePadrao:'Móvel novo', nome:'Móvel livre (montar pela tela)', grupos:[], editor:true,
+  nomePadrao:'Móvel novo', nome:'Móvel livre (pela tela)', grupos:[], editor:true,
   padrao: JSON.parse(JSON.stringify({ ...moduloDeArmario(TIPOS.armario.padrao), metodo:'padrao-nathan', metodoAjustes:{}, entrega:'desmontado' })),
   gerar: p => resultadoModulo(gerarModuloV3(p), p),
 };

@@ -1,20 +1,27 @@
 <!-- ARQUIVO GERADO por ferramentas/montar.js — não editar aqui; edite fonte/ (pagina.html, estilos/, js/) e dados/*.json -->
 <title>Configurador de Móveis</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap">
 <style>
 /* Layout: visualizador técnico — barra do projeto, coluna de parâmetros/peças à esquerda, palco 3D à direita, listas de corte e ferragens embaixo */
 /* TEMA — cores, fontes e sombras. Para mudar o visual, mexa só aqui. */
 :root{
-  --bg:#eceff1; --surface:#ffffff; --surface-2:#f5f7f8; --fg:#1b2329; --muted:#5d6a73; --line:#d3dade;
-  --accent:#1f5f9e; --accent-fg:#ffffff; --danger:#a8261d; --danger-bg:#fbeceb; --warn:#7a5200; --warn-bg:#fdf3dd; --ok:#22693f; --ok-bg:#e5f3ea;
-  --v-bg:#dde2e5; --v-linha:#28323a; --v-caixa:#e6e9ec; --v-frente:#fbfbf9; --v-gaveta:#cfd7de; --v-fundo:#b7c0c7;
+  /* interface em neomorfismo: tudo na mesma cor de fundo; o relevo vem das sombras */
+  --bg:#e3e8ef; --surface:#e3e8ef; --surface-2:#e3e8ef; --fg:#2e3646; --muted:#4f5868; --line:#c9d0da;
+  --accent:#3557c9; --accent-fg:#ffffff;
+  --sombra-fora:6px 6px 14px #c2c9d3,-6px -6px 14px #ffffff;          /* painéis em relevo */
+  --sombra-fora-p:3px 3px 7px #c2c9d3,-3px -3px 7px #ffffff;          /* botões em relevo */
+  --sombra-dentro:inset 3px 3px 7px #c2c9d3,inset -3px -3px 7px #ffffff; /* afundado: selecionado, campos */
+  --raio:18px; --raio-p:12px;
+  /* o móvel (esquema e 3D) fica nas cores reais do material, sem neomorfismo */ --danger:#a8261d; --danger-bg:#fbeceb; --warn:#7a5200; --warn-bg:#fdf3dd; --ok:#22693f; --ok-bg:#e5f3ea;
+  --v-bg:#e9edf2; --v-linha:#28323a; --v-caixa:#e6e9ec; --v-frente:#fbfbf9; --v-gaveta:#cfd7de; --v-fundo:#b7c0c7;
   --v-enchimento:#d6dccf; --v-ferragem:#6f7a82; --v-tampo:#f2f3f4; --v-parede:#c9cfd3; --v-grade:#b8c0c5; --v-esgoto:#d0503a; --v-referencia:#9fb3c8;
   --fita:#c4650f;
-  --f-sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-sans:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --sombra-fora:0 0 0 1px #2c353d; --sombra-fora-p:0 0 0 1px #34404a; --sombra-dentro:inset 0 0 0 1px #3d4954; --raio:14px; --raio-p:10px;
   --bg:#12171b; --surface:#1a2026; --surface-2:#1f262d; --fg:#e3e8eb; --muted:#93a0a8; --line:#2c353d;
   --accent:#6ea8e6; --accent-fg:#0d1720; --danger:#f0897f; --danger-bg:#3a1d1b; --warn:#e9b955; --warn-bg:#352a12; --ok:#7fcf9d; --ok-bg:#16301f;
   --v-bg:#1d2329; --v-linha:#0b0f12; --v-caixa:#7d8890; --v-frente:#a9b2b8; --v-gaveta:#66727c; --v-fundo:#525d66;
@@ -22,6 +29,7 @@
   --fita:#f0a050;
   color-scheme:dark}}
 :root[data-theme="dark"]{
+  --sombra-fora:0 0 0 1px #2c353d; --sombra-fora-p:0 0 0 1px #34404a; --sombra-dentro:inset 0 0 0 1px #3d4954; --raio:14px; --raio-p:10px;
   --bg:#12171b; --surface:#1a2026; --surface-2:#1f262d; --fg:#e3e8eb; --muted:#93a0a8; --line:#2c353d;
   --accent:#6ea8e6; --accent-fg:#0d1720; --danger:#f0897f; --danger-bg:#3a1d1b; --warn:#e9b955; --warn-bg:#352a12; --ok:#7fcf9d; --ok-bg:#16301f;
   --v-bg:#1d2329; --v-linha:#0b0f12; --v-caixa:#7d8890; --v-frente:#a9b2b8; --v-gaveta:#66727c; --v-fundo:#525d66;
@@ -183,6 +191,63 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .leg-fix { position:absolute; top:10px; left:10px; z-index:3; display:flex; flex-wrap:wrap; gap:4px 12px; max-width:calc(100% - 20px); padding:8px 10px; border-radius:8px; background:color-mix(in srgb, var(--surface, #fff) 88%, transparent); font-size:12px; pointer-events:none; }
 .leg-fix[hidden] { display:none; }
 .leg-fix i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
+/* COMPONENTES — o formato de painéis, botões e campos (neomorfismo).
+   As cores e sombras vêm de tema.css; aqui só se diz quem usa qual. */
+.lado,.vista,.cartao{border:0;border-radius:var(--raio);box-shadow:var(--sombra-fora)}
+.vista .barra,.abas{border-bottom:0}
+.btn{border:0;border-radius:var(--raio-p);background:var(--surface);box-shadow:var(--sombra-fora-p);font-weight:700;padding:8px 12px}
+.btn:hover{border:0;color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--surface);color:var(--accent);box-shadow:var(--sombra-dentro)}
+.btn.prim{background:var(--accent);color:var(--accent-fg)}
+.btn.prim:hover{color:var(--accent-fg);filter:brightness(1.08)}
+.btn:disabled{box-shadow:none}
+#nomeProjeto,.campo .entrada,.barra select,.copia,.compras input{border:0;border-radius:var(--raio-p);background:var(--surface);box-shadow:var(--sombra-dentro)}
+.abas button[aria-selected="true"]{border-bottom-color:transparent;color:var(--accent);box-shadow:var(--sombra-dentro);border-radius:var(--raio-p)}
+.abas{gap:6px;padding:8px}
+.alerta{border-radius:var(--raio-p)}
+
+/* Abas das etapas (Montar, Lista de corte, Plano, Compras, Desenhos) */
+.etapas{display:flex;flex-wrap:wrap;gap:8px;width:100%}
+.etapas button{border:0;border-radius:var(--raio-p);padding:9px 14px;background:var(--surface);box-shadow:var(--sombra-fora-p);font-weight:700;cursor:pointer;white-space:nowrap}
+.etapas button[aria-current]{color:var(--accent);box-shadow:var(--sombra-dentro)}
+[data-secao][hidden]{display:none!important}
+.painel[hidden]{display:none}
+.palco.com-esquema .rotulos,.palco.com-esquema .dica{display:none}
+/* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
+   Estrutura em pagina.html (modelos tplEditor, tplEspaco, tplOpcao); lógica em js/editor-modulo.js. */
+.ed-bloco{display:flex;flex-direction:column;gap:8px}
+.ed-grade2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ed-grade3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ed-campo{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.ed-linha{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);align-items:center;gap:8px;font-size:13px}
+.ed-campo input,.ed-linha input,.ed-linha select,.ed-select{width:100%;min-width:0;height:36px;border:0;border-radius:var(--raio-p);padding:0 10px;background:var(--surface);box-shadow:var(--sombra-dentro);font-size:13px}
+.ed-campo input{font-family:var(--f-mono);text-align:right}
+.ed-sub{font-weight:800;font-size:13px;margin-top:4px}
+.ed-nota{font-size:12px;color:var(--muted)}
+.ed-op{justify-content:center;padding:9px 4px;font-size:12.5px}
+.ed-arvore{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ed-espaco{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:9px 12px;margin-left:calc((var(--nivel,0) - 1) * 12px);max-width:calc(100% - (var(--nivel,0) - 1) * 12px);
+  border:0;border-radius:var(--raio-p);background:var(--surface);box-shadow:var(--sombra-fora-p);cursor:pointer;text-align:left}
+.ed-espaco span{font-size:12px;color:var(--muted)}
+.ed-espaco[aria-current]{color:var(--accent);box-shadow:var(--sombra-dentro)}
+.ed-espaco.divisao{box-shadow:none;cursor:default;padding:4px 12px;margin-left:calc(var(--nivel,0) * 12px - 12px)}
+.ed-espaco.divisao:first-child{margin-left:0}
+.ed-contador{display:grid;grid-template-columns:minmax(0,1fr) 38px 32px 38px;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro)}
+.ed-contador .btn{justify-content:center;padding:6px 0}
+.ed-contador strong{text-align:center;font-size:16px}
+.ed-remover{justify-content:center}
+
+/* Esquema de frente: o móvel nas cores do material; os vãos são botões por cima */
+.esquema{position:absolute;inset:0;z-index:2;background:var(--v-bg);overflow:hidden}
+.esq-peca{position:absolute;box-sizing:border-box;border:1px solid var(--v-linha);background:var(--v-caixa)}
+.esq-frente{background:var(--v-frente)}
+.esq-gaveta{background:var(--v-gaveta)}
+.esq-enchimento{background:var(--v-enchimento)}
+.esq-vao{position:absolute;box-sizing:border-box;border:0;padding:6px 0 0;background:transparent;cursor:pointer;display:flex;justify-content:center;align-items:flex-start;font:700 12px var(--f-sans);color:var(--muted)}
+.esq-vao span{padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--surface) 85%,transparent)}
+.esq-vao:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.esq-vao[aria-current]{outline:3px solid var(--accent);outline-offset:-3px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
+[data-se][hidden]{display:none!important}
 </style>
 
 <header class="topo">
@@ -194,9 +259,16 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
     <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
   </div>
+  <nav class="etapas" id="etapas" aria-label="Etapas">
+    <button type="button" data-etapa="montar" aria-current="page">Montar</button>
+    <button type="button" data-etapa="corte">Lista de corte</button>
+    <button type="button" data-etapa="plano">Plano de corte</button>
+    <button type="button" data-etapa="compras">Compras e orçamento</button>
+    <button type="button" data-etapa="desenhos">Desenhos</button>
+  </nav>
 </header>
 
-<main class="app">
+<main class="app" data-secao="montar">
   <aside class="lado">
     <div class="abas" role="tablist">
       <button role="tab" id="abaParam" aria-selected="true" aria-controls="painelParam">Parâmetros</button>
@@ -226,6 +298,10 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 
   <section class="vista" aria-label="Visualização 3D">
     <div class="barra" role="toolbar" aria-label="Ferramentas do 3D">
+      <div class="grupo" id="grupoEsquema" hidden>
+        <button class="btn" id="bEsquema" aria-pressed="true" type="button" title="Desenho de frente: clique num vão para editar">Esquema</button>
+        <button class="btn" id="b3D" aria-pressed="false" type="button">3D</button>
+      </div>
       <div class="grupo">
         <select id="selVista" aria-label="Vista">
           <option value="perspectiva">Perspectiva</option>
@@ -267,6 +343,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       </div>
     </div>
     <div class="palco" id="palco">
+      <div class="esquema" id="esquema" hidden aria-label="Esquema do móvel visto de frente"></div>
       <div class="leg-fix" id="legFix" hidden>
         <span><i style="background:#e8772e"></i>Parafuso 4,0 × 50</span><span><i style="background:#c94f8a"></i>3,5 × 14 (fundo)</span>
         <span><i style="background:#8e5bd0"></i>3,5 × 25 (frente gaveta)</span><span><i style="background:#d9a21b"></i>4,0 × 30 (espaçador)</span>
@@ -286,7 +363,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
   </section>
 </main>
 
-<section class="listas">
+<section class="listas" data-secao="corte" hidden>
   <div class="cartao">
     <div class="cab"><h2>Lista de corte</h2><button class="btn" id="copCorte" type="button">Copiar</button></div>
     <div class="resumo" id="resumoCorte"></div>
@@ -299,24 +376,73 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <textarea class="copia" id="copiaFerr" readonly hidden aria-label="Texto da lista de ferragens"></textarea>
   </div>
 </section>
-<section class="cartao plano" aria-labelledby="tPlano">
+<section class="cartao plano" aria-labelledby="tPlano" data-secao="plano" hidden>
   <div class="cab"><h2 id="tPlano">Plano de corte</h2><button class="btn" id="copLoja" type="button">Copiar lista para a loja de corte</button></div>
   <p class="nota" id="notaPlano"></p>
   <div class="grade-plano" id="gradePlano"></div>
   <textarea class="copia" id="copiaLoja" readonly hidden aria-label="Lista para a loja de corte"></textarea>
 </section>
-<section class="cartao plano compras" aria-labelledby="tCompras">
+<section class="cartao plano compras" aria-labelledby="tCompras" data-secao="compras" hidden>
   <div class="cab"><h2 id="tCompras">Lista de compras</h2><button class="btn" id="copCompras" type="button">Copiar</button></div>
   <p class="nota">Quantidades em unidade de compra (chapa, par, cento, rolo). Digite o preço unitário que a loja passar: os preços ficam salvos neste navegador e vão junto no projeto exportado.</p>
   <div class="tabela" id="tabCompras"></div>
   <textarea class="copia" id="copiaCompras" readonly hidden aria-label="Texto da lista de compras"></textarea>
 </section>
-<section class="cartao desenhos" aria-labelledby="tDes">
+<section class="cartao desenhos" aria-labelledby="tDes" data-secao="desenhos" hidden>
   <div class="cab"><h2 id="tDes">Desenhos técnicos</h2><button class="btn" id="btnPdf2" type="button">Baixar PDF</button></div>
   <p class="nota">Um desenho por peça de MDF diferente. Medidas em mm. X e Y dos furos a partir do canto inferior esquerdo (0, 0) da vista indicada. <i></i> borda com fita.</p>
   <div class="grade-des" id="gradeDes"></div>
 </section>
 <div class="toast" id="toast" hidden></div>
+
+<!-- MODELOS DO EDITOR DO MÓVEL LIVRE (5a): a estrutura fica aqui; js/tela-modulo.js só preenche -->
+<template id="tplEditor">
+  <fieldset class="ed-bloco">
+    <legend>Medidas do móvel</legend>
+    <div class="ed-grade2">
+      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-modulo="largura"></label>
+      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-modulo="altura"></label>
+      <label class="ed-campo">Profundidade<input type="number" inputmode="decimal" data-modulo="profundidade"></label>
+      <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
+    </div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Construção</legend>
+    <label class="ed-linha">Método<select data-modulo="metodo"></select></label>
+    <label class="ed-linha">Entrega<select data-modulo="entrega"><option value="desmontado">Desmontado (volumes)</option><option value="montado">Montado</option></select></label>
+    <label class="ed-linha">Puxador das portas<select data-modulo="puxador"></select></label>
+    <label class="ed-linha">Material das frentes<select data-modulo="materialFrentes"></select></label>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Espaços</legend>
+    <ul class="ed-arvore" data-lista="espacos"></ul>
+  </fieldset>
+  <fieldset class="ed-bloco ed-vao">
+    <legend data-texto="titulo"></legend>
+    <span class="ed-nota" data-texto="medida"></span>
+    <label class="ed-linha" data-se="temMedida"><span data-texto="rotMedida"></span><input type="text" data-vao="medida" placeholder="auto"></label>
+    <div class="ed-sub">O que fecha este espaço?</div>
+    <div class="ed-grade3" data-lista="frentes"></div>
+    <label class="ed-linha" data-se="porta">Dobradiça<select data-vao="lado"><option value="auto">Automática</option><option value="esq">Esquerda</option><option value="dir">Direita</option></select></label>
+    <label class="ed-linha" data-se="correr">Sistema<select data-vao="sistema"><option value="correr-rometal-dominus">Rometal Dominus (até 80 kg)</option><option value="correr-rometal-ro27">Rometal RO-27 (até 20 kg)</option></select></label>
+    <div class="ed-sub">O que tem dentro?</div>
+    <select class="ed-select" data-vao="conteudo" aria-label="Conteúdo do espaço"></select>
+    <div class="ed-contador" data-se="prateleiras">
+      <span>Prateleiras</span>
+      <button type="button" class="btn" data-acao="prat-menos" aria-label="Menos uma prateleira">−</button>
+      <strong data-texto="nPrat"></strong>
+      <button type="button" class="btn" data-acao="prat-mais" aria-label="Mais uma prateleira">+</button>
+    </div>
+    <div class="ed-sub">Dividir em mais espaços</div>
+    <div class="ed-grade2">
+      <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
+      <button type="button" class="btn" data-acao="dividir-h">▤ Deitado</button>
+    </div>
+    <button type="button" class="btn ed-remover" data-acao="remover" data-se="podeRemover">Juntar com o vizinho</button>
+  </fieldset>
+</template>
+<template id="tplEspaco"><li><button type="button" class="ed-espaco" data-acao="selecionar"><strong data-texto="nome"></strong><span data-texto="desc"></span></button></li></template>
+<template id="tplOpcao"><button type="button" class="btn ed-op" data-acao="frente"></button></template>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1601,7 +1727,7 @@ function resultadoModulo(r, m) {
   return r;
 }
 TIPOS.modulo = {
-  nomePadrao:'Móvel novo', nome:'Móvel livre (montar pela tela)', grupos:[], editor:true,
+  nomePadrao:'Móvel novo', nome:'Móvel livre (pela tela)', grupos:[], editor:true,
   padrao: JSON.parse(JSON.stringify({ ...moduloDeArmario(TIPOS.armario.padrao), metodo:'padrao-nathan', metodoAjustes:{}, entrega:'desmontado' })),
   gerar: p => resultadoModulo(gerarModuloV3(p), p),
 };
@@ -2103,6 +2229,95 @@ End Function
 }
 
 /* =====================================================================
+   5a. EDITOR DO MÓVEL LIVRE — só a lógica (sem tela).
+   Muda a árvore de vãos do módulo: dividir, juntar, frente, conteúdo, medida.
+   Cada vão é achado pelo seu "caminho": '' é o móvel inteiro, '.0' a 1ª parte,
+   '.1.2' a 3ª parte da 2ª parte, e assim por diante.
+   ===================================================================== */
+const FRENTES_EDITOR = [
+  ['nenhuma', 'Nada'], ['porta', 'Porta'], ['2portas', '2 portas'],
+  ['gaveta', 'Gaveta'], ['correr', 'Correr'], ['basculante', 'Abre p/ cima'],
+];
+const CONTEUDOS_EDITOR = [
+  ['vazio', 'Vazio'], ['prateleiras', 'Prateleiras'], ['vassoura', 'Vassoura e aspirador'],
+  ['gavetas', 'Gavetas internas'], ['gavetas+botijao', 'Botijão + gavetas'],
+];
+const ED = {
+  indices: cam => cam.split('.').filter(Boolean).map(Number),
+  no(raiz, cam) { return ED.indices(cam).reduce((n, i) => n.partes[i].no, raiz); },
+  pai(cam) {
+    const a = ED.indices(cam); if (!a.length) return null;
+    const i = a.pop(); return { cam: a.map(x => '.' + x).join(''), i };
+  },
+  parte(m, cam) { const p = ED.pai(cam); return p ? { divisao: ED.no(m.raiz, p.cam), parte: ED.no(m.raiz, p.cam).partes[p.i] } : null; },
+  trocar(m, cam, novo) {
+    if (!cam) { m.raiz = novo; return; }
+    const p = ED.pai(cam); ED.no(m.raiz, p.cam).partes[p.i].no = novo;
+  },
+  // lista para a árvore da tela: divisões e vãos, na mesma ordem em que o núcleo numera os vãos
+  espacos(raiz) {
+    const out = []; let k = 0;
+    const ir = (n, cam, nivel) => {
+      if (n.tipo === 'vao') { out.push({ cam, nivel, num: ++k, no: n }); return; }
+      out.push({ cam, nivel, divisao: true, no: n });
+      n.partes.forEach((p, i) => ir(p.no, cam + '.' + i, nivel + 1));
+    };
+    ir(raiz, '', 0); return out;
+  },
+  vaoNovo: () => ({ tipo: 'vao', frente: { tipo: 'porta', lado: 'auto' }, conteudo: [] }),
+  // dividir: na mesma direção da divisão de fora, só ganha mais uma parte; senão vira uma divisão nova
+  dividir(m, cam, dir) {
+    const no = ED.no(m.raiz, cam), info = ED.parte(m, cam);
+    if (info && info.divisao.dir === dir) { info.divisao.partes.splice(ED.pai(cam).i + 1, 0, { medida: 'auto', no: ED.vaoNovo() }); return; }
+    ED.trocar(m, cam, { tipo: 'dividir', dir, sep: 'divisoria', partes: [{ medida: 'auto', no }, { medida: 'auto', no: ED.vaoNovo() }] });
+  },
+  // juntar com o vizinho: tira a parte; se sobrar uma só, a divisão some
+  remover(m, cam) {
+    const p = ED.pai(cam); if (!p) return false;
+    const div = ED.no(m.raiz, p.cam); div.partes.splice(p.i, 1);
+    if (div.partes.length === 1) ED.trocar(m, p.cam, div.partes[0].no);
+    return true;
+  },
+  definirMedida(m, cam, texto) {
+    const info = ED.parte(m, cam); if (!info) return;
+    const v = Number(String(texto).replace(',', '.'));
+    info.parte.medida = String(texto).trim() === '' || /auto/i.test(texto) || !(v > 0) ? 'auto' : v;
+  },
+  definirFrente(m, cam, tipo) {
+    const no = ED.no(m.raiz, cam);
+    if (tipo === 'gaveta') no.conteudo = [];                       // gaveta de frente ocupa o espaço inteiro
+    no.frente = tipo === 'porta' ? { tipo, lado: 'auto' } : tipo === 'correr' ? { tipo, sistema: 'correr-rometal-dominus', n: 'auto' } : { tipo };
+  },
+  tipoConteudo(no) {
+    const t = (no.conteudo || []).map(c => c.tipo);
+    if (t.includes('botijao')) return 'gavetas+botijao';
+    if (t.includes('gavetas-internas')) return 'gavetas';
+    if (t.includes('vassoura')) return 'vassoura';
+    if (t.includes('prateleiras')) return 'prateleiras';
+    return 'vazio';
+  },
+  definirConteudo(m, cam, tipo) {
+    const no = ED.no(m.raiz, cam), P = TIPOS.armario.padrao;
+    const gav = { tipo: 'gavetas-internas', n: P.gavetas, altura: P.alturaGaveta, recuo: 45, puxador: m.puxadorGaveta };
+    const acima = { tipo: 'prateleiras-acima', n: P.pratAcimaGavetas, minLivre: 250 };
+    no.conteudo = tipo === 'prateleiras' ? [{ tipo: 'prateleiras', n: 3, min: 150 }]
+      : tipo === 'vassoura' ? [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura }]
+      : tipo === 'gavetas' ? [gav, acima]
+      : tipo === 'gavetas+botijao' ? [{ tipo: 'botijao', altura: P.alturaBotijao }, gav, acima] : [];
+  },
+  prateleiras(m, cam, delta) {
+    const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.tipo === 'prateleiras');
+    if (c) c.n = Math.max(0, c.n + delta);
+  },
+  resumo(no) {
+    const fr = (FRENTES_EDITOR.find(f => f[0] === no.frente?.tipo) || ['', 'Nada'])[1];
+    const t = ED.tipoConteudo(no), pr = (no.conteudo || []).find(x => x.tipo === 'prateleiras');
+    const ct = t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (CONTEUDOS_EDITOR.find(c => c[0] === t) || ['', ''])[1].toLowerCase();
+    return fr + ' · ' + ct;
+  },
+  resumoDivisao: no => `Dividido ${no.dir === 'v' ? 'em pé' : 'deitado'} em ${no.partes.length}`,
+};
+/* =====================================================================
    5. ESTADO DA PÁGINA
    ===================================================================== */
 const CHAVE = 'configurador-moveis:v2';
@@ -2112,7 +2327,7 @@ const estado = {
   portas:false, gavetas:false, explode:0, cotas:true, medir:false, corte:'nenhum', cortePos:50,
   tampo:true, fundo:true, paredes:true, esgoto:false, fix:false, orto:false, vista:'perspectiva',
 };
-try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...TIPOS[s.tipo].padrao, ...s.parametros } }; } catch(e) {}
+try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros } }; } catch(e) {}
 const CHAVE_PRECOS = 'configurador-moveis:precos';
 let precos = {}; try { precos = JSON.parse(localStorage.getItem(CHAVE_PRECOS) || '{}') || {}; } catch(e) {}
 const salvarPrecos = () => { try { localStorage.setItem(CHAVE_PRECOS, JSON.stringify(precos)); } catch(e) {} };
@@ -2126,6 +2341,7 @@ let toastT; const toast = msg => { const t=$('toast'); t.textContent=msg; t.hidd
 function montarFormulario() {
   const tipo = TIPOS[estado.projeto.tipo], form = $('form'), par = estado.projeto.parametros;
   $('tipoMovel').replaceChildren(...Object.entries(TIPOS).map(([k,t]) => el('option', { value:k, selected:k===estado.projeto.tipo }, t.nome)));
+  if (tipo.editor) { montarEditorModulo(); return; }                  // móvel livre: editor próprio (js/tela-modulo.js)
   form.replaceChildren(...tipo.grupos.map(g => el('fieldset', {}, el('legend', { text:g.titulo }), ...g.campos.map(c => {
     const id = 'p-'+c.id;
     if (c.tipo === 'sim') return el('div', { class:'campo sim' }, el('input', { type:'checkbox', id, checked:!!par[c.id], 'data-c':c.id }), el('label', { for:id, text:c.rot }));
@@ -2734,7 +2950,7 @@ function atualizar(primeira = false) {
     estado.valido = res; construirCena(res); aplicarCorte(); montarArvore(res.pecas);
     if (primeira || mudouTam) aplicarVista(estado.vista);
   }
-  mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal();
+  mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal(); atualizarEsquema();
 }
 function carregarProjeto() { $('nomeProjeto').value = estado.projeto.nome; montarFormulario(); estado.valido = null; atualizar(true); }
 
@@ -2764,5 +2980,150 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { ED, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+/* =====================================================================
+   5a. TELA DO MÓVEL LIVRE — liga a estrutura (modelos em pagina.html) à
+   lógica (js/editor-modulo.js). Aqui só se preenche e se reage a cliques;
+   aparência fica em estilos/editor.css.
+   Também: abas das etapas (Montar, Lista de corte, Plano, Compras, Desenhos)
+   e o esquema de frente onde se clica nos vãos.
+   ===================================================================== */
+
+// preenche [data-texto] com textos e mostra/esconde [data-se] conforme os dados
+function preencherModelo(raiz, dados) {
+  raiz.querySelectorAll('[data-texto]').forEach(e => { e.textContent = dados[e.dataset.texto] ?? ''; });
+  raiz.querySelectorAll('[data-se]').forEach(e => { e.hidden = !dados[e.dataset.se]; });
+}
+function modeloDe(id) { return $(id).content.cloneNode(true); }
+
+function montarEditorModulo() {
+  const m = estado.projeto.parametros, ed = modeloDe('tplEditor');
+  const espacos = ED.espacos(m.raiz), vaos = espacos.filter(e => !e.divisao);
+  if (!vaos.some(v => v.cam === estado.vaoSel)) estado.vaoSel = vaos[0]?.cam ?? '';
+  const sel = vaos.find(v => v.cam === estado.vaoSel), no = sel.no, info = ED.parte(m, sel.cam);
+  const reg = (estado.res?.vaos || []).find(r => r.caminho === sel.cam);
+
+  // medidas e construção do módulo
+  const valor = { largura:m.largura, altura:m.altura, profundidade:m.profundidade, beiral:m.construcao?.beiral ?? 0,
+    metodo:m.metodo, entrega:m.entrega || 'desmontado', puxador:Object.keys(PUXADORES).find(k => PUXADORES[k].ref === m.puxadorPorta?.ref) || '1',
+    materialFrentes:m.materiais?.frentes || 'mdf-ru-branco' };
+  const opcoes = {
+    metodo: Object.entries(METODOS_CONSTRUCAO.metodos).map(([k, v]) => [k, v.nome]),
+    puxador: Object.entries(PUXADORES).map(([k, v]) => [k, v.rot]),
+    materialFrentes: Object.entries(MATERIAIS).filter(([k]) => k.startsWith('mdf')).map(([k, v]) => [k, v.nome]),
+  };
+  ed.querySelectorAll('[data-modulo]').forEach(e => {
+    const k = e.dataset.modulo;
+    if (opcoes[k]) e.replaceChildren(...opcoes[k].map(([v, r]) => el('option', { value:v }, r)));
+    e.value = valor[k];
+  });
+
+  // árvore de espaços
+  ed.querySelector('[data-lista="espacos"]').replaceChildren(...espacos.map(e => {
+    const li = modeloDe('tplEspaco'), b = li.querySelector('button');
+    preencherModelo(li, e.divisao ? { nome: e.cam ? 'Divisão' : 'Móvel inteiro', desc: ED.resumoDivisao(e.no) } : { nome: 'Vão ' + e.num, desc: ED.resumo(e.no) });
+    b.dataset.cam = e.cam; b.style.setProperty('--nivel', e.nivel);
+    if (e.divisao) { b.disabled = true; b.classList.add('divisao'); }
+    if (!e.divisao && e.cam === estado.vaoSel) b.setAttribute('aria-current', 'true');
+    return li;
+  }));
+
+  // vão escolhido
+  const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
+  preencherModelo(ed, {
+    titulo: 'Vão ' + sel.num,
+    medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
+    temMedida: !!info, rotMedida: info?.divisao.dir === 'v' ? 'Largura (mm ou auto)' : 'Altura (mm ou auto)',
+    porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
+    prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: !!info,
+  });
+  const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
+  ed.querySelector('[data-vao="lado"]').value = no.frente?.lado || 'auto';
+  ed.querySelector('[data-vao="sistema"]').value = no.frente?.sistema || 'correr-rometal-dominus';
+  const selCt = ed.querySelector('[data-vao="conteudo"]');
+  selCt.replaceChildren(...CONTEUDOS_EDITOR.map(([v, r]) => el('option', { value:v }, r))); selCt.value = tipoCt;
+  ed.querySelector('[data-lista="frentes"]').replaceChildren(...FRENTES_EDITOR.map(([v, r]) => {
+    const b = modeloDe('tplOpcao').querySelector('button'); b.textContent = r; b.dataset.valor = v;
+    b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
+  }));
+  $('form').replaceChildren(ed);
+}
+
+// toda mudança: altera o módulo, refaz o editor e as peças
+function mudarModulo(fn) { fn(estado.projeto.parametros); montarFormulario(); atualizar(); }
+function ehModulo() { return !!TIPOS[estado.projeto.tipo].editor; }   // funções (não const): a tela chama antes deste arquivo terminar de carregar
+
+$('form').addEventListener('click', e => {
+  const b = e.target.closest('[data-acao]'); if (!b || !ehModulo()) return;
+  const cam = estado.vaoSel, a = b.dataset.acao;
+  if (a === 'selecionar') { estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema(); return; }
+  mudarModulo(m => {
+    if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
+    if (a === 'prat-mais') ED.prateleiras(m, cam, 1);
+    if (a === 'prat-menos') ED.prateleiras(m, cam, -1);
+    if (a === 'dividir-v') ED.dividir(m, cam, 'v');
+    if (a === 'dividir-h') ED.dividir(m, cam, 'h');
+    if (a === 'remover' && ED.remover(m, cam)) estado.vaoSel = null;
+  });
+});
+$('form').addEventListener('change', e => {
+  if (!ehModulo()) return;
+  const k = e.target.dataset.modulo, kv = e.target.dataset.vao, v = e.target.value, cam = estado.vaoSel;
+  if (k) mudarModulo(m => {
+    if (['largura', 'altura', 'profundidade'].includes(k)) m[k] = Number(v);
+    if (k === 'beiral') m.construcao = { ...m.construcao, beiral: Number(v) || 0 };
+    if (k === 'metodo') { m.metodo = v; m.metodoAjustes = {}; }
+    if (k === 'entrega') m.entrega = v;
+    if (k === 'puxador') m.puxadorPorta = { ...PUXADORES[v], altura: m.puxadorPorta?.altura ?? 1050 };
+    if (k === 'materialFrentes') m.materiais = { ...m.materiais, frentes: v };
+  });
+  if (kv) mudarModulo(m => {
+    const no = ED.no(m.raiz, cam);
+    if (kv === 'medida') ED.definirMedida(m, cam, v);
+    if (kv === 'lado') no.frente.lado = v;
+    if (kv === 'sistema') no.frente.sistema = v;
+    if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
+  });
+});
+
+/* ---------- Esquema de frente (clicar nos vãos) ---------- */
+estado.esquema = true;
+function atualizarEsquema() {
+  const caixa = $('esquema'), mod = ehModulo();
+  $('grupoEsquema').hidden = !mod;
+  caixa.hidden = !(mod && estado.esquema);
+  $('palco').classList.toggle('com-esquema', !caixa.hidden);
+  $('bEsquema').setAttribute('aria-pressed', String(estado.esquema)); $('b3D').setAttribute('aria-pressed', String(!estado.esquema));
+  if (caixa.hidden) return;
+  const r = estado.res?.dims ? estado.res : estado.valido; if (!r?.dims) { caixa.replaceChildren(); return; }   // mesmo com erro, mostra os vãos para corrigir
+  const L = r.dims.L, H = r.dims.H, margem = 32;
+  const esc = Math.min((caixa.clientWidth - 2*margem) / L, (caixa.clientHeight - 2*margem) / H) || 0.25;
+  const x0 = (caixa.clientWidth - L*esc) / 2, y0 = (caixa.clientHeight - H*esc) / 2;
+  const ret = (b, cls) => { const d = el('div', { class: cls });
+    Object.assign(d.style, { left: x0 + b[0]*esc + 'px', top: y0 + (H - b[3])*esc + 'px', width: (b[1] - b[0])*esc + 'px', height: (b[3] - b[2])*esc + 'px' }); return d; };
+  const escondidas = ['porta', 'porta-correr', 'porta-basculante', 'fundo', 'emenda-fundo', 'travessa-fixacao'];
+  const pecas = r.pecas.filter(p => p.box && p.lista && !escondidas.includes(p.papel)).sort((a, b) => a.box[5] - b.box[5]);
+  const nos = pecas.map(p => ret(p.box, 'esq-peca esq-' + p.cat));
+  const vaos = (r.vaos || []).map(v => {
+    const b = ret([v.x0, v.x1, v.y0, v.y1], 'esq-vao'), bt = el('button', { type:'button', class:'esq-vao', 'aria-label':'Editar o vão ' + v.num, 'data-cam':v.caminho }, el('span', { text:'Vão ' + v.num }));
+    bt.style.cssText = b.style.cssText; if (v.caminho === estado.vaoSel) bt.setAttribute('aria-current', 'true'); return bt;
+  });
+  caixa.replaceChildren(...nos, ...vaos);
+}
+$('esquema').addEventListener('click', e => {
+  const b = e.target.closest('[data-cam]'); if (!b) return;
+  estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema();
+});
+$('bEsquema').addEventListener('click', () => { estado.esquema = true; atualizarEsquema(); });
+$('b3D').addEventListener('click', () => { estado.esquema = false; atualizarEsquema(); });
+new ResizeObserver(() => atualizarEsquema()).observe($('palco'));
+
+/* ---------- Abas das etapas ---------- */
+$('etapas').addEventListener('click', e => {
+  const b = e.target.closest('[data-etapa]'); if (!b) return;
+  document.querySelectorAll('#etapas [data-etapa]').forEach(x => x.toggleAttribute('aria-current', x === b));
+  document.querySelectorAll('[data-secao]').forEach(s => { s.hidden = s.dataset.secao !== b.dataset.etapa; });
+  if (b.dataset.etapa === 'montar') { redimensionar(); atualizarEsquema(); }
+});
+atualizarEsquema();
 </script>
