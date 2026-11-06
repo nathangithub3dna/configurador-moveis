@@ -334,7 +334,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /* =====================================================================
    1. REGRAS DE MARCENARIA (mm) — valem para todos os tipos de móvel
    ===================================================================== */
-const R = (({ _explicacao, ...r }) => r)({"_explicacao":{"borda":"folga das frentes nas bordas externas","entre":"folga entre duas frentes","corredica":"corrediça telescópica 45 mm: desconto de 26 mm na largura da gaveta (13 por lado)","canecoDiam":"Blum CLIP top BLUMOTION 71B3550: diâmetro, profundidade e centro do caneco a partir da borda; dobradicaBorda = distância da 1ª e da última dobradiça até a ponta da porta","folgaAltGaveta":"altura da caixa = altura da gaveta − 70 (arredondado a 10)","faixaEsgoto":"± em volta do centro do esgoto","serra":"plano de corte: espessura do disco e limpeza das bordas da chapa","dobradicasPorAltura":"quantidade de dobradiças conforme a altura da porta (null = acima do último valor)","transporteMenorLado":"transporte: o menor lado de uma peça grande não passa disto (a mesma largura da chapa de 1220 que já se carrega). [Suposição — confirmar com o veículo e as portas/escadas da obra]"},"borda":1.5,"entre":3,"corredica":13,"corredicas":[250,300,350,400,450,500,550],"canecoDiam":35,"canecoProf":13,"canecoBorda":22,"dobradicaBorda":100,"enchimento":25,"sarrafo":60,"travessa":100,"recuoPrat":20,"folgaPrat":1,"folgaFundoPrat":6,"folgaAltGaveta":70,"folgaPisoGaveta":12,"faixaEsgoto":75,"portaMaxLarg":600,"angMaxDobradica":105,"puxadorComp":160,"chapa":[2750,1850],"aproveitamento":0.85,"perdaFita":1.1,"serra":4,"refilo":10,"dobradicasPorAltura":[{"ateAltura":900,"quantidade":2},{"ateAltura":1600,"quantidade":3},{"ateAltura":null,"quantidade":4}],"transporteMenorLado":1220});
+const R = (({ _explicacao, ...r }) => r)({"_explicacao":{"borda":"folga das frentes nas bordas externas","entre":"folga entre duas frentes","corredica":"corrediça telescópica 45 mm: desconto de 26 mm na largura da gaveta (13 por lado)","canecoDiam":"Blum CLIP top BLUMOTION 71B3550: diâmetro, profundidade e centro do caneco a partir da borda; dobradicaBorda = distância da 1ª e da última dobradiça até a ponta da porta","folgaAltGaveta":"altura da caixa = altura da gaveta − 70 (arredondado a 10)","faixaEsgoto":"± em volta do centro do esgoto","serra":"plano de corte: espessura do disco e limpeza das bordas da chapa","dobradicasPorAltura":"quantidade de dobradiças conforme a altura da porta (null = acima do último valor)","transporteMenorLado":"transporte: padrão do projeto — o menor lado de uma peça (módulo desmontado) ou do módulo (montado) não passa disto. O projeto pode informar outro valor. [Suposição — confirmar com o veículo e as portas/escadas da obra]","densidade":"kg/m³ para o peso das peças e dos volumes (MDF 730; fibra 900 [Provável])","embalagem":"embalagem simulada: pilha nova acima de pesoMax (kg, uma pessoa carrega) ou alturaMax (mm); margem por lado (mm). [Suposição — ajustar]"},"borda":1.5,"entre":3,"corredica":13,"corredicas":[250,300,350,400,450,500,550],"canecoDiam":35,"canecoProf":13,"canecoBorda":22,"dobradicaBorda":100,"enchimento":25,"sarrafo":60,"travessa":100,"recuoPrat":20,"folgaPrat":1,"folgaFundoPrat":6,"folgaAltGaveta":70,"folgaPisoGaveta":12,"faixaEsgoto":75,"portaMaxLarg":600,"angMaxDobradica":105,"puxadorComp":160,"chapa":[2750,1850],"aproveitamento":0.85,"perdaFita":1.1,"serra":4,"refilo":10,"dobradicasPorAltura":[{"ateAltura":900,"quantidade":2},{"ateAltura":1600,"quantidade":3},{"ateAltura":null,"quantidade":4}],"transporteMenorLado":1220,"densidade":{"mdf":730,"hdf":900},"embalagem":{"pesoMax":25,"alturaMax":150,"margem":20}});
 // Puxadores reais (medidas do fabricante; "conf" = medida não publicada, estimada — confirmar na loja)
 const PUXADORES = Object.fromEntries(Object.entries({"1":{"ref":"pux-hettich-brema-128","rot":"Hettich Brema 128 · inox escovado","modelo":"barra","furacao":128,"comp":140,"larg":14,"proj":35,"cor":"#b9bec2"},"2":{"ref":"pux-hettich-como-320","rot":"Hettich Como 320 · inox escovado","modelo":"barra","furacao":320,"comp":332,"larg":26,"proj":45,"cor":"#b9bec2"},"3":{"ref":"pux-zen-citizen-96","rot":"Zen Citizen 96 · gold escovado","modelo":"barra","furacao":96,"comp":130,"larg":12,"proj":30,"cor":"#c8a35e","conf":"largura e saliência"},"4":{"ref":"pux-zen-elemento-128","rot":"Zen Elemento G 128 · preto fosco","modelo":"bloco","furacao":128,"comp":192,"larg":30,"proj":18,"cor":"#2a2c2e"},"5":{"ref":"pux-zen-shell-64","rot":"Zen Shell 64 (concha) · gold escovado","modelo":"concha","furacao":64,"comp":90,"larg":34,"proj":24,"cor":"#c8a35e","conf":"largura e saliência"}}).map(([k, v]) => [k, { ...v, cor: parseInt(v.cor.slice(1), 16) }]));
 const opcoesPuxador = Object.entries(PUXADORES).map(([k,v]) => [Number(k), v.rot]);
@@ -1007,6 +1007,8 @@ function gerarModuloV3(m) {
   const entre = c.lateral === 'entre';                                 // topo e base passantes, laterais entre eles
   const t = c.espMDF, tf = c.espFundo, L = m.largura, H0 = m.altura, P = m.profundidade;
   const HB = c.beiral || 0, H = H0 - HB;
+  // TRANSPORTE: limite do projeto (padrão em regras); módulo montado vai inteiro, então as peças não têm limite próprio
+  const montado = m.entrega === 'montado', limT = m.transporte?.menorLadoMax ?? R.transporteMenorLado ?? Infinity, Tpeca = montado ? Infinity : limT;
   const eE = (c.paredeEsq && c.enchimento) ? R.enchimento : 0, eD = (c.paredeDir && c.enchimento) ? R.enchimento : 0;
   const xa = eE, xb = L - eD, W = xb - xa, Wi = W - 2*t;
   const rod = c.apoio === 'rodape', RD = rod ? c.rodape.altura : 0;
@@ -1262,7 +1264,7 @@ function gerarModuloV3(m) {
     const dividir = dim => {                                         // cortes [x0,x1,emendaH?] para uma chapa
       const LU = dim[0] - 2*R.refilo, WU = dim[1] - 2*R.refilo;
       if (hF > LU) return null;
-      const T = R.transporteMenorLado || Infinity;                     // transporte: o menor lado da peça não passa de T
+      const T = Tpeca;                                                  // transporte: o menor lado da peça não passa de T
       const maxW = Math.min(hF <= WU ? LU : WU, hF > T ? T : Infinity), cortes = []; let ini = xa;
       while (xb - ini > maxW) {
         const opc = juntasFundo.filter(x => x > ini + 1 && x <= ini + maxW);
@@ -1371,7 +1373,42 @@ function gerarModuloV3(m) {
   if (rasgo) pecas.filter(q => ['lateral','base','topo','travessa'].includes(q.papel) && q.box[4] <= zFundo).forEach(q =>
     (q.des.canais = q.des.canais || []).push({ dist:zFundo, larg:tf + 2*c.fundo.folga, prof:c.fundo.prof, face:'interna', txt:'rasgo do fundo' }));
 
-  return { pecas, erros:E, avisos:A };
+  // TRANSPORTE: avisos (peças que não podem ser divididas não mudam)
+  if (montado) { const ml = Math.min(L, H0, P); if (ml > limT) A.push(`Transporte: o módulo montado tem o menor lado de ${fmt(ml)} mm (limite do projeto ${fmt(limT)}).`); }
+  else pecas.filter(q => q.lista && q.papel !== 'fundo' && Math.min(q.comp, q.larg) > limT)
+    .forEach(q => A.push(`Transporte: ${q.nome} tem ${fmt(q.comp)} × ${fmt(q.larg)} mm (menor lado acima do limite de ${fmt(limT)}).`));
+  const fundosT = pecas.filter(q => q.papel === 'fundo').length;
+  if (!montado && fundosT > 3) A.push(`Transporte: com o limite de ${fmt(limT)} mm o fundo ficou em ${fundosT} peças (${fundosT - 1} emendas). Confira se o limite não está baixo demais.`);
+  const volumes = volumesDe(pecas, { montado, L, H:H0, P, A });
+  return { pecas, erros:E, avisos:A, volumes };
+}
+
+/* VOLUMES — embalagem simulada (versão simples): frentes num volume próprio, caixa em pilhas
+   (a maior peça embaixo define a base; pilha nova acima do peso ou da altura), ferragens numa caixa. */
+const pesoPeca = q => q.comp * q.larg * q.esp * ((q.mat || '').startsWith('hdf') ? R.densidade.hdf : R.densidade.mdf) / 1e9;
+function volumesDe(pecas, { montado, L, H, P, A }) {
+  const Em = R.embalagem, mg = Em.margem, vol = [];
+  const mdf = pecas.filter(q => q.lista), ferr = pecas.filter(q => !q.lista);
+  if (montado) {
+    vol.push({ tipo:'módulo montado', pecas: pecas.map(q => q.id), dims:[L + 2*mg, H + 2*mg, P + 2*mg], peso: mdf.reduce((s, q) => s + pesoPeca(q), 0) });
+  } else {
+    const empilhar = (lista, tipo) => {
+      const pilhas = [];
+      [...lista].sort((a, b) => b.comp*b.larg - a.comp*a.larg).forEach(q => {
+        const w = pesoPeca(q);
+        if (w > Em.pesoMax) { vol.push({ tipo, pecas:[q.id], dims:[q.comp + 2*mg, q.larg + 2*mg, q.esp + 2*mg], peso:w, aviso:'carregar a dois' }); A.push(`Volume: ${q.nome} pesa ${fmt(w)} kg sozinha — carregar a dois.`); return; }
+        const pl = pilhas.find(p => q.comp <= p.base[0] && q.larg <= p.base[1] && p.peso + w <= Em.pesoMax && p.alt + q.esp <= Em.alturaMax);
+        if (pl) { pl.pecas.push(q.id); pl.peso += w; pl.alt += q.esp; }
+        else pilhas.push({ base:[q.comp, q.larg], pecas:[q.id], peso:w, alt:q.esp });
+      });
+      pilhas.forEach(p => vol.push({ tipo, pecas:p.pecas, dims:[p.base[0] + 2*mg, p.base[1] + 2*mg, p.alt + 2*mg], peso:p.peso }));
+    };
+    empilhar(mdf.filter(q => q.cat === 'frente'), 'frentes');
+    empilhar(mdf.filter(q => q.cat !== 'frente'), 'caixa');
+    if (ferr.length) vol.push({ tipo:'ferragens e parafusos', pecas: ferr.map(q => q.id), dims:null, peso:null });
+  }
+  vol.forEach((v, i) => { v.num = i + 1; v.etiqueta = `Volume ${i + 1} de ${vol.length}`; v.peso = v.peso === null ? null : Math.round(v.peso * 10) / 10; });
+  return vol;
 }
 
 // CONVERSORES: parâmetros dos tipos antigos → módulo do núcleo novo

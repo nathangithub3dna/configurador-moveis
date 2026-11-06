@@ -58,6 +58,148 @@
   "rodapeEncaixe": true,
   "semFuncao": []
  },
+ "transporte": {
+  "desmontado": {
+   "fundos": 2,
+   "volumes": 12,
+   "lista": [
+    [
+     "frentes",
+     4,
+     [
+      1957,
+      492,
+      112
+     ],
+     24.7
+    ],
+    [
+     "frentes",
+     4,
+     [
+      1957,
+      483,
+      112
+     ],
+     24.3
+    ],
+    [
+     "caixa",
+     6,
+     [
+      1960,
+      940,
+      106
+     ],
+     24.8
+    ],
+    [
+     "caixa",
+     5,
+     [
+      2060,
+      416,
+      118
+     ],
+     24.9
+    ],
+    [
+     "caixa",
+     6,
+     [
+      1924,
+      416,
+      136
+     ],
+     25
+    ],
+    [
+     "caixa",
+     8,
+     [
+      1804,
+      416,
+      172
+     ],
+     24.9
+    ],
+    [
+     "caixa",
+     8,
+     [
+      466,
+      390,
+      184
+     ],
+     13.1
+    ],
+    [
+     "caixa",
+     6,
+     [
+      1840,
+      120,
+      148
+     ],
+     4
+    ],
+    [
+     "caixa",
+     8,
+     [
+      388,
+      190,
+      184
+     ],
+     5.2
+    ],
+    [
+     "caixa",
+     5,
+     [
+      340,
+      190,
+      130
+     ],
+     3
+    ],
+    [
+     "caixa",
+     2,
+     [
+      468,
+      140,
+      76
+     ],
+     1.1
+    ],
+    [
+     "ferragens e parafusos",
+     37,
+     [],
+     null
+    ]
+   ],
+   "tipos": [
+    "frentes",
+    "caixa",
+    "ferragens e parafusos"
+   ],
+   "acima25": 0,
+   "etiqueta": "Volume 1 de 12"
+  },
+  "montado": {
+   "fundos": 1,
+   "volumes": 1
+  },
+  "limite2000": {
+   "fundos": 1
+  },
+  "limite350": {
+   "avisoPorta": true,
+   "avisoLateral": true
+  }
+ },
  "erros": [],
  "avisos": [],
  "pecas": [

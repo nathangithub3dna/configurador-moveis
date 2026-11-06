@@ -8,7 +8,9 @@
     "faixaEsgoto": "± em volta do centro do esgoto",
     "serra": "plano de corte: espessura do disco e limpeza das bordas da chapa",
     "dobradicasPorAltura": "quantidade de dobradiças conforme a altura da porta (null = acima do último valor)",
-    "transporteMenorLado": "transporte: o menor lado de uma peça grande não passa disto (a mesma largura da chapa de 1220 que já se carrega). [Suposição — confirmar com o veículo e as portas/escadas da obra]"
+    "transporteMenorLado": "transporte: padrão do projeto — o menor lado de uma peça (módulo desmontado) ou do módulo (montado) não passa disto. O projeto pode informar outro valor. [Suposição — confirmar com o veículo e as portas/escadas da obra]",
+    "densidade": "kg/m³ para o peso das peças e dos volumes (MDF 730; fibra 900 [Provável])",
+    "embalagem": "embalagem simulada: pilha nova acima de pesoMax (kg, uma pessoa carrega) ou alturaMax (mm); margem por lado (mm). [Suposição — ajustar]"
   },
   "borda": 1.5,
   "entre": 3,
@@ -60,5 +62,14 @@
       "quantidade": 4
     }
   ],
-  "transporteMenorLado": 1220
+  "transporteMenorLado": 1220,
+  "densidade": {
+    "mdf": 730,
+    "hdf": 900
+  },
+  "embalagem": {
+    "pesoMax": 25,
+    "alturaMax": 150,
+    "margem": 20
+  }
 }

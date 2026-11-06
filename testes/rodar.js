@@ -148,6 +148,16 @@ function diferencas(a, b, caminho = '') {
       const sem = c.gerarModuloV3({ ...m, largura:3000, metodo:'fundo-hdf', raiz:{ tipo:'vao', frente:{ tipo:'nenhuma' }, conteudo:[] } });
       // pés reguláveis + rodapé de encaixe
       const pes = c.gerarModuloV3({ ...m, metodo:'padrao-nathan-cozinha-banheiro', metodoAjustes:{} });
+      // transporte e volumes (limite por projeto; montado × desmontado)
+      const baseArm = { ...c.CONVERSORES_V3.armario({ ...c.TIPOS.armario.padrao }), metodo:'fundo-hdf', metodoAjustes:{ rodape:{ altura:100, recuo:40 }, apoio:'rodape', topo:'inteiro', fixacao:'por-vao' } };
+      const tMont = c.gerarModuloV3({ ...baseArm, entrega:'montado' }), t2000 = c.gerarModuloV3({ ...baseArm, transporte:{ menorLadoMax:2000 } }), t400 = c.gerarModuloV3({ ...baseArm, transporte:{ menorLadoMax:350 } });
+      const nF = r_ => r_.pecas.filter(p => p.papel === 'fundo').length;
+      const transporte = {
+        desmontado: { fundos: nF(armL), volumes: armL.volumes.length, lista: armL.volumes.map(v => [v.tipo, v.pecas.length, (v.dims||[]).map(Math.round), v.peso]), tipos: [...new Set(armL.volumes.map(v => v.tipo))], acima25: armL.volumes.filter(v => v.peso > 25 && !v.aviso).length, etiqueta: armL.volumes[0]?.etiqueta },
+        montado: { fundos: nF(tMont), volumes: tMont.volumes.length },
+        limite2000: { fundos: nF(t2000) },
+        limite350: { avisoPorta: t400.avisos.some(a => a.includes('Porta')), avisoLateral: t400.avisos.some(a => a.includes('Lateral')) },
+      };
       const pinos = r_ => peca(r_, 'lateral', 'esq').des.furos.filter(f => f.tipo === 'pino').length;
       const metodo = {
         passantes: { topo: peca(e1,'topo').comp, base: peca(e1,'base').comp, lateral: peca(e1,'lateral','esq').comp, erros: e1.erros.length },
@@ -157,13 +167,16 @@ function diferencas(a, b, caminho = '') {
         fundoDividido: fundosL, perfilH: sem.pecas.filter(p => p.papel === 'emenda-fundo').length, montante: sem.pecas.filter(p => p.id.startsWith('reforco-emenda')).length, chapaFundo: [armL, sem].map(x => x.pecas.find(p => p.papel === 'fundo').chapaRef), fundosSem: sem.pecas.filter(p => p.papel === 'fundo').map(p => r(p.larg)),
         pes: pes.pecas.filter(p => p.papel === 'pe').length, rodapeEncaixe: pes.pecas.some(p => p.id === 'rodape-encaixe'), semFuncao: [...armL.pecas, ...sem.pecas, ...pes.pecas].filter(p => !p.papel).map(p => p.id),
       };
-      return { metodo, erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
+      return { metodo, transporte, erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
     });
     if (erros.length) atual.errosDaPagina = erros;
     const esp = { passantes: { topo:1200, base:1200, lateral:1864, erros:0 }, rasgo: { fundo:[1879, 1179], fundoZ:[10, 16], lateralFundo:482, divisoria:466, canais:4, erros:0 } };
     const dm = diferencas(esp, { passantes: atual.metodo.passantes, rasgo: atual.metodo.rasgo });
     const mt = atual.metodo;
     const fundoOk = JSON.stringify(mt.fundoDividido) === JSON.stringify([['hdf-cru',3,1920,900,0,900],['hdf-cru',3,1920,900,900,1800]]) && mt.montante === 0 && mt.perfilH === 2 && mt.fundosSem.length === 3 && mt.fundosSem.every(w => w <= 1220) && mt.chapaFundo.every(x => x === 'chapa-hdf-cru-3-2750x2130') && mt.pes >= 4 && mt.rodapeEncaixe && !mt.semFuncao.length;
+    const tr = atual.transporte;
+    const trOk = tr.desmontado.fundos === 2 && tr.desmontado.acima25 === 0 && tr.desmontado.tipos.join() === 'frentes,caixa,ferragens e parafusos' && tr.montado.fundos === 1 && tr.montado.volumes === 1 && tr.limite2000.fundos === 1 && tr.limite350.avisoPorta && tr.limite350.avisoLateral;
+    if (!trOk) { falhas++; console.log('TRANSPORTE/VOLUMES ERRADO', JSON.stringify(tr)); } else console.log('TRANSPORTE E VOLUMES OK  ' + JSON.stringify(tr));
     if (!fundoOk) { falhas++; console.log('FUNDO/PÉS ERRADO', JSON.stringify({ fundoDividido: mt.fundoDividido, montante: mt.montante, perfilH: mt.perfilH, chapa: mt.chapaFundo, fundosSem: mt.fundosSem, pes: mt.pes, rodape: mt.rodapeEncaixe, semFuncao: mt.semFuncao })); }
     else console.log('FUNDO PELA CHAPA DE MERCADO E PÉS OK  ' + JSON.stringify({ fundoDividido: mt.fundoDividido, chapa: mt.chapaFundo, fundosSem: mt.fundosSem, perfilH: mt.perfilH, pes: mt.pes }));
     if (dm.length || !(atual.metodo.pinos.faixa32 > atual.metodo.pinos.quatroFuros) || atual.metodo.origem !== 'método "Fundo em rasgo"') { falhas++; console.log('MÉTODO DE CONSTRUÇÃO ERRADO', JSON.stringify(atual.metodo)); dm.forEach(x => console.log('   ' + x)); }
