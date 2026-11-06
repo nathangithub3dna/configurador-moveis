@@ -347,6 +347,7 @@ const MATERIAIS = /*@dados:materiais*/null;
    Preços não vêm daqui: o Nathan preenche na lista de compras.
    ===================================================================== */
 const BIBLIOTECA = /*@dados:biblioteca*/null;
+const METODOS_CONSTRUCAO = /*@dados:metodos-construcao*/null;
 
 /* =====================================================================
    1c. FUNÇÃO (PAPEL) DE CADA PEÇA — definida num lugar só.
@@ -984,16 +985,35 @@ function calcularFixacoes(pecas) {
    Nó DIVIDIR: { tipo:'dividir', dir:'v'|'h', sep:'divisoria'|'nenhum', partes:[{ medida:'auto'|mm, no }] }
    Nó VÃO:     { tipo:'vao', frente:{ tipo:'porta'|'2portas'|'gaveta'|'nenhuma', lado }, conteudo:[...] }
    ===================================================================== */
+
+// MÉTODO DE CONSTRUÇÃO — níveis: padrão → método com nome → ajustes do projeto → ajustes do módulo
+const unirFundo = (a, b) => { const r = { ...a }; for (const [k, v] of Object.entries(b || {})) r[k] = (v && typeof v === 'object' && !Array.isArray(v) && typeof r[k] === 'object') ? unirFundo(r[k], v) : v; return r; };
+function resolverMetodo(m) {
+  const cat = METODOS_CONSTRUCAO, nome = m.metodo || cat.metodoPadrao;
+  if (!cat.metodos[nome]) throw new Error(`Método de construção "${nome}" não existe no catálogo.`);
+  const origem = {};
+  let c = unirFundo({}, cat.padrao); Object.keys(c).forEach(k => origem[k] = 'padrão');
+  for (const [nivel, aj] of [[`método "${cat.metodos[nome].nome}"`, cat.metodos[nome].ajustes], ['projeto', m.metodoProjeto], ['módulo', m.metodoAjustes]])
+    if (aj) { c = unirFundo(c, aj); Object.keys(aj).forEach(k => origem[k] = nivel); }
+  c = { ...c, ...m.construcao };                 // medidas próprias do módulo (espessuras, paredes, tampo…)
+  c.origem = origem;
+  return c;
+}
 function gerarModuloV3(m) {
   const E = [], A = [], pecas = [];
-  const c = m.construcao, amb = m.ambiente || {};
+  const c = resolverMetodo(m), amb = m.ambiente || {};
+  const entre = c.lateral === 'entre';                                 // topo e base passantes, laterais entre eles
   const t = c.espMDF, tf = c.espFundo, L = m.largura, H0 = m.altura, P = m.profundidade;
   const HB = c.beiral || 0, H = H0 - HB;
   const eE = (c.paredeEsq && c.enchimento) ? R.enchimento : 0, eD = (c.paredeDir && c.enchimento) ? R.enchimento : 0;
   const xa = eE, xb = L - eD, W = xb - xa, Wi = W - 2*t;
   const rod = c.apoio === 'rodape', RD = rod ? c.rodape.altura : 0;
-  const yLat0 = rod ? 0 : c.pes, yBase = rod ? RD : c.pes;
-  const zf = tf, Dc = P - t - tf, zFr = zf + Dc;
+  const yBase = rod ? RD : c.pes, yApoio = rod ? 0 : c.pes;
+  const yLat0 = entre ? yBase + t : yApoio, yLat1 = entre ? H - t : H;
+  // fundo sobreposto: caixa começa atrás do fundo; fundo em rasgo: caixa vai até a parede e o fundo entra recuado
+  const rasgo = c.fundo.tipo === 'rasgo', zFundo = rasgo ? c.fundo.recuo : 0;
+  const zfC = rasgo ? 0 : tf, zFr = P - t, DcC = zFr - zfC;           // peças da caixa
+  const zf = rasgo ? zFundo + tf : tf, Dc = zFr - zf;                  // espaço útil (na frente do fundo)
   const add = o => {
     const pc = Object.assign({ lista:true, mov:null, obs:'', esp:t, mat:'mdf-ru-branco', fita:[0,0] }, o);
     if (o.a !== undefined) { let a=o.a, b=o.b, fa=(o.fita||[0,0])[0], fb=(o.fita||[0,0])[1]; if (b > a) { [a,b]=[b,a]; [fa,fb]=[fb,fa]; } pc.comp=a; pc.larg=b; pc.fita=[fa,fb]; }
@@ -1004,25 +1024,29 @@ function gerarModuloV3(m) {
   const cont = { porta:0, gaveta:0, vao:0, divV:0, divH:0, trav:0 };
 
   // CAIXA
-  const Hl = H - yLat0;
-  add({ id:'lateral-esq', nome:'Lateral esquerda', nomeLista:'Lateral', cat:'caixa', a:Hl, b:Dc, fita:[1,0], box:[xa,xa+t,yLat0,H,zf,zFr], des:{ w:Dc, h:Hl, fita:['l'], frente:'l', vista:'Vista pela face interna' } });
-  add({ id:'lateral-dir', nome:'Lateral direita', nomeLista:'Lateral', cat:'caixa', a:Hl, b:Dc, fita:[1,0], box:[xb-t,xb,yLat0,H,zf,zFr], des:{ w:Dc, h:Hl, fita:['r'], frente:'r', vista:'Vista pela face interna' } });
-  add({ id:'base', nome:'Base', nomeLista:'Base', cat:'caixa', a:Wi, b:Dc, fita:[1,0], box:[xa+t,xb-t,yBase,yBase+t,zf,zFr], des:{ w:Wi, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+  const Hl = yLat1 - yLat0, xC0 = entre ? xa : xa + t, xC1 = entre ? xb : xb - t, WC = xC1 - xC0;
+  add({ id:'lateral-esq', nome:'Lateral esquerda', nomeLista:'Lateral', cat:'caixa', a:Hl, b:DcC, fita:[1,0], box:[xa,xa+t,yLat0,yLat1,zfC,zFr], des:{ w:DcC, h:Hl, fita:['l'], frente:'l', vista:'Vista pela face interna' } });
+  add({ id:'lateral-dir', nome:'Lateral direita', nomeLista:'Lateral', cat:'caixa', a:Hl, b:DcC, fita:[1,0], box:[xb-t,xb,yLat0,yLat1,zfC,zFr], des:{ w:DcC, h:Hl, fita:['r'], frente:'r', vista:'Vista pela face interna' } });
+  add({ id:'base', nome:'Base', nomeLista:'Base', cat:'caixa', a:WC, b:DcC, fita:entre ? [1,2] : [1,0], box:[xC0,xC1,yBase,yBase+t,zfC,zFr], des:{ w:WC, h:DcC, fita:['b'], frente:'b', vista:'Vista de cima' } });
   if (c.topo === 'travessas') {
-    add({ id:'travessa-frontal', nome:'Travessa superior frontal', nomeLista:'Travessa superior frontal', cat:'caixa', a:Wi, b:R.travessa, fita:[1,0], box:[xa+t,xb-t,H-t,H,zFr-R.travessa,zFr], des:{ w:Wi, h:R.travessa, fita:['b'], frente:'b', vista:'Vista de cima' } });
-    add({ id:'travessa-traseira', nome:'Travessa superior traseira', nomeLista:'Travessa superior traseira', cat:'caixa', a:Wi, b:R.travessa, box:[xa+t,xb-t,H-t,H,zf,zf+R.travessa], des:{ w:Wi, h:R.travessa, vista:'Vista de cima' } });
-  } else add({ id:'topo', nome:'Topo', nomeLista:'Topo', cat:'caixa', a:Wi, b:Dc, fita:[1,0], box:[xa+t,xb-t,H-t,H,zf,zFr], des:{ w:Wi, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+    add({ id:'travessa-frontal', nome:'Travessa superior frontal', nomeLista:'Travessa superior frontal', cat:'caixa', a:WC, b:R.travessa, fita:[1,0], box:[xC0,xC1,H-t,H,zFr-R.travessa,zFr], des:{ w:WC, h:R.travessa, fita:['b'], frente:'b', vista:'Vista de cima' } });
+    add({ id:'travessa-traseira', nome:'Travessa superior traseira', nomeLista:'Travessa superior traseira', cat:'caixa', a:WC, b:R.travessa, box:[xC0,xC1,H-t,H,zfC,zfC+R.travessa], des:{ w:WC, h:R.travessa, vista:'Vista de cima' } });
+  } else add({ id:'topo', nome:'Topo', nomeLista:'Topo', cat:'caixa', a:WC, b:DcC, fita:entre ? [1,2] : [1,0], box:[xC0,xC1,H-t,H,zfC,zFr], des:{ w:WC, h:DcC, fita:['b'], frente:'b', vista:'Vista de cima' } });
   if (rod && RD > 0) {
     const rec = c.rodape.recuo;
-    add({ id:'rodape-frontal', nome:'Rodapé frontal', nomeLista:'Rodapé', cat:'caixa', a:Wi, b:RD, box:[xa+t,xb-t,0,RD,zFr-rec-t,zFr-rec], des:{ w:Wi, h:RD, vista:'Vista de frente' } });
-    add({ id:'rodape-traseiro', nome:'Rodapé traseiro', nomeLista:'Rodapé', cat:'caixa', a:Wi, b:RD, box:[xa+t,xb-t,0,RD,zf,zf+t], des:{ w:Wi, h:RD, vista:'Vista de frente' } });
+    add({ id:'rodape-frontal', nome:'Rodapé frontal', nomeLista:'Rodapé', cat:'caixa', a:WC, b:RD, box:[xC0,xC1,0,RD,zFr-rec-t,zFr-rec], des:{ w:WC, h:RD, vista:'Vista de frente' } });
+    add({ id:'rodape-traseiro', nome:'Rodapé traseiro', nomeLista:'Rodapé', cat:'caixa', a:WC, b:RD, box:[xC0,xC1,0,RD,zfC,zfC+t], des:{ w:WC, h:RD, vista:'Vista de frente' } });
   }
   if (HB > 0) {
     add({ id:'beiral-frontal', nome:'Beiral frontal', nomeLista:'Beiral frontal', cat:'caixa', a:W, b:HB, fita:[1,2], box:[xa,xb,H,H0,zFr-t,zFr], des:{ w:W, h:HB, fita:['t','l','r'], vista:'Vista de frente' } });
     for (const [id, nome, x0] of [['beiral-esq','Beiral lateral esquerdo',xa], ['beiral-dir','Beiral lateral direito',xb-t]])
-      add({ id, nome, nomeLista:'Beiral lateral', cat:'caixa', a:Dc-t, b:HB, fita:[1,0], box:[x0,x0+t,H,H0,zf,zFr-t], des:{ w:Dc-t, h:HB, fita:['t'], vista:'Vista lateral' } });
+      add({ id, nome, nomeLista:'Beiral lateral', cat:'caixa', a:DcC-t, b:HB, fita:[1,0], box:[x0,x0+t,H,H0,zfC,zFr-t], des:{ w:DcC-t, h:HB, fita:['t'], vista:'Vista lateral' } });
   }
-  add({ id:'fundo', nome:'Fundo do móvel', nomeLista:'Fundo do móvel', cat:'fundo', mat:'mdf-branco', esp:tf, a:H-yBase, b:W, box:[xa,xb,yBase,H,0,tf], des:{ w:W, h:H-yBase, vista:'Vista de trás' } });
+  if (rasgo) {
+    // fundo encaixado: entra 'prof' mm no rasgo das laterais, base e topo (com folga), recuado da parede
+    const pr = c.fundo.prof, fo = c.fundo.folga, fx0 = xa + t - pr + fo, fx1 = xb - t + pr - fo, fy0 = yBase + t - pr + fo, fy1 = H - t + pr - fo;
+    add({ id:'fundo', nome:'Fundo do móvel (em rasgo)', nomeLista:'Fundo do móvel', cat:'fundo', mat:'mdf-branco', esp:tf, a:fy1-fy0, b:fx1-fx0, box:[fx0,fx1,fy0,fy1,zFundo,zFundo+tf], des:{ w:fx1-fx0, h:fy1-fy0, vista:'Vista de trás' } });
+  } else add({ id:'fundo', nome:'Fundo do móvel', nomeLista:'Fundo do móvel', cat:'fundo', mat:'mdf-branco', esp:tf, a:H-yBase, b:W, box:[xa,xb,yBase,H,0,tf], des:{ w:W, h:H-yBase, vista:'Vista de trás' } });
 
   // ÁRVORE DE VÃOS
   const colunas = [];                                            // vãos de 1º nível na horizontal (travessas de fixação)
@@ -1245,15 +1269,15 @@ function gerarModuloV3(m) {
     const nR = Math.floor((Dc - 80 + passo - larg) / passo), z0 = zf + (Dc - ((nR-1)*passo + larg)) / 2;
     for (const ya of [v.y0 + 25, v.y0 + v.hB - 25 - alt]) for (let k = 0; k < nR; k++) lista.push({ z0: z0 + k*passo, z1: z0 + k*passo + larg, y0: ya, y1: ya + alt });
     lat.forma = { tipo:'rasgos', lista }; lat.nome = 'Lateral direita com ventilação'; lat.nomeLista = 'Lateral com ventilação';
-    lat.des.rasgos = lista.map(r => ({ x:r.z0 - zf, y:r.y0, w:r.z1 - r.z0, h:r.y1 - r.y0 }));
+    lat.des.rasgos = lista.map(r => ({ x:r.z0 - zfC, y:r.y0 - yLat0, w:r.z1 - r.z0, h:r.y1 - r.y0 }));
   }
 
   // ENCHIMENTO
   [['esq',eE,0,eE],['dir',eD,L-eD,L]].forEach(([lado,e,x0,x1]) => {
     if (!e) return;
-    add({ id:`enchimento-${lado}`, nome:`Enchimento ${lado === 'esq' ? 'esquerdo' : 'direito'} (frontal)`, nomeLista:'Enchimento frontal', cat:'enchimento', a:Hl, b:e, fita:[1,0], box:[x0,x1,yLat0,H,P-t,P], des:{ w:e, h:Hl, fita:[lado==='esq'?'r':'l'], vista:'Vista de frente' } });
+    add({ id:`enchimento-${lado}`, nome:`Enchimento ${lado === 'esq' ? 'esquerdo' : 'direito'} (frontal)`, nomeLista:'Enchimento frontal', cat:'enchimento', a:H-yApoio, b:e, fita:[1,0], box:[x0,x1,yApoio,H,P-t,P], des:{ w:e, h:H-yApoio, fita:[lado==='esq'?'r':'l'], vista:'Vista de frente' } });
     const sx0 = lado === 'esq' ? Math.max(0,x1-t) : x0, sx1 = lado === 'esq' ? x1 : Math.min(L,x0+t);
-    add({ id:`sarrafo-${lado}`, nome:`Sarrafo do enchimento`, nomeLista:'Sarrafo do enchimento', cat:'enchimento', a:Hl, b:R.sarrafo, box:[sx0,sx1,yLat0,H,P-t-R.sarrafo,P-t], des:{ w:R.sarrafo, h:Hl, vista:'Vista de lado' } });
+    add({ id:`sarrafo-${lado}`, nome:`Sarrafo do enchimento`, nomeLista:'Sarrafo do enchimento', cat:'enchimento', a:H-yApoio, b:R.sarrafo, box:[sx0,sx1,yApoio,H,P-t-R.sarrafo,P-t], des:{ w:R.sarrafo, h:H-yApoio, vista:'Vista de lado' } });
   });
 
   // TAMPO (referência, ex.: mármore existente)
@@ -1266,17 +1290,31 @@ function gerarModuloV3(m) {
   // FURAÇÃO DAS LATERAIS (montagem, pinos, calços, corrediças)
   if (c.furarLaterais) ['esq','dir'].forEach(lado => {
     const lat = pecas.find(q => q.papel === 'lateral' && q.lado === lado); if (!lat) return;
-    const X = z => lado === 'esq' ? zFr - z : z - zf, Y = y => y - yLat0;
+    const X = z => lado === 'esq' ? zFr - z : z - zfC, Y = y => y - yLat0;
     const furos = [], linhas = [], furo = (z,y,d,prof,tipo) => furos.push({ x:X(z), y:Y(y), d, prof, tipo });
     const xIn = lado === 'esq' ? xa + t : xb - t, encosta = pc => Math.abs((lado === 'esq' ? pc.box[0] : pc.box[1]) - xIn) < 0.6;
-    pecas.filter(q => (q.papel === 'base' || q.papel === 'divisoria') && encosta(q)).forEach(b => { const yc = (b.box[2]+b.box[3])/2; [zFr-50,(zf+zFr)/2,zf+50].forEach(z => furo(z,yc,4,0,'montagem')); });
-    if (c.topo === 'travessas') [zFr-25, zFr-75, zf+75, zf+25].forEach(z => furo(z, H-t/2, 4, 0, 'montagem'));
+    pecas.filter(q => ((q.papel === 'base' && !entre) || q.papel === 'divisoria') && encosta(q)).forEach(b => { const yc = (b.box[2]+b.box[3])/2; [zFr-50,(zfC+zFr)/2,zfC+50].forEach(z => furo(z,yc,4,0,'montagem')); });
+    if (c.topo === 'travessas' && !entre) [zFr-25, zFr-75, zfC+75, zfC+25].forEach(z => furo(z, H-t/2, 4, 0, 'montagem'));
     pecas.filter(q => q.papel === 'travessa-fixacao' && encosta(q)).forEach(tr => { const yc = (tr.box[2]+tr.box[3])/2; [yc-25, yc+25].forEach(y => furo(zf+t/2, y, 4, 0, 'montagem')); });
-    pecas.filter(q => q.papel === 'prateleira' && Math.abs((lado === 'esq' ? q.box[0] - R.folgaPrat : q.box[1] + R.folgaPrat) - xIn) < 0.6).forEach(s => [s.box[5]-40, s.box[4]+40].forEach(z => furo(z, s.box[2]-5, 5, 10, 'pino')));
+    const pf = c.prateleira.furacao, vistos = new Set();
+    const pino = (z, y) => { if (y < yLat0 + t + 10 || y > yLat1 - t - 10) return; const k = Math.round(z) + ':' + Math.round(y*10); if (vistos.has(k)) return; vistos.add(k); furo(z, y, 5, 10, 'pino'); };
+    pecas.filter(q => q.papel === 'prateleira' && Math.abs((lado === 'esq' ? q.box[0] - R.folgaPrat : q.box[1] + R.folgaPrat) - xIn) < 0.6).forEach(s => [s.box[5]-40, s.box[4]+40].forEach(z => {
+      const y0 = s.box[2] - 5;
+      if (pf === '4-furos') pino(z, y0);
+      else if (pf === 'faixa32') for (let k = -c.prateleira.faixa; k <= c.prateleira.faixa; k++) pino(z, y0 + 32*k);
+      else for (let y = y0 - 32*Math.floor((y0 - yLat0)/32); y < yLat1; y += 32) pino(z, y);
+    }));
     pecas.filter(q => q.papel === 'dobradica' && q.mov?.lado === lado && Math.abs(q.mov.pivX - (lado === 'esq' ? xa : xb)) < 0.6).forEach(h => { const yc = (h.box[2]+h.box[3])/2; [yc-16, yc+16].forEach(y => furo(zFr-37, y, 3, 10, 'calco')); });
     pecas.filter(q => q.papel === 'corredica' && q.lado === lado && Math.abs((lado === 'esq' ? q.box[0] : q.box[1]) - xIn) < 0.6).forEach(cr => { const yc = (cr.box[2]+cr.box[3])/2; linhas.push({ x1:X(zFr), y1:Y(yc), x2:X(cr.box[4]), y2:Y(yc), txt:'eixo da corrediça' }); [zFr-37, cr.box[4]+37].forEach(z => furo(z, yc, 3, 10, 'corredica')); });
     lat.des.furos = furos; lat.des.linhas = linhas;
   });
+  if (c.furarLaterais && entre) ['base','topo'].forEach(pp => { const pc = pecas.find(q => q.papel === pp); if (!pc) return;
+    const fur = [];
+    for (const xx of [t/2, pc.box[1]-pc.box[0]-t/2]) for (const z of [zFr-50, (zfC+zFr)/2, zfC+50]) fur.push({ x:xx, y:zFr - z, d:4, prof:0, tipo:'montagem' });
+    pc.des.furos = fur; });
+  // rasgos (canais) para o fundo encaixado
+  if (rasgo) pecas.filter(q => ['lateral','base','topo','travessa'].includes(q.papel) && q.box[4] <= zFundo).forEach(q =>
+    (q.des.canais = q.des.canais || []).push({ dist:zFundo, larg:tf + 2*c.fundo.folga, prof:c.fundo.prof, face:'interna', txt:'rasgo do fundo' }));
 
   return { pecas, erros:E, avisos:A };
 }
@@ -1296,8 +1334,9 @@ function moduloDeGabinete(p) {
   const pux = PUXADOR_BARRA_GENERICO(n('puxadorProj'));
   return {
     largura:n('largura'), altura:n('altura'), profundidade:n('profundidade'),
-    construcao:{ espMDF:n('espMDF'), espFundo:n('espFundo'), apoio:'pes', pes:n('pes'), topo:'travessas', fixacao:'unica', beiral:0,
-      paredeEsq:!!p.paredeEsq, paredeDir:!!p.paredeDir, enchimento:!!p.enchimento, tampo:{ larg:n('tampoLarg'), prof:n('tampoProf'), esp:n('tampoEsp') }, furarLaterais:true },
+    metodo:'gabinete-atual', metodoAjustes:{ pes:n('pes') },
+    construcao:{ espMDF:n('espMDF'), espFundo:n('espFundo'), beiral:0,
+      paredeEsq:!!p.paredeEsq, paredeDir:!!p.paredeDir, enchimento:!!p.enchimento, tampo:{ larg:n('tampoLarg'), prof:n('tampoProf'), esp:n('tampoEsp') } },
     ambiente:{ esgoto:{ altura:n('esgoto'), recorteLarg:n('recorteLarg'), recorteProf:n('recorteProf') } },
     puxadorPorta:pux, puxadorGaveta:pux, raiz,
   };
@@ -1316,8 +1355,9 @@ function moduloDeArmario(p) {
   const raiz = folhas.length > 1 ? { tipo:'dividir', dir:'v', sep:'divisoria', partes:folhas.map(no => ({ medida:'auto', no })) } : folhas[0];
   return {
     largura:n('largura'), altura:n('altura'), profundidade:n('profundidade'),
-    construcao:{ espMDF:n('espMDF'), espFundo:n('espFundo'), apoio:'rodape', rodape:{ altura:n('rodape'), recuo:n('recuoRodape') }, topo:'inteiro', fixacao:'por-vao', beiral:n('alturaBeiral'),
-      paredeEsq:!!p.paredeEsq, paredeDir:!!p.paredeDir, enchimento:false, furarLaterais:false },
+    metodo:'armario-atual', metodoAjustes:{ rodape:{ altura:n('rodape'), recuo:n('recuoRodape') } },
+    construcao:{ espMDF:n('espMDF'), espFundo:n('espFundo'), beiral:n('alturaBeiral'),
+      paredeEsq:!!p.paredeEsq, paredeDir:!!p.paredeDir, enchimento:false },
     ambiente:{}, puxadorPorta:PxP, puxadorGaveta:PxG, raiz,
   };
 }
@@ -2481,5 +2521,5 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { gerarModuloV3, CONVERSORES_V3, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
 </script>

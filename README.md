@@ -12,6 +12,7 @@ Sistema do Nathan para projetar móveis planejados: 3D, lista de corte, plano de
 | `dados/biblioteca.json` | Chapas, ferragens, fixação e acabamento: nome, marca, código, unidade de compra |
 | `dados/puxadores.json` | Os 5 puxadores escolhíveis: furação, comprimento, largura, saliência, cor |
 | `dados/materiais.json` | Materiais e cor no 3D |
+| `dados/metodos-construcao.json` | Métodos de construção com nome (laterais passantes ou topo/base passantes, fundo sobreposto ou em rasgo, rodapé ou pés, furação de prateleira…) e o padrão que vale para todos |
 | `ferramentas/montar.js` | Junta a fonte com os dados e gera o `configurador.html` |
 | `testes/rodar.js` | Testes de referência: gera cada modelo e compara com o resultado guardado |
 | `testes/referencia/` | Resultado "oficial" de cada modelo (peças, lista de corte, plano, ferragens, iLogic) |

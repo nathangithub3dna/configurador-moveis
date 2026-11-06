@@ -1,4 +1,31 @@
 {
+ "metodo": {
+  "passantes": {
+   "topo": 1200,
+   "base": 1200,
+   "lateral": 1864,
+   "erros": 0
+  },
+  "rasgo": {
+   "fundo": [
+    1879,
+    1179
+   ],
+   "fundoZ": [
+    10,
+    16
+   ],
+   "lateralFundo": 482,
+   "divisoria": 466,
+   "canais": 4,
+   "erros": 0
+  },
+  "pinos": {
+   "quatroFuros": 8,
+   "faixa32": 56
+  },
+  "origem": "método \"Fundo em rasgo\""
+ },
  "erros": [],
  "avisos": [],
  "pecas": [

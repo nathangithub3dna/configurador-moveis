@@ -124,7 +124,8 @@ function diferencas(a, b, caminho = '') {
       const c = window.__configurador, r = v => typeof v === 'number' ? Math.round(v * 10) / 10 : v;
       const pux = { ...c.CONVERSORES_V3.armario({ ...c.TIPOS.armario.padrao }).puxadorPorta };
       const m = { largura:1200, altura:2000, profundidade:500,
-        construcao:{ espMDF:18, espFundo:6, apoio:'rodape', rodape:{ altura:100, recuo:40 }, topo:'inteiro', fixacao:'por-vao', beiral:0, paredeEsq:false, paredeDir:false, enchimento:false, furarLaterais:true },
+        metodo:'armario-atual', metodoAjustes:{ furarLaterais:true },
+        construcao:{ espMDF:18, espFundo:6, beiral:0, paredeEsq:false, paredeDir:false, enchimento:false },
         ambiente:{}, puxadorPorta:pux, puxadorGaveta:{ ...pux, altura:'topo-120' },
         raiz:{ tipo:'dividir', dir:'v', sep:'divisoria', partes:[
           { medida:'auto', no:{ tipo:'vao', frente:{ tipo:'porta', lado:'esq' }, conteudo:[{ tipo:'prateleiras', n:4, min:150 }] } },
@@ -132,9 +133,24 @@ function diferencas(a, b, caminho = '') {
             { medida:400, no:{ tipo:'dividir', dir:'h', sep:'nenhum', partes:[{ medida:200, no:{ tipo:'vao', frente:{ tipo:'gaveta' } } }, { medida:200, no:{ tipo:'vao', frente:{ tipo:'gaveta' } } }] } },
             { medida:'auto', no:{ tipo:'vao', frente:{ tipo:'porta', lado:'dir' }, conteudo:[{ tipo:'prateleiras', n:2, min:150 }] } } ] } } ] } };
       const res = c.gerarModuloV3(m);
-      return { erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
+      // Sub-etapa 4b: trocar o método de construção refaz as peças sem redesenhar
+      const peca = (r_, papel, lado) => r_.pecas.find(p => p.papel === papel && (!lado || p.lado === lado));
+      const comMetodo = (nome, aj) => c.gerarModuloV3({ ...m, metodo:nome, metodoAjustes:{ ...m.metodoAjustes, ...aj } });
+      const e1 = comMetodo('topo-base-passantes', {}), e2 = comMetodo('fundo-rasgo', {}), e3 = comMetodo('armario-atual', { prateleira:{ furacao:'faixa32' } });
+      const pinos = r_ => peca(r_, 'lateral', 'esq').des.furos.filter(f => f.tipo === 'pino').length;
+      const metodo = {
+        passantes: { topo: peca(e1,'topo').comp, base: peca(e1,'base').comp, lateral: peca(e1,'lateral','esq').comp, erros: e1.erros.length },
+        rasgo: { fundo: [peca(e2,'fundo').comp, peca(e2,'fundo').larg], fundoZ: peca(e2,'fundo').box.slice(4), lateralFundo: peca(e2,'lateral','esq').larg, divisoria: peca(e2,'divisoria-vertical').larg, canais: e2.pecas.filter(p => p.des?.canais?.length).length, erros: e2.erros.length },
+        pinos: { quatroFuros: pinos(res), faixa32: pinos(e3) },
+        origem: c.resolverMetodo({ ...m, metodo:'fundo-rasgo' }).origem.fundo,
+      };
+      return { metodo, erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
     });
     if (erros.length) atual.errosDaPagina = erros;
+    const esp = { passantes: { topo:1200, base:1200, lateral:1864, erros:0 }, rasgo: { fundo:[1879, 1179], fundoZ:[10, 16], lateralFundo:482, divisoria:466, canais:4, erros:0 } };
+    const dm = diferencas(esp, { passantes: atual.metodo.passantes, rasgo: atual.metodo.rasgo });
+    if (dm.length || !(atual.metodo.pinos.faixa32 > atual.metodo.pinos.quatroFuros) || atual.metodo.origem !== 'método "Fundo em rasgo"') { falhas++; console.log('MÉTODO DE CONSTRUÇÃO ERRADO', JSON.stringify(atual.metodo)); dm.forEach(x => console.log('   ' + x)); }
+    else console.log('MÉTODO DE CONSTRUÇÃO OK  ' + JSON.stringify(atual.metodo));
     const arq = path.join(__dirname, 'referencia', 'nucleo-armario-misto.json');
     const semFuncao = atual.pecas.filter(p => !p.papel).map(p => p.id);
     if (semFuncao.length || atual.erros.length || erros.length) { falhas++; console.log('NÚCLEO (móvel novo) COM PROBLEMA', JSON.stringify({ semFuncao, erros: atual.erros, pagina: erros })); }

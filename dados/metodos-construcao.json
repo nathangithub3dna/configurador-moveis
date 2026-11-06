@@ -1,0 +1,31 @@
+{
+  "_explicacao": {
+    "lateral": "passante = topo e base entram entre as laterais; entre = topo e base passam por cima/baixo e as laterais ficam entre eles",
+    "topo": "inteiro = uma chapa; travessas = travessa frontal + traseira (ex.: gabinete com tampo de pedra)",
+    "apoio": "rodape = laterais até o chão com rodapé recuado; pes = móvel apoiado em pés (altura em 'pes')",
+    "fundo": "sobreposto = parafusado atrás; rasgo = encaixado em canal das laterais/base/topo (recuo da parede, profundidade do canal, folga)",
+    "fixacao": "unica = uma travessa de fixação na parede; por-vao = uma travessa em cada vão",
+    "furarLaterais": "gera a furação de montagem, pinos, calços e corrediças nas laterais",
+    "prateleira": "furacao: 4-furos (só na altura da prateleira), faixa32 (sistema 32 com 'faixa' furos acima e abaixo), sistema32 (linha inteira a cada 32 mm)",
+    "juncao": "parafuso, minifix ou cavilha (aplicado nas fixações — sub-etapa 4d)"
+  },
+  "metodoPadrao": "armario-atual",
+  "padrao": {
+    "lateral": "passante",
+    "topo": "inteiro",
+    "apoio": "rodape",
+    "rodape": { "altura": 100, "recuo": 40 },
+    "pes": 0,
+    "fundo": { "tipo": "sobreposto", "recuo": 10, "prof": 8, "folga": 0.5 },
+    "fixacao": "por-vao",
+    "furarLaterais": true,
+    "prateleira": { "furacao": "4-furos", "faixa": 3 },
+    "juncao": "parafuso"
+  },
+  "metodos": {
+    "gabinete-atual": { "nome": "Gabinete (como hoje)", "ajustes": { "apoio": "pes", "topo": "travessas", "fixacao": "unica", "furarLaterais": true } },
+    "armario-atual":  { "nome": "Armário (como hoje)", "ajustes": { "apoio": "rodape", "topo": "inteiro", "fixacao": "por-vao", "furarLaterais": false } },
+    "fundo-rasgo":    { "nome": "Fundo em rasgo", "ajustes": { "fundo": { "tipo": "rasgo" } } },
+    "topo-base-passantes": { "nome": "Topo e base passantes", "ajustes": { "lateral": "entre" } }
+  }
+}
