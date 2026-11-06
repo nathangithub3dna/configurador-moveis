@@ -61,6 +61,7 @@ function diferencas(a, b, caminho = '') {
       if (m) return route.fulfill({ path: nm('three/' + m[1]), contentType: 'application/javascript' });
       if (u.includes('jspdf')) return route.fulfill({ path: nm('jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript' });
       if (u.includes('jszip')) return route.fulfill({ path: nm('jszip/dist/jszip.min.js'), contentType: 'application/javascript' });
+      if (u.includes('qrcode-generator')) return route.fulfill({ path: nm('qrcode-generator/qrcode.js'), contentType: 'application/javascript' });
       return route.abort();
     });
     await page.goto('http://teste/');
@@ -124,6 +125,7 @@ function diferencas(a, b, caminho = '') {
       if (m) return route.fulfill({ path: nm('three/' + m[1]), contentType: 'application/javascript' });
       if (u.includes('jspdf')) return route.fulfill({ path: nm('jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript' });
       if (u.includes('jszip')) return route.fulfill({ path: nm('jszip/dist/jszip.min.js'), contentType: 'application/javascript' });
+      if (u.includes('qrcode-generator')) return route.fulfill({ path: nm('qrcode-generator/qrcode.js'), contentType: 'application/javascript' });
       return route.abort();
     });
     await page.goto('http://teste/');
@@ -258,6 +260,7 @@ function diferencas(a, b, caminho = '') {
       if (m) return route.fulfill({ path: nm('three/' + m[1]), contentType: 'application/javascript' });
       if (u.includes('jspdf')) return route.fulfill({ path: nm('jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript' });
       if (u.includes('jszip')) return route.fulfill({ path: nm('jszip/dist/jszip.min.js'), contentType: 'application/javascript' });
+      if (u.includes('qrcode-generator')) return route.fulfill({ path: nm('qrcode-generator/qrcode.js'), contentType: 'application/javascript' });
       return route.abort();
     });
     await page.goto('http://teste/');
@@ -301,6 +304,20 @@ function diferencas(a, b, caminho = '') {
     const t5b = { cozinha, dentro, mudouDentro, estourou: estourou.erros, reta: reta.erros.slice(0, 3), paginaErros: erros };
     const ok5b = !cozinha.erros.length && cozinha.canto && cozinha.esgoto && cozinha.recorte && cozinha.modulos === 8 && cozinha.tampos === 2 && !cozinha.semFuncao.length && cozinha.naPlanta === 8 && cozinha.chapas > 0
       && dentro.editor && dentro.vaosEsquema === 1 && mudouDentro === 1 && estourou.erros.some(x => /passa .* do fim da parede A/.test(x)) && reta.erros.some(x => /parede que não existe/.test(x)) && !erros.length;
+    // 5c: códigos, pedido CorteCloud e etiquetas (no ambiente de exemplo, voltando ao L)
+    await page.selectOption('#form [data-amb="formato"]', 'L'); await page.waitForTimeout(300);
+    for (let k = 0; k < 3; k++) await passo('#form [data-acao="remover-mod"][data-i="8"]');
+    const loja = await page.evaluate(() => { const c = window.__configurador, e = c.estado, r = e.res, cods = e.codigos;
+      const lista = r.pecas.filter(p => p.lista), cc = c.pedidoCorteCloud(r.pecas, cods), pdf = c.etiquetasPDF(r.pecas, cods, 'teste');
+      const furosCC = cc.parts.reduce((s, p) => s + (p.machining ? p.machining.verticalDrills.length + p.machining.horizontalDrills.length : 0), 0);
+      const furosPecas = lista.reduce((s, p) => s + (p.des?.furos || []).length, 0);
+      return { erros: r.erros, pecas: lista.length, codigos: cods.size, unicos: new Set([...cods.values()].map(x => x.codigo)).size, exemplo: [...cods.values()][0]?.codigo,
+        modulosNosCodigos: new Set([...cods.values()].map(x => x.modulo)).size, partes: cc.parts.length, furosCC, furosPecas, comFita: cc.parts.filter(p => p.c1).length,
+        pdfKB: Math.round(pdf.byteLength / 1024), pdfB64: btoa(String.fromCharCode(...new Uint8Array(pdf).slice(0, 0))), qr: !!window.qrcode, tabela: document.querySelectorAll('#tabCodigos tbody tr').length }; });
+    t5b.loja = loja;
+    const ok5c = !loja.erros.length && loja.codigos === loja.pecas && loja.unicos === loja.pecas && /^\d{4}-\d{2} · A-M\d{2} · P\d{3}$/.test(loja.exemplo) && loja.modulosNosCodigos === 8
+      && loja.partes === loja.pecas && loja.furosCC === loja.furosPecas && loja.comFita > 0 && loja.pdfKB > 5 && loja.pdfKB < 3000 && loja.qr && loja.tabela === loja.pecas;
+    if (!ok5c) { falhas++; console.log('LOJA E ETIQUETAS (5c) ERRADO  ' + JSON.stringify(loja)); } else console.log('LOJA E ETIQUETAS (5c) OK  ' + JSON.stringify(loja));
     if (!ok5b) { falhas++; console.log('AMBIENTE (5b) ERRADO  ' + JSON.stringify(t5b)); } else console.log('AMBIENTE (5b) OK  ' + JSON.stringify(t5b));
     await page.close();
   }

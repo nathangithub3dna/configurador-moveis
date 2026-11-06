@@ -135,6 +135,17 @@
     <div class="tabela" id="tabFerr"></div>
     <textarea class="copia" id="copiaFerr" readonly hidden aria-label="Texto da lista de ferragens"></textarea>
   </div>
+  <div class="cartao loja">
+    <div class="cab"><h2>Pedido para a loja e etiquetas</h2>
+      <div class="linha">
+        <button class="btn prim" id="btnEtiquetas" type="button">Etiquetas com QR (.pdf)</button>
+        <button class="btn" id="btnCorteCloud" type="button">Pedido CorteCloud (.json)</button>
+      </div>
+    </div>
+    <label class="ed-linha loja-codigo">Código do projeto (ano, mês e nº)<input id="codProjeto" type="text" placeholder="2611-01"></label>
+    <p class="nota" id="notaLoja">Cada peça ganha um código: projeto · ambiente-módulo · peça (ex.: 2611-03 · A-M02 · P014). O mesmo código vai na etiqueta, no pedido e no desenho.</p>
+    <div class="tabela" id="tabCodigos"></div>
+  </div>
 </section>
 <section class="cartao plano" aria-labelledby="tPlano" data-secao="plano" hidden>
   <div class="cab"><h2 id="tPlano">Plano de corte</h2><button class="btn" id="copLoja" type="button">Copiar lista para a loja de corte</button></div>
@@ -273,6 +284,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script type="importmap">
 {"imports":{
   "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -292,8 +304,10 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /*@inclui:js/nucleo.js*/
 /*@inclui:js/ambiente.js*/
 /*@inclui:js/saidas.js*/
+/*@inclui:js/saidas-loja.js*/
 /*@inclui:js/editor-modulo.js*/
 /*@inclui:js/tela.js*/
 /*@inclui:js/tela-modulo.js*/
 /*@inclui:js/tela-ambiente.js*/
+/*@inclui:js/tela-loja.js*/
 </script>

@@ -33,3 +33,8 @@
 .esq-vao:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
 .esq-vao[aria-current]{outline:3px solid var(--accent);outline-offset:-3px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
 [data-se][hidden]{display:none!important}
+
+/* Pedido para a loja e etiquetas (5c) */
+.listas .loja{grid-column:1/-1}
+.loja .linha{display:flex;flex-wrap:wrap;gap:8px}
+.loja-codigo{max-width:520px}
