@@ -295,6 +295,49 @@
    "pux-zen-shell-64"
   ]
  },
+ "acabamento": {
+  "frentesMat": [
+   "mdf-amadeirado"
+  ],
+  "caixaMat": "mdf-ru-branco",
+  "veioPorta": "comp",
+  "veioBasculante": "larg",
+  "giradas": 0,
+  "basNoPlano": [
+   347,
+   797
+  ],
+  "basMedida": [
+   797,
+   347
+  ],
+  "porta": {
+   "medida": [
+    1897,
+    597
+   ],
+   "corte": [
+    1896.1,
+    596.1
+   ],
+   "fita": {
+    "C1": 0.45,
+    "C2": 0.45,
+    "L1": 0.45,
+    "L2": 0.45
+   },
+   "loja": "final"
+  },
+  "lateral": {
+   "fita": {
+    "C1": 0.45,
+    "C2": 0,
+    "L1": 0,
+    "L2": 0
+   },
+   "veio": null
+  }
+ },
  "erros": [],
  "avisos": [],
  "pecas": [

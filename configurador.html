@@ -334,7 +334,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /* =====================================================================
    1. REGRAS DE MARCENARIA (mm) — valem para todos os tipos de móvel
    ===================================================================== */
-const R = (({ _explicacao, ...r }) => r)({"_explicacao":{"borda":"folga das frentes nas bordas externas","entre":"folga entre duas frentes","corredica":"corrediça telescópica 45 mm: desconto de 26 mm na largura da gaveta (13 por lado)","canecoDiam":"Blum CLIP top BLUMOTION 71B3550: diâmetro, profundidade e centro do caneco a partir da borda; dobradicaBorda = distância da 1ª e da última dobradiça até a ponta da porta","folgaAltGaveta":"altura da caixa = altura da gaveta − 70 (arredondado a 10)","faixaEsgoto":"± em volta do centro do esgoto","serra":"plano de corte: espessura do disco e limpeza das bordas da chapa","dobradicasPorAltura":"quantidade de dobradiças conforme a altura da porta (null = acima do último valor)","transporteMenorLado":"transporte: padrão do projeto — o menor lado de uma peça (módulo desmontado) ou do módulo (montado) não passa disto. O projeto pode informar outro valor. [Suposição — confirmar com o veículo e as portas/escadas da obra]","densidade":"kg/m³ para o peso das peças, volumes, portas de correr e basculantes (MDF 730; fibra 900 [Provável])","embalagem":"embalagem simulada: pilha nova acima de pesoMax (kg, uma pessoa carrega) ou alturaMax (mm); margem por lado (mm). [Suposição — ajustar]","basculante":"pistão a gás: força (kg) = peso × (meia altura ÷ curso útil 91) × 1,25; 2 pistões a partir de 600 de largura; forças de mercado 60–140 N (Soprano/Completa)","dobradicasPorPeso":"Blum: 4–6 kg → 2, 6–12 kg → 3 (porta até 600 de largura); 22 kg → 5, 27 → 6, 32 → 7 em portas altas; 17 kg → 4 [Provável — interpolado]. Vale o maior entre altura, peso e distância máxima.","dobradicaDistMax":"Duratex: no máximo 60 cm entre dobradiças","dobradicaLarguraExtra":"Blum: porta mais larga que 600 ganha 1 dobradiça","minifix":"Minifix 15 (Häfele/Würth/Zinni): tambor Ø15 na face da peça que encosta, a 34 da ponta, prof. 12 (MDF 15) / 13,5 (MDF 18); canal Ø8 no topo até o tambor; pino Ø5 na face da outra peça [Provável prof. 11]","cavilha":"Cavilha 8 × 30: furo Ø8, 1/3 na face (10) e 2/3 no topo (20) (manual Zinni); ao lado do minifix, a 32 dele"},"borda":1.5,"entre":3,"corredica":13,"corredicas":[250,300,350,400,450,500,550],"canecoDiam":35,"canecoProf":13,"canecoBorda":22,"dobradicaBorda":100,"enchimento":25,"sarrafo":60,"travessa":100,"recuoPrat":20,"folgaPrat":1,"folgaFundoPrat":6,"folgaAltGaveta":70,"folgaPisoGaveta":12,"faixaEsgoto":75,"portaMaxLarg":600,"angMaxDobradica":105,"puxadorComp":160,"chapa":[2750,1850],"aproveitamento":0.85,"perdaFita":1.1,"serra":4,"refilo":10,"dobradicasPorAltura":[{"ateAltura":900,"quantidade":2},{"ateAltura":1600,"quantidade":3},{"ateAltura":null,"quantidade":4}],"transporteMenorLado":1220,"densidade":{"mdf":730,"hdf":900},"embalagem":{"pesoMax":25,"alturaMax":150,"margem":20},"basculante":{"cursoPistao":91,"fatorSeguranca":1.25,"larguraDoisPistoes":600,"forcas":[60,80,100,120,140]},"dobradicasPorPeso":[{"atePeso":6,"quantidade":2},{"atePeso":12,"quantidade":3},{"atePeso":17,"quantidade":4},{"atePeso":22,"quantidade":5},{"atePeso":27,"quantidade":6},{"atePeso":32,"quantidade":7}],"dobradicaDistMax":600,"dobradicaLarguraExtra":600,"minifix":{"distancia":34,"tamborDiam":15,"tamborProf":{"15":12,"18":13.5},"pinoFaceDiam":5,"pinoFaceProf":11,"canalTopoDiam":8},"cavilha":{"diam":8,"comp":30,"profFace":10,"profTopo":20,"desvio":32}});
+const R = (({ _explicacao, ...r }) => r)({"_explicacao":{"borda":"folga das frentes nas bordas externas","entre":"folga entre duas frentes","corredica":"corrediça telescópica 45 mm: desconto de 26 mm na largura da gaveta (13 por lado)","canecoDiam":"Blum CLIP top BLUMOTION 71B3550: diâmetro, profundidade e centro do caneco a partir da borda; dobradicaBorda = distância da 1ª e da última dobradiça até a ponta da porta","folgaAltGaveta":"altura da caixa = altura da gaveta − 70 (arredondado a 10)","faixaEsgoto":"± em volta do centro do esgoto","serra":"plano de corte: espessura do disco e limpeza das bordas da chapa","dobradicasPorAltura":"quantidade de dobradiças conforme a altura da porta (null = acima do último valor)","transporteMenorLado":"transporte: padrão do projeto — o menor lado de uma peça (módulo desmontado) ou do módulo (montado) não passa disto. O projeto pode informar outro valor. [Suposição — confirmar com o veículo e as portas/escadas da obra]","densidade":"kg/m³ para o peso das peças, volumes, portas de correr e basculantes (MDF 730; fibra 900 [Provável])","embalagem":"embalagem simulada: pilha nova acima de pesoMax (kg, uma pessoa carrega) ou alturaMax (mm); margem por lado (mm). [Suposição — ajustar]","basculante":"pistão a gás: força (kg) = peso × (meia altura ÷ curso útil 91) × 1,25; 2 pistões a partir de 600 de largura; forças de mercado 60–140 N (Soprano/Completa)","dobradicasPorPeso":"Blum: 4–6 kg → 2, 6–12 kg → 3 (porta até 600 de largura); 22 kg → 5, 27 → 6, 32 → 7 em portas altas; 17 kg → 4 [Provável — interpolado]. Vale o maior entre altura, peso e distância máxima.","dobradicaDistMax":"Duratex: no máximo 60 cm entre dobradiças","dobradicaLarguraExtra":"Blum: porta mais larga que 600 ganha 1 dobradiça","minifix":"Minifix 15 (Häfele/Würth/Zinni): tambor Ø15 na face da peça que encosta, a 34 da ponta, prof. 12 (MDF 15) / 13,5 (MDF 18); canal Ø8 no topo até o tambor; pino Ø5 na face da outra peça [Provável prof. 11]","cavilha":"Cavilha 8 × 30: furo Ø8, 1/3 na face (10) e 2/3 no topo (20) (manual Zinni); ao lado do minifix, a 32 dele","fitaEsp":"espessura da fita de borda (mm): 0,45 é o padrão de mercado em BP [Suposição — o Nathan pediu o padrão; confirmar com a loja]","lojaPadrao":"perfil de loja usado enquanto as lojas não respondem: descontaFita = a loja recebe a medida final e desconta a fita sozinha [Suposição — perguntar à loja]"},"borda":1.5,"entre":3,"corredica":13,"corredicas":[250,300,350,400,450,500,550],"canecoDiam":35,"canecoProf":13,"canecoBorda":22,"dobradicaBorda":100,"enchimento":25,"sarrafo":60,"travessa":100,"recuoPrat":20,"folgaPrat":1,"folgaFundoPrat":6,"folgaAltGaveta":70,"folgaPisoGaveta":12,"faixaEsgoto":75,"portaMaxLarg":600,"angMaxDobradica":105,"puxadorComp":160,"chapa":[2750,1850],"aproveitamento":0.85,"perdaFita":1.1,"serra":4,"refilo":10,"dobradicasPorAltura":[{"ateAltura":900,"quantidade":2},{"ateAltura":1600,"quantidade":3},{"ateAltura":null,"quantidade":4}],"transporteMenorLado":1220,"densidade":{"mdf":730,"hdf":900},"embalagem":{"pesoMax":25,"alturaMax":150,"margem":20},"basculante":{"cursoPistao":91,"fatorSeguranca":1.25,"larguraDoisPistoes":600,"forcas":[60,80,100,120,140]},"dobradicasPorPeso":[{"atePeso":6,"quantidade":2},{"atePeso":12,"quantidade":3},{"atePeso":17,"quantidade":4},{"atePeso":22,"quantidade":5},{"atePeso":27,"quantidade":6},{"atePeso":32,"quantidade":7}],"dobradicaDistMax":600,"dobradicaLarguraExtra":600,"minifix":{"distancia":34,"tamborDiam":15,"tamborProf":{"15":12,"18":13.5},"pinoFaceDiam":5,"pinoFaceProf":11,"canalTopoDiam":8},"cavilha":{"diam":8,"comp":30,"profFace":10,"profTopo":20,"desvio":32},"fitaEsp":0.45,"lojaPadrao":{"nome":"Loja padrão (sem perfil)","descontaFita":true}});
 // Puxadores reais (medidas do fabricante; "conf" = medida não publicada, estimada — confirmar na loja)
 const PUXADORES = Object.fromEntries(Object.entries({"1":{"ref":"pux-hettich-brema-128","rot":"Hettich Brema 128 · inox escovado","modelo":"barra","furacao":128,"comp":140,"larg":14,"proj":35,"cor":"#b9bec2"},"2":{"ref":"pux-hettich-como-320","rot":"Hettich Como 320 · inox escovado","modelo":"barra","furacao":320,"comp":332,"larg":26,"proj":45,"cor":"#b9bec2"},"3":{"ref":"pux-zen-citizen-96","rot":"Zen Citizen 96 · gold escovado","modelo":"barra","furacao":96,"comp":130,"larg":12,"proj":30,"cor":"#c8a35e","conf":"largura e saliência"},"4":{"ref":"pux-zen-elemento-128","rot":"Zen Elemento G 128 · preto fosco","modelo":"bloco","furacao":128,"comp":192,"larg":30,"proj":18,"cor":"#2a2c2e"},"5":{"ref":"pux-zen-shell-64","rot":"Zen Shell 64 (concha) · gold escovado","modelo":"concha","furacao":64,"comp":90,"larg":34,"proj":24,"cor":"#c8a35e","conf":"largura e saliência"}}).map(([k, v]) => [k, { ...v, cor: parseInt(v.cor.slice(1), 16) }]));
 const opcoesPuxador = Object.entries(PUXADORES).map(([k,v]) => [Number(k), v.rot]);
@@ -347,7 +347,7 @@ function dobradicasRegra(h, w, esp) {
   return { n, peso, acimaTabela: !fPeso };
 }
 
-const MATERIAIS = {"mdf-ru-branco":{"nome":"MDF RU branco fosco","cor":"#f3f2ee"},"mdf-branco":{"nome":"MDF branco","cor":"#ecebe6"},"marmore":{"nome":"Mármore (existente)","cor":"#f1f1ef"},"cromado":{"nome":"Metal cromado","cor":"#b9bec2"},"hdf-cru":{"nome":"Fibra (HDF) crua","cor":"#8a6a4f"},"hdf-branco":{"nome":"Fibra (HDF) branca","cor":"#efeee9"}};
+const MATERIAIS = {"mdf-ru-branco":{"nome":"MDF RU branco fosco","cor":"#f3f2ee","veio":false},"mdf-branco":{"nome":"MDF branco","cor":"#ecebe6","veio":false},"marmore":{"nome":"Mármore (existente)","cor":"#f1f1ef","veio":false},"cromado":{"nome":"Metal cromado","cor":"#b9bec2","veio":false},"hdf-cru":{"nome":"Fibra (HDF) crua","cor":"#8a6a4f","veio":false},"hdf-branco":{"nome":"Fibra (HDF) branca","cor":"#efeee9","veio":false},"mdf-amadeirado":{"nome":"MDF amadeirado (padrão com veio)","cor":"#b08a5e","veio":true,"obs":"Genérico para teste: o padrão real (fabricante, linha, código e textura) entra no catálogo de acabamentos."}};
 /* =====================================================================
    1b. BIBLIOTECA — chapas e ferragens reais (como os catálogos do Promob).
    Cada item: o que é, marca/código, unidade e embalagem de compra, dados técnicos
@@ -1472,8 +1472,26 @@ function gerarModuloV3(m) {
     .forEach(q => A.push(`Transporte: ${q.nome} tem ${fmt(q.comp)} × ${fmt(q.larg)} mm (menor lado acima do limite de ${fmt(limT)}).`));
   const fundosT = pecas.filter(q => q.papel === 'fundo').length;
   if (!montado && fundosT > 3) A.push(`Transporte: com o limite de ${fmt(limT)} mm o fundo ficou em ${fundosT} peças (${fundosT - 1} emendas). Confira se o limite não está baixo demais.`);
+  acabamentoPecas(pecas, m.materiais || {});
   const volumes = volumesDe(pecas, { montado, L, H:H0, P, A });
   return { pecas, erros:E, avisos:A, volumes, compras: comprasV3(pecas) };
+}
+
+/* ACABAMENTO DAS PEÇAS (4e) — material por grupo, veio, fita por lado (C1/C2/L1/L2) e medida de corte.
+   C = lados do comprimento (a fita neles diminui a largura de corte); L = lados da largura. */
+function acabamentoPecas(pecas, mats, loja = R.lojaPadrao) {
+  for (const q of pecas.filter(p => p.lista)) {
+    if (q.cat === 'frente' && mats.frentes) q.mat = mats.frentes;
+    else if (['caixa','enchimento','gaveta'].includes(q.cat) && mats.caixa && q.mat !== 'mdf-branco') q.mat = mats.caixa;
+    const temVeio = !!MATERIAIS[q.mat]?.veio;
+    // veio: frentes de porta na vertical (altura da peça); demais peças no comprimento
+    const alt = q.box ? q.box[3] - q.box[2] : null, vertical = q.cat === 'frente' && q.mov?.tipo !== 'gaveta' && alt !== null;
+    q.veio = !temVeio ? null : (vertical ? (Math.abs(alt - q.comp) < 0.6 ? 'comp' : 'larg') : 'comp');
+    const [nC, nL] = q.fita || [0, 0], e = R.fitaEsp;
+    q.fitaLados = { C1: nC >= 1 ? e : 0, C2: nC >= 2 ? e : 0, L1: nL >= 1 ? e : 0, L2: nL >= 2 ? e : 0 };
+    q.corte = { comp: q.comp - e*nL, larg: q.larg - e*nC };
+    q.medidaLoja = loja.descontaFita ? { comp: q.comp, larg: q.larg, tipo:'final' } : { ...q.corte, tipo:'corte' };
+  }
 }
 
 /* COMPRAS DO NÚCLEO — conta as ferragens pelas referências da biblioteca e abre os kits nos componentes */
@@ -1595,7 +1613,7 @@ function planoDeCorte(pecas) {
   for (const pc of pecas.filter(p => p.lista)) {
     const k = pc.mat + '|' + pc.esp;
     if (!porChapa.has(k)) porChapa.set(k, []);
-    porChapa.get(k).push({ id:pc.id, num:numDe.get(pc.id).num, nome:pc.nomeLista||pc.nome, a:pc.comp, b:pc.larg, chapaRef:pc.chapaRef });
+    porChapa.get(k).push({ id:pc.id, num:numDe.get(pc.id).num, nome:pc.nomeLista||pc.nome, a:pc.veio === 'larg' ? pc.larg : pc.comp, b:pc.veio === 'larg' ? pc.comp : pc.larg, chapaRef:pc.chapaRef, fixo:!!pc.veio });
   }
   const res = [];
   for (const [k, itens] of porChapa) {
@@ -1606,18 +1624,18 @@ function planoDeCorte(pecas) {
     const chapas = [];
     const novaChapa = () => { const c = { faixas:[], usadoY:0, pecas:[] }; chapas.push(c); return c; };
     for (const it of itens) {
-      if ((it.a > LU || it.b > WU) && (it.b > LU || it.a > WU)) { erros.push(`${it.nome} (${fmt(it.a)} × ${fmt(it.b)}) não cabe na chapa ${dim[0]} × ${dim[1]}.`); continue; }
+      if ((it.a > LU || it.b > WU) && (it.fixo || it.b > LU || it.a > WU)) { erros.push(`${it.nome} (${fmt(it.a)} × ${fmt(it.b)}) não cabe na chapa ${dim[0]} × ${dim[1]}${it.fixo ? ' sem girar (veio)' : ''}.`); continue; }
       let ok = false;
       for (const c of chapas) {
         for (const f of c.faixas) {
           if (it.b <= f.h && f.x + it.a <= LU) { c.pecas.push({ ...it, x:f.x, y:f.y, w:it.a, h:it.b }); f.x += it.a + kf; ok = true; break; }
-          if (it.a <= f.h && f.x + it.b <= LU) { c.pecas.push({ ...it, x:f.x, y:f.y, w:it.b, h:it.a, giro:true }); f.x += it.b + kf; ok = true; break; }
+          if (!it.fixo && it.a <= f.h && f.x + it.b <= LU) { c.pecas.push({ ...it, x:f.x, y:f.y, w:it.b, h:it.a, giro:true }); f.x += it.b + kf; ok = true; break; }
         }
         if (ok) break;
-        const [w, h, giro] = it.a <= LU ? [it.a, it.b, false] : [it.b, it.a, true];
+        const [w, h, giro] = (it.fixo || it.a <= LU) ? [it.a, it.b, false] : [it.b, it.a, true];
         if (c.usadoY + h <= WU) { const f = { y:c.usadoY, h, x:w + kf }; c.faixas.push(f); c.usadoY += h + kf; c.pecas.push({ ...it, x:0, y:f.y, w, h, giro }); ok = true; break; }
       }
-      if (!ok) { const c = novaChapa(); const [w, h, giro] = it.a <= LU ? [it.a, it.b, false] : [it.b, it.a, true]; const f = { y:0, h, x:w + kf }; c.faixas.push(f); c.usadoY = h + kf; c.pecas.push({ ...it, x:0, y:0, w, h, giro }); }
+      if (!ok) { const c = novaChapa(); const [w, h, giro] = (it.fixo || it.a <= LU) ? [it.a, it.b, false] : [it.b, it.a, true]; const f = { y:0, h, x:w + kf }; c.faixas.push(f); c.usadoY = h + kf; c.pecas.push({ ...it, x:0, y:0, w, h, giro }); }
     }
     const areaChapa = dim[0]*dim[1];
     chapas.forEach(c => c.aproveitamento = c.pecas.reduce((s,p) => s + p.w*p.h, 0) / areaChapa);
@@ -2719,5 +2737,5 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
 </script>

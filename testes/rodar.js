@@ -188,6 +188,18 @@ function diferencas(a, b, caminho = '') {
         kits: { dob: cmp(res, 'dob-blum-71B3550'), calco: cmp(res, 'calco-blum-0'), paraf: cmp(res, 'paraf-35x14'), corredicas: cmp(res, 'corr-tel45-amort'), nCorr: res.pecas.filter(p => p.papel === 'corredica').length },
         concha: gr.pecas.filter(p => p.papel === 'puxador').map(p => p.ref),
       };
+      // 4e: material por grupo, veio, fita por lado, medida de corte; plano não gira peça com veio
+      const mad = c.gerarModuloV3({ ...m, materiais:{ frentes:'mdf-amadeirado' } }), basMad = c.gerarModuloV3({ ...m, largura:800, altura:450, profundidade:350, materiais:{ frentes:'mdf-amadeirado' }, raiz:{ tipo:'vao', frente:{ tipo:'basculante' }, conteudo:[] } });
+      const planoMad = c.planoDeCorte(mad.pecas), planoBas = c.planoDeCorte(basMad.pecas);
+      const comVeio = pl => pl.materiais.flatMap(mm => mm.chapas.flatMap(ch => ch.pecas)).filter(p => (mad.pecas.concat(basMad.pecas)).find(q => q.id === p.id && q.veio));
+      const pt0 = mad.pecas.find(p => p.papel === 'porta'), basP = basMad.pecas.find(p => p.papel === 'porta-basculante');
+      const acabamento = {
+        frentesMat: [...new Set(mad.pecas.filter(p => p.cat === 'frente').map(p => p.mat))], caixaMat: mad.pecas.find(p => p.papel === 'lateral').mat,
+        veioPorta: pt0.veio, veioBasculante: basP.veio, giradas: comVeio(planoMad).concat(comVeio(planoBas)).filter(p => p.giro).length,
+        basNoPlano: (() => { const p = planoBas.materiais.flatMap(mm => mm.chapas.flatMap(ch => ch.pecas)).find(p => p.id === basP.id); return p && [r(p.w), r(p.h)]; })(), basMedida: [r(basP.comp), r(basP.larg)],
+        porta: { medida: [r(pt0.comp), r(pt0.larg)], corte: [r(pt0.corte.comp), r(pt0.corte.larg)], fita: pt0.fitaLados, loja: pt0.medidaLoja.tipo },
+        lateral: { fita: mad.pecas.find(p => p.papel === 'lateral').fitaLados, veio: mad.pecas.find(p => p.papel === 'lateral').veio },
+      };
       const pinos = r_ => peca(r_, 'lateral', 'esq').des.furos.filter(f => f.tipo === 'pino').length;
       const metodo = {
         passantes: { topo: peca(e1,'topo').comp, base: peca(e1,'base').comp, lateral: peca(e1,'lateral','esq').comp, erros: e1.erros.length },
@@ -197,7 +209,7 @@ function diferencas(a, b, caminho = '') {
         fundoDividido: fundosL, perfilH: sem.pecas.filter(p => p.papel === 'emenda-fundo').length, montante: sem.pecas.filter(p => p.id.startsWith('reforco-emenda')).length, chapaFundo: [armL, sem].map(x => x.pecas.find(p => p.papel === 'fundo').chapaRef), fundosSem: sem.pecas.filter(p => p.papel === 'fundo').map(p => r(p.larg)),
         pes: pes.pecas.filter(p => p.papel === 'pe').length, rodapeEncaixe: pes.pecas.some(p => p.id === 'rodape-encaixe'), semFuncao: [...armL.pecas, ...sem.pecas, ...pes.pecas].filter(p => !p.papel).map(p => p.id),
       };
-      return { metodo, transporte, frentes, ferragem, erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
+      return { metodo, transporte, frentes, ferragem, acabamento, erros: res.erros, avisos: res.avisos, pecas: res.pecas.map(p => ({ id:p.id, papel:p.papel, comp:r(p.comp), larg:r(p.larg), box:(p.box||[]).map(r), furos:(p.des?.furos||[]).length })) };
     });
     if (erros.length) atual.errosDaPagina = erros;
     const esp = { passantes: { topo:1200, base:1200, lateral:1864, erros:0 }, rasgo: { fundo:[1879, 1179], fundoZ:[10, 16], lateralFundo:482, divisoria:466, canais:4, erros:0 } };
@@ -210,6 +222,11 @@ function diferencas(a, b, caminho = '') {
       && fg.cavMinifix.cavilhas > 0 && fg.cavMinifix.minifix > 0 && fg.kits.dob === fg.kits.calco && fg.kits.paraf === 4*fg.kits.dob + 12*fg.kits.corredicas && fg.kits.corredicas * 2 === fg.kits.nCorr
       && fg.concha.length === 2 && fg.concha.every(x => x === 'pux-zen-shell-64');
     if (!fgOk) { falhas++; console.log('FERRAGEM (4d) ERRADO  ' + JSON.stringify(fg)); } else console.log('FERRAGEM (4d) OK  ' + JSON.stringify(fg));
+    const ac = atual.acabamento;
+    const acOk = ac.frentesMat.join() === 'mdf-amadeirado' && ac.caixaMat !== 'mdf-amadeirado' && ac.veioPorta === 'comp' && ac.veioBasculante === 'larg' && ac.giradas === 0
+      && ac.basNoPlano && ac.basNoPlano[0] === ac.basMedida[1] && Math.abs(ac.porta.corte[0] - (ac.porta.medida[0] - 0.9)) < 0.11 && Math.abs(ac.porta.corte[1] - (ac.porta.medida[1] - 0.9)) < 0.11
+      && ac.porta.loja === 'final' && ac.lateral.veio === null && ac.lateral.fita.C1 === 0.45 && ac.lateral.fita.L1 === 0;
+    if (!acOk) { falhas++; console.log('ACABAMENTO (4e) ERRADO  ' + JSON.stringify(ac)); } else console.log('ACABAMENTO (4e) OK  ' + JSON.stringify(ac));
     const fr4c = atual.frentes;
     const frOk = !fr4c.correrDominus.erros.length && fr4c.correrDominus.portas.length === 2 && fr4c.correrDominus.desempenadores === 4 && fr4c.correrDominus.trilhos === 2 && !fr4c.correrDominus.semFuncao.length
       && fr4c.correrRO27.erroPeso && !fr4c.basculante.erros.length && fr4c.basculante.pistoes.length === 2 && fr4c.basculante.pistoes.every(x => /^pistao-gas-\d+$/.test(x)) && !fr4c.basculante.semFuncao.length

@@ -1,26 +1,38 @@
 {
   "mdf-ru-branco": {
     "nome": "MDF RU branco fosco",
-    "cor": "#f3f2ee"
+    "cor": "#f3f2ee",
+    "veio": false
   },
   "mdf-branco": {
     "nome": "MDF branco",
-    "cor": "#ecebe6"
+    "cor": "#ecebe6",
+    "veio": false
   },
   "marmore": {
     "nome": "Mármore (existente)",
-    "cor": "#f1f1ef"
+    "cor": "#f1f1ef",
+    "veio": false
   },
   "cromado": {
     "nome": "Metal cromado",
-    "cor": "#b9bec2"
+    "cor": "#b9bec2",
+    "veio": false
   },
   "hdf-cru": {
     "nome": "Fibra (HDF) crua",
-    "cor": "#8a6a4f"
+    "cor": "#8a6a4f",
+    "veio": false
   },
   "hdf-branco": {
     "nome": "Fibra (HDF) branca",
-    "cor": "#efeee9"
+    "cor": "#efeee9",
+    "veio": false
+  },
+  "mdf-amadeirado": {
+    "nome": "MDF amadeirado (padrão com veio)",
+    "cor": "#b08a5e",
+    "veio": true,
+    "obs": "Genérico para teste: o padrão real (fabricante, linha, código e textura) entra no catálogo de acabamentos."
   }
 }

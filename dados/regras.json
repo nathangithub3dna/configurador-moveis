@@ -16,7 +16,9 @@
     "dobradicaDistMax": "Duratex: no máximo 60 cm entre dobradiças",
     "dobradicaLarguraExtra": "Blum: porta mais larga que 600 ganha 1 dobradiça",
     "minifix": "Minifix 15 (Häfele/Würth/Zinni): tambor Ø15 na face da peça que encosta, a 34 da ponta, prof. 12 (MDF 15) / 13,5 (MDF 18); canal Ø8 no topo até o tambor; pino Ø5 na face da outra peça [Provável prof. 11]",
-    "cavilha": "Cavilha 8 × 30: furo Ø8, 1/3 na face (10) e 2/3 no topo (20) (manual Zinni); ao lado do minifix, a 32 dele"
+    "cavilha": "Cavilha 8 × 30: furo Ø8, 1/3 na face (10) e 2/3 no topo (20) (manual Zinni); ao lado do minifix, a 32 dele",
+    "fitaEsp": "espessura da fita de borda (mm): 0,45 é o padrão de mercado em BP [Suposição — o Nathan pediu o padrão; confirmar com a loja]",
+    "lojaPadrao": "perfil de loja usado enquanto as lojas não respondem: descontaFita = a loja recebe a medida final e desconta a fita sozinha [Suposição — perguntar à loja]"
   },
   "borda": 1.5,
   "entre": 3,
@@ -135,5 +137,10 @@
     "profFace": 10,
     "profTopo": 20,
     "desvio": 32
+  },
+  "fitaEsp": 0.45,
+  "lojaPadrao": {
+    "nome": "Loja padrão (sem perfil)",
+    "descontaFita": true
   }
 }
