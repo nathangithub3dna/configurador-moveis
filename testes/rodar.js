@@ -21,7 +21,8 @@ function resumo() {
   const r = v => typeof v === 'number' ? Math.round(v * 10) / 10 : v;
   return {
     erros: res.erros, avisos: res.avisos,
-    pecas: res.pecas.map(p => ({ id: p.id, nome: p.nome, cat: p.cat, lista: p.lista, comp: r(p.comp), larg: r(p.larg), esp: p.esp, mat: p.mat, fita: p.fita, box: (p.box || []).map(r),
+    semPapel: res.pecas.filter(p => !p.papel).map(p => p.id),
+    pecas: res.pecas.map(p => ({ id: p.id, papel: p.papel, lado: p.lado, nome: p.nome, cat: p.cat, lista: p.lista, comp: r(p.comp), larg: r(p.larg), esp: p.esp, mat: p.mat, fita: p.fita, box: (p.box || []).map(r),
       furos: (p.des?.furos || []).map(f => [r(f.x), r(f.y), f.d, f.prof, f.tipo]), rasgos: (p.des?.rasgos || []).length })),
     listaDeCorte: e.textos.corte,
     ferragens: res.ferragens.map(f => `${f.qtd} ${f.unid} ${f.item}`),
@@ -67,6 +68,7 @@ function diferencas(a, b, caminho = '') {
     await page.waitForTimeout(500);
     const atual = await page.evaluate(resumo);
     if (erros.length) atual.errosDaPagina = erros;
+    if (atual.semPapel.length) { falhas++; console.log(`SEM FUNÇÃO  ${caso.nome}: ${atual.semPapel.join(', ')}`); }
     const arq = path.join(__dirname, 'referencia', caso.nome + '.json');
     if (atualizar || !fs.existsSync(arq)) {
       fs.writeFileSync(arq, JSON.stringify(atual, null, 1));

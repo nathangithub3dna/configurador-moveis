@@ -3,9 +3,12 @@
  "avisos": [
   "Móvel alto: fixe na parede antes de colocar peso (risco de tombar)."
  ],
+ "semPapel": [],
  "pecas": [
   {
    "id": "lateral-esq",
+   "papel": "lateral",
+   "lado": "esq",
    "nome": "Lateral esquerda",
    "cat": "caixa",
    "lista": true,
@@ -30,6 +33,8 @@
   },
   {
    "id": "lateral-dir",
+   "papel": "lateral",
+   "lado": "dir",
    "nome": "Lateral direita com ventilação",
    "cat": "caixa",
    "lista": true,
@@ -54,6 +59,8 @@
   },
   {
    "id": "topo",
+   "papel": "topo",
+   "lado": null,
    "nome": "Topo",
    "cat": "caixa",
    "lista": true,
@@ -78,6 +85,8 @@
   },
   {
    "id": "base",
+   "papel": "base",
+   "lado": null,
    "nome": "Base",
    "cat": "caixa",
    "lista": true,
@@ -102,6 +111,8 @@
   },
   {
    "id": "rodape-frontal",
+   "papel": "rodape",
+   "lado": null,
    "nome": "Rodapé frontal",
    "cat": "caixa",
    "lista": true,
@@ -126,6 +137,8 @@
   },
   {
    "id": "rodape-traseiro",
+   "papel": "rodape",
+   "lado": null,
    "nome": "Rodapé traseiro",
    "cat": "caixa",
    "lista": true,
@@ -150,6 +163,8 @@
   },
   {
    "id": "beiral-frontal",
+   "papel": "beiral-frontal",
+   "lado": null,
    "nome": "Beiral frontal",
    "cat": "caixa",
    "lista": true,
@@ -174,6 +189,8 @@
   },
   {
    "id": "beiral-esq",
+   "papel": "beiral-lateral",
+   "lado": "esq",
    "nome": "Beiral lateral esquerdo",
    "cat": "caixa",
    "lista": true,
@@ -198,6 +215,8 @@
   },
   {
    "id": "beiral-dir",
+   "papel": "beiral-lateral",
+   "lado": "dir",
    "nome": "Beiral lateral direito",
    "cat": "caixa",
    "lista": true,
@@ -222,6 +241,8 @@
   },
   {
    "id": "fundo",
+   "papel": "fundo",
+   "lado": null,
    "nome": "Fundo do móvel",
    "cat": "fundo",
    "lista": true,
@@ -246,6 +267,8 @@
   },
   {
    "id": "divisoria-v-1",
+   "papel": "divisoria-vertical",
+   "lado": null,
    "nome": "Divisória vertical 1",
    "cat": "caixa",
    "lista": true,
@@ -270,6 +293,8 @@
   },
   {
    "id": "divisoria-v-2",
+   "papel": "divisoria-vertical",
+   "lado": null,
    "nome": "Divisória vertical 2",
    "cat": "caixa",
    "lista": true,
@@ -294,6 +319,8 @@
   },
   {
    "id": "divisoria-v-3",
+   "papel": "divisoria-vertical",
+   "lado": null,
    "nome": "Divisória vertical 3",
    "cat": "caixa",
    "lista": true,
@@ -318,6 +345,8 @@
   },
   {
    "id": "travessa-fixacao-1",
+   "papel": "travessa-fixacao",
+   "lado": null,
    "nome": "Travessa de fixação 1",
    "cat": "caixa",
    "lista": true,
@@ -357,6 +386,8 @@
   },
   {
    "id": "travessa-fixacao-2",
+   "papel": "travessa-fixacao",
+   "lado": null,
    "nome": "Travessa de fixação 2",
    "cat": "caixa",
    "lista": true,
@@ -396,6 +427,8 @@
   },
   {
    "id": "travessa-fixacao-3",
+   "papel": "travessa-fixacao",
+   "lado": null,
    "nome": "Travessa de fixação 3",
    "cat": "caixa",
    "lista": true,
@@ -435,6 +468,8 @@
   },
   {
    "id": "travessa-fixacao-4",
+   "papel": "travessa-fixacao",
+   "lado": null,
    "nome": "Travessa de fixação 4",
    "cat": "caixa",
    "lista": true,
@@ -474,6 +509,8 @@
   },
   {
    "id": "porta-1",
+   "papel": "porta",
+   "lado": null,
    "nome": "Porta 1",
    "cat": "frente",
    "lista": true,
@@ -541,6 +578,8 @@
   },
   {
    "id": "porta-1-dobradica-1",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 1 da porta 1",
    "cat": "ferragem",
    "lista": false,
@@ -563,6 +602,8 @@
   },
   {
    "id": "porta-1-dobradica-2",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 2 da porta 1",
    "cat": "ferragem",
    "lista": false,
@@ -585,6 +626,8 @@
   },
   {
    "id": "porta-1-dobradica-3",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 3 da porta 1",
    "cat": "ferragem",
    "lista": false,
@@ -607,6 +650,8 @@
   },
   {
    "id": "porta-1-dobradica-4",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 4 da porta 1",
    "cat": "ferragem",
    "lista": false,
@@ -629,6 +674,8 @@
   },
   {
    "id": "porta-1-puxador",
+   "papel": "puxador",
+   "lado": null,
    "nome": "Puxador da porta 1",
    "cat": "ferragem",
    "lista": false,
@@ -651,6 +698,8 @@
   },
   {
    "id": "porta-2",
+   "papel": "porta",
+   "lado": null,
    "nome": "Porta 2",
    "cat": "frente",
    "lista": true,
@@ -718,6 +767,8 @@
   },
   {
    "id": "porta-2-dobradica-1",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 1 da porta 2",
    "cat": "ferragem",
    "lista": false,
@@ -740,6 +791,8 @@
   },
   {
    "id": "porta-2-dobradica-2",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 2 da porta 2",
    "cat": "ferragem",
    "lista": false,
@@ -762,6 +815,8 @@
   },
   {
    "id": "porta-2-dobradica-3",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 3 da porta 2",
    "cat": "ferragem",
    "lista": false,
@@ -784,6 +839,8 @@
   },
   {
    "id": "porta-2-dobradica-4",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 4 da porta 2",
    "cat": "ferragem",
    "lista": false,
@@ -806,6 +863,8 @@
   },
   {
    "id": "porta-2-puxador",
+   "papel": "puxador",
+   "lado": null,
    "nome": "Puxador da porta 2",
    "cat": "ferragem",
    "lista": false,
@@ -828,6 +887,8 @@
   },
   {
    "id": "porta-3",
+   "papel": "porta",
+   "lado": null,
    "nome": "Porta 3",
    "cat": "frente",
    "lista": true,
@@ -895,6 +956,8 @@
   },
   {
    "id": "porta-3-dobradica-1",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 1 da porta 3",
    "cat": "ferragem",
    "lista": false,
@@ -917,6 +980,8 @@
   },
   {
    "id": "porta-3-dobradica-2",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 2 da porta 3",
    "cat": "ferragem",
    "lista": false,
@@ -939,6 +1004,8 @@
   },
   {
    "id": "porta-3-dobradica-3",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 3 da porta 3",
    "cat": "ferragem",
    "lista": false,
@@ -961,6 +1028,8 @@
   },
   {
    "id": "porta-3-dobradica-4",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 4 da porta 3",
    "cat": "ferragem",
    "lista": false,
@@ -983,6 +1052,8 @@
   },
   {
    "id": "porta-3-puxador",
+   "papel": "puxador",
+   "lado": null,
    "nome": "Puxador da porta 3",
    "cat": "ferragem",
    "lista": false,
@@ -1005,6 +1076,8 @@
   },
   {
    "id": "porta-4",
+   "papel": "porta",
+   "lado": null,
    "nome": "Porta 4",
    "cat": "frente",
    "lista": true,
@@ -1072,6 +1145,8 @@
   },
   {
    "id": "porta-4-dobradica-1",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 1 da porta 4",
    "cat": "ferragem",
    "lista": false,
@@ -1094,6 +1169,8 @@
   },
   {
    "id": "porta-4-dobradica-2",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 2 da porta 4",
    "cat": "ferragem",
    "lista": false,
@@ -1116,6 +1193,8 @@
   },
   {
    "id": "porta-4-dobradica-3",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 3 da porta 4",
    "cat": "ferragem",
    "lista": false,
@@ -1138,6 +1217,8 @@
   },
   {
    "id": "porta-4-dobradica-4",
+   "papel": "dobradica",
+   "lado": null,
    "nome": "Dobradiça 4 da porta 4",
    "cat": "ferragem",
    "lista": false,
@@ -1160,6 +1241,8 @@
   },
   {
    "id": "porta-4-puxador",
+   "papel": "puxador",
+   "lado": null,
    "nome": "Puxador da porta 4",
    "cat": "ferragem",
    "lista": false,
@@ -1182,6 +1265,8 @@
   },
   {
    "id": "prateleira-1-1",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira do vão 1 (vassouras)",
    "cat": "caixa",
    "lista": true,
@@ -1206,6 +1291,8 @@
   },
   {
    "id": "vao-1-suporte-1",
+   "papel": "suporte-vassoura",
+   "lado": null,
    "nome": "Suporte de vassoura/rodo 1",
    "cat": "ferragem",
    "lista": false,
@@ -1228,6 +1315,8 @@
   },
   {
    "id": "vao-1-suporte-2",
+   "papel": "suporte-vassoura",
+   "lado": null,
    "nome": "Suporte de vassoura/rodo 2",
    "cat": "ferragem",
    "lista": false,
@@ -1250,6 +1339,8 @@
   },
   {
    "id": "vao-1-suporte-3",
+   "papel": "suporte-vassoura",
+   "lado": null,
    "nome": "Suporte de vassoura/rodo 3",
    "cat": "ferragem",
    "lista": false,
@@ -1272,6 +1363,8 @@
   },
   {
    "id": "vao-1-gancho",
+   "papel": "gancho",
+   "lado": null,
    "nome": "Gancho do aspirador",
    "cat": "ferragem",
    "lista": false,
@@ -1294,6 +1387,8 @@
   },
   {
    "id": "reforco-vassoura-1",
+   "papel": "reforco",
+   "lado": null,
    "nome": "Régua de reforço do gancho (vão 1)",
    "cat": "caixa",
    "lista": true,
@@ -1318,6 +1413,8 @@
   },
   {
    "id": "reforco-vassoura-1b",
+   "papel": "reforco",
+   "lado": null,
    "nome": "Régua de reforço dos suportes (vão 1)",
    "cat": "caixa",
    "lista": true,
@@ -1342,6 +1439,8 @@
   },
   {
    "id": "prateleira-2-1",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 1 do vão 2",
    "cat": "caixa",
    "lista": true,
@@ -1366,6 +1465,8 @@
   },
   {
    "id": "prateleira-2-2",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 2 do vão 2",
    "cat": "caixa",
    "lista": true,
@@ -1390,6 +1491,8 @@
   },
   {
    "id": "prateleira-2-3",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 3 do vão 2",
    "cat": "caixa",
    "lista": true,
@@ -1414,6 +1517,8 @@
   },
   {
    "id": "prateleira-2-4",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 4 do vão 2",
    "cat": "caixa",
    "lista": true,
@@ -1438,6 +1543,8 @@
   },
   {
    "id": "prateleira-2-5",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 5 do vão 2",
    "cat": "caixa",
    "lista": true,
@@ -1462,6 +1569,8 @@
   },
   {
    "id": "prateleira-3-1",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 1 do vão 3",
    "cat": "caixa",
    "lista": true,
@@ -1486,6 +1595,8 @@
   },
   {
    "id": "prateleira-3-2",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 2 do vão 3",
    "cat": "caixa",
    "lista": true,
@@ -1510,6 +1621,8 @@
   },
   {
    "id": "prateleira-3-3",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 3 do vão 3",
    "cat": "caixa",
    "lista": true,
@@ -1534,6 +1647,8 @@
   },
   {
    "id": "prateleira-3-4",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 4 do vão 3",
    "cat": "caixa",
    "lista": true,
@@ -1558,6 +1673,8 @@
   },
   {
    "id": "prateleira-3-5",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 5 do vão 3",
    "cat": "caixa",
    "lista": true,
@@ -1582,6 +1699,8 @@
   },
   {
    "id": "botijao-4",
+   "papel": "botijao",
+   "lado": null,
    "nome": "Botijão P13 (referência)",
    "cat": "referencia",
    "lista": false,
@@ -1604,6 +1723,8 @@
   },
   {
    "id": "prateleira-fixa-4",
+   "papel": "prateleira-fixa",
+   "lado": null,
    "nome": "Tampo do compartimento do botijão (vão 4)",
    "cat": "caixa",
    "lista": true,
@@ -1628,6 +1749,8 @@
   },
   {
    "id": "espacador-4",
+   "papel": "espacador",
+   "lado": null,
    "nome": "Espaçador das corrediças (vão 4)",
    "cat": "caixa",
    "lista": true,
@@ -1652,6 +1775,8 @@
   },
   {
    "id": "gaveta-1-frente",
+   "papel": "frente-gaveta",
+   "lado": null,
    "nome": "Frente da gaveta 1",
    "cat": "frente",
    "lista": true,
@@ -1691,6 +1816,8 @@
   },
   {
    "id": "gaveta-1-lateral-esq",
+   "papel": "lateral-gaveta",
+   "lado": "esq",
    "nome": "Lateral esquerda da gaveta 1",
    "cat": "gaveta",
    "lista": true,
@@ -1715,6 +1842,8 @@
   },
   {
    "id": "gaveta-1-lateral-dir",
+   "papel": "lateral-gaveta",
+   "lado": "dir",
    "nome": "Lateral direita da gaveta 1",
    "cat": "gaveta",
    "lista": true,
@@ -1739,6 +1868,8 @@
   },
   {
    "id": "gaveta-1-frente-interna",
+   "papel": "frente-interna-gaveta",
+   "lado": null,
    "nome": "Frente interna da gaveta 1",
    "cat": "gaveta",
    "lista": true,
@@ -1763,6 +1894,8 @@
   },
   {
    "id": "gaveta-1-traseira",
+   "papel": "traseira-gaveta",
+   "lado": null,
    "nome": "Traseira da gaveta 1",
    "cat": "gaveta",
    "lista": true,
@@ -1787,6 +1920,8 @@
   },
   {
    "id": "gaveta-1-fundo",
+   "papel": "fundo-gaveta",
+   "lado": null,
    "nome": "Fundo da gaveta 1",
    "cat": "gaveta",
    "lista": true,
@@ -1811,6 +1946,8 @@
   },
   {
    "id": "gaveta-1-corredica-esq",
+   "papel": "corredica",
+   "lado": "esq",
    "nome": "Corrediça 300 mm esquerda da gaveta 1",
    "cat": "ferragem",
    "lista": false,
@@ -1833,6 +1970,8 @@
   },
   {
    "id": "gaveta-1-corredica-dir",
+   "papel": "corredica",
+   "lado": "dir",
    "nome": "Corrediça 300 mm direita da gaveta 1",
    "cat": "ferragem",
    "lista": false,
@@ -1855,6 +1994,8 @@
   },
   {
    "id": "gaveta-1-puxador",
+   "papel": "puxador",
+   "lado": null,
    "nome": "Puxador da gaveta 1",
    "cat": "ferragem",
    "lista": false,
@@ -1877,6 +2018,8 @@
   },
   {
    "id": "gaveta-2-frente",
+   "papel": "frente-gaveta",
+   "lado": null,
    "nome": "Frente da gaveta 2",
    "cat": "frente",
    "lista": true,
@@ -1916,6 +2059,8 @@
   },
   {
    "id": "gaveta-2-lateral-esq",
+   "papel": "lateral-gaveta",
+   "lado": "esq",
    "nome": "Lateral esquerda da gaveta 2",
    "cat": "gaveta",
    "lista": true,
@@ -1940,6 +2085,8 @@
   },
   {
    "id": "gaveta-2-lateral-dir",
+   "papel": "lateral-gaveta",
+   "lado": "dir",
    "nome": "Lateral direita da gaveta 2",
    "cat": "gaveta",
    "lista": true,
@@ -1964,6 +2111,8 @@
   },
   {
    "id": "gaveta-2-frente-interna",
+   "papel": "frente-interna-gaveta",
+   "lado": null,
    "nome": "Frente interna da gaveta 2",
    "cat": "gaveta",
    "lista": true,
@@ -1988,6 +2137,8 @@
   },
   {
    "id": "gaveta-2-traseira",
+   "papel": "traseira-gaveta",
+   "lado": null,
    "nome": "Traseira da gaveta 2",
    "cat": "gaveta",
    "lista": true,
@@ -2012,6 +2163,8 @@
   },
   {
    "id": "gaveta-2-fundo",
+   "papel": "fundo-gaveta",
+   "lado": null,
    "nome": "Fundo da gaveta 2",
    "cat": "gaveta",
    "lista": true,
@@ -2036,6 +2189,8 @@
   },
   {
    "id": "gaveta-2-corredica-esq",
+   "papel": "corredica",
+   "lado": "esq",
    "nome": "Corrediça 300 mm esquerda da gaveta 2",
    "cat": "ferragem",
    "lista": false,
@@ -2058,6 +2213,8 @@
   },
   {
    "id": "gaveta-2-corredica-dir",
+   "papel": "corredica",
+   "lado": "dir",
    "nome": "Corrediça 300 mm direita da gaveta 2",
    "cat": "ferragem",
    "lista": false,
@@ -2080,6 +2237,8 @@
   },
   {
    "id": "gaveta-2-puxador",
+   "papel": "puxador",
+   "lado": null,
    "nome": "Puxador da gaveta 2",
    "cat": "ferragem",
    "lista": false,
@@ -2102,6 +2261,8 @@
   },
   {
    "id": "gaveta-3-frente",
+   "papel": "frente-gaveta",
+   "lado": null,
    "nome": "Frente da gaveta 3",
    "cat": "frente",
    "lista": true,
@@ -2141,6 +2302,8 @@
   },
   {
    "id": "gaveta-3-lateral-esq",
+   "papel": "lateral-gaveta",
+   "lado": "esq",
    "nome": "Lateral esquerda da gaveta 3",
    "cat": "gaveta",
    "lista": true,
@@ -2165,6 +2328,8 @@
   },
   {
    "id": "gaveta-3-lateral-dir",
+   "papel": "lateral-gaveta",
+   "lado": "dir",
    "nome": "Lateral direita da gaveta 3",
    "cat": "gaveta",
    "lista": true,
@@ -2189,6 +2354,8 @@
   },
   {
    "id": "gaveta-3-frente-interna",
+   "papel": "frente-interna-gaveta",
+   "lado": null,
    "nome": "Frente interna da gaveta 3",
    "cat": "gaveta",
    "lista": true,
@@ -2213,6 +2380,8 @@
   },
   {
    "id": "gaveta-3-traseira",
+   "papel": "traseira-gaveta",
+   "lado": null,
    "nome": "Traseira da gaveta 3",
    "cat": "gaveta",
    "lista": true,
@@ -2237,6 +2406,8 @@
   },
   {
    "id": "gaveta-3-fundo",
+   "papel": "fundo-gaveta",
+   "lado": null,
    "nome": "Fundo da gaveta 3",
    "cat": "gaveta",
    "lista": true,
@@ -2261,6 +2432,8 @@
   },
   {
    "id": "gaveta-3-corredica-esq",
+   "papel": "corredica",
+   "lado": "esq",
    "nome": "Corrediça 300 mm esquerda da gaveta 3",
    "cat": "ferragem",
    "lista": false,
@@ -2283,6 +2456,8 @@
   },
   {
    "id": "gaveta-3-corredica-dir",
+   "papel": "corredica",
+   "lado": "dir",
    "nome": "Corrediça 300 mm direita da gaveta 3",
    "cat": "ferragem",
    "lista": false,
@@ -2305,6 +2480,8 @@
   },
   {
    "id": "gaveta-3-puxador",
+   "papel": "puxador",
+   "lado": null,
    "nome": "Puxador da gaveta 3",
    "cat": "ferragem",
    "lista": false,
@@ -2327,6 +2504,8 @@
   },
   {
    "id": "gaveta-4-frente",
+   "papel": "frente-gaveta",
+   "lado": null,
    "nome": "Frente da gaveta 4",
    "cat": "frente",
    "lista": true,
@@ -2366,6 +2545,8 @@
   },
   {
    "id": "gaveta-4-lateral-esq",
+   "papel": "lateral-gaveta",
+   "lado": "esq",
    "nome": "Lateral esquerda da gaveta 4",
    "cat": "gaveta",
    "lista": true,
@@ -2390,6 +2571,8 @@
   },
   {
    "id": "gaveta-4-lateral-dir",
+   "papel": "lateral-gaveta",
+   "lado": "dir",
    "nome": "Lateral direita da gaveta 4",
    "cat": "gaveta",
    "lista": true,
@@ -2414,6 +2597,8 @@
   },
   {
    "id": "gaveta-4-frente-interna",
+   "papel": "frente-interna-gaveta",
+   "lado": null,
    "nome": "Frente interna da gaveta 4",
    "cat": "gaveta",
    "lista": true,
@@ -2438,6 +2623,8 @@
   },
   {
    "id": "gaveta-4-traseira",
+   "papel": "traseira-gaveta",
+   "lado": null,
    "nome": "Traseira da gaveta 4",
    "cat": "gaveta",
    "lista": true,
@@ -2462,6 +2649,8 @@
   },
   {
    "id": "gaveta-4-fundo",
+   "papel": "fundo-gaveta",
+   "lado": null,
    "nome": "Fundo da gaveta 4",
    "cat": "gaveta",
    "lista": true,
@@ -2486,6 +2675,8 @@
   },
   {
    "id": "gaveta-4-corredica-esq",
+   "papel": "corredica",
+   "lado": "esq",
    "nome": "Corrediça 300 mm esquerda da gaveta 4",
    "cat": "ferragem",
    "lista": false,
@@ -2508,6 +2699,8 @@
   },
   {
    "id": "gaveta-4-corredica-dir",
+   "papel": "corredica",
+   "lado": "dir",
    "nome": "Corrediça 300 mm direita da gaveta 4",
    "cat": "ferragem",
    "lista": false,
@@ -2530,6 +2723,8 @@
   },
   {
    "id": "gaveta-4-puxador",
+   "papel": "puxador",
+   "lado": null,
    "nome": "Puxador da gaveta 4",
    "cat": "ferragem",
    "lista": false,
@@ -2552,6 +2747,8 @@
   },
   {
    "id": "prateleira-4-1",
+   "papel": "prateleira",
+   "lado": null,
    "nome": "Prateleira 1 acima das gavetas (vão 4)",
    "cat": "caixa",
    "lista": true,

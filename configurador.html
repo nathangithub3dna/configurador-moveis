@@ -348,6 +348,38 @@ const MATERIAIS = {"mdf-ru-branco":{"nome":"MDF RU branco fosco","cor":"#f3f2ee"
    Preços não vêm daqui: o Nathan preenche na lista de compras.
    ===================================================================== */
 const BIBLIOTECA = {"chapa-mdf-ru-branco-18":{"grupo":"Chapas","nome":"Chapa MDF RU branco fosco 18 mm","marca":"","codigo":"","unid":"chapa","emb":1,"mat":"mdf-ru-branco","esp":18,"dim":[2750,1850]},"chapa-mdf-ru-branco-15":{"grupo":"Chapas","nome":"Chapa MDF RU branco fosco 15 mm","marca":"","codigo":"","unid":"chapa","emb":1,"mat":"mdf-ru-branco","esp":15,"dim":[2750,1850]},"chapa-mdf-branco-6":{"grupo":"Chapas","nome":"Chapa MDF branco 6 mm (fundos)","marca":"","codigo":"","unid":"chapa","emb":1,"mat":"mdf-branco","esp":6,"dim":[2750,1850]},"dob-blum-71B3550":{"grupo":"Ferragens","nome":"Dobradiça CLIP top BLUMOTION 110°, reta, com amortecedor","marca":"Blum","codigo":"71B3550","unid":"un","emb":1,"dados":{"canecoDiam":35,"canecoProf":13,"canecoCentro":22,"abertura":110,"furacao":"45 mm"},"modelo3d":"Dobradica_Blum_71B3550"},"calco-blum-0":{"grupo":"Ferragens","nome":"Calço reto CLIP, 0 mm (porta sobreposta)","marca":"Blum","codigo":"173L6100 (confirmar)","unid":"un","emb":1,"dados":{"recuoFrente":37,"furos":32},"modelo3d":"Calco_Blum_0mm"},"corr-tel45-amort":{"grupo":"Ferragens","nome":"Corrediça telescópica 45 mm com amortecedor, extração total","marca":"FGV / Telescópica (equivalente)","codigo":"","unid":"par","emb":1,"dados":{"folgaLado":13,"altura":45,"comprimentos":[250,300,350,400,450,500,550]},"modelo3d":"Corredica_Telescopica_45"},"pux-barra-128":{"grupo":"Ferragens","nome":"Puxador barra, furação 128 mm","marca":"","codigo":"","unid":"un","emb":1,"dados":{"furacao":128,"comp":160},"modelo3d":"Puxador_Barra_128"},"pux-hettich-brema-128":{"grupo":"Ferragens","nome":"Puxador Brema 128 mm, inox escovado","marca":"Hettich","codigo":"9069890","unid":"un","emb":1},"pux-hettich-como-320":{"grupo":"Ferragens","nome":"Puxador Como 320 mm, inox escovado","marca":"Hettich","codigo":"115078","unid":"un","emb":1},"pux-zen-citizen-96":{"grupo":"Ferragens","nome":"Puxador Citizen 96 mm, gold escovado","marca":"Zen Design","codigo":"ZP5463","unid":"un","emb":1},"pux-zen-elemento-128":{"grupo":"Ferragens","nome":"Puxador Elemento G 128 mm, preto fosco","marca":"Zen Design","codigo":"ZP5455.24","unid":"un","emb":1},"pux-zen-shell-64":{"grupo":"Ferragens","nome":"Puxador concha Shell 64 mm, gold escovado","marca":"Zen Design","codigo":"ZP4318","unid":"un","emb":1},"pino-5":{"grupo":"Ferragens","nome":"Suporte de prateleira, pino 5 mm","marca":"","codigo":"","unid":"un","emb":1},"sapata":{"grupo":"Ferragens","nome":"Sapata niveladora","marca":"","codigo":"","unid":"un","emb":1},"paraf-40x50":{"grupo":"Fixação","nome":"Parafuso 4,0 × 50 (montagem da caixa)","marca":"","codigo":"","unid":"cento","emb":100},"paraf-35x14":{"grupo":"Fixação","nome":"Parafuso 3,5 × 14 (dobradiças, corrediças, fundos)","marca":"","codigo":"","unid":"cento","emb":100},"paraf-35x25":{"grupo":"Fixação","nome":"Parafuso 3,5 × 25 (frente da gaveta)","marca":"","codigo":"","unid":"cento","emb":100},"paraf-40x30":{"grupo":"Fixação","nome":"Parafuso 4,0 × 30 (espaçador das corrediças)","marca":"","codigo":"","unid":"cento","emb":100},"cavilha-8x30":{"grupo":"Fixação","nome":"Cavilha de madeira 8 × 30 mm + cola (beiral)","marca":"","codigo":"","unid":"un","emb":1},"paraf-50x60-bucha":{"grupo":"Fixação","nome":"Parafuso 5,0 × 60 + bucha S8 (parede)","marca":"","codigo":"","unid":"un","emb":1},"fita-pvc-22":{"grupo":"Acabamento","nome":"Fita de borda PVC 22 mm branca","marca":"","codigo":"","unid":"rolo 20 m","emb":20,"metro":true},"fita-pvc-35":{"grupo":"Acabamento","nome":"Fita de borda PVC 35 mm branca","marca":"","codigo":"","unid":"rolo 20 m","emb":20,"metro":true},"silicone":{"grupo":"Acabamento","nome":"Silicone neutro","marca":"","codigo":"","unid":"tubo","emb":1},"suporte-vassoura":{"grupo":"Ferragens","nome":"Suporte para vassoura/rodo (garra de pressão)","marca":"","codigo":"","unid":"un","emb":1},"gancho-aspirador":{"grupo":"Ferragens","nome":"Gancho duplo para aspirador e mangueira","marca":"","codigo":"","unid":"un","emb":1}};
+
+/* =====================================================================
+   1c. FUNÇÃO (PAPEL) DE CADA PEÇA — definida num lugar só.
+   Orientação no Inventor, contagens de ferragem e fixações usam o papel, nunca o nome da peça.
+   ===================================================================== */
+const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do próprio id quando existir
+  [/^lateral-(esq|dir)$/, 'lateral'], [/^topo$/, 'topo'], [/^base$/, 'base'],
+  [/^divisoria$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'],
+  [/^travessa-(frontal|traseira)$/, 'travessa'], [/^travessa-fixacao(-\d+)?$/, 'travessa-fixacao'],
+  [/^rodape-(frontal|traseiro)$/, 'rodape'], [/^fundo$/, 'fundo'],
+  [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-\d+$/, 'prateleira-fixa'],
+  [/^reforco-/, 'reforco'], [/^beiral-frontal$/, 'beiral-frontal'], [/^beiral-(esq|dir)$/, 'beiral-lateral'],
+  [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+$/, 'espacador'],
+  [/^porta-(esq|dir|\d+)$/, 'porta'], [/^gaveta-\d+-frente$/, 'frente-gaveta'],
+  [/^gaveta-\d+-frente-interna$/, 'frente-interna-gaveta'], [/^gaveta-\d+-traseira$/, 'traseira-gaveta'],
+  [/^gaveta-\d+-lateral-(esq|dir)$/, 'lateral-gaveta'], [/^gaveta-\d+-fundo$/, 'fundo-gaveta'],
+  [/-dobradica-\d+$/, 'dobradica'], [/-puxador$/, 'puxador'], [/-corredica-(esq|dir)$/, 'corredica'],
+  [/-suporte-\d+$/, 'suporte-vassoura'], [/-gancho$/, 'gancho'], [/^botijao-/, 'botijao'], [/^tampo$/, 'tampo'],
+];
+function papelDe(id) {
+  for (const [re, papel] of PAPEIS) if (re.test(id)) { const m = id.match(/(?:^|-)(esq|dir)(?:-|$)/); return { papel, lado: m && papel !== 'porta' && papel !== 'dobradica' && papel !== 'puxador' ? m[1] : null }; }
+  return { papel: null, lado: null };
+}
+// Orientação da peça no Inventor (eixo da largura do desenho, eixo da altura do desenho), por papel
+const ORIENTACAO = {
+  'lateral:esq': ['-z','+y'], 'lateral:dir': ['+z','+y'],
+  'porta': ['-x','+y'], 'frente-gaveta': ['-x','+y'], 'fundo': ['-x','+y'],
+  'divisoria-vertical': ['-z','+y'], 'espacador': ['-z','+y'], 'beiral-lateral': ['-z','+y'],
+  'rodape': ['+x','+y'], 'travessa-fixacao': ['+x','+y'], 'beiral-frontal': ['+x','+y'],
+  'frente-interna-gaveta': ['+x','+y'], 'traseira-gaveta': ['+x','+y'], 'enchimento': ['+x','+y'],
+  'lateral-gaveta:esq': ['+z','+y'], 'lateral-gaveta:dir': ['-z','+y'], 'sarrafo': ['+z','+y'],
+};
 const chapaDe = (mat, esp) => Object.entries(BIBLIOTECA).find(([,b]) => b.unid==='chapa' && b.mat===mat && b.esp===esp)?.[0] || null;
 
 const CATS = { caixa:'Caixa', enchimento:'Enchimento', frente:'Frentes', gaveta:'Caixa das gavetas', fundo:'Fundo', ferragem:'Ferragens', tampo:'Tampo', referencia:'Referência (não fabricar)' };
@@ -482,6 +514,7 @@ function gerarGabinete(p) {
       if (b > a) { [a,b]=[b,a]; [fa,fb]=[fb,fa]; }
       pc.comp=a; pc.larg=b; pc.fita=[fa,fb];
     }
+    Object.assign(pc, papelDe(pc.id));
     pecas.push(pc); return pc;
   };
   const ferr = o => add(Object.assign({ cat:'ferragem', mat:'cromado', lista:false }, o));
@@ -624,7 +657,7 @@ function gerarGabinete(p) {
 
   // FURAÇÃO DAS LATERAIS (depende das outras peças)
   ['esq','dir'].forEach(lado => {
-    const lat = pecas.find(q => q.id === 'lateral-'+lado); if (!lat) return;
+    const lat = pecas.find(q => q.papel === 'lateral' && q.lado === lado); if (!lat) return;
     const X = z => lado==='esq' ? zFr - z : z - zf, Y = y => y - y0;
     const furos = [], linhas = [];
     const furo = (z,y,d,prof,tipo) => furos.push({ x:X(z), y:Y(y), d, prof, tipo });
@@ -632,23 +665,23 @@ function gerarGabinete(p) {
     ['base','divisoria'].forEach(id => { const b = q(id); if (!b) return; const yc=(b.box[2]+b.box[3])/2; [zFr-50,(zf+zFr)/2,zf+50].forEach(z => furo(z,yc,4,0,'montagem')); });
     [zFr-25, zFr-75, zf+75, zf+25].forEach(z => furo(z, top-t/2, 4, 0, 'montagem'));
     [top-t-75, top-t-25].forEach(y => furo(zf+t/2, y, 4, 0, 'montagem'));
-    pecas.filter(x => x.id.startsWith('prateleira-')).forEach(s => [s.box[5]-40, s.box[4]+40].forEach(z => furo(z, s.box[2]-5, 5, 10, 'pino')));
-    pecas.filter(x => x.id.startsWith(`porta-${lado}-dobradica-`)).forEach(h => { const yc=(h.box[2]+h.box[3])/2; [yc-16, yc+16].forEach(y => furo(zFr-37, y, 3, 10, 'calco')); });
-    pecas.filter(x => x.id.endsWith('-corredica-'+lado)).forEach(c => { const yc=(c.box[2]+c.box[3])/2; linhas.push({ x1:X(zFr), y1:Y(yc), x2:X(c.box[4]), y2:Y(yc), txt:'eixo da corrediça' }); [zFr-37, c.box[4]+37].forEach(z => furo(z, yc, 3, 10, 'corredica')); });
+    pecas.filter(x => x.papel === 'prateleira').forEach(s => [s.box[5]-40, s.box[4]+40].forEach(z => furo(z, s.box[2]-5, 5, 10, 'pino')));
+    pecas.filter(x => x.papel === 'dobradica' && x.expPai === `porta-${lado}`).forEach(h => { const yc=(h.box[2]+h.box[3])/2; [yc-16, yc+16].forEach(y => furo(zFr-37, y, 3, 10, 'calco')); });
+    pecas.filter(x => x.papel === 'corredica' && x.lado === lado).forEach(c => { const yc=(c.box[2]+c.box[3])/2; linhas.push({ x1:X(zFr), y1:Y(yc), x2:X(c.box[4]), y2:Y(yc), txt:'eixo da corrediça' }); [zFr-37, c.box[4]+37].forEach(z => furo(z, yc, 3, 10, 'corredica')); });
     lat.des.furos = furos; lat.des.linhas = linhas;
   });
 
   // FERRAGENS
   const conta = c => pecas.filter(c).length;
-  const nDob = conta(pc => pc.id.includes('-dobradica-'));
-  const nPux = conta(pc => pc.id.endsWith('-puxador'));
-  const nGv = pecas.filter(pc => pc.id.endsWith('-frente-interna')).length;
-  const nPrat = conta(pc => pc.id.startsWith('prateleira-'));
+  const nDob = conta(pc => pc.papel === 'dobradica');
+  const nPux = conta(pc => pc.papel === 'puxador');
+  const nGv = pecas.filter(pc => pc.papel === 'frente-interna-gaveta').length;
+  const nPrat = conta(pc => pc.papel === 'prateleira');
   const temDiv = conta(pc => pc.id==='divisoria');
   const nEnch = (eE?1:0) + (eD?1:0);
   const red10 = v => Math.ceil(v*1.2/10)*10;
   const perim = pc => 2*(pc.comp+pc.larg);
-  const fundos = pecas.filter(pc => pc.id==='fundo' || pc.id.endsWith('-fundo'));
+  const fundos = pecas.filter(pc => pc.papel === 'fundo' || pc.papel === 'fundo-gaveta');
   const fitaMm = pecas.filter(pc=>pc.lista).reduce((s,pc)=>s + pc.fita[0]*pc.comp + pc.fita[1]*pc.larg, 0);
   const fitaLarg = t <= 19 ? 22 : 35;
   const ferragens = [];
@@ -704,6 +737,7 @@ function gerarArmario(p) {
   const add = o => {
     const pc = Object.assign({ lista:true, mov:null, obs:'', esp:t, mat:'mdf-ru-branco', fita:[0,0] }, o);
     if (o.a !== undefined) { let a=o.a, b=o.b, fa=(o.fita||[0,0])[0], fb=(o.fita||[0,0])[1]; if (b > a) { [a,b]=[b,a]; [fa,fb]=[fb,fa]; } pc.comp=a; pc.larg=b; pc.fita=[fa,fb]; }
+    Object.assign(pc, papelDe(pc.id));
     pecas.push(pc); return pc;
   };
   const ferr = o => add(Object.assign({ cat:'ferragem', mat:'cromado', lista:false }, o));
@@ -852,11 +886,11 @@ function gerarArmario(p) {
 
   // FERRAGENS
   const conta = c => pecas.filter(c).length;
-  const nDob = conta(pc => pc.id.includes('-dobradica-'));
-  const nPux = conta(pc => pc.id.endsWith('-puxador'));
-  const nPrat = conta(pc => /^prateleira-\d+-\d+$/.test(pc.id));
-  const juntas = 2 /*topo*/ + 2 /*base*/ + (RD > 0 ? 4 : 0) + 2*(nV-1) + 2*nV /*travessas*/ + 2*conta(pc => pc.id.startsWith('prateleira-fixa')) + 2*conta(pc => pc.id.startsWith('reforco-'));
-  const fundos = pecas.filter(pc => pc.id === 'fundo' || pc.id.endsWith('-fundo'));
+  const nDob = conta(pc => pc.papel === 'dobradica');
+  const nPux = conta(pc => pc.papel === 'puxador');
+  const nPrat = conta(pc => pc.papel === 'prateleira');
+  const juntas = 2 /*topo*/ + 2 /*base*/ + (RD > 0 ? 4 : 0) + 2*(nV-1) + 2*nV /*travessas*/ + 2*conta(pc => pc.papel === 'prateleira-fixa') + 2*conta(pc => pc.papel === 'reforco');
+  const fundos = pecas.filter(pc => pc.papel === 'fundo' || pc.papel === 'fundo-gaveta');
   const perim = pc => 2*(pc.comp + pc.larg);
   const fitaMm = pecas.filter(pc => pc.lista).reduce((s,pc) => s + pc.fita[0]*pc.comp + pc.fita[1]*pc.larg, 0);
   const fitaLarg = t <= 19 ? 22 : 35;
@@ -869,7 +903,7 @@ function gerarArmario(p) {
   F('dob-blum-71B3550', nDob, `${nd} por porta. Caneco Ø35 × 13, centro a 22 mm da borda.`);
   F('calco-blum-0', nDob, 'Linha a 37 mm da frente da lateral/divisória.');
   if (nGavTotal) F('corr-tel45-amort', nGavTotal, 'Gaveta interna: 26 mm mais estreita que o espaço entre espaçador e lateral.', `${Lc} mm`);
-  const porRef = {}; pecas.filter(pc => pc.id.endsWith('-puxador')).forEach(pc => porRef[pc.ref] = (porRef[pc.ref]||0) + 1);
+  const porRef = {}; pecas.filter(pc => pc.papel === 'puxador').forEach(pc => porRef[pc.ref] = (porRef[pc.ref]||0) + 1);
   for (const [ref, q] of Object.entries(porRef)) { const px = Object.values(PUXADORES).find(x => x.ref === ref); F(ref, q, `Furação ${px.furacao} mm, parafuso M4 (vem com o puxador).` + (px.conf ? ` [Suposição] ${px.conf} estimadas: confirmar na loja.` : '')); }
   F('pino-5', nPrat*4);
   F('suporte-vassoura', nSup); F('gancho-aspirador', nGancho);
@@ -910,19 +944,19 @@ function calcularFixacoes(pecas) {
       const fA = fino(A), fB = fino(B), dir = [0,0,0]; dir[ax] = lado;
       const xEntrada = lado === 1 ? A.box[2*ax] : A.box[2*ax+1], xContato = lado === 1 ? A.box[2*ax+1] : A.box[2*ax];
       const pt = (vAx, vals) => { const q = [0,0,0]; q[ax] = vAx; o.forEach(i => q[i] = vals[i]); return q; };
-      const bordaBeiral = A.id.startsWith('beiral') || B.id.startsWith('beiral');
+      const ehBeiral = pc => pc.papel === 'beiral-frontal' || pc.papel === 'beiral-lateral', bordaBeiral = ehBeiral(A) || ehBeiral(B);
       if (fA === ax && fB !== ax && A.cat !== 'frente' && B.cat !== 'frente') {
         // A atravessada, entra no topo de B; linha ao longo do eixo do plano que não é a espessura de B
         const q = o.find(i => i !== fB), meio = (ov[fB][0] + ov[fB][1]) / 2;
         if (A.cat === 'fundo') { for (const v of linha(ov[q][0], ov[q][1], 40, 150)) add('paraf-35x14', pt(xEntrada, { [q]:v, [fB]:meio }), dir, 14, 3.5, B.id); }
-        else if (bordaBeiral && A.id.startsWith('beiral')) { for (const v of linha(ov[q][0], ov[q][1], 50, 300)) add('cavilha-8x30', pt(xContato - lado*15, { [q]:v, [fB]:meio }), dir, 30, 8, B.id); }
+        else if (bordaBeiral && ehBeiral(A)) { for (const v of linha(ov[q][0], ov[q][1], 50, 300)) add('cavilha-8x30', pt(xContato - lado*15, { [q]:v, [fB]:meio }), dir, 30, 8, B.id); }
         else for (const v of linha(ov[q][0], ov[q][1], 50, 250)) add('paraf-40x50', pt(xEntrada, { [q]:v, [fB]:meio }), dir, 50, 4, B.id);
       } else if (fA === ax && fB === ax) {
         // face com face: frente da gaveta (pela frente interna) e espaçador das corrediças
         const [i, j] = o;
         if (B.cat === 'frente' && /-frente-interna$/.test(A.id)) {
           for (const u of linha(ov[i][0], ov[i][1], 60, 1e9)) for (const v of linha(ov[j][0], ov[j][1], 30, 1e9)) add('paraf-35x25', pt(xEntrada, { [i]:u, [j]:v }), dir, 25, 3.5, B.id);
-        } else if (A.id.startsWith('espacador-') && B.cat !== 'frente') {
+        } else if (A.papel === 'espacador' && B.cat !== 'frente') {
           for (const u of linha(ov[i][0], ov[i][1], 60, 300)) for (const v of linha(ov[j][0], ov[j][1], 50, 1e9)) add('paraf-40x30', pt(xEntrada, { [i]:u, [j]:v }), dir, 30, 4, B.id);
         }
       } else if (fA !== ax && fB !== ax && A.id < B.id && bordaBeiral) {
@@ -933,10 +967,10 @@ function calcularFixacoes(pecas) {
     }
   }
   // parafusos de parede nas travessas
-  for (const pc of pecas.filter(pc => /^travessa-fixacao/.test(pc.id))) for (const f of (pc.des?.furos || []).filter(f => f.tipo === 'parede'))
+  for (const pc of pecas.filter(pc => pc.papel === 'travessa-fixacao')) for (const f of (pc.des?.furos || []).filter(f => f.tipo === 'parede'))
     add('paraf-50x60-bucha', [pc.box[0] + f.x, pc.box[2] + f.y, pc.box[5]], [0,0,-1], 60 + pc.box[5] - pc.box[4], 5, pc.id);
   // pinos das prateleiras soltas (4 por prateleira, nas paredes do vão)
-  for (const pc of pecas.filter(pc => /^prateleira-\d+-\d+$/.test(pc.id))) {
+  for (const pc of pecas.filter(pc => pc.papel === 'prateleira')) {
     const [x0,x1,y0,,z0,z1] = pc.box;
     for (const [x, dx] of [[x0 - 1, 1], [x1 + 1, -1]]) for (const z of [z0 + 40, z1 - 40]) add('pino-5', [x - dx*8, y0 - 3, z], [dx,0,0], 18, 5, pc.id);
   }
@@ -1230,16 +1264,8 @@ function gerarPDF() {
    Montagem: eixos (u, v) da vista do desenho → eixos do móvel; Z da peça aponta para quem olha a vista.
    ===================================================================== */
 function oriDe(id) {
-  if (id === 'lateral-esq') return ['-z','+y'];
-  if (id === 'lateral-dir') return ['+z','+y'];
-  if (/^porta-(esq|dir|\d+)$/.test(id) || /^gaveta-\d+-frente$/.test(id) || id === 'fundo') return ['-x','+y'];
-  if (/^divisoria-v-/.test(id) || /^espacador-/.test(id)) return ['-z','+y'];
-  if (/^rodape-/.test(id) || /^travessa-fixacao-/.test(id) || id === 'beiral-frontal') return ['+x','+y'];
-  if (/^beiral-(esq|dir)$/.test(id)) return ['-z','+y'];
-  if (id === 'travessa-fixacao' || /^gaveta-\d+-(frente-interna|traseira)$/.test(id) || id.startsWith('enchimento-')) return ['+x','+y'];
-  if (/^gaveta-\d+-lateral-esq$/.test(id) || id.startsWith('sarrafo-')) return ['+z','+y'];
-  if (/^gaveta-\d+-lateral-dir$/.test(id)) return ['-z','+y'];
-  return ['+x','-z'];
+  const pc = estado.res?.pecas.find(p => p.id === id); const { papel, lado } = pc || papelDe(id);
+  return ORIENTACAO[papel + ':' + lado] || ORIENTACAO[papel] || ['+x','-z'];
 }
 const EIXO = { x:0, y:1, z:2 };
 const vetor = s => { const v = [0,0,0]; v[EIXO[s[1]]] = s[0]==='-' ? -1 : 1; return v; };
