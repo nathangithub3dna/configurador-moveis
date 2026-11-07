@@ -265,6 +265,16 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .folha-svg{background:#fff;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro);padding:10px;overflow:auto}
 .folha-svg svg{display:block;width:100%;height:auto;max-width:1400px;margin:0 auto}
 .sub-des{font-size:14px;margin:6px 0}
+
+/* Orçamento (5c parte 3) */
+.orcamento .cab .linha{display:flex;flex-wrap:wrap;gap:8px}
+.orc-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:8px 0 16px}
+.orc-resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
+.orc-caixa{padding:12px 14px;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro);display:flex;flex-direction:column;gap:2px}
+.orc-caixa span{font-size:12px;color:var(--muted)}
+.orc-caixa strong{font-size:18px;font-family:var(--f-mono)}
+.orc-caixa.total strong{color:var(--accent)}
+.orc-avisos{grid-column:1/-1;font-size:13px;color:var(--muted);margin:0;padding-left:18px}
 /* AMBIENTE (5b) — aparência do painel do ambiente e da planta vista de cima.
    Estrutura em pagina.html (tplAmbiente, tplParede, tplModuloAmb, tplPonto); lógica em js/ambiente.js. */
 .amb-lista{display:flex;flex-direction:column;gap:10px}
@@ -443,6 +453,49 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
   <div class="tabela" id="tabCompras"></div>
   <textarea class="copia" id="copiaCompras" readonly hidden aria-label="Texto da lista de compras"></textarea>
 </section>
+<section class="cartao orcamento" aria-labelledby="tOrc" data-secao="compras" hidden>
+  <div class="cab"><h2 id="tOrc">Orçamento</h2>
+    <div class="linha">
+      <button class="btn prim" id="btnCongelar" type="button">Congelar revisão</button>
+      <button class="btn" id="btnPdfOrc" type="button">PDF do orçamento (última revisão)</button>
+    </div>
+  </div>
+  <p class="nota">O material vem da lista de compras acima. Preencha horas, taxa e terceiros. "Congelar revisão" guarda os preços e o projeto deste dia (Rev A, B…); uma revisão congelada nunca muda.</p>
+  <div class="orc-grade">
+    <fieldset class="ed-bloco"><legend>Cliente</legend>
+      <label class="ed-campo">Nome<input type="text" data-orc="cliente"></label>
+      <label class="ed-campo">Observação no orçamento<input type="text" data-orc="obs"></label>
+    </fieldset>
+    <fieldset class="ed-bloco"><legend>Mão de obra</legend>
+      <div class="ed-grade2">
+        <label class="ed-campo">Taxa por hora (R$)<input type="number" min="0" step="0.01" data-orc="taxaHora"></label>
+        <label class="ed-campo">Horas de projeto<input type="number" min="0" step="0.5" data-orc="horasProjeto"></label>
+        <label class="ed-campo">Horas de fabricação<input type="number" min="0" step="0.5" data-orc="horasFabricacao"></label>
+        <label class="ed-campo">Horas de montagem<input type="number" min="0" step="0.5" data-orc="horasMontagem"></label>
+      </div>
+    </fieldset>
+    <fieldset class="ed-bloco"><legend>Terceiros e serviços (R$)</legend>
+      <div class="ed-grade2">
+        <label class="ed-campo">Serviços da loja (corte, fita, furação)<input type="number" min="0" step="0.01" data-orc="servicosLoja"></label>
+        <label class="ed-campo">Instalação terceirizada<input type="number" min="0" step="0.01" data-orc="instalacao"></label>
+        <label class="ed-campo">Frete<input type="number" min="0" step="0.01" data-orc="frete"></label>
+      </div>
+    </fieldset>
+    <fieldset class="ed-bloco"><legend>Percentuais e condições</legend>
+      <div class="ed-grade2">
+        <label class="ed-campo">Markup no material (%)<input type="number" min="0" step="1" data-orc="markup"></label>
+        <label class="ed-campo">Lucro na mão de obra (%)<input type="number" min="0" step="1" data-orc="lucro"></label>
+        <label class="ed-campo">Impostos (%)<input type="number" min="0" step="0.1" data-orc="impostos"></label>
+        <label class="ed-campo">Sinal (%)<input type="number" min="0" max="100" step="5" data-orc="sinal"></label>
+        <label class="ed-campo">Prazo (dias)<input type="number" min="0" step="1" data-orc="prazoDias"></label>
+        <label class="ed-campo">Validade (dias)<input type="number" min="0" step="1" data-orc="validadeDias"></label>
+      </div>
+    </fieldset>
+  </div>
+  <div class="orc-resumo" id="orcResumo"></div>
+  <h3 class="sub-des">Revisões</h3>
+  <div class="tabela" id="tabRevisoes"></div>
+</section>
 <section class="cartao desenhos" aria-labelledby="tDes" data-secao="desenhos" hidden>
   <div class="cab"><h2 id="tDes">Desenhos técnicos</h2>
     <div class="linha">
@@ -596,7 +649,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /* =====================================================================
    1. REGRAS DE MARCENARIA (mm) — valem para todos os tipos de móvel
    ===================================================================== */
-const R = (({ _explicacao, ...r }) => r)({"_explicacao":{"borda":"folga das frentes nas bordas externas","entre":"folga entre duas frentes","corredica":"corrediça telescópica 45 mm: desconto de 26 mm na largura da gaveta (13 por lado)","canecoDiam":"Blum CLIP top BLUMOTION 71B3550: diâmetro, profundidade e centro do caneco a partir da borda; dobradicaBorda = distância da 1ª e da última dobradiça até a ponta da porta","folgaAltGaveta":"altura da caixa = altura da gaveta − 70 (arredondado a 10)","faixaEsgoto":"± em volta do centro do esgoto","serra":"plano de corte: espessura do disco e limpeza das bordas da chapa","dobradicasPorAltura":"quantidade de dobradiças conforme a altura da porta (null = acima do último valor)","transporteMenorLado":"transporte: padrão do projeto — o menor lado de uma peça (módulo desmontado) ou do módulo (montado) não passa disto. O projeto pode informar outro valor. [Suposição — confirmar com o veículo e as portas/escadas da obra]","densidade":"kg/m³ para o peso das peças, volumes, portas de correr e basculantes (MDF 730; fibra 900 [Provável])","embalagem":"embalagem simulada: pilha nova acima de pesoMax (kg, uma pessoa carrega) ou alturaMax (mm); margem por lado (mm). [Suposição — ajustar]","basculante":"pistão a gás: força (kg) = peso × (meia altura ÷ curso útil 91) × 1,25; 2 pistões a partir de 600 de largura; forças de mercado 60–140 N (Soprano/Completa)","dobradicasPorPeso":"Blum: 4–6 kg → 2, 6–12 kg → 3 (porta até 600 de largura); 22 kg → 5, 27 → 6, 32 → 7 em portas altas; 17 kg → 4 [Provável — interpolado]. Vale o maior entre altura, peso e distância máxima.","dobradicaDistMax":"Duratex: no máximo 60 cm entre dobradiças","dobradicaLarguraExtra":"Blum: porta mais larga que 600 ganha 1 dobradiça","minifix":"Minifix 15 (Häfele/Würth/Zinni): tambor Ø15 na face da peça que encosta, a 34 da ponta, prof. 12 (MDF 15) / 13,5 (MDF 18); canal Ø8 no topo até o tambor; pino Ø5 na face da outra peça [Provável prof. 11]","cavilha":"Cavilha 8 × 30: furo Ø8, 1/3 na face (10) e 2/3 no topo (20) (manual Zinni); ao lado do minifix, a 32 dele","fitaEsp":"espessura da fita de borda (mm): 0,45 é o padrão de mercado em BP [Suposição — o Nathan pediu o padrão; confirmar com a loja]","lojaPadrao":"perfil de loja usado enquanto as lojas não respondem: descontaFita = a loja recebe a medida final e desconta a fita sozinha [Suposição — perguntar à loja]","cantoFolga":"canto do L: folga mínima entre as portas de duas paredes; menos que isso → aviso com sugestão de enchimento (cego) [Suposição — confirmar com o montador]"},"borda":1.5,"entre":3,"corredica":13,"corredicas":[250,300,350,400,450,500,550],"canecoDiam":35,"canecoProf":13,"canecoBorda":22,"dobradicaBorda":100,"enchimento":25,"sarrafo":60,"travessa":100,"recuoPrat":20,"folgaPrat":1,"folgaFundoPrat":6,"folgaAltGaveta":70,"folgaPisoGaveta":12,"faixaEsgoto":75,"portaMaxLarg":600,"angMaxDobradica":105,"puxadorComp":160,"chapa":[2750,1850],"aproveitamento":0.85,"perdaFita":1.1,"serra":4,"refilo":10,"dobradicasPorAltura":[{"ateAltura":900,"quantidade":2},{"ateAltura":1600,"quantidade":3},{"ateAltura":null,"quantidade":4}],"transporteMenorLado":1220,"densidade":{"mdf":730,"hdf":900},"embalagem":{"pesoMax":25,"alturaMax":150,"margem":20},"basculante":{"cursoPistao":91,"fatorSeguranca":1.25,"larguraDoisPistoes":600,"forcas":[60,80,100,120,140]},"dobradicasPorPeso":[{"atePeso":6,"quantidade":2},{"atePeso":12,"quantidade":3},{"atePeso":17,"quantidade":4},{"atePeso":22,"quantidade":5},{"atePeso":27,"quantidade":6},{"atePeso":32,"quantidade":7}],"dobradicaDistMax":600,"dobradicaLarguraExtra":600,"minifix":{"distancia":34,"tamborDiam":15,"tamborProf":{"15":12,"18":13.5},"pinoFaceDiam":5,"pinoFaceProf":11,"canalTopoDiam":8},"cavilha":{"diam":8,"comp":30,"profFace":10,"profTopo":20,"desvio":32},"fitaEsp":0.45,"lojaPadrao":{"nome":"Loja padrão (sem perfil)","descontaFita":true},"cantoFolga":50});
+const R = (({ _explicacao, ...r }) => r)({"_explicacao":{"borda":"folga das frentes nas bordas externas","entre":"folga entre duas frentes","corredica":"corrediça telescópica 45 mm: desconto de 26 mm na largura da gaveta (13 por lado)","canecoDiam":"Blum CLIP top BLUMOTION 71B3550: diâmetro, profundidade e centro do caneco a partir da borda; dobradicaBorda = distância da 1ª e da última dobradiça até a ponta da porta","folgaAltGaveta":"altura da caixa = altura da gaveta − 70 (arredondado a 10)","faixaEsgoto":"± em volta do centro do esgoto","serra":"plano de corte: espessura do disco e limpeza das bordas da chapa","dobradicasPorAltura":"quantidade de dobradiças conforme a altura da porta (null = acima do último valor)","transporteMenorLado":"transporte: padrão do projeto — o menor lado de uma peça (módulo desmontado) ou do módulo (montado) não passa disto. O projeto pode informar outro valor. [Suposição — confirmar com o veículo e as portas/escadas da obra]","densidade":"kg/m³ para o peso das peças, volumes, portas de correr e basculantes (MDF 730; fibra 900 [Provável])","embalagem":"embalagem simulada: pilha nova acima de pesoMax (kg, uma pessoa carrega) ou alturaMax (mm); margem por lado (mm). [Suposição — ajustar]","basculante":"pistão a gás: força (kg) = peso × (meia altura ÷ curso útil 91) × 1,25; 2 pistões a partir de 600 de largura; forças de mercado 60–140 N (Soprano/Completa)","dobradicasPorPeso":"Blum: 4–6 kg → 2, 6–12 kg → 3 (porta até 600 de largura); 22 kg → 5, 27 → 6, 32 → 7 em portas altas; 17 kg → 4 [Provável — interpolado]. Vale o maior entre altura, peso e distância máxima.","dobradicaDistMax":"Duratex: no máximo 60 cm entre dobradiças","dobradicaLarguraExtra":"Blum: porta mais larga que 600 ganha 1 dobradiça","minifix":"Minifix 15 (Häfele/Würth/Zinni): tambor Ø15 na face da peça que encosta, a 34 da ponta, prof. 12 (MDF 15) / 13,5 (MDF 18); canal Ø8 no topo até o tambor; pino Ø5 na face da outra peça [Provável prof. 11]","cavilha":"Cavilha 8 × 30: furo Ø8, 1/3 na face (10) e 2/3 no topo (20) (manual Zinni); ao lado do minifix, a 32 dele","fitaEsp":"espessura da fita de borda (mm): 0,45 é o padrão de mercado em BP [Suposição — o Nathan pediu o padrão; confirmar com a loja]","lojaPadrao":"perfil de loja usado enquanto as lojas não respondem: descontaFita = a loja recebe a medida final e desconta a fita sozinha [Suposição — perguntar à loja]","cantoFolga":"canto do L: folga mínima entre as portas de duas paredes; menos que isso → aviso com sugestão de enchimento (cego) [Suposição — confirmar com o montador]","orcamento":"padrões do orçamento (%, dias): markup 15–25% sobre o material, lucro 10–20% sobre a mão de obra, sinal 50% (guia de precificação, pesquisa F9). Impostos: o Nathan informa. Taxa por hora não tem padrão: o Nathan preenche."},"borda":1.5,"entre":3,"corredica":13,"corredicas":[250,300,350,400,450,500,550],"canecoDiam":35,"canecoProf":13,"canecoBorda":22,"dobradicaBorda":100,"enchimento":25,"sarrafo":60,"travessa":100,"recuoPrat":20,"folgaPrat":1,"folgaFundoPrat":6,"folgaAltGaveta":70,"folgaPisoGaveta":12,"faixaEsgoto":75,"portaMaxLarg":600,"angMaxDobradica":105,"puxadorComp":160,"chapa":[2750,1850],"aproveitamento":0.85,"perdaFita":1.1,"serra":4,"refilo":10,"dobradicasPorAltura":[{"ateAltura":900,"quantidade":2},{"ateAltura":1600,"quantidade":3},{"ateAltura":null,"quantidade":4}],"transporteMenorLado":1220,"densidade":{"mdf":730,"hdf":900},"embalagem":{"pesoMax":25,"alturaMax":150,"margem":20},"basculante":{"cursoPistao":91,"fatorSeguranca":1.25,"larguraDoisPistoes":600,"forcas":[60,80,100,120,140]},"dobradicasPorPeso":[{"atePeso":6,"quantidade":2},{"atePeso":12,"quantidade":3},{"atePeso":17,"quantidade":4},{"atePeso":22,"quantidade":5},{"atePeso":27,"quantidade":6},{"atePeso":32,"quantidade":7}],"dobradicaDistMax":600,"dobradicaLarguraExtra":600,"minifix":{"distancia":34,"tamborDiam":15,"tamborProf":{"15":12,"18":13.5},"pinoFaceDiam":5,"pinoFaceProf":11,"canalTopoDiam":8},"cavilha":{"diam":8,"comp":30,"profFace":10,"profTopo":20,"desvio":32},"fitaEsp":0.45,"lojaPadrao":{"nome":"Loja padrão (sem perfil)","descontaFita":true},"cantoFolga":50,"orcamento":{"markup":20,"lucro":15,"impostos":0,"sinal":50,"prazoDias":30,"validadeDias":15}});
 // Puxadores reais (medidas do fabricante; "conf" = medida não publicada, estimada — confirmar na loja)
 const PUXADORES = Object.fromEntries(Object.entries({"1":{"ref":"pux-hettich-brema-128","rot":"Hettich Brema 128 · inox escovado","modelo":"barra","furacao":128,"comp":140,"larg":14,"proj":35,"cor":"#b9bec2"},"2":{"ref":"pux-hettich-como-320","rot":"Hettich Como 320 · inox escovado","modelo":"barra","furacao":320,"comp":332,"larg":26,"proj":45,"cor":"#b9bec2"},"3":{"ref":"pux-zen-citizen-96","rot":"Zen Citizen 96 · gold escovado","modelo":"barra","furacao":96,"comp":130,"larg":12,"proj":30,"cor":"#c8a35e","conf":"largura e saliência"},"4":{"ref":"pux-zen-elemento-128","rot":"Zen Elemento G 128 · preto fosco","modelo":"bloco","furacao":128,"comp":192,"larg":30,"proj":18,"cor":"#2a2c2e"},"5":{"ref":"pux-zen-shell-64","rot":"Zen Shell 64 (concha) · gold escovado","modelo":"concha","furacao":64,"comp":90,"larg":34,"proj":24,"cor":"#c8a35e","conf":"largura e saliência"}}).map(([k, v]) => [k, { ...v, cor: parseInt(v.cor.slice(1), 16) }]));
 const opcoesPuxador = Object.entries(PUXADORES).map(([k,v]) => [Number(k), v.rot]);
@@ -2751,6 +2804,75 @@ async function folhasPDF(pecas, extraDe) {
   return doc.output('arraybuffer');
 }
 /* =====================================================================
+   5c (parte 3). ORÇAMENTO — blocos MÓVEL e INSTALAÇÃO, revisões congeladas
+   (Rev A, B…) e aceite do cliente. Só lógica; a tela fica em tela-orcamento.js.
+
+   Fórmula (guia de precificação de marcenaria sob medida, pesquisa F9):
+     MÓVEL      = (material + serviços da loja) × (1 + markup) + horas do móvel × taxa × (1 + lucro)
+     INSTALAÇÃO = instalação terceirizada + frete + horas de montagem × taxa × (1 + lucro)
+     TOTAL      = (MÓVEL + INSTALAÇÃO) × (1 + impostos)
+   Conferência de mercado: material × 3 (só para comparar, não entra na conta).
+   ===================================================================== */
+function entradasOrcamentoPadrao() {
+  const O = R.orcamento;
+  return { cliente:'', horasProjeto:0, horasFabricacao:0, horasMontagem:0, taxaHora:0, servicosLoja:0, instalacao:0, frete:0,
+    markup:O.markup, lucro:O.lucro, impostos:O.impostos, sinal:O.sinal, prazoDias:O.prazoDias, validadeDias:O.validadeDias, obs:'' };
+}
+function calcularOrcamento(compras, e) {
+  const material = compras?.total || 0, semPreco = compras?.semPreco || 0, pct = v => (Number(v) || 0) / 100, num = v => Number(v) || 0;
+  const maoMovel = (num(e.horasProjeto) + num(e.horasFabricacao)) * num(e.taxaHora) * (1 + pct(e.lucro));
+  const movel = (material + num(e.servicosLoja)) * (1 + pct(e.markup)) + maoMovel;
+  const instalacao = num(e.instalacao) + num(e.frete) + num(e.horasMontagem) * num(e.taxaHora) * (1 + pct(e.lucro));
+  const total = (movel + instalacao) * (1 + pct(e.impostos));
+  const avisos = [];
+  if (semPreco) avisos.push(`${semPreco} item(ns) da lista de compras sem preço: o material está incompleto.`);
+  if (!num(e.taxaHora)) avisos.push('Taxa por hora em branco: as horas não estão sendo cobradas.');
+  if (!num(e.horasFabricacao)) avisos.push('Horas de fabricação em branco.');
+  return { material, maoMovel, movel, instalacao, total, sinal: total * pct(e.sinal), conferencia: material * 3, avisos,
+    blocos: { movel: movel * (1 + pct(e.impostos)), instalacao: instalacao * (1 + pct(e.impostos)) } };
+}
+// revisão congelada: guarda os preços e o projeto daquele dia; a anterior nunca muda
+function congelarRevisao(projeto, res, compras, entradas) {
+  const orc = projeto.orcamento, revs = orc.revisoes, letra = String.fromCharCode(65 + revs.length);
+  const calc = calcularOrcamento(compras, entradas), ant = revs.at(-1);
+  const rev = { rev: letra, data: new Date().toISOString(), entradas: JSON.parse(JSON.stringify(entradas)),
+    itens: compras.linhas.map(l => ({ ref:l.ref, nome:l.nome, compra:l.compra, unid:l.unid, preco:l.preco, total:l.total })),
+    resultado: calc, projeto: { nome: projeto.nome, tipo: projeto.tipo, pecas: res.pecas.filter(p => p.lista).length, dims: res.dims ? [res.dims.L, res.dims.H, res.dims.P] : null },
+    parametros: JSON.parse(JSON.stringify(projeto.parametros)), aceite: null,
+    diferenca: ant ? calc.total - ant.resultado.total : null, aposAceite: !!revs.some(r => r.aceite) };
+  revs.push(rev); return rev;
+}
+function registrarAceite(projeto, rev, nome) { const r = projeto.orcamento.revisoes.find(x => x.rev === rev); if (r) r.aceite = { nome, data: new Date().toISOString() }; return r; }
+
+// PDF do orçamento para o cliente (A4, retrato): blocos, condições, não incluso, aceite
+function orcamentoPDF(rev, extra = {}) {
+  const { jsPDF } = window.jspdf, doc = new jsPDF({ unit:'mm', format:'a4' }), e = rev.entradas, c = rev.resultado;
+  const T = (s, x, y, size = 10, peso = 'normal', al = 'left') => { doc.setFont('helvetica', peso); doc.setFontSize(size); doc.text(pdfTxt(s), x, y, { align: al }); };
+  const dia = iso => new Date(iso).toLocaleDateString('pt-BR');
+  T(extra.empresa || '[NOME DA EMPRESA]', 20, 22, 16, 'bold'); T(`${extra.autor || 'Nathan'} · ${extra.cidade || 'Ponta Grossa - PR'}`, 20, 28, 9);
+  T('ORÇAMENTO', 190, 22, 16, 'bold', 'right'); T(`Rev. ${rev.rev} · ${dia(rev.data)}`, 190, 28, 10, 'normal', 'right');
+  doc.setLineWidth(0.4); doc.line(20, 32, 190, 32);
+  T('Cliente:', 20, 42, 10, 'bold'); T(e.cliente || '—', 40, 42);
+  T('Projeto:', 20, 48, 10, 'bold'); T(rev.projeto.nome || '—', 40, 48);
+  if (rev.projeto.dims) T(`Medidas gerais: ${rev.projeto.dims.map(v => Math.round(v)).join(' × ')} mm`, 40, 54, 9);
+  let y = 68; T('VALORES', 20, y, 11, 'bold'); y += 8;
+  const linha = (rot, v, peso = 'normal') => { T(rot, 24, y, 11, peso); T(reais(v), 186, y, 11, peso, 'right'); y += 8; };
+  linha('Móvel (material, fabricação e projeto)', c.blocos.movel);
+  linha('Instalação', c.blocos.instalacao);
+  doc.setLineWidth(0.2); doc.line(20, y - 4, 190, y - 4); linha('TOTAL', c.total, 'bold');
+  if (rev.diferenca != null) { T(`Diferença em relação à revisão anterior: ${rev.diferenca >= 0 ? '+' : ''}${reais(rev.diferenca)}`, 24, y, 9); y += 7; }
+  y += 6; T('CONDIÇÕES', 20, y, 11, 'bold'); y += 7;
+  [`Sinal de ${e.sinal}% na aprovação (${reais(c.sinal)}); restante na entrega.`, `Prazo de entrega: ${e.prazoDias} dias após o sinal e a medição final.`,
+   `Validade deste orçamento: ${e.validadeDias} dias.`, 'Mudanças depois da aprovação só por escrito, com nova revisão e diferença de valor.',
+   ...(e.obs ? [e.obs] : [])].forEach(s => { T('• ' + s, 24, y, 9.5); y += 6; });
+  y += 4; T('NÃO INCLUSO', 20, y, 11, 'bold'); y += 7;
+  ['Pedra (tampo), vidros e espelhos, salvo se listados acima.', 'Instalação elétrica, hidráulica e de gás; pontos e tomadas.', 'Pintura, gesso e reparos de parede.'].forEach(s => { T('• ' + s, 24, y, 9.5); y += 6; });
+  y = Math.max(y + 16, 240); doc.line(24, y, 100, y); doc.line(114, y, 186, y);
+  T('Aceite do cliente', 62, y + 5, 9, 'normal', 'center'); T('Data', 150, y + 5, 9, 'normal', 'center');
+  if (rev.aceite) T(`Aceito por ${rev.aceite.nome} em ${dia(rev.aceite.data)}.`, 24, y - 3, 9, 'bold');
+  return doc.output('arraybuffer');
+}
+/* =====================================================================
    5a. EDITOR DO MÓVEL LIVRE — só a lógica (sem tela).
    Muda a árvore de vãos do módulo: dividir, juntar, frente, conteúdo, medida.
    Cada vão é achado pelo seu "caminho": '' é o móvel inteiro, '.0' a 1ª parte,
@@ -2849,7 +2971,7 @@ const estado = {
   portas:false, gavetas:false, explode:0, cotas:true, medir:false, corte:'nenhum', cortePos:50,
   tampo:true, fundo:true, paredes:true, esgoto:false, fix:false, orto:false, vista:'perspectiva',
 };
-try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros } }; } catch(e) {}
+try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros }, codigo:s.codigo, orcamento:s.orcamento }; } catch(e) {}
 const CHAVE_PRECOS = 'configurador-moveis:precos';
 let precos = {}; try { precos = JSON.parse(localStorage.getItem(CHAVE_PRECOS) || '{}') || {}; } catch(e) {}
 const salvarPrecos = () => { try { localStorage.setItem(CHAVE_PRECOS, JSON.stringify(precos)); } catch(e) {} };
@@ -3285,7 +3407,7 @@ function mostrarListas(res) {
     fitaItem ? el('span', {}, 'Fita: ', el('b', { text:`${fitaItem.qtd} m` })) : null,
     el('span', { text:'Nº = número da peça no plano de corte' }));
   linhasNum(lc);
-  mostrarPlano(plano); mostrarCompras();
+  mostrarPlano(plano); mostrarCompras(); mostrarOrcamento();
 }
 function linhasNum(lc) {
   // acrescenta a coluna Nº na tabela da lista de corte
@@ -3330,7 +3452,7 @@ function mostrarCompras() {
     corpo.push(el('tr', { class:'grupo' }, el('td', { colspan:6, text:g })));
     lc.linhas.filter(l => l.grupo === g).forEach(l => {
       const inp = el('input', { type:'number', min:'0', step:'0.01', inputmode:'decimal', id:'preco-'+l.ref, 'aria-label':'Preço de '+l.nome, value: l.preco ?? '' });
-      inp.addEventListener('change', () => { const v = Number(inp.value); if (v > 0) precos[l.ref] = v; else delete precos[l.ref]; salvarPrecos(); mostrarCompras(); });
+      inp.addEventListener('change', () => { const v = Number(inp.value); if (v > 0) precos[l.ref] = v; else delete precos[l.ref]; salvarPrecos(); mostrarCompras(); mostrarOrcamento(); });
       corpo.push(el('tr', {},
         el('td', {}, el('div', { text:l.nome }), (l.marca||l.codigo) ? el('div', { class:'obs', text:[l.marca, l.codigo].filter(Boolean).join(' · ') }) : null),
         el('td', { class:'n', text:l.necessario }),
@@ -3375,17 +3497,17 @@ let downloads = null, downloadsPronto = false;
 (async () => { try { downloads = window.claude?.use ? await window.claude.use('downloads') : null; } catch(e) { downloads = null; } downloadsPronto = true; atualizarBotoesExport(); })();
 function atualizarBotoesExport() {
   const ok = estado.res && estado.res.erros.length === 0;
-  const disp = downloadsPronto ? !!downloads : true;
-  $('btnZip').disabled = !ok || !disp || !window.JSZip; $('btnJson').disabled = !ok || !disp;
+  const disp = true;                                                   // fora do Claude baixa pelo navegador (salvar)
+  $('btnZip').disabled = !ok || !window.JSZip; $('btnJson').disabled = !estado.res;   // o projeto salva mesmo com erros
   $('btnPdf').disabled = $('btnPdf2').disabled = !ok || !disp || !window.jspdf;
   $('btnIlogic').disabled = !ok || !disp; $('copIlogic').disabled = !ok;
-  $('notaExport').textContent = !ok ? 'Exportação bloqueada até corrigir os erros.' : !disp ? 'Exportar só funciona com a página aberta no Claude.' : !window.JSZip ? 'O pacote .zip não carregou; o projeto .json continua disponível.' : 'O pacote leva o modelo 3D (.glb), os desenhos em PDF, o projeto e as listas em planilha.';
+  $('notaExport').textContent = !ok ? 'O projeto (.json) pode ser salvo mesmo com erros; o pacote, os desenhos e o iLogic esperam a correção.' : !window.JSZip ? 'O pacote .zip não carregou; o projeto .json continua disponível.' : 'O pacote leva o modelo 3D (.glb), os desenhos em PDF, o projeto e as listas em planilha.';
 }
 const slug = () => (estado.projeto.nome || 'projeto').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'projeto';
 function dadosProjeto() {
   const r = estado.res;
   return { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), unidade:'mm',
-    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros,
+    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento,
     pecas: r.pecas.map(pc => ({ id:pc.id, nomeGLB:`${pc.cat}_${pc.mat}_${pc.id}`, nome:pc.nome, categoria:pc.cat, material:pc.mat, espessura:pc.esp, comprimento:pc.comp ?? null, largura:pc.larg ?? null, fita:pc.fita, listaDeCorte:pc.lista, caixa_mm:pc.box, forma:pc.forma||null, movimento:pc.mov, obs:pc.obs })),
     ferragens: r.ferragens,
     planoDeCorte: estado.plano, listaDeCompras: estado.compras, precos, biblioteca: BIBLIOTECA };
@@ -3412,17 +3534,33 @@ async function gerarGLB() {
   }
   return await new GLTFExporter().parseAsync(c, { binary:true });
 }
+// salvar: dentro do Claude usa o recurso de downloads dele; em qualquer outro navegador, baixa direto (arquivo comum)
 async function salvar(nome, dados) {
-  try { await downloads.save({ filename:nome, data:dados }); toast('Arquivo salvo.'); }
-  catch(e) { toast(e?.code === 'declined' ? 'Download cancelado.' : `Não foi possível salvar (${e?.code || 'erro'}).`); }
+  if (downloads) {
+    try { await downloads.save({ filename:nome, data:dados }); toast('Arquivo salvo.'); }
+    catch(e) { toast(e?.code === 'declined' ? 'Download cancelado.' : `Não foi possível salvar (${e?.code || 'erro'}).`); }
+    return;
+  }
+  try {
+    const tipo = /\.json$/.test(nome) ? 'application/json' : /\.pdf$/.test(nome) ? 'application/pdf' : /\.zip$/.test(nome) ? 'application/zip' : 'text/plain';
+    const url = URL.createObjectURL(new Blob([dados], { type:tipo })), a = document.createElement('a');
+    a.href = url; a.download = nome; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
+    toast('Arquivo baixado.');
+  } catch(e) { toast('Não foi possível baixar o arquivo neste navegador.'); }
 }
-const baixarPDF = () => { if (!downloads || estado.res.erros.length || !window.jspdf) return; try { salvar(slug()+'-desenhos.pdf', gerarPDF()); } catch(e) { toast('Falha ao montar o PDF.'); } };
-$('btnIlogic').addEventListener('click', () => { if (!downloads || estado.res.erros.length) return; salvar(slug()+'-inventor-ilogic.txt', gerarILogic()); });
+const baixarPDF = () => { if (estado.res.erros.length || !window.jspdf) return; try { salvar(slug()+'-desenhos.pdf', gerarPDF()); } catch(e) { toast('Falha ao montar o PDF.'); } };
+$('btnIlogic').addEventListener('click', () => { if (estado.res.erros.length) return; salvar(slug()+'-inventor-ilogic.txt', gerarILogic()); });
 $('copIlogic').addEventListener('click', () => { if (!estado.res.erros.length) copiar(gerarILogic(), 'copiaIlogic'); });
 $('btnPdf').addEventListener('click', baixarPDF); $('btnPdf2').addEventListener('click', baixarPDF);
-$('btnJson').addEventListener('click', () => { if (!downloads || estado.res.erros.length) return; salvar(slug()+'.json', JSON.stringify(dadosProjeto(), null, 2)); });
+$('btnJson').addEventListener('click', () => {
+  if (!estado.res) return;
+  // com erro: salva o projeto para continuar depois (sem peças, que estão inconsistentes)
+  const dados = estado.res.erros.length ? { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), incompleto:true, erros:estado.res.erros,
+    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento, precos } : dadosProjeto();
+  salvar(slug() + (estado.res.erros.length ? '-incompleto' : '') + '.json', JSON.stringify(dados, null, 2));
+});
 $('btnZip').addEventListener('click', async () => {
-  if (!downloads || estado.res.erros.length || !window.JSZip) return;
+  if (estado.res.erros.length || !window.JSZip) return;
   $('btnZip').disabled = true; $('notaExport').textContent = 'Montando o pacote…';
   try {
     const zip = new JSZip();
@@ -3449,7 +3587,7 @@ $('arqProjeto').addEventListener('change', e => {
     try {
       const d = JSON.parse(fr.result);
       if (!TIPOS[d.tipo] || typeof d.parametros !== 'object') throw 0;
-      estado.projeto = { tipo:d.tipo, nome:d.nome || 'Projeto', parametros:{ ...TIPOS[d.tipo].padrao, ...d.parametros } };
+      estado.projeto = { tipo:d.tipo, nome:d.nome || 'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[d.tipo].padrao)), ...d.parametros }, codigo:d.codigo, orcamento:d.orcamento };
       if (d.precos && typeof d.precos === 'object') { precos = { ...precos, ...d.precos }; salvarPrecos(); }
       carregarProjeto(); toast('Projeto aberto.');
     } catch(err) { toast('Esse arquivo não é um projeto do Configurador.'); }
@@ -3503,7 +3641,7 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
 /* =====================================================================
    5a. TELA DO MÓVEL LIVRE — liga a estrutura (modelos em pagina.html) à
    lógica (js/editor-modulo.js). Aqui só se preenche e se reage a cliques;
@@ -3783,11 +3921,11 @@ function mostrarLoja() {
 }
 $('codProjeto').addEventListener('change', e => { estado.projeto.codigo = e.target.value.trim() || codigoProjetoPadrao(); salvarLocal(); mostrarLoja(); });
 $('btnEtiquetas').addEventListener('click', () => {
-  if (!downloads || estado.res.erros.length || !window.jspdf) return;
+  if (estado.res.erros.length || !window.jspdf) return;
   try { salvar(slug() + '-etiquetas.pdf', etiquetasPDF(estado.res.pecas, estado.codigos, estado.projeto.nome)); } catch (e) { toast('Falha ao montar as etiquetas.'); }
 });
 $('btnCorteCloud').addEventListener('click', () => {
-  if (!downloads || estado.res.erros.length) return;
+  if (estado.res.erros.length) return;
   salvar(slug() + '-cortecloud.json', JSON.stringify(pedidoCorteCloud(estado.res.pecas, estado.codigos), null, 2));
 });
 mostrarLoja();
@@ -3805,9 +3943,56 @@ function mostrarFolha() {
 }
 $('selFolha').addEventListener('change', e => { estado.folhaSel = e.target.value; mostrarFolha(); });
 $('btnFolhas').addEventListener('click', async () => {
-  if (!downloads || estado.res.erros.length) return;
+  if (estado.res.erros.length) return;
   toast('Montando as folhas…');
   try { salvar(slug() + '-folhas-A3.pdf', await folhasPDF(pecasComFolha(), extraFolha)); } catch (e) { toast('Falha ao montar as folhas.'); }
 });
 mostrarFolha();
+/* =====================================================================
+   5c (parte 3). TELA DO ORÇAMENTO — campos, resumo, revisões e aceite.
+   Estrutura em pagina.html (seção .orcamento); lógica em orcamento.js.
+   ===================================================================== */
+function orcDoProjeto() {
+  const p = estado.projeto;
+  if (!p.orcamento) p.orcamento = { entradas: entradasOrcamentoPadrao(), revisoes: [] };
+  p.orcamento.entradas = { ...entradasOrcamentoPadrao(), ...p.orcamento.entradas };
+  return p.orcamento;
+}
+function mostrarOrcamento() {
+  const orc = orcDoProjeto(), e = orc.entradas, r = estado.res, ok = r && !r.erros.length && estado.compras;
+  document.querySelectorAll('[data-orc]').forEach(inp => { if (document.activeElement !== inp) inp.value = e[inp.dataset.orc] ?? ''; });
+  const c = ok ? calcularOrcamento(estado.compras, e) : null;
+  const caixa = (rot, v, cls = '') => el('div', { class:'orc-caixa ' + cls }, el('span', { text:rot }), el('strong', { text: v == null ? '—' : reais(v) }));
+  $('orcResumo').replaceChildren(...(c ? [caixa('Material (lista de compras)', c.material), caixa('Móvel', c.blocos.movel), caixa('Instalação', c.blocos.instalacao),
+    caixa('Total', c.total, 'total'), caixa(`Sinal (${e.sinal}%)`, c.sinal), caixa('Conferência: material × 3', c.conferencia),
+    c.avisos.length ? el('ul', { class:'orc-avisos' }, ...c.avisos.map(a => el('li', { text:a }))) : null] : [el('p', { class:'vazio', text:'Corrija os erros do projeto para orçar.' })]));
+  $('btnCongelar').disabled = !ok; $('btnPdfOrc').disabled = !orc.revisoes.length || !window.jspdf;
+  const dia = iso => new Date(iso).toLocaleDateString('pt-BR');
+  $('tabRevisoes').replaceChildren(orc.revisoes.length ? el('table', {},
+    el('thead', {}, el('tr', {}, ...['Rev.', 'Data', 'Cliente', 'Total', 'Diferença', 'Aceite', ''].map(t => el('th', { text:t })))),
+    el('tbody', {}, ...orc.revisoes.map((rv, i) => el('tr', {},
+      el('td', { class:'mono', text:rv.rev }), el('td', { text:dia(rv.data) }), el('td', { text:rv.entradas.cliente || '—' }),
+      el('td', { class:'n', text:reais(rv.resultado.total) }), el('td', { class:'n', text: rv.diferenca == null ? '—' : (rv.diferenca >= 0 ? '+' : '') + reais(rv.diferenca) }),
+      el('td', { text: rv.aceite ? `${rv.aceite.nome} · ${dia(rv.aceite.data)}` : (rv.aposAceite ? 'mudança após aceite' : '—') }),
+      el('td', {}, i === orc.revisoes.length - 1 && !rv.aceite ? el('button', { type:'button', class:'btn', 'data-aceite':rv.rev, text:'Registrar aceite' }) : null))))) :
+    el('p', { class:'vazio', text:'Nenhuma revisão congelada ainda.' }));
+}
+document.querySelector('.orcamento').addEventListener('change', e => {
+  const k = e.target.dataset.orc; if (!k) return;
+  orcDoProjeto().entradas[k] = e.target.type === 'number' ? Number(e.target.value) : e.target.value; salvarLocal(); mostrarOrcamento();
+});
+document.querySelector('.orcamento').addEventListener('click', e => {
+  const b = e.target.closest('[data-aceite]'); if (!b) return;
+  const nome = orcDoProjeto().entradas.cliente || 'cliente';
+  registrarAceite(estado.projeto, b.dataset.aceite, nome); salvarLocal(); mostrarOrcamento(); toast(`Aceite da Rev. ${b.dataset.aceite} registrado.`);
+});
+$('btnCongelar').addEventListener('click', () => {
+  if (!estado.compras || estado.res.erros.length) return;
+  const rv = congelarRevisao(estado.projeto, estado.res, estado.compras, orcDoProjeto().entradas); salvarLocal(); mostrarOrcamento(); toast(`Revisão ${rv.rev} congelada.`);
+});
+$('btnPdfOrc').addEventListener('click', () => {
+  const rv = orcDoProjeto().revisoes.at(-1); if (!rv) return;
+  salvar(`${slug()}-orcamento-rev-${rv.rev}.pdf`, orcamentoPDF(rv));
+});
+mostrarOrcamento();
 </script>

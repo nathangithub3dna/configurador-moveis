@@ -7,7 +7,8 @@
 - Editar só `fonte/` e `dados/*.json`; `configurador.html` é **gerado** por `npm run montar` (o `testar` já monta). A fonte é separada por assunto (pedido do Nathan: não misturar código com visual):
   - `fonte/estilos/tema.css` — cores, fontes e sombras (mudar o visual = só aqui); `fonte/estilos/layout.css` — posições e tamanhos.
   - `fonte/pagina.html` — estrutura da tela; inclui as outras partes com `/*@inclui:caminho*/`.
-  - `fonte/js/` — lógica: `regras`, `tipos`, `geradores`, `nucleo`, `ambiente`, `editor-modulo`, `saidas` (listas, plano, desenhos, Inventor); tela: `tela` (3D, eventos), `tela-modulo`, `tela-ambiente`.
+  - `fonte/js/` — lógica: `regras`, `tipos`, `geradores`, `nucleo`, `ambiente`, `editor-modulo`, `saidas` (listas, plano, desenhos, Inventor), `saidas-loja` (códigos, CorteCloud, etiquetas), `folha-peca` (folha A3), `orcamento`; tela: `tela` (3D, eventos, salvar), `tela-modulo`, `tela-ambiente`, `tela-loja`, `tela-orcamento`.
+- Salvar: dentro do Claude usa o recurso de downloads; fora dele, baixa pelo navegador. O projeto (.json) salva mesmo com erros.
   - Estrutura dos painéis novos em `<template>` no `pagina.html`; o JS só preenche (`data-texto`, `data-se`, `data-acao`).
 - Visual escolhido para a tela (5a): neomorfismo **só na interface**; o móvel (desenho e 3D) fica nas cores reais do material.
 - `configurador.html` é o arquivo publicado no artifact https://claude.ai/artifact/HsqccQZfs2utTfs3jVHp1Q (publicar sempre a partir dele).

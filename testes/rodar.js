@@ -327,6 +327,35 @@ function diferencas(a, b, caminho = '') {
     loja.folha = folha;
     const okFolha = folha.svgOk && folha.paginas === 3 && folha.pdfKB > 3 && folha.previa && folha.opcoes > 0;
     if (!okFolha) { falhas++; console.log('FOLHA A3 (5c) ERRADO  ' + JSON.stringify(folha)); } else console.log('FOLHA A3 (5c) OK  ' + JSON.stringify(folha));
+    // 5c parte 3: orçamento com revisões congeladas e aceite
+    await passo('#etapas [data-etapa="compras"]');
+    const orc = await page.evaluate(async () => {
+      const e = window.__configurador.estado, preencher = (k, v) => { const i = document.querySelector(`[data-orc="${k}"]`); i.value = v; i.dispatchEvent(new Event('change', { bubbles:true })); };
+      document.querySelectorAll('#tabCompras input[type=number]').forEach((inp, k) => { inp.value = 10 + k; inp.dispatchEvent(new Event('change')); });
+      preencher('cliente', 'Cliente Teste'); preencher('taxaHora', 50); preencher('horasFabricacao', 20); preencher('instalacao', 800);
+      const resumo1 = document.querySelectorAll('#orcResumo .orc-caixa').length;
+      document.getElementById('btnCongelar').click();
+      const revA = JSON.parse(JSON.stringify(e.projeto.orcamento.revisoes[0]));
+      document.querySelector('[data-aceite="A"]').click();
+      preencher('horasFabricacao', 30); document.getElementById('btnCongelar').click();
+      const revs = e.projeto.orcamento.revisoes, pdf = window.__configurador.orcamentoPDF(revs[1]);
+      return { resumo1, n: revs.length, totalA: revA.resultado.total, totalA_depois: revs[0].resultado.total, aceiteA: !!revs[0].aceite, revB: revs[1].rev, difB: revs[1].diferenca, aposAceite: revs[1].aposAceite,
+        linhas: document.querySelectorAll('#tabRevisoes tbody tr').length, pdfKB: Math.round(pdf.byteLength / 1024), salvo: !!JSON.parse(localStorage.getItem('configurador-moveis:v2') || '{}').orcamento };
+    });
+    loja.orc = orc;
+    const okOrc = orc.resumo1 >= 6 && orc.n === 2 && orc.totalA > 0 && orc.totalA === orc.totalA_depois && orc.aceiteA && orc.revB === 'B' && Math.abs(orc.difB - 10 * 50 * 1.15) < 0.01 && orc.aposAceite && orc.linhas === 2 && orc.pdfKB > 2;
+    if (!okOrc) { falhas++; console.log('ORÇAMENTO (5c) ERRADO  ' + JSON.stringify(orc)); } else console.log('ORÇAMENTO (5c) OK  ' + JSON.stringify(orc));
+    // fora do Claude: o download sai pelo navegador; projeto com erro também salva
+    const baixar = await page.evaluate(() => ({ json: !document.getElementById('btnJson').disabled, nota: document.getElementById('notaExport').textContent }));
+    const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 8000 }).catch(() => null), page.evaluate(() => document.getElementById('btnJson').click())]);
+    loja.baixar = { ...baixar, arquivo: dl ? dl.suggestedFilename() : null };
+    await page.evaluate(() => { const i = document.querySelector('#form [data-parede="comprimento"]'); i.value = 500; i.dispatchEvent(new Event('change', { bubbles:true })); });
+    await page.waitForTimeout(400);
+    const comErro = await page.evaluate(() => ({ erros: window.__configurador.estado.res.erros.length, json: !document.getElementById('btnJson').disabled }));
+    const [dl2] = await Promise.all([page.waitForEvent('download', { timeout: 8000 }).catch(() => null), page.evaluate(() => document.getElementById('btnJson').click())]);
+    loja.baixar.comErro = { ...comErro, arquivo: dl2 ? dl2.suggestedFilename() : null };
+    const okBaixar = baixar.json && !/só funciona/.test(baixar.nota) && !!dl && comErro.erros > 0 && comErro.json && /incompleto\.json$/.test(dl2?.suggestedFilename() || '');
+    if (!okBaixar) { falhas++; console.log('SALVAR FORA DO CLAUDE ERRADO  ' + JSON.stringify(loja.baixar)); } else console.log('SALVAR FORA DO CLAUDE OK  ' + JSON.stringify(loja.baixar));
     if (!ok5c) { falhas++; console.log('LOJA E ETIQUETAS (5c) ERRADO  ' + JSON.stringify(loja)); } else console.log('LOJA E ETIQUETAS (5c) OK  ' + JSON.stringify(loja));
     if (!ok5b) { falhas++; console.log('AMBIENTE (5b) ERRADO  ' + JSON.stringify(t5b)); } else console.log('AMBIENTE (5b) OK  ' + JSON.stringify(t5b));
     await page.close();

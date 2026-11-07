@@ -159,6 +159,49 @@
   <div class="tabela" id="tabCompras"></div>
   <textarea class="copia" id="copiaCompras" readonly hidden aria-label="Texto da lista de compras"></textarea>
 </section>
+<section class="cartao orcamento" aria-labelledby="tOrc" data-secao="compras" hidden>
+  <div class="cab"><h2 id="tOrc">Orçamento</h2>
+    <div class="linha">
+      <button class="btn prim" id="btnCongelar" type="button">Congelar revisão</button>
+      <button class="btn" id="btnPdfOrc" type="button">PDF do orçamento (última revisão)</button>
+    </div>
+  </div>
+  <p class="nota">O material vem da lista de compras acima. Preencha horas, taxa e terceiros. "Congelar revisão" guarda os preços e o projeto deste dia (Rev A, B…); uma revisão congelada nunca muda.</p>
+  <div class="orc-grade">
+    <fieldset class="ed-bloco"><legend>Cliente</legend>
+      <label class="ed-campo">Nome<input type="text" data-orc="cliente"></label>
+      <label class="ed-campo">Observação no orçamento<input type="text" data-orc="obs"></label>
+    </fieldset>
+    <fieldset class="ed-bloco"><legend>Mão de obra</legend>
+      <div class="ed-grade2">
+        <label class="ed-campo">Taxa por hora (R$)<input type="number" min="0" step="0.01" data-orc="taxaHora"></label>
+        <label class="ed-campo">Horas de projeto<input type="number" min="0" step="0.5" data-orc="horasProjeto"></label>
+        <label class="ed-campo">Horas de fabricação<input type="number" min="0" step="0.5" data-orc="horasFabricacao"></label>
+        <label class="ed-campo">Horas de montagem<input type="number" min="0" step="0.5" data-orc="horasMontagem"></label>
+      </div>
+    </fieldset>
+    <fieldset class="ed-bloco"><legend>Terceiros e serviços (R$)</legend>
+      <div class="ed-grade2">
+        <label class="ed-campo">Serviços da loja (corte, fita, furação)<input type="number" min="0" step="0.01" data-orc="servicosLoja"></label>
+        <label class="ed-campo">Instalação terceirizada<input type="number" min="0" step="0.01" data-orc="instalacao"></label>
+        <label class="ed-campo">Frete<input type="number" min="0" step="0.01" data-orc="frete"></label>
+      </div>
+    </fieldset>
+    <fieldset class="ed-bloco"><legend>Percentuais e condições</legend>
+      <div class="ed-grade2">
+        <label class="ed-campo">Markup no material (%)<input type="number" min="0" step="1" data-orc="markup"></label>
+        <label class="ed-campo">Lucro na mão de obra (%)<input type="number" min="0" step="1" data-orc="lucro"></label>
+        <label class="ed-campo">Impostos (%)<input type="number" min="0" step="0.1" data-orc="impostos"></label>
+        <label class="ed-campo">Sinal (%)<input type="number" min="0" max="100" step="5" data-orc="sinal"></label>
+        <label class="ed-campo">Prazo (dias)<input type="number" min="0" step="1" data-orc="prazoDias"></label>
+        <label class="ed-campo">Validade (dias)<input type="number" min="0" step="1" data-orc="validadeDias"></label>
+      </div>
+    </fieldset>
+  </div>
+  <div class="orc-resumo" id="orcResumo"></div>
+  <h3 class="sub-des">Revisões</h3>
+  <div class="tabela" id="tabRevisoes"></div>
+</section>
 <section class="cartao desenhos" aria-labelledby="tDes" data-secao="desenhos" hidden>
   <div class="cab"><h2 id="tDes">Desenhos técnicos</h2>
     <div class="linha">
@@ -317,9 +360,11 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /*@inclui:js/saidas.js*/
 /*@inclui:js/saidas-loja.js*/
 /*@inclui:js/folha-peca.js*/
+/*@inclui:js/orcamento.js*/
 /*@inclui:js/editor-modulo.js*/
 /*@inclui:js/tela.js*/
 /*@inclui:js/tela-modulo.js*/
 /*@inclui:js/tela-ambiente.js*/
 /*@inclui:js/tela-loja.js*/
+/*@inclui:js/tela-orcamento.js*/
 </script>

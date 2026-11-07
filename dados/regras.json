@@ -19,7 +19,8 @@
     "cavilha": "Cavilha 8 × 30: furo Ø8, 1/3 na face (10) e 2/3 no topo (20) (manual Zinni); ao lado do minifix, a 32 dele",
     "fitaEsp": "espessura da fita de borda (mm): 0,45 é o padrão de mercado em BP [Suposição — o Nathan pediu o padrão; confirmar com a loja]",
     "lojaPadrao": "perfil de loja usado enquanto as lojas não respondem: descontaFita = a loja recebe a medida final e desconta a fita sozinha [Suposição — perguntar à loja]",
-    "cantoFolga": "canto do L: folga mínima entre as portas de duas paredes; menos que isso → aviso com sugestão de enchimento (cego) [Suposição — confirmar com o montador]"
+    "cantoFolga": "canto do L: folga mínima entre as portas de duas paredes; menos que isso → aviso com sugestão de enchimento (cego) [Suposição — confirmar com o montador]",
+    "orcamento": "padrões do orçamento (%, dias): markup 15–25% sobre o material, lucro 10–20% sobre a mão de obra, sinal 50% (guia de precificação, pesquisa F9). Impostos: o Nathan informa. Taxa por hora não tem padrão: o Nathan preenche."
   },
   "borda": 1.5,
   "entre": 3,
@@ -144,5 +145,13 @@
     "nome": "Loja padrão (sem perfil)",
     "descontaFita": true
   },
-  "cantoFolga": 50
+  "cantoFolga": 50,
+  "orcamento": {
+    "markup": 20,
+    "lucro": 15,
+    "impostos": 0,
+    "sinal": 50,
+    "prazoDias": 30,
+    "validadeDias": 15
+  }
 }

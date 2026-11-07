@@ -8,7 +8,7 @@ const estado = {
   portas:false, gavetas:false, explode:0, cotas:true, medir:false, corte:'nenhum', cortePos:50,
   tampo:true, fundo:true, paredes:true, esgoto:false, fix:false, orto:false, vista:'perspectiva',
 };
-try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros } }; } catch(e) {}
+try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros }, codigo:s.codigo, orcamento:s.orcamento }; } catch(e) {}
 const CHAVE_PRECOS = 'configurador-moveis:precos';
 let precos = {}; try { precos = JSON.parse(localStorage.getItem(CHAVE_PRECOS) || '{}') || {}; } catch(e) {}
 const salvarPrecos = () => { try { localStorage.setItem(CHAVE_PRECOS, JSON.stringify(precos)); } catch(e) {} };
@@ -444,7 +444,7 @@ function mostrarListas(res) {
     fitaItem ? el('span', {}, 'Fita: ', el('b', { text:`${fitaItem.qtd} m` })) : null,
     el('span', { text:'Nº = número da peça no plano de corte' }));
   linhasNum(lc);
-  mostrarPlano(plano); mostrarCompras();
+  mostrarPlano(plano); mostrarCompras(); mostrarOrcamento();
 }
 function linhasNum(lc) {
   // acrescenta a coluna Nº na tabela da lista de corte
@@ -489,7 +489,7 @@ function mostrarCompras() {
     corpo.push(el('tr', { class:'grupo' }, el('td', { colspan:6, text:g })));
     lc.linhas.filter(l => l.grupo === g).forEach(l => {
       const inp = el('input', { type:'number', min:'0', step:'0.01', inputmode:'decimal', id:'preco-'+l.ref, 'aria-label':'Preço de '+l.nome, value: l.preco ?? '' });
-      inp.addEventListener('change', () => { const v = Number(inp.value); if (v > 0) precos[l.ref] = v; else delete precos[l.ref]; salvarPrecos(); mostrarCompras(); });
+      inp.addEventListener('change', () => { const v = Number(inp.value); if (v > 0) precos[l.ref] = v; else delete precos[l.ref]; salvarPrecos(); mostrarCompras(); mostrarOrcamento(); });
       corpo.push(el('tr', {},
         el('td', {}, el('div', { text:l.nome }), (l.marca||l.codigo) ? el('div', { class:'obs', text:[l.marca, l.codigo].filter(Boolean).join(' · ') }) : null),
         el('td', { class:'n', text:l.necessario }),
@@ -534,17 +534,17 @@ let downloads = null, downloadsPronto = false;
 (async () => { try { downloads = window.claude?.use ? await window.claude.use('downloads') : null; } catch(e) { downloads = null; } downloadsPronto = true; atualizarBotoesExport(); })();
 function atualizarBotoesExport() {
   const ok = estado.res && estado.res.erros.length === 0;
-  const disp = downloadsPronto ? !!downloads : true;
-  $('btnZip').disabled = !ok || !disp || !window.JSZip; $('btnJson').disabled = !ok || !disp;
+  const disp = true;                                                   // fora do Claude baixa pelo navegador (salvar)
+  $('btnZip').disabled = !ok || !window.JSZip; $('btnJson').disabled = !estado.res;   // o projeto salva mesmo com erros
   $('btnPdf').disabled = $('btnPdf2').disabled = !ok || !disp || !window.jspdf;
   $('btnIlogic').disabled = !ok || !disp; $('copIlogic').disabled = !ok;
-  $('notaExport').textContent = !ok ? 'Exportação bloqueada até corrigir os erros.' : !disp ? 'Exportar só funciona com a página aberta no Claude.' : !window.JSZip ? 'O pacote .zip não carregou; o projeto .json continua disponível.' : 'O pacote leva o modelo 3D (.glb), os desenhos em PDF, o projeto e as listas em planilha.';
+  $('notaExport').textContent = !ok ? 'O projeto (.json) pode ser salvo mesmo com erros; o pacote, os desenhos e o iLogic esperam a correção.' : !window.JSZip ? 'O pacote .zip não carregou; o projeto .json continua disponível.' : 'O pacote leva o modelo 3D (.glb), os desenhos em PDF, o projeto e as listas em planilha.';
 }
 const slug = () => (estado.projeto.nome || 'projeto').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'projeto';
 function dadosProjeto() {
   const r = estado.res;
   return { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), unidade:'mm',
-    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros,
+    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento,
     pecas: r.pecas.map(pc => ({ id:pc.id, nomeGLB:`${pc.cat}_${pc.mat}_${pc.id}`, nome:pc.nome, categoria:pc.cat, material:pc.mat, espessura:pc.esp, comprimento:pc.comp ?? null, largura:pc.larg ?? null, fita:pc.fita, listaDeCorte:pc.lista, caixa_mm:pc.box, forma:pc.forma||null, movimento:pc.mov, obs:pc.obs })),
     ferragens: r.ferragens,
     planoDeCorte: estado.plano, listaDeCompras: estado.compras, precos, biblioteca: BIBLIOTECA };
@@ -571,17 +571,33 @@ async function gerarGLB() {
   }
   return await new GLTFExporter().parseAsync(c, { binary:true });
 }
+// salvar: dentro do Claude usa o recurso de downloads dele; em qualquer outro navegador, baixa direto (arquivo comum)
 async function salvar(nome, dados) {
-  try { await downloads.save({ filename:nome, data:dados }); toast('Arquivo salvo.'); }
-  catch(e) { toast(e?.code === 'declined' ? 'Download cancelado.' : `Não foi possível salvar (${e?.code || 'erro'}).`); }
+  if (downloads) {
+    try { await downloads.save({ filename:nome, data:dados }); toast('Arquivo salvo.'); }
+    catch(e) { toast(e?.code === 'declined' ? 'Download cancelado.' : `Não foi possível salvar (${e?.code || 'erro'}).`); }
+    return;
+  }
+  try {
+    const tipo = /\.json$/.test(nome) ? 'application/json' : /\.pdf$/.test(nome) ? 'application/pdf' : /\.zip$/.test(nome) ? 'application/zip' : 'text/plain';
+    const url = URL.createObjectURL(new Blob([dados], { type:tipo })), a = document.createElement('a');
+    a.href = url; a.download = nome; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
+    toast('Arquivo baixado.');
+  } catch(e) { toast('Não foi possível baixar o arquivo neste navegador.'); }
 }
-const baixarPDF = () => { if (!downloads || estado.res.erros.length || !window.jspdf) return; try { salvar(slug()+'-desenhos.pdf', gerarPDF()); } catch(e) { toast('Falha ao montar o PDF.'); } };
-$('btnIlogic').addEventListener('click', () => { if (!downloads || estado.res.erros.length) return; salvar(slug()+'-inventor-ilogic.txt', gerarILogic()); });
+const baixarPDF = () => { if (estado.res.erros.length || !window.jspdf) return; try { salvar(slug()+'-desenhos.pdf', gerarPDF()); } catch(e) { toast('Falha ao montar o PDF.'); } };
+$('btnIlogic').addEventListener('click', () => { if (estado.res.erros.length) return; salvar(slug()+'-inventor-ilogic.txt', gerarILogic()); });
 $('copIlogic').addEventListener('click', () => { if (!estado.res.erros.length) copiar(gerarILogic(), 'copiaIlogic'); });
 $('btnPdf').addEventListener('click', baixarPDF); $('btnPdf2').addEventListener('click', baixarPDF);
-$('btnJson').addEventListener('click', () => { if (!downloads || estado.res.erros.length) return; salvar(slug()+'.json', JSON.stringify(dadosProjeto(), null, 2)); });
+$('btnJson').addEventListener('click', () => {
+  if (!estado.res) return;
+  // com erro: salva o projeto para continuar depois (sem peças, que estão inconsistentes)
+  const dados = estado.res.erros.length ? { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), incompleto:true, erros:estado.res.erros,
+    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento, precos } : dadosProjeto();
+  salvar(slug() + (estado.res.erros.length ? '-incompleto' : '') + '.json', JSON.stringify(dados, null, 2));
+});
 $('btnZip').addEventListener('click', async () => {
-  if (!downloads || estado.res.erros.length || !window.JSZip) return;
+  if (estado.res.erros.length || !window.JSZip) return;
   $('btnZip').disabled = true; $('notaExport').textContent = 'Montando o pacote…';
   try {
     const zip = new JSZip();
@@ -608,7 +624,7 @@ $('arqProjeto').addEventListener('change', e => {
     try {
       const d = JSON.parse(fr.result);
       if (!TIPOS[d.tipo] || typeof d.parametros !== 'object') throw 0;
-      estado.projeto = { tipo:d.tipo, nome:d.nome || 'Projeto', parametros:{ ...TIPOS[d.tipo].padrao, ...d.parametros } };
+      estado.projeto = { tipo:d.tipo, nome:d.nome || 'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[d.tipo].padrao)), ...d.parametros }, codigo:d.codigo, orcamento:d.orcamento };
       if (d.precos && typeof d.precos === 'object') { precos = { ...precos, ...d.precos }; salvarPrecos(); }
       carregarProjeto(); toast('Projeto aberto.');
     } catch(err) { toast('Esse arquivo não é um projeto do Configurador.'); }
@@ -662,4 +678,4 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };

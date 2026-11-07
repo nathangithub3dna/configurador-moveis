@@ -18,11 +18,11 @@ function mostrarLoja() {
 }
 $('codProjeto').addEventListener('change', e => { estado.projeto.codigo = e.target.value.trim() || codigoProjetoPadrao(); salvarLocal(); mostrarLoja(); });
 $('btnEtiquetas').addEventListener('click', () => {
-  if (!downloads || estado.res.erros.length || !window.jspdf) return;
+  if (estado.res.erros.length || !window.jspdf) return;
   try { salvar(slug() + '-etiquetas.pdf', etiquetasPDF(estado.res.pecas, estado.codigos, estado.projeto.nome)); } catch (e) { toast('Falha ao montar as etiquetas.'); }
 });
 $('btnCorteCloud').addEventListener('click', () => {
-  if (!downloads || estado.res.erros.length) return;
+  if (estado.res.erros.length) return;
   salvar(slug() + '-cortecloud.json', JSON.stringify(pedidoCorteCloud(estado.res.pecas, estado.codigos), null, 2));
 });
 mostrarLoja();
@@ -40,7 +40,7 @@ function mostrarFolha() {
 }
 $('selFolha').addEventListener('change', e => { estado.folhaSel = e.target.value; mostrarFolha(); });
 $('btnFolhas').addEventListener('click', async () => {
-  if (!downloads || estado.res.erros.length) return;
+  if (estado.res.erros.length) return;
   toast('Montando as folhas…');
   try { salvar(slug() + '-folhas-A3.pdf', await folhasPDF(pecasComFolha(), extraFolha)); } catch (e) { toast('Falha ao montar as folhas.'); }
 });

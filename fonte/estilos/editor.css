@@ -46,3 +46,13 @@
 .folha-svg{background:#fff;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro);padding:10px;overflow:auto}
 .folha-svg svg{display:block;width:100%;height:auto;max-width:1400px;margin:0 auto}
 .sub-des{font-size:14px;margin:6px 0}
+
+/* Orçamento (5c parte 3) */
+.orcamento .cab .linha{display:flex;flex-wrap:wrap;gap:8px}
+.orc-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:8px 0 16px}
+.orc-resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
+.orc-caixa{padding:12px 14px;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro);display:flex;flex-direction:column;gap:2px}
+.orc-caixa span{font-size:12px;color:var(--muted)}
+.orc-caixa strong{font-size:18px;font-family:var(--f-mono)}
+.orc-caixa.total strong{color:var(--accent)}
+.orc-avisos{grid-column:1/-1;font-size:13px;color:var(--muted);margin:0;padding-left:18px}
