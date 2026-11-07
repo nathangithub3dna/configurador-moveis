@@ -26,3 +26,22 @@ $('btnCorteCloud').addEventListener('click', () => {
   salvar(slug() + '-cortecloud.json', JSON.stringify(pedidoCorteCloud(estado.res.pecas, estado.codigos), null, 2));
 });
 mostrarLoja();
+
+/* ---------- Folha A3 da peça (5c parte 2): prévia e PDF de todas ---------- */
+function extraFolha(pc) { return { projeto: estado.projeto.nome, codigo: estado.codigos?.get(pc.id)?.codigo || '' }; }
+function pecasComFolha() { const r = estado.res; return r ? listaDesenhos(r.pecas).map(it => it.pc) : []; }
+function mostrarFolha() {
+  const r = estado.res, sel = $('selFolha'); if (!r) return;
+  if (r.erros.length) { $('folhaSvg').replaceChildren(el('p', { class:'vazio', text:'Corrija os erros para ver as folhas.' })); $('btnFolhas').disabled = true; return; }
+  const ps = pecasComFolha(), atual = ps.some(p => p.id === estado.folhaSel) ? estado.folhaSel : ps[0]?.id;
+  sel.replaceChildren(...ps.map(p => el('option', { value:p.id, selected:p.id === atual }, `${estado.codigos?.get(p.id)?.codigo || ''} — ${p.nome}`)));
+  estado.folhaSel = atual; $('btnFolhas').disabled = !window.jspdf || !window.svg2pdf && !window.jspdf?.jsPDF?.API?.svg;
+  const pc = ps.find(p => p.id === atual); $('folhaSvg').innerHTML = pc ? folhaPecaSVG(pc, extraFolha(pc)) : '';
+}
+$('selFolha').addEventListener('change', e => { estado.folhaSel = e.target.value; mostrarFolha(); });
+$('btnFolhas').addEventListener('click', async () => {
+  if (!downloads || estado.res.erros.length) return;
+  toast('Montando as folhas…');
+  try { salvar(slug() + '-folhas-A3.pdf', await folhasPDF(pecasComFolha(), extraFolha)); } catch (e) { toast('Falha ao montar as folhas.'); }
+});
+mostrarFolha();

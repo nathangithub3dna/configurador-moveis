@@ -62,6 +62,7 @@ function diferencas(a, b, caminho = '') {
       if (u.includes('jspdf')) return route.fulfill({ path: nm('jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript' });
       if (u.includes('jszip')) return route.fulfill({ path: nm('jszip/dist/jszip.min.js'), contentType: 'application/javascript' });
       if (u.includes('qrcode-generator')) return route.fulfill({ path: nm('qrcode-generator/qrcode.js'), contentType: 'application/javascript' });
+      if (u.includes('svg2pdf')) return route.fulfill({ path: nm('svg2pdf.js/dist/svg2pdf.umd.min.js'), contentType: 'application/javascript' });
       return route.abort();
     });
     await page.goto('http://teste/');
@@ -126,6 +127,7 @@ function diferencas(a, b, caminho = '') {
       if (u.includes('jspdf')) return route.fulfill({ path: nm('jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript' });
       if (u.includes('jszip')) return route.fulfill({ path: nm('jszip/dist/jszip.min.js'), contentType: 'application/javascript' });
       if (u.includes('qrcode-generator')) return route.fulfill({ path: nm('qrcode-generator/qrcode.js'), contentType: 'application/javascript' });
+      if (u.includes('svg2pdf')) return route.fulfill({ path: nm('svg2pdf.js/dist/svg2pdf.umd.min.js'), contentType: 'application/javascript' });
       return route.abort();
     });
     await page.goto('http://teste/');
@@ -261,6 +263,7 @@ function diferencas(a, b, caminho = '') {
       if (u.includes('jspdf')) return route.fulfill({ path: nm('jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript' });
       if (u.includes('jszip')) return route.fulfill({ path: nm('jszip/dist/jszip.min.js'), contentType: 'application/javascript' });
       if (u.includes('qrcode-generator')) return route.fulfill({ path: nm('qrcode-generator/qrcode.js'), contentType: 'application/javascript' });
+      if (u.includes('svg2pdf')) return route.fulfill({ path: nm('svg2pdf.js/dist/svg2pdf.umd.min.js'), contentType: 'application/javascript' });
       return route.abort();
     });
     await page.goto('http://teste/');
@@ -317,6 +320,13 @@ function diferencas(a, b, caminho = '') {
     t5b.loja = loja;
     const ok5c = !loja.erros.length && loja.codigos === loja.pecas && loja.unicos === loja.pecas && /^\d{4}-\d{2} · A-M\d{2} · P\d{3}$/.test(loja.exemplo) && loja.modulosNosCodigos === 8
       && loja.partes === loja.pecas && loja.furosCC === loja.furosPecas && loja.comFita > 0 && loja.pdfKB > 5 && loja.pdfKB < 3000 && loja.qr && loja.tabela === loja.pecas;
+    const folha = await page.evaluate(async () => { const c = window.__configurador, e = c.estado, pcs = e.res.pecas.filter(p => p.lista).slice(0, 3);
+      const svg = c.folhaPecaSVG(pcs[0], { projeto:'teste', codigo:'x' }); const pdf = await c.folhasPDF(pcs, () => ({ projeto:'teste' }));
+      return { svgOk: svg.startsWith('<svg') && svg.includes('VISTA FRONTAL') && svg.includes('LATERAL'), pdfKB: Math.round(pdf.byteLength / 1024), paginas: (new TextDecoder('latin1').decode(pdf).match(/\/Type \/Page\b/g) || []).length,
+        previa: !!document.querySelector('#folhaSvg svg'), opcoes: document.querySelectorAll('#selFolha option').length }; });
+    loja.folha = folha;
+    const okFolha = folha.svgOk && folha.paginas === 3 && folha.pdfKB > 3 && folha.previa && folha.opcoes > 0;
+    if (!okFolha) { falhas++; console.log('FOLHA A3 (5c) ERRADO  ' + JSON.stringify(folha)); } else console.log('FOLHA A3 (5c) OK  ' + JSON.stringify(folha));
     if (!ok5c) { falhas++; console.log('LOJA E ETIQUETAS (5c) ERRADO  ' + JSON.stringify(loja)); } else console.log('LOJA E ETIQUETAS (5c) OK  ' + JSON.stringify(loja));
     if (!ok5b) { falhas++; console.log('AMBIENTE (5b) ERRADO  ' + JSON.stringify(t5b)); } else console.log('AMBIENTE (5b) OK  ' + JSON.stringify(t5b));
     await page.close();

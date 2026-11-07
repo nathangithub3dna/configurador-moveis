@@ -160,7 +160,17 @@
   <textarea class="copia" id="copiaCompras" readonly hidden aria-label="Texto da lista de compras"></textarea>
 </section>
 <section class="cartao desenhos" aria-labelledby="tDes" data-secao="desenhos" hidden>
-  <div class="cab"><h2 id="tDes">Desenhos técnicos</h2><button class="btn" id="btnPdf2" type="button">Baixar PDF</button></div>
+  <div class="cab"><h2 id="tDes">Desenhos técnicos</h2>
+    <div class="linha">
+      <button class="btn prim" id="btnFolhas" type="button">Folhas A3 de todas as peças (.pdf)</button>
+      <button class="btn" id="btnPdf2" type="button">PDF antigo</button>
+    </div>
+  </div>
+  <div class="folha-previa">
+    <label class="ed-linha">Peça<select id="selFolha" aria-label="Peça para ver a folha"></select></label>
+    <div class="folha-svg" id="folhaSvg" aria-label="Folha A3 da peça escolhida"></div>
+  </div>
+  <h3 class="sub-des">Desenhos rápidos (todas as peças)</h3>
   <p class="nota">Um desenho por peça de MDF diferente. Medidas em mm. X e Y dos furos a partir do canto inferior esquerdo (0, 0) da vista indicada. <i></i> borda com fita.</p>
   <div class="grade-des" id="gradeDes"></div>
 </section>
@@ -285,6 +295,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg2pdf.js@2.2.3/dist/svg2pdf.umd.min.js"></script>
 <script type="importmap">
 {"imports":{
   "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -305,6 +316,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /*@inclui:js/ambiente.js*/
 /*@inclui:js/saidas.js*/
 /*@inclui:js/saidas-loja.js*/
+/*@inclui:js/folha-peca.js*/
 /*@inclui:js/editor-modulo.js*/
 /*@inclui:js/tela.js*/
 /*@inclui:js/tela-modulo.js*/

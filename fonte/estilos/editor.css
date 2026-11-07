@@ -38,3 +38,11 @@
 .listas .loja{grid-column:1/-1}
 .loja .linha{display:flex;flex-wrap:wrap;gap:8px}
 .loja-codigo{max-width:520px}
+
+/* Folha A3 da peça (5c parte 2) */
+.desenhos .cab .linha{display:flex;flex-wrap:wrap;gap:8px}
+.folha-previa{display:flex;flex-direction:column;gap:10px;margin:8px 0 18px}
+.folha-previa .ed-linha{max-width:520px}
+.folha-svg{background:#fff;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro);padding:10px;overflow:auto}
+.folha-svg svg{display:block;width:100%;height:auto;max-width:1400px;margin:0 auto}
+.sub-des{font-size:14px;margin:6px 0}
