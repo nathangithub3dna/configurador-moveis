@@ -15,16 +15,18 @@
   --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --sombra-fora:0 0 0 1px #2c353d; --sombra-fora-p:0 0 0 1px #34404a; --sombra-dentro:inset 0 0 0 1px #3d4954; --raio:14px; --raio-p:10px;
-  --bg:#12171b; --surface:#1a2026; --surface-2:#1f262d; --fg:#e3e8eb; --muted:#93a0a8; --line:#2c353d;
+  /* neomorfismo escuro: mesma ideia do claro, com sombras escuras e brilho discreto */
+  --sombra-fora:6px 6px 14px #16191e,-6px -6px 14px #30353f; --sombra-fora-p:3px 3px 7px #16191e,-3px -3px 7px #30353f; --sombra-dentro:inset 3px 3px 7px #16191e,inset -3px -3px 7px #30353f; --raio:18px; --raio-p:12px;
+  --bg:#23272e; --surface:#23272e; --surface-2:#23272e; --fg:#e6e9ee; --muted:#a7b0bc; --line:#3a414c;
   --accent:#6ea8e6; --accent-fg:#0d1720; --danger:#f0897f; --danger-bg:#3a1d1b; --warn:#e9b955; --warn-bg:#352a12; --ok:#7fcf9d; --ok-bg:#16301f;
   --v-bg:#1d2329; --v-linha:#0b0f12; --v-caixa:#7d8890; --v-frente:#a9b2b8; --v-gaveta:#66727c; --v-fundo:#525d66;
   --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387;
   --fita:#f0a050;
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --sombra-fora:0 0 0 1px #2c353d; --sombra-fora-p:0 0 0 1px #34404a; --sombra-dentro:inset 0 0 0 1px #3d4954; --raio:14px; --raio-p:10px;
-  --bg:#12171b; --surface:#1a2026; --surface-2:#1f262d; --fg:#e3e8eb; --muted:#93a0a8; --line:#2c353d;
+  /* neomorfismo escuro: mesma ideia do claro, com sombras escuras e brilho discreto */
+  --sombra-fora:6px 6px 14px #16191e,-6px -6px 14px #30353f; --sombra-fora-p:3px 3px 7px #16191e,-3px -3px 7px #30353f; --sombra-dentro:inset 3px 3px 7px #16191e,inset -3px -3px 7px #30353f; --raio:18px; --raio-p:12px;
+  --bg:#23272e; --surface:#23272e; --surface-2:#23272e; --fg:#e6e9ee; --muted:#a7b0bc; --line:#3a414c;
   --accent:#6ea8e6; --accent-fg:#0d1720; --danger:#f0897f; --danger-bg:#3a1d1b; --warn:#e9b955; --warn-bg:#352a12; --ok:#7fcf9d; --ok-bg:#16301f;
   --v-bg:#1d2329; --v-linha:#0b0f12; --v-caixa:#7d8890; --v-frente:#a9b2b8; --v-gaveta:#66727c; --v-fundo:#525d66;
   --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387;
