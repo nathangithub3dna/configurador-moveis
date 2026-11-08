@@ -566,7 +566,7 @@ async function gerarGLB() {
     const m = new THREE.Mesh(g, mats[pc.mat]);
     m.name = `${pc.cat}_${pc.mat}_${pc.id}`; m.position.copy(ct.multiplyScalar(0.001));
     m.userData = { nome:pc.nome, categoria:pc.cat, comprimento_mm:pc.comp ?? null, largura_mm:pc.larg ?? null, espessura_mm:pc.esp, fita:pc.fita,
-      movimento: pc.mov ? (pc.mov.tipo==='porta' ? { tipo:'porta', lado:pc.mov.lado, pivo_m:[pc.mov.pivX/1000, 0, pc.mov.pivZ/1000], eixo:'y', angulo_max:pc.mov.angMax } : { tipo:'gaveta', curso_m:pc.mov.curso/1000, eixo:'z' }) : null };
+      movimento: pc.mov ? (pc.mov.tipo==='porta' ? { tipo:'porta', lado:pc.mov.lado, pivo_m:[pc.mov.pivX/1000, 0, pc.mov.pivZ/1000], eixo:'y', angulo_max:pc.mov.angMax } : { tipo:'gaveta', curso_m:pc.mov.curso/1000, eixo:pc.mov.eixo || 'z' }) : null };
     c.add(m);
   }
   return await new GLTFExporter().parseAsync(c, { binary:true });
@@ -667,7 +667,7 @@ function quadro() {
   for (const no of nos.values()) {
     const m = no.pc.mov;
     if (m?.tipo === 'porta') { const alvo = estado.portas ? m.angMax : 0; no.ang += (alvo - no.ang)*k; no.mover.rotation.y = (m.lado==='esq' ? -1 : 1) * no.ang*Math.PI/180; }
-    if (m?.tipo === 'gaveta') { const alvo = estado.gavetas ? m.curso : 0; no.slide += (alvo - no.slide)*k; no.mover.position.z = no.slide; }
+    if (m?.tipo === 'gaveta') { const alvo = estado.gavetas ? m.curso : 0; no.slide += (alvo - no.slide)*k; if (m.eixo === 'x') no.mover.position.x = no.slide; else no.mover.position.z = no.slide; }
     no.wrapper.position.copy(no.dirExp).multiplyScalar(expAtual*0.9);
   }
   controles.update();
@@ -678,4 +678,4 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };

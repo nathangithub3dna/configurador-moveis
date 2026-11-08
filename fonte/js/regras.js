@@ -32,7 +32,7 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^lateral-(esq|dir)$/, 'lateral'], [/^topo$/, 'topo'], [/^base$/, 'base'],
   [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'],
   [/^travessa-(frontal|traseira)$/, 'travessa'], [/^travessa-fixacao(-\d+)?$/, 'travessa-fixacao'],
-  [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'], [/^ponto-\d+$/, 'ponto'],
+  [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'], [/^ponto-\d+$/, 'ponto'], [/^peca-teste$/, 'teste'],
   [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-\d+$/, 'prateleira-fixa'],
   [/^reforco-/, 'reforco'], [/^beiral-frontal$/, 'beiral-frontal'], [/^beiral-(esq|dir)$/, 'beiral-lateral'],
   [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+$/, 'espacador'],

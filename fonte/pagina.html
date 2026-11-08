@@ -128,6 +128,24 @@
 </main>
 
 <section class="listas" data-secao="corte" hidden>
+  <div class="cartao conferencia">
+    <div class="cab"><h2>Conferência antes de liberar para corte</h2>
+      <button class="btn prim" id="btnLiberar2" type="button">Liberar para corte</button>
+    </div>
+    <ul class="conf-lista" id="confLista"></ul>
+    <label class="conf-check"><input type="checkbox" id="confAvisos"> Conferi os avisos do projeto (abertura de portas e gavetas, canto, pontos) e estão resolvidos ou aceitos</label>
+    <fieldset class="ed-bloco conf-furacao">
+      <legend>Furação na loja (vale para todos os projetos deste computador)</legend>
+      <label class="conf-check"><input type="radio" name="confFur" value=""> Ainda não conferida</label>
+      <label class="conf-check"><input type="radio" name="confFur" value="validada"> Peça de teste conferida: a loja fura certo</label>
+      <label class="conf-check"><input type="radio" name="confFur" value="soCorte"> A loja só corta (a furação é feita na oficina)</label>
+      <p class="nota">Peça de teste: 300 × 200 com 5 furos fora de simetria. Mande cortar e furar na loja e compare com a folha. O furo grande (Ø35) tem que ficar a 40 mm das duas bordas, no canto de baixo à esquerda olhando a face interna; o Ø8 do topo, na borda esquerda.</p>
+      <div class="linha">
+        <button class="btn" id="btnTesteJson" type="button">Peça de teste: pedido CorteCloud (.json)</button>
+        <button class="btn" id="btnTestePdf" type="button">Peça de teste: folha A3 (.pdf)</button>
+      </div>
+    </fieldset>
+  </div>
   <div class="cartao">
     <div class="cab"><h2>Lista de corte</h2><button class="btn" id="copCorte" type="button">Copiar</button></div>
     <div class="resumo" id="resumoCorte"></div>

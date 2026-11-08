@@ -284,6 +284,16 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .situacao[data-estado="liberado"] .sit-rotulo{color:#1e6b3a}
 .situacao [hidden],.mudancas[hidden]{display:none!important}
 .mudancas{margin-top:14px}
+
+/* Conferência antes de liberar */
+.listas .conferencia{grid-column:1/-1}
+.conf-lista{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
+.conf-lista li{padding:8px 12px;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro);font-size:13px}
+.conf-lista li[data-ok="sim"]::before{content:"✓ ";color:#1e6b3a;font-weight:800}
+.conf-lista li[data-ok="nao"]::before{content:"✗ ";color:#b00020;font-weight:800}
+.conf-lista li[data-opcional]{opacity:.85}
+.conf-check{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:4px 0}
+.conf-furacao .linha{display:flex;flex-wrap:wrap;gap:8px}
 /* AMBIENTE (5b) — aparência do painel do ambiente e da planta vista de cima.
    Estrutura em pagina.html (tplAmbiente, tplParede, tplModuloAmb, tplPonto); lógica em js/ambiente.js. */
 .amb-lista{display:flex;flex-direction:column;gap:10px}
@@ -431,6 +441,24 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 </main>
 
 <section class="listas" data-secao="corte" hidden>
+  <div class="cartao conferencia">
+    <div class="cab"><h2>Conferência antes de liberar para corte</h2>
+      <button class="btn prim" id="btnLiberar2" type="button">Liberar para corte</button>
+    </div>
+    <ul class="conf-lista" id="confLista"></ul>
+    <label class="conf-check"><input type="checkbox" id="confAvisos"> Conferi os avisos do projeto (abertura de portas e gavetas, canto, pontos) e estão resolvidos ou aceitos</label>
+    <fieldset class="ed-bloco conf-furacao">
+      <legend>Furação na loja (vale para todos os projetos deste computador)</legend>
+      <label class="conf-check"><input type="radio" name="confFur" value=""> Ainda não conferida</label>
+      <label class="conf-check"><input type="radio" name="confFur" value="validada"> Peça de teste conferida: a loja fura certo</label>
+      <label class="conf-check"><input type="radio" name="confFur" value="soCorte"> A loja só corta (a furação é feita na oficina)</label>
+      <p class="nota">Peça de teste: 300 × 200 com 5 furos fora de simetria. Mande cortar e furar na loja e compare com a folha. O furo grande (Ø35) tem que ficar a 40 mm das duas bordas, no canto de baixo à esquerda olhando a face interna; o Ø8 do topo, na borda esquerda.</p>
+      <div class="linha">
+        <button class="btn" id="btnTesteJson" type="button">Peça de teste: pedido CorteCloud (.json)</button>
+        <button class="btn" id="btnTestePdf" type="button">Peça de teste: folha A3 (.pdf)</button>
+      </div>
+    </fieldset>
+  </div>
   <div class="cartao">
     <div class="cab"><h2>Lista de corte</h2><button class="btn" id="copCorte" type="button">Copiar</button></div>
     <div class="resumo" id="resumoCorte"></div>
@@ -3451,7 +3479,7 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^lateral-(esq|dir)$/, 'lateral'], [/^topo$/, 'topo'], [/^base$/, 'base'],
   [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'],
   [/^travessa-(frontal|traseira)$/, 'travessa'], [/^travessa-fixacao(-\d+)?$/, 'travessa-fixacao'],
-  [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'], [/^ponto-\d+$/, 'ponto'],
+  [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'], [/^ponto-\d+$/, 'ponto'], [/^peca-teste$/, 'teste'],
   [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-\d+$/, 'prateleira-fixa'],
   [/^reforco-/, 'reforco'], [/^beiral-frontal$/, 'beiral-frontal'], [/^beiral-(esq|dir)$/, 'beiral-lateral'],
   [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+$/, 'espacador'],
@@ -4710,6 +4738,10 @@ const MODELOS_AMBIENTE = {
                raiz:{ tipo:'vao', frente:{ tipo:'2portas' }, conteudo:[{ tipo:'prateleiras', n:1, min:150 }] } },
   gaveteiro: { nome:'Gaveteiro', linha:'inferior', y:0, largura:600, altura:850, profundidade:580, metodo:'padrao-nathan-cozinha-banheiro',
                raiz:{ tipo:'dividir', dir:'h', sep:'nenhum', partes:[0,1,2].map(() => ({ medida:'auto', no:{ tipo:'vao', frente:{ tipo:'gaveta' }, conteudo:[] } })) } },
+  // canto do L: a parte junto da parede fica cega (o módulo da outra parede encosta na frente dela); porta só na parte livre
+  canto:     { nome:'Balcão de canto (cego)', linha:'inferior', y:0, largura:1000, altura:850, profundidade:580, metodo:'padrao-nathan-cozinha-banheiro',
+               raiz:{ tipo:'dividir', dir:'v', sep:'nenhum', partes:[{ medida:630, no:{ tipo:'vao', frente:{ tipo:'nenhuma' }, conteudo:[{ tipo:'prateleiras', n:1, min:150 }] } },
+                 { medida:'auto', no:{ tipo:'vao', frente:{ tipo:'porta', lado:'dir' }, conteudo:[{ tipo:'prateleiras', n:1, min:150 }] } }] } },
   aereo:     { nome:'Aéreo', linha:'aereo', y:1500, largura:800, altura:700, profundidade:350, metodo:'padrao-nathan', ajustes:{ apoio:'pes', pes:0, rodapeEncaixe:null },
                raiz:{ tipo:'vao', frente:{ tipo:'2portas' }, conteudo:[{ tipo:'prateleiras', n:1, min:150 }] } },
   torre:     { nome:'Torre', linha:'torre', y:0, largura:600, altura:2200, profundidade:580, metodo:'padrao-nathan-cozinha-banheiro',
@@ -4733,6 +4765,13 @@ const AMB = {
     if (parede !== 1) return 0;
     const noCanto = amb.modulos.filter(m => m.parede === 0 && m.x < 1 && (linha === 'aereo' ? m.linha === 'aereo' : m.linha !== 'aereo'));
     return noCanto.reduce((p, m) => Math.max(p, m.modulo.profundidade), 0);
+  },
+  // movimento (porta, gaveta) no mundo: na parede A só desloca; na B o módulo está girado 90° (frente para +X)
+  movNoMundo(mod, mv) {
+    if (mod.parede === 0) return mv.tipo === 'porta' ? { ...mv, pivX: mv.pivX + mod.x } : { ...mv };
+    if (mv.tipo === 'porta') return { ...mv, pivX: mv.pivZ, pivZ: mod.x + mod.modulo.largura - mv.pivX };
+    if (mv.tipo === 'gaveta') return { ...mv, eixo:'x' };
+    return null;                                          // correr e basculante na parede B: ainda sem movimento no 3D
   },
   // posição no mundo de uma caixa local [x0,x1,y0,y1,z0,z1] do módulo
   noMundo(amb, mod, b) {
@@ -4767,7 +4806,7 @@ function gerarAmbiente(amb) {
     r.erros.forEach(x => E.push(`${rot}: ${x}`)); r.avisos.filter(x => !/Móvel alto/.test(x)).forEach(x => A.push(`${rot}: ${x}`));
     for (const pc of r.pecas) {
       const q = { ...pc, id: `${tag}-${pc.id}`, nome: `${tag} · ${pc.nome}`, modulo:k, box: pc.box ? AMB.noMundo(amb, mod, pc.box) : pc.box };
-      if (mod.parede !== 0) q.mov = null;          // [limitação] porta da parede B ainda não abre no 3D
+      if (q.mov) q.mov = AMB.movNoMundo(mod, q.mov);   // parede B: o módulo está girado 90°, o movimento acompanha
       if (q.expPai) q.expPai = `${tag}-${q.expPai}`;
       pecas.push(q);
     }
@@ -4786,8 +4825,9 @@ function gerarAmbiente(amb) {
   if (paredes.length === 2) for (const ma of amb.modulos.filter(m => m.parede === 0 && m.x < 1)) for (const mb of amb.modulos.filter(m => m.parede === 1)) {
     const alturaCruza = ma.y < mb.y + mb.modulo.altura && mb.y < ma.y + ma.modulo.altura; if (!alturaCruza) continue;
     const ia = amb.modulos.indexOf(ma) + 1, ib = amb.modulos.indexOf(mb) + 1;
+    const frenteNoCanto = pecas.some(p => p.modulo === amb.modulos.indexOf(ma) && p.cat === 'frente' && p.box && p.box[0] < mb.modulo.profundidade + R.cantoFolga);
     if (mb.x < ma.modulo.profundidade - 0.5) E.push(`Canto: M${ia} e M${ib} se cruzam (M${ib} precisa começar a ${fmt(ma.modulo.profundidade)} mm do canto).`);
-    else if (mb.x - ma.modulo.profundidade < R.cantoFolga) A.push(`Canto: entre M${ia} e M${ib} sobram ${fmt(mb.x - ma.modulo.profundidade)} mm — as portas podem bater. Sugestão: enchimento (cego) de ${R.cantoFolga} mm.`);
+    else if (frenteNoCanto && mb.x - ma.modulo.profundidade < R.cantoFolga) A.push(`Canto: entre M${ia} e M${ib} sobram ${fmt(mb.x - ma.modulo.profundidade)} mm — as portas podem bater. Sugestão: enchimento (cego) de ${R.cantoFolga} mm.`);
   }
   // 4. tampo contínuo sobre os inferiores de cada parede (pedra: referência, orçado à parte)
   paredes.forEach((P, i) => {
@@ -4800,6 +4840,29 @@ function gerarAmbiente(amb) {
     const tem = amb.pontos.some(p => p.parede === i && p.tipo === 'esgoto' && p.x > x0 && p.x < x1);
     if (tem) A.push(`Tampo da ${nomeP(i)}: tem esgoto embaixo — prever recorte da cuba no tampo.`);
   });
+  // 5b. abrir portas e puxar gavetas: o que se move não pode entrar em outro módulo (vista de cima, nas alturas que se cruzam)
+  // peça a peça (não a caixa do módulo inteiro): um puxador do outro lado do módulo não conta
+  const obstaculos = pecas.filter(p => p.box && p.modulo !== undefined && !p.mov);
+  const dentro = (x, z, y0, y1, c) => x > c[0] + 1 && x < c[1] - 1 && z > c[4] + 1 && z < c[5] - 1 && y0 < c[3] && y1 > c[2];
+  const jaAvisado = new Set();
+  for (const f of pecas.filter(p => p.lista && p.cat === 'frente' && p.mov && p.box && (p.mov.tipo === 'porta' || p.mov.tipo === 'gaveta'))) {
+    const b = f.box, mod = amb.modulos[f.modulo], B = mod.parede === 1, pontos = [];
+    if (f.mov.tipo === 'porta') {
+      const px = f.mov.pivX, pz = f.mov.pivZ, longe = B ? (Math.abs(b[4] - pz) > Math.abs(b[5] - pz) ? b[4] : b[5]) : (Math.abs(b[0] - px) > Math.abs(b[1] - px) ? b[0] : b[1]);
+      const v0 = B ? [0, longe - pz] : [longe - px, 0], s = f.mov.lado === 'esq' ? -1 : 1;
+      for (let a = 5; a <= Math.min(90, f.mov.angMax || 90); a += 5) { /* até 90°: o que precisa abrir para usar */ const th = s * a * Math.PI / 180, vx = v0[0] * Math.cos(th) + v0[1] * Math.sin(th), vz = -v0[0] * Math.sin(th) + v0[1] * Math.cos(th);
+        for (let t = 0.1; t <= 1.001; t += 0.1) pontos.push([px + vx * t, pz + vz * t, a]); }
+    } else { const c = f.mov.curso || 0;
+      for (let t = 0.1; t <= 1.001; t += 0.1) for (let u = 0.05; u <= 0.951; u += 0.15) pontos.push(B ? [b[1] + c * t, b[4] + (b[5] - b[4]) * u, null] : [b[0] + (b[1] - b[0]) * u, b[5] + c * t, null]); }
+    for (const [x, z, ang] of pontos) {
+      const ob = obstaculos.find(p => p.modulo !== f.modulo && dentro(x, z, b[2], b[3], p.box));
+      if (!ob) continue; const j = ob.modulo;
+      const chave = f.id + '>' + j; if (jaAvisado.has(chave)) break; jaAvisado.add(chave);
+      A.push(f.mov.tipo === 'porta' ? `Abertura: ${f.nome} bate no M${j + 1} (${amb.modulos[j].nome}) com ${ang}° — use enchimento no canto ou troque o lado da dobradiça.`
+        : `Abertura: ${f.nome} não sai toda — bate no M${j + 1} (${amb.modulos[j].nome}). Use enchimento no canto ou gaveta mais curta.`);
+      break;
+    }
+  }
   // 5. pontos e paredes como referência no 3D (não fabricar)
   amb.pontos.forEach((pt, k) => { if (!paredes[pt.parede]) return;
     const fake = { parede:pt.parede, x:pt.x - 40, y:pt.altura - 40, modulo:{ largura:80 } };
@@ -4821,7 +4884,7 @@ TIPOS.ambiente = {
 // cozinha em L de exemplo: gaveteiro no canto da A, balcão da pia, balcão; na B um balcão e uma torre; aéreos na A
 (() => {
   const amb = TIPOS.ambiente.padrao, add = (k, p, x) => { const m = AMB.novoModulo(k, p, x ?? AMB.proximoX(amb, p, MODELOS_AMBIENTE[k].linha)); amb.modulos.push(m); return m; };
-  add('gaveteiro', 0, 0); const pia = add('balcao', 0); pia.nome = 'Balcão da pia'; pia.modulo.largura = 1200; add('balcao', 0);
+  add('canto', 0, 0); const pia = add('balcao', 0); pia.nome = 'Balcão da pia'; pia.modulo.largura = 1200; add('balcao', 0);
   add('balcao', 1); add('torre', 1);
   add('aereo', 0, 0); add('aereo', 0); add('aereo', 0);
 })();
@@ -5674,6 +5737,8 @@ function liberarParaCorte(projeto, res) {
   const s = situacaoProjeto(projeto);
   if (s.estado !== 'aprovado') return { ok: false, motivo: s.estado === 'liberado' ? 'Já está liberado.' : 'Só libera depois do aceite do cliente na última revisão, sem mudanças depois dela.' };
   if (res.erros.length) return { ok: false, motivo: 'Corrija os erros antes de liberar.' };
+  const falta = conferenciaFabricacao(projeto, res, null).filter(i => i.obrigatorio && !i.ok);
+  if (falta.length) return { ok: false, motivo: 'Falta na conferência: ' + falta.map(i => i.texto).join('; ') };
   projeto.liberacao = { rev: s.rev, data: new Date().toISOString() };
   return { ok: true };
 }
@@ -5690,6 +5755,33 @@ function diferencasDesdeRevisao(projeto, resAtual, comprasAtuais, entradasAtuais
   for (const ref2 of new Set([...fA.keys(), ...fB.keys()])) { const a = fA.get(ref2)?.qtd || 0, b = fB.get(ref2)?.qtd || 0; if (a !== b) ferragens.push({ nome: (fB.get(ref2) || fA.get(ref2)).nome, antes: a, agora: b }); }
   const totalAgora = comprasAtuais ? calcularOrcamento(comprasAtuais, entradasAtuais).total : null;
   return { ref: ref.rev, aprovada: !!ref.aceite, pecas, ferragens, totalAntes: ref.resultado.total, totalAgora, diferenca: totalAgora == null ? null : totalAgora - ref.resultado.total };
+}
+
+/* ---------- Conferência antes de liberar para corte ---------- */
+// configuração da oficina (vale para todos os projetos deste computador): a furação da loja já foi conferida?
+function lerConfigOficina() { try { return JSON.parse(localStorage.getItem('configurador-moveis:config')) || {}; } catch (e) { return {}; } }
+function gravarConfigOficina(c) { try { localStorage.setItem('configurador-moveis:config', JSON.stringify(c)); } catch (e) {} }
+function textoAvisos(res) { return (res?.avisos || []).join('|'); }
+function conferenciaFabricacao(projeto, res, compras) {
+  const s = situacaoProjeto(projeto), cfg = lerConfigOficina(), avisos = res?.avisos || [];
+  const furacao = cfg.furacao === 'validada' ? 'Furação da loja conferida com a peça de teste' + (cfg.data ? ` (${new Date(cfg.data).toLocaleDateString('pt-BR')})` : '')
+    : cfg.furacao === 'soCorte' ? 'A loja só corta; a furação é feita na oficina' : 'Furação da loja ainda não conferida (mande a peça de teste)';
+  return [
+    { ok: s.estado === 'aprovado' || s.estado === 'liberado', obrigatorio: true, texto: s.estado === 'estudo' ? 'Revisão aprovada pelo cliente: falta (congele uma revisão e registre o aceite)' : `Revisão ${s.rev} aprovada pelo cliente` },
+    { ok: !!res && !res.erros.length, obrigatorio: true, texto: res?.erros.length ? `${res.erros.length} erro(s) no projeto` : 'Projeto sem erros' },
+    { ok: !!res && res.pecas.every(p => p.papel), obrigatorio: true, texto: 'Toda peça com função definida (orientação no Inventor e etiquetas)' },
+    { ok: !avisos.length || projeto.conferencia?.avisosVistos === textoAvisos(res), obrigatorio: true, texto: avisos.length ? `${avisos.length} aviso(s): conferir abertura de portas, gavetas, canto, pontos` : 'Sem avisos', chave: 'avisos' },
+    { ok: cfg.furacao === 'validada' || cfg.furacao === 'soCorte', obrigatorio: true, texto: furacao, chave: 'furacao' },
+    { ok: !compras || !compras.semPreco, obrigatorio: false, texto: compras?.semPreco ? `${compras.semPreco} item(ns) sem preço na lista de compras (o orçamento fica incompleto)` : 'Lista de compras com todos os preços' },
+  ];
+}
+// peça de teste: mostra se a loja lê o canto, as faces e o topo como o configurador (furos fora de simetria)
+function pecaDeTeste() {
+  return { id: 'peca-teste', nome: 'Peça de teste de furação', nomeLista: 'Peça de teste de furação', cat: 'caixa', papel: 'teste', mat: 'mdf-ru-branco', esp: 18, comp: 300, larg: 200, fita: [0, 0], lista: true,
+    des: { w: 200, h: 300, fita: [], vista: 'Vista pela face interna', furos: [
+      { x: 40, y: 40, d: 35, prof: 13, tipo: 'Ø35 perto do canto 0' }, { x: 160, y: 40, d: 8, prof: 10, tipo: 'Ø8 na face' },
+      { x: 100, y: 150, d: 5, prof: 0, tipo: 'Ø5 passante' }, { x: 40, y: 260, d: 5, prof: 11, tipo: 'Ø5 cego no alto' },
+      { x: 0, y: 150, d: 8, prof: 20, tipo: 'Ø8 no topo esquerdo', face: 'topo-esq' } ] } };
 }
 /* =====================================================================
    5a. EDITOR DO MÓVEL LIVRE — só a lógica (sem tela).
@@ -6348,7 +6440,7 @@ async function gerarGLB() {
     const m = new THREE.Mesh(g, mats[pc.mat]);
     m.name = `${pc.cat}_${pc.mat}_${pc.id}`; m.position.copy(ct.multiplyScalar(0.001));
     m.userData = { nome:pc.nome, categoria:pc.cat, comprimento_mm:pc.comp ?? null, largura_mm:pc.larg ?? null, espessura_mm:pc.esp, fita:pc.fita,
-      movimento: pc.mov ? (pc.mov.tipo==='porta' ? { tipo:'porta', lado:pc.mov.lado, pivo_m:[pc.mov.pivX/1000, 0, pc.mov.pivZ/1000], eixo:'y', angulo_max:pc.mov.angMax } : { tipo:'gaveta', curso_m:pc.mov.curso/1000, eixo:'z' }) : null };
+      movimento: pc.mov ? (pc.mov.tipo==='porta' ? { tipo:'porta', lado:pc.mov.lado, pivo_m:[pc.mov.pivX/1000, 0, pc.mov.pivZ/1000], eixo:'y', angulo_max:pc.mov.angMax } : { tipo:'gaveta', curso_m:pc.mov.curso/1000, eixo:pc.mov.eixo || 'z' }) : null };
     c.add(m);
   }
   return await new GLTFExporter().parseAsync(c, { binary:true });
@@ -6449,7 +6541,7 @@ function quadro() {
   for (const no of nos.values()) {
     const m = no.pc.mov;
     if (m?.tipo === 'porta') { const alvo = estado.portas ? m.angMax : 0; no.ang += (alvo - no.ang)*k; no.mover.rotation.y = (m.lado==='esq' ? -1 : 1) * no.ang*Math.PI/180; }
-    if (m?.tipo === 'gaveta') { const alvo = estado.gavetas ? m.curso : 0; no.slide += (alvo - no.slide)*k; no.mover.position.z = no.slide; }
+    if (m?.tipo === 'gaveta') { const alvo = estado.gavetas ? m.curso : 0; no.slide += (alvo - no.slide)*k; if (m.eixo === 'x') no.mover.position.x = no.slide; else no.mover.position.z = no.slide; }
     no.wrapper.position.copy(no.dirExp).multiplyScalar(expAtual*0.9);
   }
   controles.update();
@@ -6460,7 +6552,7 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
 /* =====================================================================
    5a. TELA DO MÓVEL LIVRE — liga a estrutura (modelos em pagina.html) à
    lógica (js/editor-modulo.js). Aqui só se preenche e se reage a cliques;
@@ -6821,7 +6913,7 @@ mostrarOrcamento();
    ===================================================================== */
 function mostrarSituacao() {
   const p = estado.projeto, s = situacaoProjeto(p), r = rotuloDocumento(p), caixa = $('situacao');
-  caixa.dataset.estado = s.estado;
+  caixa.dataset.estado = s.estado; mostrarConferencia();
   preencherModelo(caixa, { rotulo: r.longo, podeLiberar: s.estado === 'aprovado' && estado.res && !estado.res.erros.length });
   const m = $('mudancas'), dif = estado.res ? diferencasDesdeRevisao(p, estado.res, estado.compras, orcDoProjeto().entradas) : null;
   m.hidden = !dif; if (!dif) return;
@@ -6831,10 +6923,27 @@ function mostrarSituacao() {
   m.querySelector('[data-lista="pecas"]').replaceChildren(tabela(['Peça', 'Mudança', 'Antes', 'Agora'], (dif.pecas || []).map(x => [x.nome, x.tipo, x.antes || '—', x.agora || '—'])));
   m.querySelector('[data-lista="ferragens"]').replaceChildren(tabela(['Ferragem', 'Antes', 'Agora'], (dif.ferragens || []).map(x => [x.nome, x.antes, x.agora])));
 }
-$('btnLiberar').addEventListener('click', () => {
-  const r = liberarParaCorte(estado.projeto, estado.res);
-  toast(r.ok ? 'Liberado para corte: lista, desenhos, etiquetas e pedido saem sem o aviso de estudo.' : r.motivo);
-  salvarLocal(); atualizar();
-});
+$('btnLiberar').addEventListener('click', () => tentarLiberar());
 mostrarSituacao();
+
+/* ---------- Conferência antes de liberar (aba Lista de corte) ---------- */
+function mostrarConferencia() {
+  const p = estado.projeto, itens = conferenciaFabricacao(p, estado.res, estado.compras), cfg = lerConfigOficina();
+  $('confLista').replaceChildren(...itens.map(i => { const li = el('li', { text: i.texto + (i.obrigatorio ? '' : ' (não impede liberar)') }); li.dataset.ok = i.ok ? 'sim' : 'nao'; if (!i.obrigatorio) li.dataset.opcional = '1'; return li; }));
+  $('confAvisos').checked = !!estado.res && p.conferencia?.avisosVistos === textoAvisos(estado.res) && !!estado.res.avisos.length;
+  $('confAvisos').disabled = !estado.res?.avisos.length;
+  document.querySelectorAll('input[name="confFur"]').forEach(r => { r.checked = r.value === (cfg.furacao || ''); });
+  $('btnLiberar2').disabled = situacaoProjeto(p).estado !== 'aprovado';
+}
+function tentarLiberar() {
+  const r = liberarParaCorte(estado.projeto, estado.res);
+  if (!r.ok) { toast(r.motivo); document.querySelector('#etapas [data-etapa="corte"]').click(); return; }
+  toast('Liberado para corte: lista, desenhos, etiquetas e pedido saem sem o aviso de estudo.'); salvarLocal(); atualizar();
+}
+$('btnLiberar2').addEventListener('click', tentarLiberar);
+$('confAvisos').addEventListener('change', e => { estado.projeto.conferencia = { ...estado.projeto.conferencia, avisosVistos: e.target.checked ? textoAvisos(estado.res) : null }; salvarLocal(); mostrarSituacao(); });
+document.querySelectorAll('input[name="confFur"]').forEach(r => r.addEventListener('change', () => { gravarConfigOficina({ ...lerConfigOficina(), furacao: r.value || null, data: new Date().toISOString() }); mostrarSituacao(); }));
+$('btnTesteJson').addEventListener('click', () => { const pc = pecaDeTeste(); salvar('peca-de-teste-cortecloud.json', JSON.stringify(pedidoCorteCloud([pc], new Map([[pc.id, { codigo:'TESTE-FURACAO' }]]), 'TESTE'), null, 2)); });
+$('btnTestePdf').addEventListener('click', async () => { try { salvar('peca-de-teste-folha-A3.pdf', await folhasPDF([pecaDeTeste()], () => ({ projeto:'Peça de teste de furação', codigo:'TESTE-FURACAO', rev:'—' }))); } catch (e) { toast('Falha ao montar a folha.'); } });
+mostrarConferencia();
 </script>

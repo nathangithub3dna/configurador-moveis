@@ -65,3 +65,13 @@
 .situacao[data-estado="liberado"] .sit-rotulo{color:#1e6b3a}
 .situacao [hidden],.mudancas[hidden]{display:none!important}
 .mudancas{margin-top:14px}
+
+/* Conferência antes de liberar */
+.listas .conferencia{grid-column:1/-1}
+.conf-lista{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
+.conf-lista li{padding:8px 12px;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro);font-size:13px}
+.conf-lista li[data-ok="sim"]::before{content:"✓ ";color:#1e6b3a;font-weight:800}
+.conf-lista li[data-ok="nao"]::before{content:"✗ ";color:#b00020;font-weight:800}
+.conf-lista li[data-opcional]{opacity:.85}
+.conf-check{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:4px 0}
+.conf-furacao .linha{display:flex;flex-wrap:wrap;gap:8px}

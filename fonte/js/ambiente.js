@@ -18,6 +18,10 @@ const MODELOS_AMBIENTE = {
                raiz:{ tipo:'vao', frente:{ tipo:'2portas' }, conteudo:[{ tipo:'prateleiras', n:1, min:150 }] } },
   gaveteiro: { nome:'Gaveteiro', linha:'inferior', y:0, largura:600, altura:850, profundidade:580, metodo:'padrao-nathan-cozinha-banheiro',
                raiz:{ tipo:'dividir', dir:'h', sep:'nenhum', partes:[0,1,2].map(() => ({ medida:'auto', no:{ tipo:'vao', frente:{ tipo:'gaveta' }, conteudo:[] } })) } },
+  // canto do L: a parte junto da parede fica cega (o módulo da outra parede encosta na frente dela); porta só na parte livre
+  canto:     { nome:'Balcão de canto (cego)', linha:'inferior', y:0, largura:1000, altura:850, profundidade:580, metodo:'padrao-nathan-cozinha-banheiro',
+               raiz:{ tipo:'dividir', dir:'v', sep:'nenhum', partes:[{ medida:630, no:{ tipo:'vao', frente:{ tipo:'nenhuma' }, conteudo:[{ tipo:'prateleiras', n:1, min:150 }] } },
+                 { medida:'auto', no:{ tipo:'vao', frente:{ tipo:'porta', lado:'dir' }, conteudo:[{ tipo:'prateleiras', n:1, min:150 }] } }] } },
   aereo:     { nome:'Aéreo', linha:'aereo', y:1500, largura:800, altura:700, profundidade:350, metodo:'padrao-nathan', ajustes:{ apoio:'pes', pes:0, rodapeEncaixe:null },
                raiz:{ tipo:'vao', frente:{ tipo:'2portas' }, conteudo:[{ tipo:'prateleiras', n:1, min:150 }] } },
   torre:     { nome:'Torre', linha:'torre', y:0, largura:600, altura:2200, profundidade:580, metodo:'padrao-nathan-cozinha-banheiro',
@@ -41,6 +45,13 @@ const AMB = {
     if (parede !== 1) return 0;
     const noCanto = amb.modulos.filter(m => m.parede === 0 && m.x < 1 && (linha === 'aereo' ? m.linha === 'aereo' : m.linha !== 'aereo'));
     return noCanto.reduce((p, m) => Math.max(p, m.modulo.profundidade), 0);
+  },
+  // movimento (porta, gaveta) no mundo: na parede A só desloca; na B o módulo está girado 90° (frente para +X)
+  movNoMundo(mod, mv) {
+    if (mod.parede === 0) return mv.tipo === 'porta' ? { ...mv, pivX: mv.pivX + mod.x } : { ...mv };
+    if (mv.tipo === 'porta') return { ...mv, pivX: mv.pivZ, pivZ: mod.x + mod.modulo.largura - mv.pivX };
+    if (mv.tipo === 'gaveta') return { ...mv, eixo:'x' };
+    return null;                                          // correr e basculante na parede B: ainda sem movimento no 3D
   },
   // posição no mundo de uma caixa local [x0,x1,y0,y1,z0,z1] do módulo
   noMundo(amb, mod, b) {
@@ -75,7 +86,7 @@ function gerarAmbiente(amb) {
     r.erros.forEach(x => E.push(`${rot}: ${x}`)); r.avisos.filter(x => !/Móvel alto/.test(x)).forEach(x => A.push(`${rot}: ${x}`));
     for (const pc of r.pecas) {
       const q = { ...pc, id: `${tag}-${pc.id}`, nome: `${tag} · ${pc.nome}`, modulo:k, box: pc.box ? AMB.noMundo(amb, mod, pc.box) : pc.box };
-      if (mod.parede !== 0) q.mov = null;          // [limitação] porta da parede B ainda não abre no 3D
+      if (q.mov) q.mov = AMB.movNoMundo(mod, q.mov);   // parede B: o módulo está girado 90°, o movimento acompanha
       if (q.expPai) q.expPai = `${tag}-${q.expPai}`;
       pecas.push(q);
     }
@@ -94,8 +105,9 @@ function gerarAmbiente(amb) {
   if (paredes.length === 2) for (const ma of amb.modulos.filter(m => m.parede === 0 && m.x < 1)) for (const mb of amb.modulos.filter(m => m.parede === 1)) {
     const alturaCruza = ma.y < mb.y + mb.modulo.altura && mb.y < ma.y + ma.modulo.altura; if (!alturaCruza) continue;
     const ia = amb.modulos.indexOf(ma) + 1, ib = amb.modulos.indexOf(mb) + 1;
+    const frenteNoCanto = pecas.some(p => p.modulo === amb.modulos.indexOf(ma) && p.cat === 'frente' && p.box && p.box[0] < mb.modulo.profundidade + R.cantoFolga);
     if (mb.x < ma.modulo.profundidade - 0.5) E.push(`Canto: M${ia} e M${ib} se cruzam (M${ib} precisa começar a ${fmt(ma.modulo.profundidade)} mm do canto).`);
-    else if (mb.x - ma.modulo.profundidade < R.cantoFolga) A.push(`Canto: entre M${ia} e M${ib} sobram ${fmt(mb.x - ma.modulo.profundidade)} mm — as portas podem bater. Sugestão: enchimento (cego) de ${R.cantoFolga} mm.`);
+    else if (frenteNoCanto && mb.x - ma.modulo.profundidade < R.cantoFolga) A.push(`Canto: entre M${ia} e M${ib} sobram ${fmt(mb.x - ma.modulo.profundidade)} mm — as portas podem bater. Sugestão: enchimento (cego) de ${R.cantoFolga} mm.`);
   }
   // 4. tampo contínuo sobre os inferiores de cada parede (pedra: referência, orçado à parte)
   paredes.forEach((P, i) => {
@@ -108,6 +120,29 @@ function gerarAmbiente(amb) {
     const tem = amb.pontos.some(p => p.parede === i && p.tipo === 'esgoto' && p.x > x0 && p.x < x1);
     if (tem) A.push(`Tampo da ${nomeP(i)}: tem esgoto embaixo — prever recorte da cuba no tampo.`);
   });
+  // 5b. abrir portas e puxar gavetas: o que se move não pode entrar em outro módulo (vista de cima, nas alturas que se cruzam)
+  // peça a peça (não a caixa do módulo inteiro): um puxador do outro lado do módulo não conta
+  const obstaculos = pecas.filter(p => p.box && p.modulo !== undefined && !p.mov);
+  const dentro = (x, z, y0, y1, c) => x > c[0] + 1 && x < c[1] - 1 && z > c[4] + 1 && z < c[5] - 1 && y0 < c[3] && y1 > c[2];
+  const jaAvisado = new Set();
+  for (const f of pecas.filter(p => p.lista && p.cat === 'frente' && p.mov && p.box && (p.mov.tipo === 'porta' || p.mov.tipo === 'gaveta'))) {
+    const b = f.box, mod = amb.modulos[f.modulo], B = mod.parede === 1, pontos = [];
+    if (f.mov.tipo === 'porta') {
+      const px = f.mov.pivX, pz = f.mov.pivZ, longe = B ? (Math.abs(b[4] - pz) > Math.abs(b[5] - pz) ? b[4] : b[5]) : (Math.abs(b[0] - px) > Math.abs(b[1] - px) ? b[0] : b[1]);
+      const v0 = B ? [0, longe - pz] : [longe - px, 0], s = f.mov.lado === 'esq' ? -1 : 1;
+      for (let a = 5; a <= Math.min(90, f.mov.angMax || 90); a += 5) { /* até 90°: o que precisa abrir para usar */ const th = s * a * Math.PI / 180, vx = v0[0] * Math.cos(th) + v0[1] * Math.sin(th), vz = -v0[0] * Math.sin(th) + v0[1] * Math.cos(th);
+        for (let t = 0.1; t <= 1.001; t += 0.1) pontos.push([px + vx * t, pz + vz * t, a]); }
+    } else { const c = f.mov.curso || 0;
+      for (let t = 0.1; t <= 1.001; t += 0.1) for (let u = 0.05; u <= 0.951; u += 0.15) pontos.push(B ? [b[1] + c * t, b[4] + (b[5] - b[4]) * u, null] : [b[0] + (b[1] - b[0]) * u, b[5] + c * t, null]); }
+    for (const [x, z, ang] of pontos) {
+      const ob = obstaculos.find(p => p.modulo !== f.modulo && dentro(x, z, b[2], b[3], p.box));
+      if (!ob) continue; const j = ob.modulo;
+      const chave = f.id + '>' + j; if (jaAvisado.has(chave)) break; jaAvisado.add(chave);
+      A.push(f.mov.tipo === 'porta' ? `Abertura: ${f.nome} bate no M${j + 1} (${amb.modulos[j].nome}) com ${ang}° — use enchimento no canto ou troque o lado da dobradiça.`
+        : `Abertura: ${f.nome} não sai toda — bate no M${j + 1} (${amb.modulos[j].nome}). Use enchimento no canto ou gaveta mais curta.`);
+      break;
+    }
+  }
   // 5. pontos e paredes como referência no 3D (não fabricar)
   amb.pontos.forEach((pt, k) => { if (!paredes[pt.parede]) return;
     const fake = { parede:pt.parede, x:pt.x - 40, y:pt.altura - 40, modulo:{ largura:80 } };
@@ -129,7 +164,7 @@ TIPOS.ambiente = {
 // cozinha em L de exemplo: gaveteiro no canto da A, balcão da pia, balcão; na B um balcão e uma torre; aéreos na A
 (() => {
   const amb = TIPOS.ambiente.padrao, add = (k, p, x) => { const m = AMB.novoModulo(k, p, x ?? AMB.proximoX(amb, p, MODELOS_AMBIENTE[k].linha)); amb.modulos.push(m); return m; };
-  add('gaveteiro', 0, 0); const pia = add('balcao', 0); pia.nome = 'Balcão da pia'; pia.modulo.largura = 1200; add('balcao', 0);
+  add('canto', 0, 0); const pia = add('balcao', 0); pia.nome = 'Balcão da pia'; pia.modulo.largura = 1200; add('balcao', 0);
   add('balcao', 1); add('torre', 1);
   add('aereo', 0, 0); add('aereo', 0); add('aereo', 0);
 })();

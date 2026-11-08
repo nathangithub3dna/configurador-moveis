@@ -26,6 +26,8 @@ function liberarParaCorte(projeto, res) {
   const s = situacaoProjeto(projeto);
   if (s.estado !== 'aprovado') return { ok: false, motivo: s.estado === 'liberado' ? 'Já está liberado.' : 'Só libera depois do aceite do cliente na última revisão, sem mudanças depois dela.' };
   if (res.erros.length) return { ok: false, motivo: 'Corrija os erros antes de liberar.' };
+  const falta = conferenciaFabricacao(projeto, res, null).filter(i => i.obrigatorio && !i.ok);
+  if (falta.length) return { ok: false, motivo: 'Falta na conferência: ' + falta.map(i => i.texto).join('; ') };
   projeto.liberacao = { rev: s.rev, data: new Date().toISOString() };
   return { ok: true };
 }
@@ -42,4 +44,31 @@ function diferencasDesdeRevisao(projeto, resAtual, comprasAtuais, entradasAtuais
   for (const ref2 of new Set([...fA.keys(), ...fB.keys()])) { const a = fA.get(ref2)?.qtd || 0, b = fB.get(ref2)?.qtd || 0; if (a !== b) ferragens.push({ nome: (fB.get(ref2) || fA.get(ref2)).nome, antes: a, agora: b }); }
   const totalAgora = comprasAtuais ? calcularOrcamento(comprasAtuais, entradasAtuais).total : null;
   return { ref: ref.rev, aprovada: !!ref.aceite, pecas, ferragens, totalAntes: ref.resultado.total, totalAgora, diferenca: totalAgora == null ? null : totalAgora - ref.resultado.total };
+}
+
+/* ---------- Conferência antes de liberar para corte ---------- */
+// configuração da oficina (vale para todos os projetos deste computador): a furação da loja já foi conferida?
+function lerConfigOficina() { try { return JSON.parse(localStorage.getItem('configurador-moveis:config')) || {}; } catch (e) { return {}; } }
+function gravarConfigOficina(c) { try { localStorage.setItem('configurador-moveis:config', JSON.stringify(c)); } catch (e) {} }
+function textoAvisos(res) { return (res?.avisos || []).join('|'); }
+function conferenciaFabricacao(projeto, res, compras) {
+  const s = situacaoProjeto(projeto), cfg = lerConfigOficina(), avisos = res?.avisos || [];
+  const furacao = cfg.furacao === 'validada' ? 'Furação da loja conferida com a peça de teste' + (cfg.data ? ` (${new Date(cfg.data).toLocaleDateString('pt-BR')})` : '')
+    : cfg.furacao === 'soCorte' ? 'A loja só corta; a furação é feita na oficina' : 'Furação da loja ainda não conferida (mande a peça de teste)';
+  return [
+    { ok: s.estado === 'aprovado' || s.estado === 'liberado', obrigatorio: true, texto: s.estado === 'estudo' ? 'Revisão aprovada pelo cliente: falta (congele uma revisão e registre o aceite)' : `Revisão ${s.rev} aprovada pelo cliente` },
+    { ok: !!res && !res.erros.length, obrigatorio: true, texto: res?.erros.length ? `${res.erros.length} erro(s) no projeto` : 'Projeto sem erros' },
+    { ok: !!res && res.pecas.every(p => p.papel), obrigatorio: true, texto: 'Toda peça com função definida (orientação no Inventor e etiquetas)' },
+    { ok: !avisos.length || projeto.conferencia?.avisosVistos === textoAvisos(res), obrigatorio: true, texto: avisos.length ? `${avisos.length} aviso(s): conferir abertura de portas, gavetas, canto, pontos` : 'Sem avisos', chave: 'avisos' },
+    { ok: cfg.furacao === 'validada' || cfg.furacao === 'soCorte', obrigatorio: true, texto: furacao, chave: 'furacao' },
+    { ok: !compras || !compras.semPreco, obrigatorio: false, texto: compras?.semPreco ? `${compras.semPreco} item(ns) sem preço na lista de compras (o orçamento fica incompleto)` : 'Lista de compras com todos os preços' },
+  ];
+}
+// peça de teste: mostra se a loja lê o canto, as faces e o topo como o configurador (furos fora de simetria)
+function pecaDeTeste() {
+  return { id: 'peca-teste', nome: 'Peça de teste de furação', nomeLista: 'Peça de teste de furação', cat: 'caixa', papel: 'teste', mat: 'mdf-ru-branco', esp: 18, comp: 300, larg: 200, fita: [0, 0], lista: true,
+    des: { w: 200, h: 300, fita: [], vista: 'Vista pela face interna', furos: [
+      { x: 40, y: 40, d: 35, prof: 13, tipo: 'Ø35 perto do canto 0' }, { x: 160, y: 40, d: 8, prof: 10, tipo: 'Ø8 na face' },
+      { x: 100, y: 150, d: 5, prof: 0, tipo: 'Ø5 passante' }, { x: 40, y: 260, d: 5, prof: 11, tipo: 'Ø5 cego no alto' },
+      { x: 0, y: 150, d: 8, prof: 20, tipo: 'Ø8 no topo esquerdo', face: 'topo-esq' } ] } };
 }

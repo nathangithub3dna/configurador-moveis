@@ -291,7 +291,7 @@ function diferencas(a, b, caminho = '') {
     await passo('#etapas [data-etapa="montar"]');
     await page.selectOption('#tipoMovel', 'ambiente'); await page.waitForTimeout(800);
     const fotoA = () => page.evaluate(() => { const r = window.__configurador.estado.res;
-      return { erros: r.erros, avisos: r.avisos.length, canto: r.avisos.some(x => /^Canto/.test(x)), esgoto: r.avisos.some(x => /cobre o esgoto/.test(x)), recorte: r.pecas.some(p => p.forma?.tipo === 'recorte'),
+      return { erros: r.erros, avisos: r.avisos.length, canto: r.avisos.some(x => /^Canto/.test(x)), abertura: r.avisos.filter(x => /^Abertura/.test(x)).length, esgoto: r.avisos.some(x => /cobre o esgoto/.test(x)), recorte: r.pecas.some(p => p.forma?.tipo === 'recorte'),
         modulos: new Set(r.pecas.filter(p => p.modulo !== undefined).map(p => p.modulo)).size, tampos: r.pecas.filter(p => p.papel === 'tampo').length, semFuncao: r.pecas.filter(p => !p.papel).map(p => p.id).slice(0, 5),
         naPlanta: document.querySelectorAll('#esquema .pl-modulo').length, chapas: (window.__configurador.estado.plano?.materiais || []).length }; });
     const cozinha = await fotoA();
@@ -305,7 +305,15 @@ function diferencas(a, b, caminho = '') {
     await page.selectOption('#form [data-amb="formato"]', 'reta'); await page.waitForTimeout(400);
     const reta = await fotoA();
     const t5b = { cozinha, dentro, mudouDentro, estourou: estourou.erros, reta: reta.erros.slice(0, 3), paginaErros: erros };
-    const ok5b = !cozinha.erros.length && cozinha.canto && cozinha.esgoto && cozinha.recorte && cozinha.modulos === 8 && cozinha.tampos === 2 && !cozinha.semFuncao.length && cozinha.naPlanta === 8 && cozinha.chapas > 0
+    // 4: no canto, um gaveteiro no lugar do balcão cego tem as gavetas bloqueadas pelo módulo da parede B
+    const bloqueio = await page.evaluate(() => { const c = window.__configurador, amb = JSON.parse(JSON.stringify(c.TIPOS.ambiente.padrao));
+      amb.modulos[0] = c.AMB.novoModulo('gaveteiro', 0, 0); const r = c.TIPOS.ambiente.gerar(amb);
+      const portaB = r.pecas.find(p => p.modulo === 3 && p.mov?.tipo === 'porta'), gavB = (() => { const a2 = JSON.parse(JSON.stringify(c.TIPOS.ambiente.padrao)); a2.modulos[3] = c.AMB.novoModulo('gaveteiro', 1, a2.modulos[3].x); return c.TIPOS.ambiente.gerar(a2).pecas.find(p => p.modulo === 3 && p.mov?.tipo === 'gaveta'); })();
+      return { gavetasBloqueadas: r.avisos.filter(x => /^Abertura: M1 · Frente da gaveta/.test(x)).length, portaB: portaB && { pivX: portaB.mov.pivX, pivZ: portaB.mov.pivZ, dentro: portaB.mov.pivZ >= portaB.box[4] - 3 && portaB.mov.pivZ <= portaB.box[5] + 3 }, gavetaB: gavB?.mov.eixo }; });
+    t5b.bloqueio = bloqueio; t5b.abertura = cozinha.abertura;
+    const ok4 = cozinha.abertura === 0 && !cozinha.canto && bloqueio.gavetasBloqueadas === 3 && bloqueio.portaB?.dentro && bloqueio.gavetaB === 'x';
+    if (!ok4) { falhas++; console.log('CONFERÊNCIA DE ABERTURA ERRADO  ' + JSON.stringify({ abertura: cozinha.abertura, canto: cozinha.canto, bloqueio })); } else console.log('CONFERÊNCIA DE ABERTURA OK  ' + JSON.stringify(bloqueio));
+    const ok5b = !cozinha.erros.length && cozinha.esgoto && cozinha.recorte && cozinha.modulos === 8 && cozinha.tampos === 2 && !cozinha.semFuncao.length && cozinha.naPlanta === 8 && cozinha.chapas > 0
       && dentro.editor && dentro.vaosEsquema === 1 && mudouDentro === 1 && estourou.erros.some(x => /passa .* do fim da parede A/.test(x)) && reta.erros.some(x => /parede que não existe/.test(x)) && !erros.length;
     // 5c: códigos, pedido CorteCloud e etiquetas (no ambiente de exemplo, voltando ao L)
     await page.selectOption('#form [data-amb="formato"]', 'L'); await page.waitForTimeout(300);
@@ -348,15 +356,19 @@ function diferencas(a, b, caminho = '') {
       const c = window.__configurador, e = c.estado, ler = () => ({ rotulo: document.querySelector('#situacao .sit-rotulo').textContent, liberar: !document.getElementById('btnLiberar').hidden });
       const s0 = ler(); document.querySelector('[data-aceite="B"]').click(); await new Promise(r => setTimeout(r, 300));
       const s1 = ler(); document.getElementById('btnLiberar').click(); await new Promise(r => setTimeout(r, 300));
+      const bloqueado = ler().rotulo, confFaltas = [...document.querySelectorAll('#confLista li[data-ok="nao"]')].length;
+      document.querySelector('input[name="confFur"][value="soCorte"]').click(); const av = document.getElementById('confAvisos'); if (!av.disabled && !av.checked) av.click();
+      document.getElementById('btnLiberar').click(); await new Promise(r => setTimeout(r, 300));
+      const pt = c.pecaDeTeste(), pedidoTeste = c.pedidoCorteCloud([pt], new Map([[pt.id, { codigo:'T' }]]), 'TESTE').parts[0].machining;
       const s2 = ler(), lista2 = e.textos.corte.split('\n')[1], folha2 = c.folhaPecaSVG(e.res.pecas.find(p => p.lista), { aviso:'' }).includes('NÃO FABRICAR');
-      return { s0, s1, s2, lista2, folha2 }; });
+      return { s0, s1, bloqueado, confFaltas, s2, lista2, folha2, teste: { face: pedidoTeste.verticalDrills.length, topo: pedidoTeste.horizontalDrills.length } }; });
     await passo('#etapas [data-etapa="montar"]');
-    await page.evaluate(() => { const i = document.querySelector('#form [data-mod="largura"][data-i="0"]'); i.value = 500; i.dispatchEvent(new Event('change', { bubbles:true })); });
+    await page.evaluate(() => { const i = document.querySelector('#form [data-mod="largura"][data-i="2"]'); i.value = 500; i.dispatchEvent(new Event('change', { bubbles:true })); });
     await page.waitForTimeout(400);
     sit.depois = await page.evaluate(() => ({ rotulo: document.querySelector('#situacao .sit-rotulo').textContent, mudancas: !document.getElementById('mudancas').hidden,
       pecasMudaram: document.querySelectorAll('#mudancas [data-lista="pecas"] tbody tr').length, titulo: document.querySelector('#mudancas h3').textContent, lista: window.__configurador.estado.textos.corte.split('\n')[1] }));
     loja.situacao = sit;
-    const okSit = /ESTUDO/.test(sit.s0.rotulo) && /APROVADO/.test(sit.s1.rotulo) && sit.s1.liberar && /LIBERADO/.test(sit.s2.rotulo) && /LIBERADO/.test(sit.lista2)
+    const okSit = /ESTUDO/.test(sit.s0.rotulo) && /APROVADO/.test(sit.s1.rotulo) && sit.s1.liberar && /APROVADO/.test(sit.bloqueado) && sit.confFaltas > 0 && /LIBERADO/.test(sit.s2.rotulo) && sit.teste.face === 4 && sit.teste.topo === 1 && /LIBERADO/.test(sit.lista2)
       && /ESTUDO — alterado depois da Rev. B/.test(sit.depois.rotulo) && sit.depois.mudancas && sit.depois.pecasMudaram > 0 && /Rev. B/.test(sit.depois.titulo) && /não fabricar/.test(sit.depois.lista);
     if (!okSit) { falhas++; console.log('SITUAÇÃO E REVISÃO ERRADO  ' + JSON.stringify(sit)); } else console.log('SITUAÇÃO E REVISÃO OK  ' + JSON.stringify(sit));
     const okOrc = orc.resumo1 >= 6 && orc.n === 2 && orc.totalA > 0 && orc.totalA === orc.totalA_depois && orc.aceiteA && orc.revB === 'B' && Math.abs(orc.difB - 10 * 50 * 1.15) < 0.01 && orc.aposAceite && orc.linhas === 2 && orc.pdfKB > 2;
