@@ -51,6 +51,17 @@ function folhaPecaSVG(pc, extra = {}) {
   // fita marcada nas bordas (regra 8): linha grossa por fora
   const bordas = { t:[X(0), Y(H), X(W), Y(H), 0, -0.6], b:[X(0), Y(0), X(W), Y(0), 0, 0.6], l:[X(0), Y(0), X(0), Y(H), -0.6, 0], r:[X(W), Y(0), X(W), Y(H), 0.6, 0] };
   fita.forEach(s => { const b = bordas[s]; if (b) ln(b[0] + b[4], b[1] + b[5], b[2] + b[4], b[3] + b[5], 0.9, 'stroke-opacity="0.55"'); });
+  // recortes na borda (des.recortes: na borda de cima do desenho) e vazados (des.rasgos), girados junto com a folha
+  const hOrig = d.h ?? pc.comp, girou = (d.w ?? pc.larg) > hOrig, gira = q => girou ? { x: hOrig - (q.y + q.h), y: q.x, w: q.h, h: q.w } : q;
+  const recs = (d.recortes || []).map(r => gira({ x: r.x, y: hOrig - r.h, w: r.w, h: r.h })), vaz = (d.rasgos || []).map(gira);
+  for (const q of recs) {
+    rect(X(q.x), Y(q.y + q.h), q.w * S, q.h * S, L.visivel, 'fill="#fff"');
+    const borda = [[q.y + q.h >= H - 0.01, X(q.x), Y(H), X(q.x + q.w), Y(H)], [q.y <= 0.01, X(q.x), Y(0), X(q.x + q.w), Y(0)],
+      [q.x <= 0.01, X(0), Y(q.y), X(0), Y(q.y + q.h)], [q.x + q.w >= W - 0.01, X(W), Y(q.y), X(W), Y(q.y + q.h)]];
+    borda.filter(b => b[0]).forEach(([, x1, y1, x2, y2]) => out.push(`<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="#fff" stroke-width="1.4"/>`));   // apaga a borda onde a chapa foi cortada
+    t(X(q.x + q.w / 2), Y(q.y + q.h / 2) + 1, `recorte ${n(q.w)} × ${n(q.h)}`, 2.2, 'middle');
+  }
+  for (const q of vaz) { rect(X(q.x), Y(q.y + q.h), q.w * S, q.h * S, L.visivel); t(X(q.x + q.w / 2), Y(q.y) + 3, `vazado ${n(q.w)} × ${n(q.h)} passante`, 2.2, 'middle'); }
   for (const f of furos) { circ(X(f.x), Y(f.y), Math.max(0.35, f.d * S / 2), f.prof ? L.visivel : L.visivel); if (f.d * S > 2) { ln(X(f.x) - f.d * S / 2 - 1, Y(f.y), X(f.x) + f.d * S / 2 + 1, Y(f.y), 0.13, 'stroke-dasharray="3,1,0.5,1"'); ln(X(f.x), Y(f.y) - f.d * S / 2 - 1, X(f.x), Y(f.y) + f.d * S / 2 + 1, 0.13, 'stroke-dasharray="3,1,0.5,1"'); } }
   // cotas totais (1ª linha a 10 mm — regra 12)
   cotaH(X(0), X(W), Y(0), Y(0) + FOLHA.cotaPrimeira, n(W));

@@ -25,3 +25,29 @@
 .pl-ponto{position:absolute;border-radius:50%;border:2px solid var(--surface)}
 .pl-esgoto{background:#7a5230}.pl-agua{background:#2f7fd0}.pl-gas{background:#d9a21b}.pl-tomada{background:#c0392b}
 .pl-legenda{position:absolute;left:16px;bottom:12px;right:16px;font-size:12px;color:var(--muted)}
+
+/* peças livres (1b): lista com uma peça aberta por vez; sublinhas de recorte, furo e ferragem */
+.amb-nota{margin:0;font-size:12px;color:var(--muted)}
+.amb-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.amb-cab-btn{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:1px}
+.amb-cab-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.amb-livre-corpo{display:flex;flex-direction:column;gap:8px;padding-top:4px}
+.amb-livre-corpo[hidden]{display:none}
+.amb-sub{margin:6px 0 0;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--fg)}
+.amb-fita{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.amb-fita>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px}
+.amb-check{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fg)}
+.amb-sublinha{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:6px;align-items:end}
+.amb-sublinha .btn{padding:6px 10px}
+.amb-fer{grid-template-columns:minmax(0,1fr) 70px auto}
+.amb-fer select{height:36px}
+.amb-grupo .amb-cab strong{color:var(--fg)}
+
+/* planta: peças livres por cima dos módulos, na cor de peça livre */
+.pl-livres{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.pl-livre{pointer-events:auto;cursor:pointer}
+.pl-livre polygon{fill:color-mix(in srgb,var(--v-livre) 55%,transparent);stroke:var(--v-linha);stroke-width:1.5}
+.pl-livre text{font:800 11px var(--f-sans);fill:var(--fg);text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.pl-livre-sel polygon{stroke:var(--accent);stroke-width:3}
+.pl-livre-sel text{fill:var(--accent)}
+.amb-livre .ed-campo input[type=text]{font-family:var(--f-sans);text-align:left}
