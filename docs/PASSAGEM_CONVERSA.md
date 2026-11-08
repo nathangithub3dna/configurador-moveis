@@ -1,49 +1,46 @@
-# Passagem — Configurador de Móveis — 08/11/2026 18:50
+# Passagem — Configurador de Móveis — 08/11/2026 (noite)
 
 ## Onde paramos
-Sub-etapa **1b do passo 1 (tela das peças livres) pronta e publicada** (commit `85b1e8a`, artifact versão 27): no modo Ambiente dá para criar e editar peças livres pela tela, juntar em grupos e vê-las na planta. **Ficou aberto um problema relatado pelo Nathan:** no celular, abrindo o artifact pelo app do Claude, os botões e campos aparecem mas a área do desenho fica vazia (nenhum móvel). Na nuvem, numa tela de celular (390 × 844), o móvel aparece no Esquema e no 3D — não foi reproduzido. A 1b ainda não foi aprovada pelo Nathan.
+Sub-etapa **1c-i pronta e publicada** (commit `fb0a3d7`, artifact versão 28): em qualquer módulo (móvel livre ou módulo do ambiente) dá para **desligar uma peça** ou **mudar a medida** dela; aceite feito com a caixa da geladeira (aéreo a 1800 mm, laterais descendo até o chão, sem fundo). A 1c foi dividida a pedido do Nathan ("pode dividir o quanto for necessário"): 1c-i (feita), 1c-ii, 1c-iii. A 1c-i ainda não foi aprovada pelo Nathan. A 1b foi tomada como aprovada (o Nathan pediu para seguir para as próximas alterações).
 
 ## Próximo passo
-1. Investigar o "móvel não aparece no celular" antes de qualquer outra coisa. O Nathan ainda não respondeu as duas perguntas que separam as causas:
-   - Antes de hoje o móvel aparecia no celular? (Se parou hoje, suspeitar da 1b: `fonte/js/tela-ambiente.js`, `fonte/pagina.html`, `fonte/estilos/ambiente.css`, `fonte/js/folha-peca.js`.)
-   - Em "Lista de corte" a tabela aparece preenchida? (Preenchida = programa roda e só o desenho falha: tamanho da área `.vista`/`.palco` no app, ou WebGL do aparelho. Vazia = o programa não carrega no app: ex. a biblioteca three vinda de cdn.jsdelivr.net pelo importmap.)
-   - Confirmar a causa antes de corrigir (pedir print; se possível abrir o artifact no Chrome do PC em largura de celular). Depois corrigir, rodar `npm run testar`, publicar.
-2. Depois: aprovação da 1b pelo Nathan e a sub-etapa **1c — caixa livre + desligar/mudar peça de qualquer módulo** (aceite: caixa da geladeira com lateral alta + aéreo, sem base nem fundo). Especificação em `claude/peca-caixa-livre.md`.
+1. Aprovação da 1c-i pelo Nathan (testar: 3D → tocar numa peça → "Ajuste desta peça"; no ambiente, "Abrir" o módulo → "Peças ajustadas").
+2. **1c-ii — caixa livre:** módulo solto no ambiente (X, Y, Z) ou afastado da parede, virado para os 4 lados. Definir o aceite com o Nathan antes.
+3. **1c-iii — giro em ângulo livre da caixa** (3D, planta, portas abrindo, choques, iLogic).
+4. Problema do celular continua aberto (ver "Sem testar / riscos").
 
 ## Feito nesta conversa
-- Tela das peças livres no modo Ambiente — para montar painel, forro, cortineiro, mesa etc. sem mexer nos dados:
-  - "+ Peça" por função (nasce com medidas iniciais da função); lista com uma peça aberta por vez; Editar/Fechar, Duplicar, Remover.
-  - Campos: nome, função, grupo, medida 1, medida 2, espessura, material, veio (só em material com veio), fita por borda (nomeada como a peça nasce: de baixo, de cima, lado do canto, de trás, da frente…), como nasce, onde (parede A, parede B, solta), posição, giro (tombar, virar, inclinar), recortes, furos, ferragens da biblioteca com quantidade.
-  - Trocar "onde" mantém a peça no mesmo lugar do ambiente; na parede B avisa para conferir o giro (a peça nasce virada 90°).
-  - Grupo: bloco por grupo com "Mover X/Y/Z" (eixos do ambiente), "Mover o grupo" e "Duplicar o grupo" (cópia "<grupo> 2", ao lado). Duplicar peça: cópia nasce ao lado.
-- Planta (vista de cima): peças livres desenhadas por cima dos módulos com o contorno real visto de cima (vale girada), rótulo L1, L2…; clicar abre a peça no painel.
-- Folha A3: a vista frontal passou a desenhar recortes de borda e vazados (antes saía só o retângulo — valia também para a prateleira com recorte do sifão). Conferido por imagem no tampo da mesa.
-- Teste novo "PEÇAS LIVRES PELA TELA (1b)" em `testes/rodar.js`: monta pela tela as 8 peças do caso da 1a e compara com o caso montado pelos dados (igual); confere planta, clique na planta, mover/duplicar grupo, duplicar/remover peça. Todos os casos iguais à referência.
-- Publicado: artifact versão 27; cópia em `codigo/configurador-moveis.html` no projeto; `configurador-offline.html` enviado ao Nathan; `claude/peca-caixa-livre.md` atualizado (1b feita, o que ficou pronto e limites).
-- Explicado ao Nathan o plano do passo 1 (1a–1d) e o escopo dos passos 2 e 3.
+- Ajuste por peça (`modulo.pecasAjuste`, lógica em `fonte/js/nucleo.js` → `aplicarAjustesPecas`): desligar (leva junto dobradiças/puxador da porta, caixa da gaveta) ou mudar medida por eixo do módulo com "o que fica no lugar". Aplicado antes da furação.
+- Furação das laterais (e base/topo passantes) medida a partir da própria peça, não do módulo — sem ajuste, resultado idêntico (referências iguais).
+- Ambiente: erro se peça esticada fica abaixo do chão; aviso se ocupa o lugar de outro módulo (peça a peça).
+- Tela (`fonte/js/tela-ajuste.js`, `fonte/estilos/ajuste.css`, modelos `tplAjuste*`): bloco na ficha da peça e lista "Peças ajustadas" no editor do módulo.
+- Esquema de frente enquadra peças que saem do módulo; ficha à frente das cotas do 3D (no celular os números passavam por cima).
+- **Versão sem internet:** passou a declarar `<meta charset="utf-8">` (`ferramentas/offline.js`). Sem isso o navegador adivinhava a codificação; com o arquivo maior adivinhou errado e um acento quebrou o programa inteiro (teste "SEM INTERNET" falhou e voltou a passar com a correção).
+- Teste novo "AJUSTE POR PEÇA (1c)" em `testes/rodar.js`. Todos os casos iguais à referência.
+- Publicado: artifact v28; cópia em `codigo/configurador-moveis.html`; `claude/peca-caixa-livre.md` atualizado (divisão da 1c, o que ficou pronto, limites).
 
 ## Decisões tomadas
-- Mexer na posição de uma peça move só ela; o grupo se move pelo bloco do grupo (Mover/Duplicar) — sugestão do Claude, para não arrastar o pé ao ajustar o tampo; informada ao Nathan, sem resposta contrária.
-- Duplicar peça/grupo: a cópia nasce ao lado, não por cima — sugestão do Claude.
+- 1c dividida em 1c-i / 1c-ii / 1c-iii (Nathan).
+- Mudar a medida só em peças de caixa/fundo/enchimento sem furos próprios; porta, gaveta, ferragem, prateleira com recorte e travessa de fixação dão erro explicando — escolha do Claude para não gerar furação errada.
+- Medida padrão do "o que fica no lugar": esquerda/embaixo/atrás — escolha do Claude.
 
 ## Tentado e descartado
 - nada
 
 ## Sem testar / riscos
-- **Móvel não aparece no celular (artifact no app do Claude)** — causa não confirmada; ver "Próximo passo".
-- Uso real da tela pelo Nathan (montar a mesa no celular) — ainda não feito.
-- 3D das peças criadas pela tela não conferido por imagem nesta etapa (dados iguais aos da 1a, que foi conferida).
+- **Móvel não aparece no celular (artifact no app do Claude)** — causa não confirmada; o Nathan não respondeu às perguntas (aparecia antes? Lista de corte vem preenchida?). Descartado nesta conversa: falta de codificação no artifact publicado (a página publicada já vem com `<meta charset=utf8>`). Na nuvem, em 390 × 844, o móvel aparece no 3D.
+- Uso real da 1c-i pelo Nathan.
+- Ajuste guardado pelo nome interno da peça: mexer na árvore de vãos pode fazê-lo deixar de servir (vira aviso).
 - iLogic de peça girada continua sem rodar no Inventor.
 
 ## Pendências
-- Decisão do Nathan sobre cópias duplicadas (pergunta feita, sem resposta): A) parar de copiar o programa para `codigo/configurador-moveis.html` no projeto (recomendação do Claude: o código já está no GitHub e a versão de uso no artifact; a cópia de 360 KB fica desatualizada e pesa nas buscas); B) também deixar a passagem só no GitHub; C) deixar como está. Mudar exige ajustar `CLAUDE.md`, a skill do configurador e a skill de fechar conversa. Até lá, seguir copiando.
-- Limites da 1b: "Mover o grupo" não gira o grupo; rótulos da planta se sobrepõem em peças finas e próximas; nome longo da peça encosta no "QTD." do carimbo da folha A3 (já existia).
-- Limites da 1a continuam (recortes só numa borda, furos só na face A, CorteCloud sem recortes, volumes de transporte do ambiente, biblioteca sem mão-francesa/cantoneira/suporte invisível, 3D na cor da categoria).
+- Decisão do Nathan sobre cópias duplicadas (A: parar de copiar o programa para `codigo/configurador-moveis.html`; B: também a passagem só no GitHub; C: deixar como está). Até lá, seguir copiando.
+- Limites da 1c-i, 1b e 1a: ver `claude/peca-caixa-livre.md`.
 
 ## Arquivos tocados
-- `fonte/pagina.html` — bloco "Peças livres" no modelo do Ambiente e modelos `tplLivre`, `tplLivreRec`, `tplLivreFuro`, `tplLivreFer`, `tplGrupo`.
-- `fonte/js/tela-ambiente.js` — lista e edição das peças livres, grupos, peças livres na planta e clique nelas.
-- `fonte/estilos/ambiente.css` — aparência da lista de peças livres e das peças na planta.
-- `fonte/js/folha-peca.js` — recortes e vazados na vista frontal da folha A3.
-- `testes/rodar.js` — teste "PEÇAS LIVRES PELA TELA (1b)".
-- Projeto MÓVEIS PLANEJADOS: `claude/peca-caixa-livre.md`, `codigo/configurador-moveis.html`.
+- `fonte/js/nucleo.js` — `aplicarAjustesPecas`, `eixosDoDesenho`; furação relativa à peça.
+- `fonte/js/ambiente.js` — erro/aviso de peça esticada.
+- `fonte/js/tela-ajuste.js` (novo), `fonte/estilos/ajuste.css` (novo), `fonte/pagina.html` (modelos e inclusões), `fonte/js/tela.js` (ficha chama o ajuste; `selecionar` exposto aos testes), `fonte/js/tela-modulo.js` (lista no editor; enquadramento do esquema), `fonte/estilos/layout.css` (camada das cotas).
+- `ferramentas/offline.js` — `<meta charset="utf-8">`.
+- `testes/rodar.js` — teste "AJUSTE POR PEÇA (1c)".
+- Projeto MÓVEIS PLANEJADOS: `claude/peca-caixa-livre.md`, `codigo/configurador-moveis.html`, `claude/passagem-conversa.md`.
