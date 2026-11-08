@@ -22,3 +22,8 @@
 .palco.com-esquema .rotulos,.palco.com-esquema .dica{display:none}
 .ficha[hidden]{display:none}
 .grupo[hidden]{display:none}
+
+/* diagnóstico de carregamento (js/diagnostico.js): só aparece se o programa não abrir */
+.diag-carga{position:relative;z-index:30;margin:8px;padding:10px 12px;border-radius:var(--raio-p);background:var(--warn-bg);color:var(--warn);font-size:12px;display:flex;flex-direction:column;gap:6px}
+.diag-carga pre{margin:0;white-space:pre-wrap;word-break:break-all;font:11px/1.35 var(--f-mono);color:var(--fg)}
+.diag-carga .btn{align-self:flex-start}
