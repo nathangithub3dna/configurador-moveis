@@ -37,6 +37,8 @@ const re = /<script type="importmap">[\s\S]*?<\/script>/;
 if (!re.test(s)) { console.error('ERRO: importmap não encontrado'); process.exit(1); }
 s = s.replace(re, () => `<script type="importmap">${JSON.stringify({ imports: mapa })}</script>`);
 s = s.replace('<!-- ARQUIVO GERADO', '<!-- VERSÃO SEM INTERNET (bibliotecas embutidas) · ARQUIVO GERADO');
+// aberto direto do disco não há quem diga a codificação: sem isto o navegador adivinha e pode quebrar os acentos (e o programa)
+s = '<meta charset="utf-8">\n' + s;
 
 const saida = path.join(raiz, 'configurador-offline.html');
 fs.writeFileSync(saida, s);

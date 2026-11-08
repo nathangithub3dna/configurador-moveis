@@ -75,7 +75,7 @@ legend{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:upperc
 .barra select{padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-size:12.5px}
 .palco{position:relative;flex:1;min-height:0;touch-action:none}
 .palco canvas{display:block}
-.rotulos{position:absolute;inset:0;pointer-events:none}
+.rotulos{position:absolute;inset:0;pointer-events:none;z-index:1}   /* camada própria: as cotas não passam por cima da ficha */
 .cota-rot{font:500 11px var(--f-mono);color:var(--fg);background:var(--surface);border:1px solid var(--line);padding:1px 5px;border-radius:4px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .cota-rot.med{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
 .cota-rot.esg{color:var(--v-esgoto);border-color:var(--v-esgoto)}

@@ -108,6 +108,12 @@ function gerarAmbiente(amb) {
     const mods = [...new Set(pecas.filter(p => p.modulo !== undefined && p.lista && p.box && cruza(q.box, p.box)).map(p => p.modulo))];
     if (mods.length) A.push(`${q.nome}: ocupa o mesmo lugar que ${mods.map(j => `M${j + 1}`).join(', ')}.`);
   }
+  // 1c. peça com medida mudada à mão: pode sair do módulo — conferir chão e outros módulos peça a peça
+  for (const q of pecas.filter(p => p.ajustada && p.box)) {
+    if (q.box[2] < -0.5) E.push(`${q.nome}: com a medida mudada fica ${fmt(-q.box[2])} mm abaixo do chão.`);
+    const mods = [...new Set(pecas.filter(p => p.modulo !== undefined && p.modulo !== q.modulo && p.lista && p.box && cruza(q.box, p.box)).map(p => p.modulo))];
+    if (mods.length) A.push(`${q.nome}: com a medida mudada ocupa o mesmo lugar que ${mods.map(j => `M${j + 1}`).join(', ')}.`);
+  }
   // 2. sobreposição entre módulos da mesma parede (aéreos só com aéreos; torre conta nas duas linhas)
   const conflito = (m1, m2) => m1.parede === m2.parede && ext(m1)[0] < ext(m2)[1] - 0.5 && ext(m2)[0] < ext(m1)[1] - 0.5
     && m1.y < m2.y + m2.modulo.altura - 0.5 && m2.y < m1.y + m1.modulo.altura - 0.5;

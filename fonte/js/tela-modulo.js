@@ -70,6 +70,7 @@ function montarEditorModulo() {
     const b = modeloDe('tplOpcao').querySelector('button'); b.textContent = r; b.dataset.valor = v;
     b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
   }));
+  preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela-ajuste.js)
   $('form').replaceChildren(ed);
 }
 
@@ -83,6 +84,7 @@ $('form').addEventListener('click', e => {
   const b = e.target.closest('[data-acao]'); if (!b || !ehModulo()) return;
   const cam = estado.vaoSel, a = b.dataset.acao;
   if (a === 'voltar-ambiente') return;                                 // tela-ambiente.js cuida
+  if (a.startsWith('ajuste-')) return;                                  // tela-ajuste.js cuida
   if (a === 'selecionar') { estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema(); return; }
   mudarModulo(m => {
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
@@ -124,11 +126,14 @@ function atualizarEsquema() {
   if (caixa.hidden) return;
   if (amb && !mod) { desenharPlanta(caixa); return; }                  // ambiente: planta vista de cima (js/tela-ambiente.js)
   const r = amb ? resultadoLocal() : (estado.res?.dims ? estado.res : estado.valido); if (!r?.dims) { caixa.replaceChildren(); return; }   // mesmo com erro, mostra os vãos para corrigir
-  const L = r.dims.L, H = r.dims.H, margem = 32;
+  // enquadra pelo módulo e por peças que saem dele (medida mudada à mão — 1c)
+  const bx = r.pecas.filter(p => p.box && p.lista), xMin = Math.min(0, ...bx.map(p => p.box[0])), yMin = Math.min(0, ...bx.map(p => p.box[2]));
+  const xMax = Math.max(r.dims.L, ...bx.map(p => p.box[1])), yMax = Math.max(r.dims.H, ...bx.map(p => p.box[3]));
+  const L = xMax - xMin, H = yMax - yMin, margem = 32;
   const esc = Math.min((caixa.clientWidth - 2*margem) / L, (caixa.clientHeight - 2*margem) / H) || 0.25;
-  const x0 = (caixa.clientWidth - L*esc) / 2, y0 = (caixa.clientHeight - H*esc) / 2;
+  const x0 = (caixa.clientWidth - L*esc) / 2 - xMin*esc, y0 = (caixa.clientHeight - H*esc) / 2;
   const ret = (b, cls) => { const d = el('div', { class: cls });
-    Object.assign(d.style, { left: x0 + b[0]*esc + 'px', top: y0 + (H - b[3])*esc + 'px', width: (b[1] - b[0])*esc + 'px', height: (b[3] - b[2])*esc + 'px' }); return d; };
+    Object.assign(d.style, { left: x0 + b[0]*esc + 'px', top: y0 + (yMax - b[3])*esc + 'px', width: (b[1] - b[0])*esc + 'px', height: (b[3] - b[2])*esc + 'px' }); return d; };
   const escondidas = ['porta', 'porta-correr', 'porta-basculante', 'fundo', 'emenda-fundo', 'travessa-fixacao'];
   const pecas = r.pecas.filter(p => p.box && p.lista && !escondidas.includes(p.papel)).sort((a, b) => a.box[5] - b.box[5]);
   const nos = pecas.map(p => ret(p.box, 'esq-peca esq-' + p.cat));

@@ -430,14 +430,19 @@ function gerarModuloV3(m) {
     add({ id:'tampo', nome:'Tampo (existente)', cat:'tampo', mat:'marmore', esp:te, a:tl, b:tp, lista:false, box:[tx0,tx0+tl,H,H+te,0,tp] });
   }
 
+  // AJUSTE POR PEÇA (passo 1c): desligar ou mudar a medida — antes da furação, para os furos saírem na peça real
+  aplicarAjustesPecas(pecas, m.pecasAjuste, E, A);
+
   // FURAÇÃO DAS LATERAIS (montagem, pinos, calços, corrediças)
   if (c.furarLaterais) ['esq','dir'].forEach(lado => {
     const lat = pecas.find(q => q.papel === 'lateral' && q.lado === lado); if (!lat) return;
-    const X = z => lado === 'esq' ? zFr - z : z - zfC, Y = y => y - yLat0;
+    const [lz0, lz1, ly0, ly1] = [lat.box[4], lat.box[5], lat.box[2], lat.box[3]];   // a própria lateral (pode ter medida mudada — 1c)
+    const X = z => lado === 'esq' ? lz1 - z : z - lz0, Y = y => y - ly0;
     const furos = [], linhas = [], furo = (z,y,d,prof,tipo) => furos.push({ x:X(z), y:Y(y), d, prof, tipo });
     const xIn = lado === 'esq' ? xa + t : xb - t, encosta = pc => Math.abs((lado === 'esq' ? pc.box[0] : pc.box[1]) - xIn) < 0.6;
     pecas.filter(q => ((q.papel === 'base' && !entre) || q.papel === 'divisoria' || (q.papel === 'topo' && !entre)) && encosta(q)).forEach(b => {
-      const yc = (b.box[2]+b.box[3])/2, zs = [zFr-50,(zfC+zFr)/2,zfC+50], J = c.juncao || 'parafuso';
+      const za = Math.max(lz0, b.box[4]), zb = Math.min(lz1, b.box[5]);
+      const yc = (b.box[2]+b.box[3])/2, zs = [zb-50,(za+zb)/2,za+50], J = c.juncao || 'parafuso';
       if (J === 'parafuso') { if (b.papel !== 'topo') zs.forEach(z => furo(z,yc,4,0,'montagem')); return; }
       // JUNÇÃO por minifix e/ou cavilha: furos na lateral (face) e na peça que encosta (face + topo)
       const mf = R.minifix, cv = R.cavilha, fb = b.des.furos = b.des.furos || [], eixoX = lado === 'esq' ? 0 : b.box[1] - b.box[0], dirX = lado === 'esq' ? 1 : -1;
@@ -446,25 +451,25 @@ function gerarModuloV3(m) {
       const cavilhaEm = J === 'cavilha' ? zs : J.includes('cavilha') ? [zs[0] - cv.desvio, (zs[0]+zs[2])/2, zs[2] + cv.desvio] : [];
       minifixEm.forEach(z => {
         furos.push({ x:X(z), y:Y(yc), d:mf.pinoFaceDiam, prof:mf.pinoFaceProf, tipo:'minifix-pino', face:'interna' });
-        fb.push({ x:eixoX + dirX*mf.distancia, y:zFr - z, d:mf.tamborDiam, prof:mf.tamborProf[t >= 18 ? '18' : '15'], tipo:'minifix-tambor', face:faceB });
-        fb.push({ x:eixoX, y:zFr - z, d:mf.canalTopoDiam, prof:mf.distancia, tipo:'minifix-canal', face:pontaB });
+        fb.push({ x:eixoX + dirX*mf.distancia, y:b.box[5] - z, d:mf.tamborDiam, prof:mf.tamborProf[t >= 18 ? '18' : '15'], tipo:'minifix-tambor', face:faceB });
+        fb.push({ x:eixoX, y:b.box[5] - z, d:mf.canalTopoDiam, prof:mf.distancia, tipo:'minifix-canal', face:pontaB });
         ferr({ id:`minifix-${b.id}-${lado}-${Math.round(z)}`, nome:`Minifix ${b.nome} × lateral ${lado}`, ref:'kit-minifix-15', box:[(lado === 'esq' ? xIn : xIn) - 7.5 + dirX*mf.distancia, xIn + 7.5 + dirX*mf.distancia, yc - 7.5, yc + 7.5, z - 7.5, z + 7.5] });
       });
       cavilhaEm.forEach(z => {
         furos.push({ x:X(z), y:Y(yc), d:cv.diam, prof:cv.profFace, tipo:'cavilha', face:'interna' });
-        fb.push({ x:eixoX, y:zFr - z, d:cv.diam, prof:cv.profTopo, tipo:'cavilha', face:pontaB });
+        fb.push({ x:eixoX, y:b.box[5] - z, d:cv.diam, prof:cv.profTopo, tipo:'cavilha', face:pontaB });
         ferr({ id:`cavilha-${b.id}-${lado}-${Math.round(z)}`, nome:`Cavilha ${b.nome} × lateral ${lado}`, ref:'cavilha-8x30', box:[xIn - (lado === 'esq' ? cv.profFace : cv.profTopo), xIn + (lado === 'esq' ? cv.profTopo : cv.profFace), yc - 4, yc + 4, z - 4, z + 4] });
       });
     });
-    if (c.topo === 'travessas' && !entre) [zFr-25, zFr-75, zfC+75, zfC+25].forEach(z => furo(z, H-t/2, 4, 0, 'montagem'));
+    if (c.topo === 'travessas' && !entre) [lz1-25, lz1-75, lz0+75, lz0+25].forEach(z => furo(z, H-t/2, 4, 0, 'montagem'));
     pecas.filter(q => q.papel === 'travessa-fixacao' && encosta(q)).forEach(tr => { const yc = (tr.box[2]+tr.box[3])/2; [yc-25, yc+25].forEach(y => furo(zf+t/2, y, 4, 0, 'montagem')); });
     const pf = c.prateleira.furacao, vistos = new Set();
-    const pino = (z, y) => { if (y < yLat0 + t + 10 || y > yLat1 - t - 10) return; const k = Math.round(z) + ':' + Math.round(y*10); if (vistos.has(k)) return; vistos.add(k); furo(z, y, 5, 10, 'pino'); };
+    const pino = (z, y) => { if (y < ly0 + t + 10 || y > ly1 - t - 10) return; const k = Math.round(z) + ':' + Math.round(y*10); if (vistos.has(k)) return; vistos.add(k); furo(z, y, 5, 10, 'pino'); };
     pecas.filter(q => q.papel === 'prateleira' && Math.abs((lado === 'esq' ? q.box[0] - R.folgaPrat : q.box[1] + R.folgaPrat) - xIn) < 0.6).forEach(s => [s.box[5]-40, s.box[4]+40].forEach(z => {
       const y0 = s.box[2] - 5;
       if (pf === '4-furos') pino(z, y0);
       else if (pf === 'faixa32') for (let k = -c.prateleira.faixa; k <= c.prateleira.faixa; k++) pino(z, y0 + 32*k);
-      else for (let y = y0 - 32*Math.floor((y0 - yLat0)/32); y < yLat1; y += 32) pino(z, y);
+      else for (let y = y0 - 32*Math.floor((y0 - ly0)/32); y < ly1; y += 32) pino(z, y);
     }));
     pecas.filter(q => q.papel === 'dobradica' && q.mov?.lado === lado && Math.abs(q.mov.pivX - (lado === 'esq' ? xa : xb)) < 0.6).forEach(h => { const yc = (h.box[2]+h.box[3])/2; [yc-16, yc+16].forEach(y => furo(zFr-37, y, 3, 10, 'calco')); });
     pecas.filter(q => q.papel === 'corredica' && q.lado === lado && Math.abs((lado === 'esq' ? q.box[0] : q.box[1]) - xIn) < 0.6).forEach(cr => { const yc = (cr.box[2]+cr.box[3])/2; linhas.push({ x1:X(zFr), y1:Y(yc), x2:X(cr.box[4]), y2:Y(yc), txt:'eixo da corrediça' }); [zFr-37, cr.box[4]+37].forEach(z => furo(z, yc, 3, 10, 'corredica')); });
@@ -472,7 +477,7 @@ function gerarModuloV3(m) {
   });
   if (c.furarLaterais && entre) ['base','topo'].forEach(pp => { const pc = pecas.find(q => q.papel === pp); if (!pc) return;
     const fur = [];
-    for (const xx of [t/2, pc.box[1]-pc.box[0]-t/2]) for (const z of [zFr-50, (zfC+zFr)/2, zfC+50]) fur.push({ x:xx, y:zFr - z, d:4, prof:0, tipo:'montagem' });
+    for (const xx of [t/2, pc.box[1]-pc.box[0]-t/2]) for (const z of [pc.box[5]-50, (pc.box[4]+pc.box[5])/2, pc.box[4]+50]) fur.push({ x:xx, y:pc.box[5] - z, d:4, prof:0, tipo:'montagem' });
     pc.des.furos = fur; });
   // rasgos (canais) para o fundo encaixado
   if (rasgo) pecas.filter(q => ['lateral','base','topo','travessa'].includes(q.papel) && q.box[4] <= zFundo).forEach(q =>
@@ -487,6 +492,68 @@ function gerarModuloV3(m) {
   acabamentoPecas(pecas, m.materiais || {});
   const volumes = volumesDe(pecas, { montado, L, H:H0, P, A });
   return { pecas, erros:E, avisos:A, volumes, compras: comprasV3(pecas), vaos: regioes };
+}
+
+/* AJUSTE POR PEÇA (passo 1c) — em qualquer módulo: desligar uma peça ou mudar a medida dela.
+   m.pecasAjuste = { '<id da peça>': { desligar:true } | { medidas:{ x|y|z: { valor, fixo:'ini'|'fim'|'centro' } } } }
+   Eixos do módulo: x = largura (esquerda → direita), y = altura (chão → cima), z = profundidade (parede → frente).
+   fixo = o lado que não se mexe: 'ini' = esquerda/embaixo/atrás, 'fim' = direita/em cima/na frente.
+   Desligar leva junto o que é da peça (dobradiças e puxador da porta; caixa da gaveta). O resto segue a regra. */
+const EIXOS_AJUSTE = { x:{ i:0, nome:'largura' }, y:{ i:1, nome:'altura' }, z:{ i:2, nome:'profundidade' } };
+// eixo do desenho (w, h) de uma peça: pela medida; empate (peça quadrada) pela vista
+function eixosDoDesenho(pc) {
+  const ext = [0,1,2].map(i => pc.box[2*i+1] - pc.box[2*i]), esp = [0,1,2].reduce((a, i) => Math.abs(ext[i] - pc.esp) < Math.abs(ext[a] - pc.esp) ? i : a, 0);
+  const planos = [0,1,2].filter(i => i !== esp), igual = (v, i) => Math.abs(ext[i] - v) < 0.6;
+  const pelaVista = /lateral|lado|face interna/i.test(pc.des?.vista || '') && planos.includes(2) && pc.cat !== 'frente' ? [2, 1] : /cima/i.test(pc.des?.vista || '') ? [0, 2] : [0, 1];
+  let w = planos.find(i => igual(pc.des?.w, i)), h = planos.find(i => i !== w);
+  if (w === undefined || (igual(pc.des?.w, planos[0]) && igual(pc.des?.w, planos[1]))) [w, h] = planos.includes(pelaVista[0]) && planos.includes(pelaVista[1]) ? pelaVista : planos;
+  return { esp, w, h, ext };
+}
+function aplicarAjustesPecas(pecas, ajustes, E, A) {
+  if (!ajustes) return;
+  const ids = new Set(pecas.map(p => p.id));
+  for (const [id, aj] of Object.entries(ajustes)) {
+    if (!aj) continue;
+    const pc = pecas.find(p => p.id === id);
+    if (!pc) { A.push(`Ajuste da peça "${id}": a peça não existe mais neste módulo — o ajuste ficou sem efeito (confira ou remova).`); continue; }
+    if (aj.desligar) {
+      const fora = new Set([id]); let mudou = true;
+      while (mudou) { mudou = false; for (const p of pecas) if (p.expPai && fora.has(p.expPai) && !fora.has(p.id)) { fora.add(p.id); mudou = true; } }
+      for (let k = pecas.length - 1; k >= 0; k--) if (fora.has(pecas[k].id)) pecas.splice(k, 1);
+      continue;
+    }
+    const meds = Object.entries(aj.medidas || {}).filter(([, v]) => v && v.valor !== undefined && v.valor !== '');
+    if (!meds.length) continue;
+    const rot = pc.nome;
+    if (pc.cat === 'ferragem' || pc.cat === 'referencia' || pc.cat === 'tampo') { E.push(`${rot}: ferragem e referência não mudam de medida (só dá para desligar).`); continue; }
+    if (pc.cat === 'frente' || pc.cat === 'gaveta' || pc.mov) { E.push(`${rot}: porta e gaveta não mudam de medida por ajuste — mude o vão ou a frente no módulo.`); continue; }
+    if ((pc.des?.furos || []).length || pc.forma?.tipo === 'recorte') { E.push(`${rot}: a peça tem furos ou recorte próprios; mudar a medida aqui deixaria a furação errada.`); continue; }
+    const d = eixosDoDesenho(pc), box = [...pc.box];
+    let ok = true;
+    for (const [eixo, v] of meds) {
+      const ex = EIXOS_AJUSTE[eixo], val = Number(v.valor);
+      if (!ex) { E.push(`${rot}: eixo "${eixo}" não existe.`); ok = false; continue; }
+      if (ex.i === d.esp) { E.push(`${rot}: a ${ex.nome} desta peça é a espessura da chapa — troque a chapa, não a medida.`); ok = false; continue; }
+      if (!(val > 0)) { E.push(`${rot}: ${ex.nome} inválida.`); ok = false; continue; }
+      const a = box[2*ex.i], b = box[2*ex.i+1];
+      if (v.fixo === 'fim') box[2*ex.i] = b - val; else if (v.fixo === 'centro') { box[2*ex.i] = (a + b - val) / 2; box[2*ex.i+1] = (a + b + val) / 2; } else box[2*ex.i+1] = a + val;
+      if (v.fixo === 'fim') box[2*ex.i+1] = b;
+    }
+    if (!ok) continue;
+    const novo = [0,1,2].map(i => box[2*i+1] - box[2*i]), mudouC = Math.abs(novo[d.w] - d.ext[d.w]) > 0.01 || Math.abs(novo[d.h] - d.ext[d.h]) > 0.01;
+    if (!mudouC) continue;
+    // comp = maior medida; a fita acompanha o lado (se a peça "virar", troca de posição)
+    const compEra = d.ext[d.w] >= d.ext[d.h] ? d.w : d.h, compAgora = novo[d.w] >= novo[d.h] ? d.w : d.h;
+    if (compEra !== compAgora) pc.fita = [pc.fita[1], pc.fita[0]];
+    pc.box = box; pc.comp = Math.max(novo[d.w], novo[d.h]); pc.larg = Math.min(novo[d.w], novo[d.h]);
+    if (pc.des) { pc.des.w = novo[d.w]; pc.des.h = novo[d.h]; }
+    if (pc.forma?.tipo === 'rasgos' && pc.des) {
+      pc.des.rasgos = pc.forma.lista.map(r => ({ x:r.z0 - box[4], y:r.y0 - box[2], w:r.z1 - r.z0, h:r.y1 - r.y0 }));
+      if (pc.forma.lista.some(r => r.z0 < box[4] || r.z1 > box[5] || r.y0 < box[2] || r.y1 > box[3])) E.push(`${rot}: com a medida nova os rasgos de ventilação ficam fora da peça.`);
+    }
+    pc.ajustada = true;
+    pc.obs = [pc.obs, 'Medida mudada à mão (ajuste da peça).'].filter(Boolean).join(' ');
+  }
 }
 
 /* ACABAMENTO DAS PEÇAS (4e) — material por grupo, veio, fita por lado (C1/C2/L1/L2) e medida de corte.

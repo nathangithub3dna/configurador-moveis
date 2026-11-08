@@ -1,0 +1,14 @@
+/* Ajuste por peça (1c): bloco na ficha da peça clicada e lista no editor do módulo */
+.ficha{max-height:calc(100% - 20px);overflow:auto;z-index:4}          /* à frente das cotas do 3D */
+.aj-peca{display:flex;flex-direction:column;gap:6px;margin-top:6px;padding-top:8px;border-top:1px solid var(--line)}
+.aj-tit{font-size:12px;font-weight:700}
+.aj-tit em{font-style:normal;font-weight:600;color:var(--accent)}
+.aj-medidas{display:flex;flex-direction:column;gap:6px}
+.aj-linha{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,.9fr) minmax(0,1.4fr);align-items:center;gap:6px;font-size:12px}
+.aj-linha input,.aj-linha select{min-width:0;font:inherit;font-size:12px}
+.aj-nota{font-size:11.5px;color:var(--muted)}
+.aj-botoes{display:flex;flex-wrap:wrap;gap:6px}
+.ed-ajustes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ed-ajuste{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px}
+.ed-ajuste > span{display:flex;flex-direction:column;min-width:0}
+.ed-ajuste > span > span{color:var(--muted);font-size:11.5px}

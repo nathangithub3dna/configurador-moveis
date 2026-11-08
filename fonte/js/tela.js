@@ -295,6 +295,7 @@ function destacar() {
   else { $('fMed').textContent = `${fmt(pc.comp)} × ${fmt(pc.larg)} × ${fmt(pc.esp)} mm`; $('fDet').textContent = `${MATERIAIS[pc.mat].nome} · fita ${fitaTxt(pc.fita)}${pc.lista ? '' : ' · fora da lista de corte'}`; }
   $('fObs').textContent = pc.obs || '';
   $('fGlb').textContent = `${pc.cat}_${pc.mat}_${pc.id}`;
+  preencherAjustePeca(pc);                                             // desligar / mudar medida (tela-ajuste.js)
   $('ficha').hidden = false;
 }
 function selecionar(id) { estado.sel = id; limparMedida(false); destacar(); construirCotas(); }
@@ -325,7 +326,7 @@ function pontoMedida(hit) {
     $('fNome').textContent = 'Medida';
     $('fMed').textContent = `${fmt(dist)} mm`;
     $('fDet').textContent = `Δx ${fmt(Math.abs(b.x-a.x))} · Δy ${fmt(Math.abs(b.y-a.y))} · Δz ${fmt(Math.abs(b.z-a.z))} mm`;
-    $('fObs').textContent = 'Pontos perto de um canto grudam no canto.'; $('fGlb').textContent = ''; $('fDesenho').hidden = true;
+    $('fObs').textContent = 'Pontos perto de um canto grudam no canto.'; $('fGlb').textContent = ''; $('fDesenho').hidden = true; $('fAjuste').replaceChildren();
     $('ficha').hidden = false;
   }
 }
@@ -690,4 +691,4 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { atualizar, nosAtual: () => nos, AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { atualizar, selecionar, nosAtual: () => nos, AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };

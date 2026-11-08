@@ -8,6 +8,7 @@
 /*@inclui:estilos/componentes.css*/
 /*@inclui:estilos/editor.css*/
 /*@inclui:estilos/ambiente.css*/
+/*@inclui:estilos/ajuste.css*/
 </style>
 
 <header class="topo">
@@ -121,6 +122,7 @@
         <span class="det" id="fObs"></span>
         <span class="glb" id="fGlb"></span>
         <button class="btn" id="fDesenho" type="button" hidden>Ver desenho técnico</button>
+        <div id="fAjuste"></div>
       </div>
       <span class="dica" id="dica">Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça</span>
     </div>
@@ -278,6 +280,11 @@
     <label class="ed-linha">Entrega<select data-modulo="entrega"><option value="desmontado">Desmontado (volumes)</option><option value="montado">Montado</option></select></label>
     <label class="ed-linha">Puxador das portas<select data-modulo="puxador"></select></label>
     <label class="ed-linha">Material das frentes<select data-modulo="materialFrentes"></select></label>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Peças ajustadas</legend>
+    <ul class="ed-ajustes" data-lista="ajustes"></ul>
+    <span class="ed-nota" data-texto="notaAjustes"></span>
   </fieldset>
   <fieldset class="ed-bloco">
     <legend>Espaços</legend>
@@ -476,6 +483,21 @@
     <button type="button" class="btn" data-acao="remover-ponto" aria-label="Remover ponto">×</button>
   </div>
 </template>
+<!-- AJUSTE POR PEÇA (1c): na ficha da peça clicada e na lista do editor — js/tela-ajuste.js só preenche -->
+<template id="tplAjustePeca">
+  <div class="aj-peca">
+    <div class="aj-tit">Ajuste desta peça <em data-texto="situacao"></em></div>
+    <div class="aj-medidas" data-se="mede"></div>
+    <span class="aj-nota" data-texto="nota"></span>
+    <div class="aj-botoes">
+      <button class="btn" type="button" data-aj="aplicar" data-se="mede">Aplicar medida</button>
+      <button class="btn" type="button" data-aj="desligar">Desligar peça</button>
+      <button class="btn" type="button" data-aj="voltar" data-se="ajustada">Voltar à regra</button>
+    </div>
+  </div>
+</template>
+<template id="tplAjusteMedida"><label class="aj-linha"><span data-texto="rot"></span><input type="number" inputmode="decimal" data-aj-valor><select data-aj-fixo aria-label="O que fica no lugar"></select></label></template>
+<template id="tplAjusteItem"><li class="ed-ajuste"><span><strong data-texto="nome"></strong><span data-texto="desc"></span></span><button type="button" class="btn" data-acao="ajuste-voltar">Voltar à regra</button></li></template>
 <template id="tplEspaco"><li><button type="button" class="ed-espaco" data-acao="selecionar"><strong data-texto="nome"></strong><span data-texto="desc"></span></button></li></template>
 <template id="tplOpcao"><button type="button" class="btn ed-op" data-acao="frente"></button></template>
 
@@ -511,6 +533,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /*@inclui:js/tela.js*/
 /*@inclui:js/tela-modulo.js*/
 /*@inclui:js/tela-ambiente.js*/
+/*@inclui:js/tela-ajuste.js*/
 /*@inclui:js/tela-loja.js*/
 /*@inclui:js/tela-orcamento.js*/
 /*@inclui:js/tela-revisao.js*/
