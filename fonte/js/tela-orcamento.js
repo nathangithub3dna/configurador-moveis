@@ -34,11 +34,11 @@ document.querySelector('.orcamento').addEventListener('change', e => {
 document.querySelector('.orcamento').addEventListener('click', e => {
   const b = e.target.closest('[data-aceite]'); if (!b) return;
   const nome = orcDoProjeto().entradas.cliente || 'cliente';
-  registrarAceite(estado.projeto, b.dataset.aceite, nome); salvarLocal(); mostrarOrcamento(); toast(`Aceite da Rev. ${b.dataset.aceite} registrado.`);
+  registrarAceite(estado.projeto, b.dataset.aceite, nome); salvarLocal(); atualizar(); toast(`Aceite da Rev. ${b.dataset.aceite} registrado.`);
 });
 $('btnCongelar').addEventListener('click', () => {
   if (!estado.compras || estado.res.erros.length) return;
-  const rv = congelarRevisao(estado.projeto, estado.res, estado.compras, orcDoProjeto().entradas); salvarLocal(); mostrarOrcamento(); toast(`Revisão ${rv.rev} congelada.`);
+  const rv = congelarRevisao(estado.projeto, estado.res, estado.compras, orcDoProjeto().entradas); salvarLocal(); atualizar(); toast(`Revisão ${rv.rev} congelada.`);
 });
 $('btnPdfOrc').addEventListener('click', () => {
   const rv = orcDoProjeto().revisoes.at(-1); if (!rv) return;

@@ -143,9 +143,12 @@ function folhaPecaSVG(pc, extra = {}) {
   campo(cx0 + 40, cy0 + 10, 'PEÇA', `${pc.nome} — ${MATERIAIS[pc.mat]?.nome || pc.mat} ${n(E)} mm`.slice(0, 52), 3.0); campo(cx0 + 120, cy0 + 10, 'QTD.', '1');
   campo(cx0 + 40, cy0 + 20, 'DIMENSÕES (C × L × E)', `${n(H)} × ${n(W)} × ${n(E)}`, 3.2); campo(cx0 + 120, cy0 + 20, 'ESCALA', `1:${den}`, 3.2); campo(cx0 + 150, cy0 + 20, 'FOLHA', 'A3', 3.2);
   const nC = fita.filter(x => x === 'l' || x === 'r').length, nL = fita.filter(x => x === 't' || x === 'b').length;
-  campo(cx0 + 40, cy0 + 30, 'FITA', fita.length ? `${fita.length} lado${fita.length > 1 ? 's' : ''} (${[nC && nC + 'C', nL && nL + 'L'].filter(Boolean).join(' ')})` : 'sem fita', 3.0); campo(cx0 + 120, cy0 + 30, 'DATA', new Date().toLocaleDateString('pt-BR'), 3.0); campo(cx0 + 150, cy0 + 30, 'REV.', extra.rev || 'A', 3.0);
+  campo(cx0 + 40, cy0 + 30, 'FITA', fita.length ? `${fita.length} lado${fita.length > 1 ? 's' : ''} (${[nC && nC + 'C', nL && nL + 'L'].filter(Boolean).join(' ')})` : 'sem fita', 3.0); campo(cx0 + 120, cy0 + 30, 'DATA', new Date().toLocaleDateString('pt-BR'), 3.0); campo(cx0 + 150, cy0 + 30, 'REV.', extra.rev || '—', 3.0);
   const sx = cx0 + 160, sy = cy0 + 4;   // símbolo do 1º diedro
   out.push(`<path d="M${sx} ${sy + 3} L${sx + 7} ${sy + 1} L${sx + 7} ${sy + 7} L${sx} ${sy + 5} Z" fill="none" stroke="#000" stroke-width="0.25"/><circle cx="${sx + 12}" cy="${sy + 4}" r="3" fill="none" stroke="#000" stroke-width="0.25"/><circle cx="${sx + 12}" cy="${sy + 4}" r="1.3" fill="none" stroke="#000" stroke-width="0.25"/>`);
+  // documento que não está liberado sai marcado (ninguém fabrica com folha de estudo)
+  if (extra.aviso) { out.push(`<text x="${FW / 2 - 40}" y="${FOLHA.margem + 8}" font-size="5" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#b00020" text-anchor="middle">${esc(extra.aviso)}</text>`);
+    out.push(`<text x="${FW / 2 - 40}" y="${FH / 2 + 20}" font-size="28" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#b00020" fill-opacity="0.12" text-anchor="middle" transform="rotate(-25 ${FW / 2 - 40} ${FH / 2 + 20})">NÃO FABRICAR</text>`); }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${FW}mm" height="${FH}mm" viewBox="0 0 ${FW} ${FH}"><defs><marker id="s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2.5" markerHeight="2.5" orient="auto-start-reverse"><path d="M0,2 L10,5 L0,8 z" fill="#000"/></marker></defs><rect width="${FW}" height="${FH}" fill="#fff"/>${out.join('')}</svg>`;
 }
 

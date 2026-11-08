@@ -275,6 +275,15 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .orc-caixa strong{font-size:18px;font-family:var(--f-mono)}
 .orc-caixa.total strong{color:var(--accent)}
 .orc-avisos{grid-column:1/-1;font-size:13px;color:var(--muted);margin:0;padding-left:18px}
+
+/* Situação do projeto (estudo / aprovado / liberado) e mudanças */
+.situacao{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sit-rotulo{padding:6px 12px;border-radius:999px;font-weight:800;font-size:13px;box-shadow:var(--sombra-dentro)}
+.situacao[data-estado="estudo"] .sit-rotulo{color:#9a5b00}
+.situacao[data-estado="aprovado"] .sit-rotulo{color:var(--accent)}
+.situacao[data-estado="liberado"] .sit-rotulo{color:#1e6b3a}
+.situacao [hidden],.mudancas[hidden]{display:none!important}
+.mudancas{margin-top:14px}
 /* AMBIENTE (5b) — aparência do painel do ambiente e da planta vista de cima.
    Estrutura em pagina.html (tplAmbiente, tplParede, tplModuloAmb, tplPonto); lógica em js/ambiente.js. */
 .amb-lista{display:flex;flex-direction:column;gap:10px}
@@ -312,6 +321,10 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <button class="btn" id="btnAbrir" type="button">Abrir projeto</button>
     <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
     <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
+  </div>
+  <div class="situacao" id="situacao" role="status">
+    <span class="sit-rotulo" data-texto="rotulo"></span>
+    <button type="button" class="btn" id="btnLiberar" data-se="podeLiberar">Liberar para corte</button>
   </div>
   <nav class="etapas" id="etapas" aria-label="Etapas">
     <button type="button" data-etapa="montar" aria-current="page">Montar</button>
@@ -495,6 +508,12 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
   <div class="orc-resumo" id="orcResumo"></div>
   <h3 class="sub-des">Revisões</h3>
   <div class="tabela" id="tabRevisoes"></div>
+  <div class="mudancas" id="mudancas" hidden>
+    <h3 class="sub-des" data-texto="titulo"></h3>
+    <p class="nota" data-texto="custo"></p>
+    <div class="tabela" data-lista="pecas"></div>
+    <div class="tabela" data-lista="ferragens"></div>
+  </div>
 </section>
 <section class="cartao desenhos" aria-labelledby="tDes" data-secao="desenhos" hidden>
   <div class="cab"><h2 id="tDes">Desenhos técnicos</h2>
@@ -2579,7 +2598,7 @@ function fitaTexto(esp) { return esp ? `Fita ${String(esp).replace('.', ',')}` :
    verticalDrills[], horizontalDrills[], furrowMachining, furrowMachiningPair }.
    [Provável] canto 0 = canto inferior esquerdo da vista do desenho; C = comprimento (lado maior).
    Conferir com a loja antes de mandar furar em CNC. */
-function pedidoCorteCloud(pecas, codigos) {
+function pedidoCorteCloud(pecas, codigos, rotulo = '') {
   const parts = [];
   for (const pc of pecas.filter(p => p.lista)) {
     const [c, l] = medidaLoja(pc), d = pc.des || {}, e = pc.esp;
@@ -2592,7 +2611,7 @@ function pedidoCorteCloud(pecas, codigos) {
     const horizontalDrills = furos.filter(f => String(f.face || '').startsWith('topo')).map(f => { const [, y] = xy(f);
       return { corner: f.face === 'topo-dir' ? 1 : 0, direction:'XP', x:0, y: arred(y), z: arred(e / 2), depth: f.prof, diameter: f.d, face:'i' }; });
     const canal = (d.canais || [])[0];
-    parts.push({ quantity:1, c: arred(c), l: arred(l), function: pc.nomeLista || pc.nome, complement: codigos.get(pc.id)?.codigo || '',
+    parts.push({ quantity:1, c: arred(c), l: arred(l), function: pc.nomeLista || pc.nome, complement: [codigos.get(pc.id)?.codigo, rotulo].filter(Boolean).join(' · '),
       c1: fitaTexto(fl.C1), c2: fitaTexto(fl.C2), l1: fitaTexto(fl.L1), l2: fitaTexto(fl.L2),
       material: `${MATERIAIS[pc.mat]?.nome || pc.mat} ${String(e).replace('.', ',')}`,
       machining: (verticalDrills.length || horizontalDrills.length || canal) ? { x: arred(c), y: arred(l), z: e, startSide:0, verticalDrills, horizontalDrills,
@@ -2617,7 +2636,7 @@ function qrPNG(texto) {
   for (let r = 0; r < n; r++) for (let s = 0; s < n; s++) if (q.isDark(r, s)) g.fillRect(s * px, r * px, px, px);
   return cv.toDataURL('image/png');
 }
-function etiquetasPDF(pecas, codigos, nomeProjeto) {
+function etiquetasPDF(pecas, codigos, nomeProjeto, rotulo = '') {
   const { jsPDF } = window.jspdf, doc = new jsPDF({ unit:'mm', format:'a4' }), E = ETIQUETA;
   const lista = pecas.filter(p => p.lista && codigos.has(p.id)).sort((a, b) => codigos.get(a.id).codigo.localeCompare(codigos.get(b.id).codigo));
   lista.forEach((pc, k) => {
@@ -2634,7 +2653,7 @@ function etiquetasPDF(pecas, codigos, nomeProjeto) {
     doc.text(pdfTxt(MATERIAIS[pc.mat]?.nome || pc.mat).slice(0, 36), tx, y + 23.5);
     const fl = ladosFita(pc), f = ['C1','C2','L1','L2'].filter(k2 => fl[k2]).join(' ');
     doc.text(pdfTxt(`Fita: ${f || 'sem fita'}${pc.veio ? '   Veio: ' + (pc.veio === 'comp' ? 'no comprimento' : 'na largura') : ''}`), tx, y + 28.5);
-    doc.setTextColor(110); doc.setFontSize(7); doc.text(pdfTxt(nomeProjeto).slice(0, 46), tx, y + 34);
+    doc.setTextColor(110); doc.setFontSize(7); doc.text(pdfTxt(`${nomeProjeto}${rotulo ? ' · ' + rotulo : ''}`).slice(0, 58), tx, y + 34);
   });
   return doc.output('arraybuffer');
 }
@@ -2783,9 +2802,12 @@ function folhaPecaSVG(pc, extra = {}) {
   campo(cx0 + 40, cy0 + 10, 'PEÇA', `${pc.nome} — ${MATERIAIS[pc.mat]?.nome || pc.mat} ${n(E)} mm`.slice(0, 52), 3.0); campo(cx0 + 120, cy0 + 10, 'QTD.', '1');
   campo(cx0 + 40, cy0 + 20, 'DIMENSÕES (C × L × E)', `${n(H)} × ${n(W)} × ${n(E)}`, 3.2); campo(cx0 + 120, cy0 + 20, 'ESCALA', `1:${den}`, 3.2); campo(cx0 + 150, cy0 + 20, 'FOLHA', 'A3', 3.2);
   const nC = fita.filter(x => x === 'l' || x === 'r').length, nL = fita.filter(x => x === 't' || x === 'b').length;
-  campo(cx0 + 40, cy0 + 30, 'FITA', fita.length ? `${fita.length} lado${fita.length > 1 ? 's' : ''} (${[nC && nC + 'C', nL && nL + 'L'].filter(Boolean).join(' ')})` : 'sem fita', 3.0); campo(cx0 + 120, cy0 + 30, 'DATA', new Date().toLocaleDateString('pt-BR'), 3.0); campo(cx0 + 150, cy0 + 30, 'REV.', extra.rev || 'A', 3.0);
+  campo(cx0 + 40, cy0 + 30, 'FITA', fita.length ? `${fita.length} lado${fita.length > 1 ? 's' : ''} (${[nC && nC + 'C', nL && nL + 'L'].filter(Boolean).join(' ')})` : 'sem fita', 3.0); campo(cx0 + 120, cy0 + 30, 'DATA', new Date().toLocaleDateString('pt-BR'), 3.0); campo(cx0 + 150, cy0 + 30, 'REV.', extra.rev || '—', 3.0);
   const sx = cx0 + 160, sy = cy0 + 4;   // símbolo do 1º diedro
   out.push(`<path d="M${sx} ${sy + 3} L${sx + 7} ${sy + 1} L${sx + 7} ${sy + 7} L${sx} ${sy + 5} Z" fill="none" stroke="#000" stroke-width="0.25"/><circle cx="${sx + 12}" cy="${sy + 4}" r="3" fill="none" stroke="#000" stroke-width="0.25"/><circle cx="${sx + 12}" cy="${sy + 4}" r="1.3" fill="none" stroke="#000" stroke-width="0.25"/>`);
+  // documento que não está liberado sai marcado (ninguém fabrica com folha de estudo)
+  if (extra.aviso) { out.push(`<text x="${FW / 2 - 40}" y="${FOLHA.margem + 8}" font-size="5" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#b00020" text-anchor="middle">${esc(extra.aviso)}</text>`);
+    out.push(`<text x="${FW / 2 - 40}" y="${FH / 2 + 20}" font-size="28" font-family="Helvetica, Arial, sans-serif" font-weight="bold" fill="#b00020" fill-opacity="0.12" text-anchor="middle" transform="rotate(-25 ${FW / 2 - 40} ${FH / 2 + 20})">NÃO FABRICAR</text>`); }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${FW}mm" height="${FH}mm" viewBox="0 0 ${FW} ${FH}"><defs><marker id="s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="2.5" markerHeight="2.5" orient="auto-start-reverse"><path d="M0,2 L10,5 L0,8 z" fill="#000"/></marker></defs><rect width="${FW}" height="${FH}" fill="#fff"/>${out.join('')}</svg>`;
 }
 
@@ -2871,6 +2893,51 @@ function orcamentoPDF(rev, extra = {}) {
   T('Aceite do cliente', 62, y + 5, 9, 'normal', 'center'); T('Data', 150, y + 5, 9, 'normal', 'center');
   if (rev.aceite) T(`Aceito por ${rev.aceite.nome} em ${dia(rev.aceite.data)}.`, 24, y - 3, 9, 'bold');
   return doc.output('arraybuffer');
+}
+/* =====================================================================
+   SITUAÇÃO DO PROJETO E REVISÕES — estudo, aprovado pelo cliente, liberado
+   para corte; o que mudou desde a revisão aprovada. Só lógica.
+
+   - ESTUDO: nenhuma revisão aceita, ou o projeto mudou depois da última congelada.
+   - APROVADO: a última revisão congelada tem o aceite do cliente e o projeto não mudou.
+   - LIBERADO: aprovado + "Liberar para corte" (sem erros). Só aqui os documentos
+     de fabricação saem sem o aviso "NÃO FABRICAR".
+   Todo documento (lista, desenho, etiqueta, pedido) leva o mesmo rótulo.
+   ===================================================================== */
+function situacaoProjeto(projeto) {
+  const revs = projeto.orcamento?.revisoes || [], ult = revs.at(-1);
+  const alterado = !ult || JSON.stringify(projeto.parametros) !== JSON.stringify(ult.parametros);
+  const aprovada = [...revs].reverse().find(r => r.aceite) || null;
+  let estado = 'estudo';
+  if (ult && ult.aceite && !alterado) estado = projeto.liberacao?.rev === ult.rev ? 'liberado' : 'aprovado';
+  return { estado, rev: ult && !alterado ? ult.rev : null, ultima: ult || null, aprovada, alterado: !!ult && alterado };
+}
+function rotuloDocumento(projeto) {
+  const s = situacaoProjeto(projeto), dia = iso => new Date(iso).toLocaleDateString('pt-BR');
+  if (s.estado === 'liberado') return { curto: `Rev. ${s.rev} · LIBERADO`, longo: `Rev. ${s.rev} · LIBERADO PARA CORTE em ${dia(projeto.liberacao.data)}`, fabricar: true, rev: s.rev };
+  if (s.estado === 'aprovado') return { curto: `Rev. ${s.rev} · APROVADO`, longo: `Rev. ${s.rev} · APROVADO PELO CLIENTE — ainda não liberado para corte`, fabricar: false, rev: s.rev };
+  return { curto: 'ESTUDO', longo: s.alterado ? `ESTUDO — alterado depois da Rev. ${s.ultima.rev}; não fabricar` : 'ESTUDO — não fabricar', fabricar: false, rev: s.alterado ? `${s.ultima.rev}*` : '—' };
+}
+function liberarParaCorte(projeto, res) {
+  const s = situacaoProjeto(projeto);
+  if (s.estado !== 'aprovado') return { ok: false, motivo: s.estado === 'liberado' ? 'Já está liberado.' : 'Só libera depois do aceite do cliente na última revisão, sem mudanças depois dela.' };
+  if (res.erros.length) return { ok: false, motivo: 'Corrija os erros antes de liberar.' };
+  projeto.liberacao = { rev: s.rev, data: new Date().toISOString() };
+  return { ok: true };
+}
+// o que mudou entre a revisão de referência (a aprovada, ou a última) e o projeto atual
+function diferencasDesdeRevisao(projeto, resAtual, comprasAtuais, entradasAtuais) {
+  const s = situacaoProjeto(projeto), ref = s.aprovada || s.ultima; if (!ref || !s.alterado) return null;
+  let resRef; try { resRef = TIPOS[projeto.tipo].gerar(ref.parametros); } catch (e) { return { ref: ref.rev, erro: 'Não foi possível refazer a revisão de referência.' }; }
+  const chave = p => `${fmt(p.comp)} × ${fmt(p.larg)} × ${fmt(p.esp)} ${MATERIAIS[p.mat]?.nome || p.mat}`;
+  const mapa = ps => new Map(ps.filter(p => p.lista).map(p => [p.id, p]));
+  const A = mapa(resRef.pecas), B = mapa(resAtual.pecas), pecas = [];
+  for (const [id, p] of B) { const q = A.get(id); if (!q) pecas.push({ tipo: 'nova', nome: p.nome, agora: chave(p) }); else if (chave(p) !== chave(q)) pecas.push({ tipo: 'mudou', nome: p.nome, antes: chave(q), agora: chave(p) }); }
+  for (const [id, q] of A) if (!B.has(id)) pecas.push({ tipo: 'saiu', nome: q.nome, antes: chave(q) });
+  const fA = new Map((resRef.ferragens || []).map(f => [f.ref, f])), fB = new Map((resAtual.ferragens || []).map(f => [f.ref, f])), ferragens = [];
+  for (const ref2 of new Set([...fA.keys(), ...fB.keys()])) { const a = fA.get(ref2)?.qtd || 0, b = fB.get(ref2)?.qtd || 0; if (a !== b) ferragens.push({ nome: (fB.get(ref2) || fA.get(ref2)).nome, antes: a, agora: b }); }
+  const totalAgora = comprasAtuais ? calcularOrcamento(comprasAtuais, entradasAtuais).total : null;
+  return { ref: ref.rev, aprovada: !!ref.aceite, pecas, ferragens, totalAntes: ref.resultado.total, totalAgora, diferenca: totalAgora == null ? null : totalAgora - ref.resultado.total };
 }
 /* =====================================================================
    5a. EDITOR DO MÓVEL LIVRE — só a lógica (sem tela).
@@ -3364,7 +3431,7 @@ function mostrarAlertas(res) {
 
 /* ---------- Listas ---------- */
 function textoCorte(lc, nome) {
-  const ls = [`LISTA DE CORTE — ${nome}`, 'Medidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.', ''];
+  const ls = [`LISTA DE CORTE — ${nome}`, rotuloDocumento(estado.projeto).longo, 'Medidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.', ''];
   for (const [g, its] of lc.grupos) {
     ls.push(g.toUpperCase());
     its.forEach(it => ls.push(`${it.qtd}× ${it.nomeLista||it.nome} — ${fmt(it.comp)} × ${fmt(it.larg)} — fita ${fitaTxt(it.fita)}${it.forma?.tipo==='recorte' ? ` — recorte ${fmt(it.forma.rl)} × ${fmt(it.forma.rp)} no centro de trás` : ''}`));
@@ -3611,7 +3678,7 @@ function atualizar(primeira = false) {
     estado.valido = res; construirCena(res); aplicarCorte(); montarArvore(res.pecas);
     if (primeira || mudouTam) aplicarVista(estado.vista);
   }
-  mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal(); atualizarEsquema(); mostrarLoja(); mostrarFolha();
+  mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal(); atualizarEsquema(); mostrarLoja(); mostrarFolha(); mostrarSituacao();
 }
 function carregarProjeto() { $('nomeProjeto').value = estado.projeto.nome; montarFormulario(); estado.valido = null; atualizar(true); }
 
@@ -3922,16 +3989,16 @@ function mostrarLoja() {
 $('codProjeto').addEventListener('change', e => { estado.projeto.codigo = e.target.value.trim() || codigoProjetoPadrao(); salvarLocal(); mostrarLoja(); });
 $('btnEtiquetas').addEventListener('click', () => {
   if (estado.res.erros.length || !window.jspdf) return;
-  try { salvar(slug() + '-etiquetas.pdf', etiquetasPDF(estado.res.pecas, estado.codigos, estado.projeto.nome)); } catch (e) { toast('Falha ao montar as etiquetas.'); }
+  try { salvar(slug() + '-etiquetas.pdf', etiquetasPDF(estado.res.pecas, estado.codigos, estado.projeto.nome, rotuloDocumento(estado.projeto).curto)); } catch (e) { toast('Falha ao montar as etiquetas.'); }
 });
 $('btnCorteCloud').addEventListener('click', () => {
   if (estado.res.erros.length) return;
-  salvar(slug() + '-cortecloud.json', JSON.stringify(pedidoCorteCloud(estado.res.pecas, estado.codigos), null, 2));
+  salvar(slug() + '-cortecloud.json', JSON.stringify(pedidoCorteCloud(estado.res.pecas, estado.codigos, rotuloDocumento(estado.projeto).curto), null, 2));
 });
 mostrarLoja();
 
 /* ---------- Folha A3 da peça (5c parte 2): prévia e PDF de todas ---------- */
-function extraFolha(pc) { return { projeto: estado.projeto.nome, codigo: estado.codigos?.get(pc.id)?.codigo || '' }; }
+function extraFolha(pc) { const r = rotuloDocumento(estado.projeto); return { projeto: estado.projeto.nome, codigo: estado.codigos?.get(pc.id)?.codigo || '', rev: r.rev, aviso: r.fabricar ? '' : r.longo }; }
 function pecasComFolha() { const r = estado.res; return r ? listaDesenhos(r.pecas).map(it => it.pc) : []; }
 function mostrarFolha() {
   const r = estado.res, sel = $('selFolha'); if (!r) return;
@@ -3984,15 +4051,38 @@ document.querySelector('.orcamento').addEventListener('change', e => {
 document.querySelector('.orcamento').addEventListener('click', e => {
   const b = e.target.closest('[data-aceite]'); if (!b) return;
   const nome = orcDoProjeto().entradas.cliente || 'cliente';
-  registrarAceite(estado.projeto, b.dataset.aceite, nome); salvarLocal(); mostrarOrcamento(); toast(`Aceite da Rev. ${b.dataset.aceite} registrado.`);
+  registrarAceite(estado.projeto, b.dataset.aceite, nome); salvarLocal(); atualizar(); toast(`Aceite da Rev. ${b.dataset.aceite} registrado.`);
 });
 $('btnCongelar').addEventListener('click', () => {
   if (!estado.compras || estado.res.erros.length) return;
-  const rv = congelarRevisao(estado.projeto, estado.res, estado.compras, orcDoProjeto().entradas); salvarLocal(); mostrarOrcamento(); toast(`Revisão ${rv.rev} congelada.`);
+  const rv = congelarRevisao(estado.projeto, estado.res, estado.compras, orcDoProjeto().entradas); salvarLocal(); atualizar(); toast(`Revisão ${rv.rev} congelada.`);
 });
 $('btnPdfOrc').addEventListener('click', () => {
   const rv = orcDoProjeto().revisoes.at(-1); if (!rv) return;
   salvar(`${slug()}-orcamento-rev-${rv.rev}.pdf`, orcamentoPDF(rv));
 });
 mostrarOrcamento();
+/* =====================================================================
+   TELA DA SITUAÇÃO DO PROJETO — rótulo no cabeçalho (estudo / aprovado /
+   liberado), botão "Liberar para corte" e quadro "o que mudou".
+   Lógica em revisao.js; estrutura em pagina.html (#situacao, #mudancas).
+   ===================================================================== */
+function mostrarSituacao() {
+  const p = estado.projeto, s = situacaoProjeto(p), r = rotuloDocumento(p), caixa = $('situacao');
+  caixa.dataset.estado = s.estado;
+  preencherModelo(caixa, { rotulo: r.longo, podeLiberar: s.estado === 'aprovado' && estado.res && !estado.res.erros.length });
+  const m = $('mudancas'), dif = estado.res ? diferencasDesdeRevisao(p, estado.res, estado.compras, orcDoProjeto().entradas) : null;
+  m.hidden = !dif; if (!dif) return;
+  const tabela = (cab, linhas) => linhas.length ? el('table', {}, el('thead', {}, el('tr', {}, ...cab.map(t => el('th', { text:t })))), el('tbody', {}, ...linhas.map(l => el('tr', {}, ...l.map(v => el('td', { text:String(v) })))))) : el('p', { class:'vazio', text:'Sem mudanças aqui.' });
+  preencherModelo(m, { titulo: `O que mudou desde a Rev. ${dif.ref}${dif.aprovada ? ' (aprovada pelo cliente)' : ''}`,
+    custo: dif.erro || (dif.diferenca == null ? '' : `Total: ${reais(dif.totalAntes)} → ${reais(dif.totalAgora)} (${dif.diferenca >= 0 ? '+' : ''}${reais(dif.diferenca)}). Para valer, congele uma nova revisão.`) });
+  m.querySelector('[data-lista="pecas"]').replaceChildren(tabela(['Peça', 'Mudança', 'Antes', 'Agora'], (dif.pecas || []).map(x => [x.nome, x.tipo, x.antes || '—', x.agora || '—'])));
+  m.querySelector('[data-lista="ferragens"]').replaceChildren(tabela(['Ferragem', 'Antes', 'Agora'], (dif.ferragens || []).map(x => [x.nome, x.antes, x.agora])));
+}
+$('btnLiberar').addEventListener('click', () => {
+  const r = liberarParaCorte(estado.projeto, estado.res);
+  toast(r.ok ? 'Liberado para corte: lista, desenhos, etiquetas e pedido saem sem o aviso de estudo.' : r.motivo);
+  salvarLocal(); atualizar();
+});
+mostrarSituacao();
 </script>

@@ -343,6 +343,22 @@ function diferencas(a, b, caminho = '') {
         linhas: document.querySelectorAll('#tabRevisoes tbody tr').length, pdfKB: Math.round(pdf.byteLength / 1024), salvo: !!JSON.parse(localStorage.getItem('configurador-moveis:v2') || '{}').orcamento };
     });
     loja.orc = orc;
+    // situação: aceite da B → aprovado → liberar → liberado; mudar medida → estudo com lista do que mudou
+    const sit = await page.evaluate(async () => {
+      const c = window.__configurador, e = c.estado, ler = () => ({ rotulo: document.querySelector('#situacao .sit-rotulo').textContent, liberar: !document.getElementById('btnLiberar').hidden });
+      const s0 = ler(); document.querySelector('[data-aceite="B"]').click(); await new Promise(r => setTimeout(r, 300));
+      const s1 = ler(); document.getElementById('btnLiberar').click(); await new Promise(r => setTimeout(r, 300));
+      const s2 = ler(), lista2 = e.textos.corte.split('\n')[1], folha2 = c.folhaPecaSVG(e.res.pecas.find(p => p.lista), { aviso:'' }).includes('NÃO FABRICAR');
+      return { s0, s1, s2, lista2, folha2 }; });
+    await passo('#etapas [data-etapa="montar"]');
+    await page.evaluate(() => { const i = document.querySelector('#form [data-mod="largura"][data-i="0"]'); i.value = 500; i.dispatchEvent(new Event('change', { bubbles:true })); });
+    await page.waitForTimeout(400);
+    sit.depois = await page.evaluate(() => ({ rotulo: document.querySelector('#situacao .sit-rotulo').textContent, mudancas: !document.getElementById('mudancas').hidden,
+      pecasMudaram: document.querySelectorAll('#mudancas [data-lista="pecas"] tbody tr').length, titulo: document.querySelector('#mudancas h3').textContent, lista: window.__configurador.estado.textos.corte.split('\n')[1] }));
+    loja.situacao = sit;
+    const okSit = /ESTUDO/.test(sit.s0.rotulo) && /APROVADO/.test(sit.s1.rotulo) && sit.s1.liberar && /LIBERADO/.test(sit.s2.rotulo) && /LIBERADO/.test(sit.lista2)
+      && /ESTUDO — alterado depois da Rev. B/.test(sit.depois.rotulo) && sit.depois.mudancas && sit.depois.pecasMudaram > 0 && /Rev. B/.test(sit.depois.titulo) && /não fabricar/.test(sit.depois.lista);
+    if (!okSit) { falhas++; console.log('SITUAÇÃO E REVISÃO ERRADO  ' + JSON.stringify(sit)); } else console.log('SITUAÇÃO E REVISÃO OK  ' + JSON.stringify(sit));
     const okOrc = orc.resumo1 >= 6 && orc.n === 2 && orc.totalA > 0 && orc.totalA === orc.totalA_depois && orc.aceiteA && orc.revB === 'B' && Math.abs(orc.difB - 10 * 50 * 1.15) < 0.01 && orc.aposAceite && orc.linhas === 2 && orc.pdfKB > 2;
     if (!okOrc) { falhas++; console.log('ORÇAMENTO (5c) ERRADO  ' + JSON.stringify(orc)); } else console.log('ORÇAMENTO (5c) OK  ' + JSON.stringify(orc));
     // fora do Claude: o download sai pelo navegador; projeto com erro também salva

@@ -401,7 +401,7 @@ function mostrarAlertas(res) {
 
 /* ---------- Listas ---------- */
 function textoCorte(lc, nome) {
-  const ls = [`LISTA DE CORTE — ${nome}`, 'Medidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.', ''];
+  const ls = [`LISTA DE CORTE — ${nome}`, rotuloDocumento(estado.projeto).longo, 'Medidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.', ''];
   for (const [g, its] of lc.grupos) {
     ls.push(g.toUpperCase());
     its.forEach(it => ls.push(`${it.qtd}× ${it.nomeLista||it.nome} — ${fmt(it.comp)} × ${fmt(it.larg)} — fita ${fitaTxt(it.fita)}${it.forma?.tipo==='recorte' ? ` — recorte ${fmt(it.forma.rl)} × ${fmt(it.forma.rp)} no centro de trás` : ''}`));
@@ -648,7 +648,7 @@ function atualizar(primeira = false) {
     estado.valido = res; construirCena(res); aplicarCorte(); montarArvore(res.pecas);
     if (primeira || mudouTam) aplicarVista(estado.vista);
   }
-  mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal(); atualizarEsquema(); mostrarLoja(); mostrarFolha();
+  mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal(); atualizarEsquema(); mostrarLoja(); mostrarFolha(); mostrarSituacao();
 }
 function carregarProjeto() { $('nomeProjeto').value = estado.projeto.nome; montarFormulario(); estado.valido = null; atualizar(true); }
 

@@ -19,16 +19,16 @@ function mostrarLoja() {
 $('codProjeto').addEventListener('change', e => { estado.projeto.codigo = e.target.value.trim() || codigoProjetoPadrao(); salvarLocal(); mostrarLoja(); });
 $('btnEtiquetas').addEventListener('click', () => {
   if (estado.res.erros.length || !window.jspdf) return;
-  try { salvar(slug() + '-etiquetas.pdf', etiquetasPDF(estado.res.pecas, estado.codigos, estado.projeto.nome)); } catch (e) { toast('Falha ao montar as etiquetas.'); }
+  try { salvar(slug() + '-etiquetas.pdf', etiquetasPDF(estado.res.pecas, estado.codigos, estado.projeto.nome, rotuloDocumento(estado.projeto).curto)); } catch (e) { toast('Falha ao montar as etiquetas.'); }
 });
 $('btnCorteCloud').addEventListener('click', () => {
   if (estado.res.erros.length) return;
-  salvar(slug() + '-cortecloud.json', JSON.stringify(pedidoCorteCloud(estado.res.pecas, estado.codigos), null, 2));
+  salvar(slug() + '-cortecloud.json', JSON.stringify(pedidoCorteCloud(estado.res.pecas, estado.codigos, rotuloDocumento(estado.projeto).curto), null, 2));
 });
 mostrarLoja();
 
 /* ---------- Folha A3 da peça (5c parte 2): prévia e PDF de todas ---------- */
-function extraFolha(pc) { return { projeto: estado.projeto.nome, codigo: estado.codigos?.get(pc.id)?.codigo || '' }; }
+function extraFolha(pc) { const r = rotuloDocumento(estado.projeto); return { projeto: estado.projeto.nome, codigo: estado.codigos?.get(pc.id)?.codigo || '', rev: r.rev, aviso: r.fabricar ? '' : r.longo }; }
 function pecasComFolha() { const r = estado.res; return r ? listaDesenhos(r.pecas).map(it => it.pc) : []; }
 function mostrarFolha() {
   const r = estado.res, sel = $('selFolha'); if (!r) return;

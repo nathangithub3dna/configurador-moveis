@@ -56,3 +56,12 @@
 .orc-caixa strong{font-size:18px;font-family:var(--f-mono)}
 .orc-caixa.total strong{color:var(--accent)}
 .orc-avisos{grid-column:1/-1;font-size:13px;color:var(--muted);margin:0;padding-left:18px}
+
+/* Situação do projeto (estudo / aprovado / liberado) e mudanças */
+.situacao{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sit-rotulo{padding:6px 12px;border-radius:999px;font-weight:800;font-size:13px;box-shadow:var(--sombra-dentro)}
+.situacao[data-estado="estudo"] .sit-rotulo{color:#9a5b00}
+.situacao[data-estado="aprovado"] .sit-rotulo{color:var(--accent)}
+.situacao[data-estado="liberado"] .sit-rotulo{color:#1e6b3a}
+.situacao [hidden],.mudancas[hidden]{display:none!important}
+.mudancas{margin-top:14px}

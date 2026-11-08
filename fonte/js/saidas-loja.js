@@ -27,7 +27,7 @@ function fitaTexto(esp) { return esp ? `Fita ${String(esp).replace('.', ',')}` :
    verticalDrills[], horizontalDrills[], furrowMachining, furrowMachiningPair }.
    [Provável] canto 0 = canto inferior esquerdo da vista do desenho; C = comprimento (lado maior).
    Conferir com a loja antes de mandar furar em CNC. */
-function pedidoCorteCloud(pecas, codigos) {
+function pedidoCorteCloud(pecas, codigos, rotulo = '') {
   const parts = [];
   for (const pc of pecas.filter(p => p.lista)) {
     const [c, l] = medidaLoja(pc), d = pc.des || {}, e = pc.esp;
@@ -40,7 +40,7 @@ function pedidoCorteCloud(pecas, codigos) {
     const horizontalDrills = furos.filter(f => String(f.face || '').startsWith('topo')).map(f => { const [, y] = xy(f);
       return { corner: f.face === 'topo-dir' ? 1 : 0, direction:'XP', x:0, y: arred(y), z: arred(e / 2), depth: f.prof, diameter: f.d, face:'i' }; });
     const canal = (d.canais || [])[0];
-    parts.push({ quantity:1, c: arred(c), l: arred(l), function: pc.nomeLista || pc.nome, complement: codigos.get(pc.id)?.codigo || '',
+    parts.push({ quantity:1, c: arred(c), l: arred(l), function: pc.nomeLista || pc.nome, complement: [codigos.get(pc.id)?.codigo, rotulo].filter(Boolean).join(' · '),
       c1: fitaTexto(fl.C1), c2: fitaTexto(fl.C2), l1: fitaTexto(fl.L1), l2: fitaTexto(fl.L2),
       material: `${MATERIAIS[pc.mat]?.nome || pc.mat} ${String(e).replace('.', ',')}`,
       machining: (verticalDrills.length || horizontalDrills.length || canal) ? { x: arred(c), y: arred(l), z: e, startSide:0, verticalDrills, horizontalDrills,
@@ -65,7 +65,7 @@ function qrPNG(texto) {
   for (let r = 0; r < n; r++) for (let s = 0; s < n; s++) if (q.isDark(r, s)) g.fillRect(s * px, r * px, px, px);
   return cv.toDataURL('image/png');
 }
-function etiquetasPDF(pecas, codigos, nomeProjeto) {
+function etiquetasPDF(pecas, codigos, nomeProjeto, rotulo = '') {
   const { jsPDF } = window.jspdf, doc = new jsPDF({ unit:'mm', format:'a4' }), E = ETIQUETA;
   const lista = pecas.filter(p => p.lista && codigos.has(p.id)).sort((a, b) => codigos.get(a.id).codigo.localeCompare(codigos.get(b.id).codigo));
   lista.forEach((pc, k) => {
@@ -82,7 +82,7 @@ function etiquetasPDF(pecas, codigos, nomeProjeto) {
     doc.text(pdfTxt(MATERIAIS[pc.mat]?.nome || pc.mat).slice(0, 36), tx, y + 23.5);
     const fl = ladosFita(pc), f = ['C1','C2','L1','L2'].filter(k2 => fl[k2]).join(' ');
     doc.text(pdfTxt(`Fita: ${f || 'sem fita'}${pc.veio ? '   Veio: ' + (pc.veio === 'comp' ? 'no comprimento' : 'na largura') : ''}`), tx, y + 28.5);
-    doc.setTextColor(110); doc.setFontSize(7); doc.text(pdfTxt(nomeProjeto).slice(0, 46), tx, y + 34);
+    doc.setTextColor(110); doc.setFontSize(7); doc.text(pdfTxt(`${nomeProjeto}${rotulo ? ' · ' + rotulo : ''}`).slice(0, 58), tx, y + 34);
   });
   return doc.output('arraybuffer');
 }

@@ -19,6 +19,10 @@
     <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
     <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
   </div>
+  <div class="situacao" id="situacao" role="status">
+    <span class="sit-rotulo" data-texto="rotulo"></span>
+    <button type="button" class="btn" id="btnLiberar" data-se="podeLiberar">Liberar para corte</button>
+  </div>
   <nav class="etapas" id="etapas" aria-label="Etapas">
     <button type="button" data-etapa="montar" aria-current="page">Montar</button>
     <button type="button" data-etapa="corte">Lista de corte</button>
@@ -201,6 +205,12 @@
   <div class="orc-resumo" id="orcResumo"></div>
   <h3 class="sub-des">Revisões</h3>
   <div class="tabela" id="tabRevisoes"></div>
+  <div class="mudancas" id="mudancas" hidden>
+    <h3 class="sub-des" data-texto="titulo"></h3>
+    <p class="nota" data-texto="custo"></p>
+    <div class="tabela" data-lista="pecas"></div>
+    <div class="tabela" data-lista="ferragens"></div>
+  </div>
 </section>
 <section class="cartao desenhos" aria-labelledby="tDes" data-secao="desenhos" hidden>
   <div class="cab"><h2 id="tDes">Desenhos técnicos</h2>
@@ -361,10 +371,12 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 /*@inclui:js/saidas-loja.js*/
 /*@inclui:js/folha-peca.js*/
 /*@inclui:js/orcamento.js*/
+/*@inclui:js/revisao.js*/
 /*@inclui:js/editor-modulo.js*/
 /*@inclui:js/tela.js*/
 /*@inclui:js/tela-modulo.js*/
 /*@inclui:js/tela-ambiente.js*/
 /*@inclui:js/tela-loja.js*/
 /*@inclui:js/tela-orcamento.js*/
+/*@inclui:js/tela-revisao.js*/
 </script>
