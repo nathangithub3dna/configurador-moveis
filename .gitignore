@@ -1,4 +1,4 @@
-node_modules/
+node_modules
 testes/saida/
 projetos/
 *.log
