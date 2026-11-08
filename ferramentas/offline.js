@@ -19,27 +19,15 @@ for (const [url, arq] of Object.entries(UMD)) {
   s = s.replace(re, () => `<script>/* ${url} (embutido) */\n${codigo}\n</script>`);
 }
 
-// 2. módulos do three.js: cada um vira um "data:" no importmap; imports relativos viram 'three/addons/…'
-const base = nm('three/examples/jsm'), mapa = { three: dataURL(fs.readFileSync(nm('three/build/three.module.js'), 'utf8')) };
+// 2. three.js principal: o endereço completo vira um "data:" (as partes extras já vêm embutidas pelo montar — three-embutido.js)
+const { URL_THREE } = require('./three-embutido');
 function dataURL(codigo) { return 'data:text/javascript;base64,' + Buffer.from(codigo, 'utf8').toString('base64'); }
-function addon(rel) {                                      // rel: 'controls/OrbitControls.js'
-  const chave = 'three/addons/' + rel; if (mapa[chave]) return;
-  mapa[chave] = 'pendente';
-  let codigo = fs.readFileSync(path.join(base, rel), 'utf8');
-  codigo = codigo.replace(/(from\s*|import\s*)(['"])(\.{1,2}\/[^'"]+)\2/g, (_, pre, q, r) => {
-    const alvo = path.posix.normalize(path.posix.join(path.posix.dirname(rel), r)); addon(alvo); return `${pre}${q}three/addons/${alvo}${q}`; });
-  mapa[chave] = dataURL(codigo);
-}
-const usados = [...s.matchAll(/from\s*'three\/addons\/([^']+)'/g)].map(m => m[1]);
-if (!usados.length) { console.error('ERRO: nenhum módulo three/addons encontrado'); process.exit(1); }
-usados.forEach(addon);
-const re = /<script type="importmap">[\s\S]*?<\/script>/;
-if (!re.test(s)) { console.error('ERRO: importmap não encontrado'); process.exit(1); }
-s = s.replace(re, () => `<script type="importmap">${JSON.stringify({ imports: mapa })}</script>`);
+if (!s.includes(`'${URL_THREE}'`)) { console.error('ERRO: endereço do three.js não encontrado na página'); process.exit(1); }
+s = s.replace(`'${URL_THREE}'`, () => `'${dataURL(fs.readFileSync(nm('three/build/three.module.js'), 'utf8'))}'`);
 s = s.replace('<!-- ARQUIVO GERADO', '<!-- VERSÃO SEM INTERNET (bibliotecas embutidas) · ARQUIVO GERADO');
 // aberto direto do disco não há quem diga a codificação: sem isto o navegador adivinha e pode quebrar os acentos (e o programa)
 s = '<meta charset="utf-8">\n' + s;
 
 const saida = path.join(raiz, 'configurador-offline.html');
 fs.writeFileSync(saida, s);
-console.log(`configurador-offline.html montado: ${(fs.statSync(saida).size / 1048576).toFixed(1)} MB, ${Object.keys(mapa).length} módulos 3D, ${Object.keys(UMD).length} bibliotecas`);
+console.log(`configurador-offline.html montado: ${(fs.statSync(saida).size / 1048576).toFixed(1)} MB, 3D embutido, ${Object.keys(UMD).length} bibliotecas`);

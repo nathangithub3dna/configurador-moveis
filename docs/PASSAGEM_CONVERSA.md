@@ -7,7 +7,7 @@ Sub-etapa **1c-i pronta e publicada** (commit `fb0a3d7`, artifact versão 28): e
 1. Aprovação da 1c-i pelo Nathan (testar: 3D → tocar numa peça → "Ajuste desta peça"; no ambiente, "Abrir" o módulo → "Peças ajustadas").
 2. **1c-ii — caixa livre:** módulo solto no ambiente (X, Y, Z) ou afastado da parede, virado para os 4 lados. Definir o aceite com o Nathan antes.
 3. **1c-iii — giro em ângulo livre da caixa** (3D, planta, portas abrindo, choques, iLogic).
-4. Problema do celular continua aberto (ver "Sem testar / riscos").
+4. Confirmar no celular que o programa abre (artifact v30).
 
 ## Feito nesta conversa
 - Ajuste por peça (`modulo.pecasAjuste`, lógica em `fonte/js/nucleo.js` → `aplicarAjustesPecas`): desligar (leva junto dobradiças/puxador da porta, caixa da gaveta) ou mudar medida por eixo do módulo com "o que fica no lugar". Aplicado antes da furação.
@@ -28,7 +28,7 @@ Sub-etapa **1c-i pronta e publicada** (commit `fb0a3d7`, artifact versão 28): e
 - nada
 
 ## Sem testar / riscos
-- **Móvel não aparece no celular (artifact no app do Claude)** — causa não confirmada; o Nathan não respondeu às perguntas (aparecia antes? Lista de corte vem preenchida?). Descartado nesta conversa: falta de codificação no artifact publicado (a página publicada já vem com `<meta charset=utf8>`). Na nuvem, em 390 × 844, o móvel aparece no 3D.
+- **Celular (app do Claude, Android, Chrome 111): causa confirmada e corrigida, falta o Nathan confirmar no aparelho.** O diagnóstico de carregamento (`fonte/js/diagnostico.js`, aviso no topo se o programa não abrir em 10 s) mostrou: o app põe 2 scripts próprios antes da página e rejeita o `importmap`; sem ele o `'three'` não era achado e o programa inteiro não iniciava (por isso o tipo de móvel vazio e o desenho vazio). Correção: sem importmap — three.js principal por endereço completo e as partes extras (câmera, rótulos, GLB, juntar formas) embutidas pelo montador (`ferramentas/three-embutido.js`); a versão offline troca o endereço por um `data:`.
 - Uso real da 1c-i pelo Nathan.
 - Ajuste guardado pelo nome interno da peça: mexer na árvore de vãos pode fazê-lo deixar de servir (vira aviso).
 - iLogic de peça girada continua sem rodar no Inventor.

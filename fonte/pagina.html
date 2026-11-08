@@ -506,18 +506,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/svg2pdf.js@2.2.3/dist/svg2pdf.umd.min.js"></script>
-<script type="importmap">
-{"imports":{
-  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-}}
-</script>
 <script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+/* 3D: three.js principal por endereço completo + controle da câmera, rótulos, exportar GLB e juntar formas embutidos
+   (ferramentas/three-embutido.js). Sem importmap: o app do Claude no celular rejeita importmap. */
+/*@three*/
 
 /*@inclui:js/regras.js*/
 /*@inclui:js/tipos.js*/

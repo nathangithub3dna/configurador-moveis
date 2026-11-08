@@ -13,6 +13,9 @@ const incluir = (txt, profundidade = 0) => txt.replace(/\/\*@inclui:([\w\/.-]+)\
   return incluir(fs.readFileSync(arq, 'utf8').replace(/\n$/, ''), profundidade + 1);
 });
 let s = incluir(fs.readFileSync(path.join(raiz, 'fonte', 'pagina.html'), 'utf8'));
+const { threeEmbutido } = require('./three-embutido');
+if (!s.includes('/*@three*/')) { console.error('ERRO: a página não tem /*@three*/ (onde entra o 3D)'); process.exit(1); }
+s = s.replace('/*@three*/', () => threeEmbutido());
 const usados = new Set();
 s = s.replace(/\/\*@dados:([\w-]+)\*\/null/g, (_, nome) => {
   const arq = path.join(raiz, 'dados', nome + '.json');
