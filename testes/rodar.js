@@ -376,6 +376,24 @@ function diferencas(a, b, caminho = '') {
     if (!ok5b) { falhas++; console.log('AMBIENTE (5b) ERRADO  ' + JSON.stringify(t5b)); } else console.log('AMBIENTE (5b) OK  ' + JSON.stringify(t5b));
     await page.close();
   }
+  // passo 3: versão sem internet — abre o arquivo direto (file://) com TODA a rede bloqueada
+  {
+    const page = await ctx.newPage(), errosOff = [], pedidos = [];
+    page.on('pageerror', e => errosOff.push(e.message));
+    await page.route('**/*', route => { const u = route.request().url(); if (u.startsWith('file:')) return route.continue(); pedidos.push(u.slice(0, 60)); return route.abort(); });
+    await page.goto('file://' + path.join(__dirname, '..', 'configurador-offline.html'));
+    let ok = true; try { await page.waitForFunction(() => window.__configurador?.estado?.res, null, { timeout: 20000 }); } catch (e) { ok = false; }
+    const off = ok ? await page.evaluate(async () => { const c = window.__configurador, e = c.estado, pcs = e.res.pecas.filter(p => p.lista);
+      const pdf = await c.folhasPDF(pcs.slice(0, 2), () => ({ projeto:'offline' })), etq = c.etiquetasPDF(e.res.pecas, e.codigos, 'offline');
+      return { pecas: pcs.length, canvas3D: !!document.querySelector('#palco canvas'), libs: { three: !!window.__configurador.cam, jspdf: !!window.jspdf, jszip: !!window.JSZip, qr: !!window.qrcode, svg2pdf: !!(window.svg2pdf || window.jspdf?.jsPDF?.API?.svg) },
+        folhasKB: Math.round(pdf.byteLength / 1024), etiquetasKB: Math.round(etq.byteLength / 1024), zip: !document.getElementById('btnZip').disabled }; }) : null;
+    const tamanhoMB = +(fs.statSync(path.join(__dirname, '..', 'configurador-offline.html')).size / 1048576).toFixed(1);
+    const fontes = pedidos.filter(u => !/fonts\.(googleapis|gstatic)/.test(u));
+    const okOff = ok && off && off.pecas > 0 && off.canvas3D && Object.values(off.libs).every(Boolean) && off.folhasKB > 3 && off.etiquetasKB > 3 && off.zip && !errosOff.length && !fontes.length;
+    const t = { carregou: ok, ...off, tamanhoMB, pedidosBloqueados: pedidos.length, foraDeFontes: fontes, erros: errosOff };
+    if (!okOff) { falhas++; console.log('SEM INTERNET ERRADO  ' + JSON.stringify(t)); } else console.log('SEM INTERNET OK  ' + JSON.stringify(t));
+    await page.close();
+  }
   await b.close();
   if (falhas) { console.log(`\n${falhas} caso(s) mudaram. Se a mudança foi de propósito: npm run atualizar-referencia`); process.exit(1); }
   console.log('\nTodos os casos iguais à referência.');

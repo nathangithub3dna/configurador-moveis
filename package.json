@@ -4,14 +4,16 @@
   "private": true,
   "description": "Configurador de móveis planejados do Nathan",
   "scripts": {
-    "montar": "node ferramentas/montar.js",
-    "testar": "node ferramentas/montar.js && node testes/rodar.js",
-    "atualizar-referencia": "node ferramentas/montar.js && node testes/rodar.js --atualizar"
+    "montar": "node ferramentas/montar.js && node ferramentas/offline.js",
+    "testar": "node ferramentas/montar.js && node ferramentas/offline.js && node testes/rodar.js",
+    "atualizar-referencia": "node ferramentas/montar.js && node ferramentas/offline.js && node testes/rodar.js --atualizar"
   },
   "devDependencies": {
     "jspdf": "2.5.1",
     "jszip": "3.10.1",
     "playwright": "1.48.2",
-    "three": "0.160.0"
+    "three": "0.160.0",
+    "qrcode-generator": "1.4.4",
+    "svg2pdf.js": "2.2.3"
   }
 }

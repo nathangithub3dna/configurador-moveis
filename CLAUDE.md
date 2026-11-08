@@ -9,6 +9,7 @@
   - `fonte/pagina.html` — estrutura da tela; inclui as outras partes com `/*@inclui:caminho*/`.
   - `fonte/js/` — lógica: `regras`, `tipos`, `geradores`, `nucleo`, `ambiente`, `editor-modulo`, `saidas` (listas, plano, desenhos, Inventor), `saidas-loja` (códigos, CorteCloud, etiquetas), `folha-peca` (folha A3), `orcamento`, `revisao` (estudo/aprovado/liberado, o que mudou); tela: `tela` (3D, eventos, salvar), `tela-modulo`, `tela-ambiente`, `tela-loja`, `tela-orcamento`, `tela-revisao`.
 - Salvar: dentro do Claude usa o recurso de downloads; fora dele, baixa pelo navegador. O projeto (.json) salva mesmo com erros.
+- `configurador-offline.html` (gerado por `ferramentas/offline.js`, junto com o montar): mesmo programa com as bibliotecas embutidas (de node_modules), abre sem internet e sem o Claude. O teste abre o arquivo com a rede bloqueada.
   - Estrutura dos painéis novos em `<template>` no `pagina.html`; o JS só preenche (`data-texto`, `data-se`, `data-acao`).
 - Visual escolhido para a tela (5a): neomorfismo **só na interface**; o móvel (desenho e 3D) fica nas cores reais do material.
 - `configurador.html` é o arquivo publicado no artifact https://claude.ai/artifact/HsqccQZfs2utTfs3jVHp1Q (publicar sempre a partir dele).
