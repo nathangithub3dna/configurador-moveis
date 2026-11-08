@@ -1,54 +1,49 @@
-# Passagem — Configurador de Móveis — 08/11/2026 16:00
+# Passagem — Configurador de Móveis — 08/11/2026 18:50
 
 ## Onde paramos
-Sub-etapa **1a do passo 1 (peça livre) pronta**: o ambiente aceita peças livres (painel, forro, cortineiro, tampo de mesa, pé em painel, lateral de acabamento, prateleira de parede, bancada, tamponamento, peça genérica), presas a uma parede ou soltas, giradas em qualquer ângulo, e elas saem em 3D, lista e plano de corte, códigos, CorteCloud, iLogic, folha A3 e compras. **Ainda não dá para criá-las pela tela** — só pelos dados do projeto. Commit `96c8ea4`, artifact versão 26.
+Sub-etapa **1b do passo 1 (tela das peças livres) pronta e publicada** (commit `85b1e8a`, artifact versão 27): no modo Ambiente dá para criar e editar peças livres pela tela, juntar em grupos e vê-las na planta. **Ficou aberto um problema relatado pelo Nathan:** no celular, abrindo o artifact pelo app do Claude, os botões e campos aparecem mas a área do desenho fica vazia (nenhum móvel). Na nuvem, numa tela de celular (390 × 844), o móvel aparece no Esquema e no 3D — não foi reproduzido. A 1b ainda não foi aprovada pelo Nathan.
 
 ## Próximo passo
-Sub-etapa **1b — tela das peças livres** (aprovada pelo Nathan):
-1. Ler `CLAUDE.md`, esta passagem e `claude/peca-caixa-livre.md` (projeto MÓVEIS PLANEJADOS).
-2. No modo Ambiente (`fonte/pagina.html` com `<template>`, `fonte/js/tela-ambiente.js`): lista de peças livres; adicionar por função; campos de medidas, material, veio, fita por lado, apoio (deitada / em pé de frente / em pé de lado), posição (parede ou solta), giro nos 3 eixos, recortes, furos, ferragens da biblioteca; duplicar; remover; grupo (peças do mesmo grupo andam juntas).
-3. Peças livres na planta (`desenharPlanta`), inclusive giradas.
-4. Aceite: montar pela tela o caso do teste "PEÇAS LIVRES (1a)" (pórtico com painel e forro, cortineiro, mesa com tampo recortado e pé em painel, peça girada).
+1. Investigar o "móvel não aparece no celular" antes de qualquer outra coisa. O Nathan ainda não respondeu as duas perguntas que separam as causas:
+   - Antes de hoje o móvel aparecia no celular? (Se parou hoje, suspeitar da 1b: `fonte/js/tela-ambiente.js`, `fonte/pagina.html`, `fonte/estilos/ambiente.css`, `fonte/js/folha-peca.js`.)
+   - Em "Lista de corte" a tabela aparece preenchida? (Preenchida = programa roda e só o desenho falha: tamanho da área `.vista`/`.palco` no app, ou WebGL do aparelho. Vazia = o programa não carrega no app: ex. a biblioteca three vinda de cdn.jsdelivr.net pelo importmap.)
+   - Confirmar a causa antes de corrigir (pedir print; se possível abrir o artifact no Chrome do PC em largura de celular). Depois corrigir, rodar `npm run testar`, publicar.
+2. Depois: aprovação da 1b pelo Nathan e a sub-etapa **1c — caixa livre + desligar/mudar peça de qualquer módulo** (aceite: caixa da geladeira com lateral alta + aéreo, sem base nem fundo). Especificação em `claude/peca-caixa-livre.md`.
 
 ## Feito nesta conversa
-- Testes voltaram a rodar na nuvem — o repositório guardava um atalho `node_modules` para uma pasta de outra sessão e o Playwright exigia uma versão exata do navegador; agora `npm install` traz as bibliotecas e o teste usa o Chromium que existir em `/opt/pw-browsers` (commit `57b817e`).
-- Pesquisa de mercado (Promob, Hellomob, Polyboard, Mozaik) sobre peças avulsas e proposta aprovada — registrada em `claude/peca-caixa-livre.md`.
-- Peça livre implementada em `fonte/js/livres.js` e ligada ao ambiente, 3D, iLogic, códigos (`A-L01…`), furo avulso; aviso de peça livre ocupando o lugar de um módulo; cor própria no 3D.
-- Teste novo "PEÇAS LIVRES (1a)" em `testes/rodar.js` (8 peças, inclusive giradas e na parede B; casos de erro). Todos os casos antigos iguais à referência. 3D conferido por imagem.
+- Tela das peças livres no modo Ambiente — para montar painel, forro, cortineiro, mesa etc. sem mexer nos dados:
+  - "+ Peça" por função (nasce com medidas iniciais da função); lista com uma peça aberta por vez; Editar/Fechar, Duplicar, Remover.
+  - Campos: nome, função, grupo, medida 1, medida 2, espessura, material, veio (só em material com veio), fita por borda (nomeada como a peça nasce: de baixo, de cima, lado do canto, de trás, da frente…), como nasce, onde (parede A, parede B, solta), posição, giro (tombar, virar, inclinar), recortes, furos, ferragens da biblioteca com quantidade.
+  - Trocar "onde" mantém a peça no mesmo lugar do ambiente; na parede B avisa para conferir o giro (a peça nasce virada 90°).
+  - Grupo: bloco por grupo com "Mover X/Y/Z" (eixos do ambiente), "Mover o grupo" e "Duplicar o grupo" (cópia "<grupo> 2", ao lado). Duplicar peça: cópia nasce ao lado.
+- Planta (vista de cima): peças livres desenhadas por cima dos módulos com o contorno real visto de cima (vale girada), rótulo L1, L2…; clicar abre a peça no painel.
+- Folha A3: a vista frontal passou a desenhar recortes de borda e vazados (antes saía só o retângulo — valia também para a prateleira com recorte do sifão). Conferido por imagem no tampo da mesa.
+- Teste novo "PEÇAS LIVRES PELA TELA (1b)" em `testes/rodar.js`: monta pela tela as 8 peças do caso da 1a e compara com o caso montado pelos dados (igual); confere planta, clique na planta, mover/duplicar grupo, duplicar/remover peça. Todos os casos iguais à referência.
+- Publicado: artifact versão 27; cópia em `codigo/configurador-moveis.html` no projeto; `configurador-offline.html` enviado ao Nathan; `claude/peca-caixa-livre.md` atualizado (1b feita, o que ficou pronto e limites).
+- Explicado ao Nathan o plano do passo 1 (1a–1d) e o escopo dos passos 2 e 3.
 
 ## Decisões tomadas
-- Posição: presa à parede (distância do canto, altura, afastamento) ou solta (X, Y, Z) — Nathan.
-- Rotação: ângulo livre já, em qualquer eixo — Nathan (o Claude avisou que custa mais; seguiu a escolha).
-- Formato: retângulo + recortes retangulares + furos avulsos — Nathan.
-- Caixa livre: módulo solto + desligar ou mudar medida de qualquer peça de módulo — Nathan.
-- Fixação da peça livre sempre escolhida à mão, com aviso quando falta — sugestão do Claude (o cálculo por contato poria parafuso aparente no tampo da mesa), confirmada pelo Nathan.
-- Ordem: 1b (tela) antes de 1c (caixa livre) — Nathan.
+- Mexer na posição de uma peça move só ela; o grupo se move pelo bloco do grupo (Mover/Duplicar) — sugestão do Claude, para não arrastar o pé ao ajustar o tampo; informada ao Nathan, sem resposta contrária.
+- Duplicar peça/grupo: a cópia nasce ao lado, não por cima — sugestão do Claude.
 
 ## Tentado e descartado
-- Fixação automática por contato nas peças livres alinhadas (estava na proposta) — trocada pela fixação à mão pelo motivo acima.
+- nada
 
 ## Sem testar / riscos
-- Nada foi testado pela tela pelo Nathan: não há tela para peça livre até a 1b.
-- iLogic de peça girada em ângulo: eixos conferidos só no app, não rodados no Inventor — testar no trabalho quando houver um caso.
-- Folha A3 de peça com recorte: o teste só confere que a folha é gerada; conferir visualmente na 1b.
+- **Móvel não aparece no celular (artifact no app do Claude)** — causa não confirmada; ver "Próximo passo".
+- Uso real da tela pelo Nathan (montar a mesa no celular) — ainda não feito.
+- 3D das peças criadas pela tela não conferido por imagem nesta etapa (dados iguais aos da 1a, que foi conferida).
+- iLogic de peça girada continua sem rodar no Inventor.
 
 ## Pendências
-- Limites da 1a (em `claude/peca-caixa-livre.md`): recortes só numa mesma borda; furos só na face A (sem canal nem furo de topo); CorteCloud não leva recortes nem vazados; planta sem peças livres (vai na 1b); volumes de transporte não existem no ambiente; biblioteca sem mão-francesa, cantoneira e suporte invisível (precisa pesquisar itens reais); 3D na cor da categoria, não do material.
-- Sub-etapas 1c (caixa livre) e 1d (caso real da cozinha) do passo 1.
-- Herdadas: posição do puxador na tela nova (A/B/C); folha A4; rasgos nas vistas da folha; correr e basculante da parede B no 3D; conferência de abertura no móvel solto; juntar pilhas pequenas nos volumes; levantamento da obra; manual de montagem; peça de teste e perguntas às lojas; catálogo de gola e cava; "NÃO FABRICAR" no PDF antigo e orientação da furação na loja sem conferir. Lista completa em `claude/lacunas-especificacao.md`.
-
-### Caso de aceite — cozinha do Nathan (fotos de 08/11/2026)
-Em U: parede do fogão (fogão de piso Dako entre balcões, purificador na parede, aéreos com nicho aberto do micro-ondas); parede da pia sob a janela (gaveteiro + portas, aéreos interrompidos pela janela, cortineiro em MDF); caixa da geladeira (lateral alta até o chão + aéreo por cima, sem base nem fundo); península de costas para a passagem (balcão de 2 portas, lateral aparente, espelho de granito elevado); mesa em MDF com pé em painel, encostada num pórtico (painel de parede que sobe e vira forro), bancada fina na parede e prateleira com mão-francesa. Tampo de granito preto; rodapé preto recuado; frentes amadeiradas com veio vertical.
+- Decisão do Nathan sobre cópias duplicadas (pergunta feita, sem resposta): A) parar de copiar o programa para `codigo/configurador-moveis.html` no projeto (recomendação do Claude: o código já está no GitHub e a versão de uso no artifact; a cópia de 360 KB fica desatualizada e pesa nas buscas); B) também deixar a passagem só no GitHub; C) deixar como está. Mudar exige ajustar `CLAUDE.md`, a skill do configurador e a skill de fechar conversa. Até lá, seguir copiando.
+- Limites da 1b: "Mover o grupo" não gira o grupo; rótulos da planta se sobrepõem em peças finas e próximas; nome longo da peça encosta no "QTD." do carimbo da folha A3 (já existia).
+- Limites da 1a continuam (recortes só numa borda, furos só na face A, CorteCloud sem recortes, volumes de transporte do ambiente, biblioteca sem mão-francesa/cantoneira/suporte invisível, 3D na cor da categoria).
 
 ## Arquivos tocados
-- `fonte/js/livres.js` — novo: lógica da peça livre.
-- `fonte/js/regras.js` — funções das peças livres (`FUNCOES_LIVRE`, `PAPEIS`), categoria "Peças livres".
-- `fonte/js/ambiente.js` — peças livres entram no ambiente; aviso de sobreposição com módulo.
-- `fonte/js/saidas.js` — furo avulso; posição no iLogic pelos eixos da peça; ordem das listas.
-- `fonte/js/saidas-loja.js` — código `A-L01…` para peça livre.
-- `fonte/js/tela.js` — forma 3D da peça livre; `atualizar` e `nosAtual` expostos para o teste.
-- `fonte/estilos/tema.css` — cor `--v-livre`.
-- `fonte/pagina.html` — inclui `livres.js`.
-- `testes/rodar.js` — Chromium da nuvem; teste "PEÇAS LIVRES (1a)".
-- `.gitignore`, `package-lock.json`; `node_modules` saiu do repositório.
-- Projeto: `claude/peca-caixa-livre.md` (novo), `codigo/configurador-moveis.html`, `claude/passagem-conversa.md`.
+- `fonte/pagina.html` — bloco "Peças livres" no modelo do Ambiente e modelos `tplLivre`, `tplLivreRec`, `tplLivreFuro`, `tplLivreFer`, `tplGrupo`.
+- `fonte/js/tela-ambiente.js` — lista e edição das peças livres, grupos, peças livres na planta e clique nelas.
+- `fonte/estilos/ambiente.css` — aparência da lista de peças livres e das peças na planta.
+- `fonte/js/folha-peca.js` — recortes e vazados na vista frontal da folha A3.
+- `testes/rodar.js` — teste "PEÇAS LIVRES PELA TELA (1b)".
+- Projeto MÓVEIS PLANEJADOS: `claude/peca-caixa-livre.md`, `codigo/configurador-moveis.html`.
