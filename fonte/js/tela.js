@@ -103,7 +103,16 @@ function geometriaDe(pc) {
   const [x0,x1,y0,y1,z0,z1] = pc.box, w=x1-x0, h=y1-y0, d=z1-z0;
   const c = [(x0+x1)/2, (y0+y1)/2, (z0+z1)/2];
   let g;
-  if (pc.forma?.tipo === 'recorte') {
+  if (pc.forma?.tipo === 'livre') {
+    // peça livre: contorno do desenho (recortes na borda de cima, vazados) extrudado para dentro da face A, nos eixos da peça
+    const f = pc.forma, pts = [[0,0],[f.W,0],[f.W,f.H]];
+    f.recortes.slice().sort((a,b) => b.x - a.x).forEach(r => pts.push([r.x+r.w,f.H],[r.x+r.w,f.H-r.h],[r.x,f.H-r.h],[r.x,f.H]));
+    pts.push([0,f.H]);
+    const sh = new THREE.Shape(pts.map(([u,v]) => new THREE.Vector2(u,v)));
+    f.rasgos.forEach(r => sh.holes.push(new THREE.Path([[r.x,r.y],[r.x,r.y+r.h],[r.x+r.w,r.y+r.h],[r.x+r.w,r.y]].map(([u,v]) => new THREE.Vector2(u,v)))));
+    g = new THREE.ExtrudeGeometry(sh, { depth:pc.esp, bevelEnabled:false }); g.translate(0, 0, -pc.esp);
+    g.applyMatrix4(new THREE.Matrix4().makeBasis(new THREE.Vector3(...f.du), new THREE.Vector3(...f.dv), new THREE.Vector3(...f.n)).setPosition(...f.origem));
+  } else if (pc.forma?.tipo === 'recorte') {
     const { rl, rp } = pc.forma, a=(w-rl)/2;
     const s = new THREE.Shape([[0,0],[a,0],[a,rp],[a+rl,rp],[a+rl,0],[w,0],[w,d],[0,d]].map(([u,v])=>new THREE.Vector2(u,v)));
     g = new THREE.ExtrudeGeometry(s, { depth:h, bevelEnabled:false });
@@ -681,4 +690,4 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { atualizar, nosAtual: () => nos, AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };

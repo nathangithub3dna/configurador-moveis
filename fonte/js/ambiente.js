@@ -9,6 +9,7 @@
      pontos:  [{ tipo:'esgoto'|'agua'|'gas'|'tomada', parede:0, x, altura }],
      modulos: [{ nome, linha:'inferior'|'aereo'|'torre', parede:0, x, y, modulo:{…módulo do núcleo…} }],
      tampo:   { esp, balanco },
+     livres:  [{ …peça livre: ver livres.js… }],
    }
    x = distância do canto (início da parede) até o lado do módulo; y = altura do chão até a base.
    Parede A corre no eixo X (fundo); parede B corre no eixo Z a partir do canto (lado esquerdo).
@@ -97,6 +98,16 @@ function gerarAmbiente(amb) {
       fixacoes.push({ ...f, p:[p[0], p[2], p[4]], dir, dono:`${tag}-${f.dono}` });
     });
   });
+  // 1b. peças livres (passo 1): chapas posicionadas à mão — livres.js
+  const lv = pecasLivres(amb, paredes);
+  E.push(...lv.erros); A.push(...lv.avisos); pecas.push(...lv.pecas);
+  lv.ferragens.forEach(f => { const s = soma.get(f.ref); if (s) s.qtd += f.qtd; else soma.set(f.ref, { ...f }); });
+  // peça livre (sem giro em ângulo) ocupando o mesmo lugar de uma peça de módulo
+  const cruza = (a, b) => [0,1,2].every(i => Math.min(a[2*i+1], b[2*i+1]) - Math.max(a[2*i], b[2*i]) > 1);
+  for (const q of lv.pecas.filter(p => !p.giro)) {
+    const mods = [...new Set(pecas.filter(p => p.modulo !== undefined && p.lista && p.box && cruza(q.box, p.box)).map(p => p.modulo))];
+    if (mods.length) A.push(`${q.nome}: ocupa o mesmo lugar que ${mods.map(j => `M${j + 1}`).join(', ')}.`);
+  }
   // 2. sobreposição entre módulos da mesma parede (aéreos só com aéreos; torre conta nas duas linhas)
   const conflito = (m1, m2) => m1.parede === m2.parede && ext(m1)[0] < ext(m2)[1] - 0.5 && ext(m2)[0] < ext(m1)[1] - 0.5
     && m1.y < m2.y + m2.modulo.altura - 0.5 && m2.y < m1.y + m1.modulo.altura - 0.5;

@@ -2,7 +2,7 @@
    4. LISTAS — agrupa peças iguais e calcula chapas e fita
    ===================================================================== */
 function listaDeCorte(pecas) {
-  const ordem = ['caixa','enchimento','frente','gaveta','fundo'];
+  const ordem = ['caixa','enchimento','frente','gaveta','fundo','livre'];
   const mapa = new Map();
   for (const pc of pecas.filter(p=>p.lista)) {
     const k = [pc.mat, pc.esp, pc.nomeLista||pc.nome, pc.comp, pc.larg, pc.fita.join(), pc.forma?.tipo||''].join('|');
@@ -89,9 +89,10 @@ const TIPOS_FURO = {
   calco:    { l:'D', nome:'Calço da dobradiça, pré-furo' },
   corredica:{ l:'C', nome:'Corrediça, pré-furo' },
   parede:   { l:'F', nome:'Fixação na parede, passante' },
+  avulso:   { l:'A', nome:'Furo avulso (peça livre)' },
 };
 function listaDesenhos(pecas) {
-  const ordem = ['caixa','enchimento','frente','gaveta','fundo'];
+  const ordem = ['caixa','enchimento','frente','gaveta','fundo','livre'];
   const mapa = new Map();
   for (const pc of pecas.filter(p => p.lista && p.des)) {
     const k = JSON.stringify([pc.nomeLista, pc.comp, pc.larg, pc.esp, pc.mat, pc.des]);
@@ -294,6 +295,7 @@ const EIXO = { x:0, y:1, z:2 };
 const vetor = s => { const v = [0,0,0]; v[EIXO[s[1]]] = s[0]==='-' ? -1 : 1; return v; };
 const cruz = (a,b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
 function posicaoInventor(pc) {
+  if (pc.eixos) return { ok:true, ...pc.eixos };      // peça livre: eixos já calculados (vale também girada em ângulo)
   const [us, vs] = oriDe(pc.id), u = vetor(us), v = vetor(vs), nn = cruz(u, v);
   const ext = [pc.box[1]-pc.box[0], pc.box[3]-pc.box[2], pc.box[5]-pc.box[4]];
   const mn = [pc.box[0], pc.box[2], pc.box[4]], mx = [pc.box[1], pc.box[3], pc.box[5]];

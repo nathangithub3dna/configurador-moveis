@@ -11,8 +11,8 @@ function codigoProjetoPadrao() { const d = new Date(); return `${String(d.getFul
 function codigosDasPecas(pecas, codigoProjeto, ambiente = 'A') {
   const lc = listaDeCorte(pecas), mapa = new Map(); let n = 0;
   for (const its of lc.grupos.values()) for (const it of its) for (const id of it.ids) {
-    const pc = pecas.find(p => p.id === id), mod = (pc.modulo ?? 0) + 1;
-    const codigo = `${codigoProjeto} · ${ambiente}-M${String(mod).padStart(2, '0')} · P${String(++n).padStart(3, '0')}`;
+    const pc = pecas.find(p => p.id === id), livre = pc.livre !== undefined, mod = (livre ? pc.livre : (pc.modulo ?? 0)) + 1;
+    const codigo = `${codigoProjeto} · ${ambiente}-${livre ? 'L' : 'M'}${String(mod).padStart(2, '0')} · P${String(++n).padStart(3, '0')}`;
     mapa.set(id, { codigo, num: it.num, modulo: mod });
   }
   return mapa;

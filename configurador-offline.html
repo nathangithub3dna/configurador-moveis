@@ -15,7 +15,7 @@
   --raio:18px; --raio-p:12px;
   /* o móvel (esquema e 3D) fica nas cores reais do material, sem neomorfismo */ --danger:#a8261d; --danger-bg:#fbeceb; --warn:#7a5200; --warn-bg:#fdf3dd; --ok:#22693f; --ok-bg:#e5f3ea;
   --v-bg:#e9edf2; --v-linha:#28323a; --v-caixa:#e6e9ec; --v-frente:#fbfbf9; --v-gaveta:#cfd7de; --v-fundo:#b7c0c7;
-  --v-enchimento:#d6dccf; --v-ferragem:#6f7a82; --v-tampo:#f2f3f4; --v-parede:#c9cfd3; --v-grade:#b8c0c5; --v-esgoto:#d0503a; --v-referencia:#9fb3c8;
+  --v-enchimento:#d6dccf; --v-ferragem:#6f7a82; --v-tampo:#f2f3f4; --v-parede:#c9cfd3; --v-grade:#b8c0c5; --v-esgoto:#d0503a; --v-referencia:#9fb3c8; --v-livre:#dccbb2;
   --fita:#c4650f;
   --f-sans:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
@@ -26,7 +26,7 @@
   --bg:#23272e; --surface:#23272e; --surface-2:#23272e; --fg:#e6e9ee; --muted:#a7b0bc; --line:#3a414c;
   --accent:#6ea8e6; --accent-fg:#0d1720; --danger:#f0897f; --danger-bg:#3a1d1b; --warn:#e9b955; --warn-bg:#352a12; --ok:#7fcf9d; --ok-bg:#16301f;
   --v-bg:#1d2329; --v-linha:#0b0f12; --v-caixa:#7d8890; --v-frente:#a9b2b8; --v-gaveta:#66727c; --v-fundo:#525d66;
-  --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387;
+  --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387; --v-livre:#8c7c64;
   --fita:#f0a050;
   color-scheme:dark}}
 :root[data-theme="dark"]{
@@ -35,7 +35,7 @@
   --bg:#23272e; --surface:#23272e; --surface-2:#23272e; --fg:#e6e9ee; --muted:#a7b0bc; --line:#3a414c;
   --accent:#6ea8e6; --accent-fg:#0d1720; --danger:#f0897f; --danger-bg:#3a1d1b; --warn:#e9b955; --warn-bg:#352a12; --ok:#7fcf9d; --ok-bg:#16301f;
   --v-bg:#1d2329; --v-linha:#0b0f12; --v-caixa:#7d8890; --v-frente:#a9b2b8; --v-gaveta:#66727c; --v-fundo:#525d66;
-  --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387;
+  --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387; --v-livre:#8c7c64;
   --fita:#f0a050;
   color-scheme:dark}
 /* LAYOUT — posição e tamanho das partes da tela. */
@@ -3485,7 +3485,12 @@ const METODOS_CONSTRUCAO = {"_explicacao":{"lateral":"passante = topo e base ent
    1c. FUNÇÃO (PAPEL) DE CADA PEÇA — definida num lugar só.
    Orientação no Inventor, contagens de ferragem e fixações usam o papel, nunca o nome da peça.
    ===================================================================== */
+// Funções das peças livres (passo 1): id da peça livre = L<nº>-<função>
+const FUNCOES_LIVRE = { 'painel':'Painel de parede', 'forro':'Forro', 'cortineiro':'Cortineiro', 'tamponamento':'Tamponamento',
+  'lateral-acabamento':'Lateral de acabamento', 'tampo-mesa':'Tampo de mesa', 'pe-painel':'Pé em painel', 'prateleira-parede':'Prateleira de parede',
+  'bancada':'Bancada', 'peca-generica':'Peça genérica' };
 const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do próprio id quando existir
+  ...Object.keys(FUNCOES_LIVRE).map(f => [new RegExp('^L\\d+-' + f + '$'), f]),
   [/^lateral-(esq|dir)$/, 'lateral'], [/^topo$/, 'topo'], [/^base$/, 'base'],
   [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'],
   [/^travessa-(frontal|traseira)$/, 'travessa'], [/^travessa-fixacao(-\d+)?$/, 'travessa-fixacao'],
@@ -3516,7 +3521,7 @@ const ORIENTACAO = {
 const chapasDe = (mat, esp) => Object.entries(BIBLIOTECA).filter(([,b]) => b.unid==='chapa' && b.mat===mat && b.esp===esp).map(([k]) => k);
 const chapaDe = (mat, esp) => chapasDe(mat, esp)[0] || null;
 
-const CATS = { caixa:'Caixa', enchimento:'Enchimento', frente:'Frentes', gaveta:'Caixa das gavetas', fundo:'Fundo', ferragem:'Ferragens', tampo:'Tampo', referencia:'Referência (não fabricar)' };
+const CATS = { caixa:'Caixa', enchimento:'Enchimento', frente:'Frentes', gaveta:'Caixa das gavetas', fundo:'Fundo', livre:'Peças livres', ferragem:'Ferragens', tampo:'Tampo', referencia:'Referência (não fabricar)' };
 
 const fmt = v => { const r = Math.round(v*10)/10; return Number.isInteger(r) ? String(r) : r.toFixed(1).replace('.', ','); };
 const fitaTxt = f => { const s = []; if (f[0]) s.push(f[0]+'C'); if (f[1]) s.push(f[1]+'L'); return s.length ? s.join(' ') : '—'; };
@@ -4739,6 +4744,7 @@ TIPOS.modulo = {
      pontos:  [{ tipo:'esgoto'|'agua'|'gas'|'tomada', parede:0, x, altura }],
      modulos: [{ nome, linha:'inferior'|'aereo'|'torre', parede:0, x, y, modulo:{…módulo do núcleo…} }],
      tampo:   { esp, balanco },
+     livres:  [{ …peça livre: ver livres.js… }],
    }
    x = distância do canto (início da parede) até o lado do módulo; y = altura do chão até a base.
    Parede A corre no eixo X (fundo); parede B corre no eixo Z a partir do canto (lado esquerdo).
@@ -4827,6 +4833,16 @@ function gerarAmbiente(amb) {
       fixacoes.push({ ...f, p:[p[0], p[2], p[4]], dir, dono:`${tag}-${f.dono}` });
     });
   });
+  // 1b. peças livres (passo 1): chapas posicionadas à mão — livres.js
+  const lv = pecasLivres(amb, paredes);
+  E.push(...lv.erros); A.push(...lv.avisos); pecas.push(...lv.pecas);
+  lv.ferragens.forEach(f => { const s = soma.get(f.ref); if (s) s.qtd += f.qtd; else soma.set(f.ref, { ...f }); });
+  // peça livre (sem giro em ângulo) ocupando o mesmo lugar de uma peça de módulo
+  const cruza = (a, b) => [0,1,2].every(i => Math.min(a[2*i+1], b[2*i+1]) - Math.max(a[2*i], b[2*i]) > 1);
+  for (const q of lv.pecas.filter(p => !p.giro)) {
+    const mods = [...new Set(pecas.filter(p => p.modulo !== undefined && p.lista && p.box && cruza(q.box, p.box)).map(p => p.modulo))];
+    if (mods.length) A.push(`${q.nome}: ocupa o mesmo lugar que ${mods.map(j => `M${j + 1}`).join(', ')}.`);
+  }
   // 2. sobreposição entre módulos da mesma parede (aéreos só com aéreos; torre conta nas duas linhas)
   const conflito = (m1, m2) => m1.parede === m2.parede && ext(m1)[0] < ext(m2)[1] - 0.5 && ext(m2)[0] < ext(m1)[1] - 0.5
     && m1.y < m2.y + m2.modulo.altura - 0.5 && m2.y < m1.y + m1.modulo.altura - 0.5;
@@ -4899,10 +4915,162 @@ TIPOS.ambiente = {
   add('aereo', 0, 0); add('aereo', 0); add('aereo', 0);
 })();
 /* =====================================================================
+   PASSO 1a. PEÇAS LIVRES — chapa posicionada à mão no ambiente (painel de parede,
+   forro, cortineiro, mesa, bancada, lateral de acabamento…). Só lógica.
+
+   Peça livre (ambiente.livres[]) = {
+     nome, funcao (FUNCOES_LIVRE em regras.js), grupo (texto; peças do mesmo grupo andam juntas — tela, 1b),
+     comp, larg, esp, mat,                   // comp = medida 1 (eixo u), larg = medida 2 (eixo v)
+     veio: 'comp' | 'larg' | null,           // só vale em material com veio; sem informar = no comprimento
+     fita: { C1, C2, L1, L2 },               // espessura da fita em cada lado (0 = sem). C1 = lado v=0, C2 = v=larg, L1 = u=0, L2 = u=comp
+     apoio: 'deitada' | 'frente' | 'lado',   // como a peça nasce antes do giro
+     pos: { parede:0|1, x, y, afast }        // x = distância do canto, y = altura do chão, afast = distância da parede (mesma regra dos módulos)
+        | { solta:true, x, y, z },           // coordenadas do ambiente (X ao longo da parede A, Y para cima, Z saindo da parede A)
+     giro: [gx, gy, gz],                     // graus, em volta do centro da peça; eixos da parede: x ao longo dela, y vertical, z saindo dela
+                                              // ordem: primeiro gz, depois gx, por último gy (gy = girar em volta do eixo vertical)
+     recortes: [{ u, v, w, h }],             // retângulo no plano da peça: encostado na borda = recorte; por dentro = vazado
+     furos: [{ u, v, d, prof }],             // na face A; prof 0 = passante
+     ferragens: [{ ref, qtd }],              // fixação escolhida à mão (itens da biblioteca)
+   }
+   Eixos da peça antes do giro: u = medida 1, v = medida 2, n = u × v (sai da face A, a face furada).
+     deitada: u ao longo da parede, v na profundidade, face A para baixo
+     frente:  u ao longo da parede, v na vertical,     face A para a frente
+     lado:    u na profundidade,     v na vertical,     face A virada para o lado do canto
+   Fixação: sempre escolhida à mão (o cálculo por contato dos módulos não vale para peça livre:
+   ele poria parafuso aparente no tampo de uma mesa, por exemplo).
+   ===================================================================== */
+const LIVRE_APOIOS = { deitada: [[1,0,0],[0,0,1]], frente: [[1,0,0],[0,1,0]], lado: [[0,0,1],[0,1,0]] };
+
+const V3 = {
+  cruz: (a, b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]],
+  soma: (...vs) => vs.reduce((s, v) => [s[0]+v[0], s[1]+v[1], s[2]+v[2]], [0,0,0]),
+  mult: (v, k) => [v[0]*k, v[1]*k, v[2]*k],
+  abs: v => v.map(Math.abs),
+  matVet: (m, v) => [0,1,2].map(i => m[i][0]*v[0] + m[i][1]*v[1] + m[i][2]*v[2]),
+  matMat: (a, b) => [0,1,2].map(i => [0,1,2].map(j => a[i][0]*b[0][j] + a[i][1]*b[1][j] + a[i][2]*b[2][j])),
+  limpa: v => v.map(x => Math.abs(x) < 1e-9 ? 0 : Math.abs(Math.abs(x) - 1) < 1e-9 ? Math.sign(x) : x),
+};
+// giro em graus → matriz (ordem: z, depois x, depois y)
+function matrizGiro([gx = 0, gy = 0, gz = 0] = []) {
+  const r = g => g * Math.PI / 180, c = g => Math.cos(r(g)), s = g => Math.sin(r(g));
+  const Rx = [[1,0,0],[0,c(gx),-s(gx)],[0,s(gx),c(gx)]], Ry = [[c(gy),0,s(gy)],[0,1,0],[-s(gy),0,c(gy)]], Rz = [[c(gz),-s(gz),0],[s(gz),c(gz),0],[0,0,1]];
+  return V3.matMat(Ry, V3.matMat(Rx, Rz)).map(V3.limpa);
+}
+const giroAlinhado = m => m.every(l => l.every(x => x === 0 || x === 1 || x === -1));
+// da parede ao ambiente (só direção): parede A = igual; parede B = girada 90° (como os módulos: o lado do canto fica à direita)
+const vetorNoMundo = (parede, v) => parede === 1 ? [v[2], v[1], -v[0]] : v;
+
+// desenho da peça: escolhe o giro no plano (0, 90, 180 ou 270°) que deixa todos os recortes na borda de cima,
+// porque o contorno do desenho, do iLogic e da folha só sabe recortar a borda de cima
+const ROT_DESENHO = [
+  { pt: (a, b, C, L) => [a, b],         W: (C, L) => C, H: (C, L) => L, du: (U, V) => U,              dv: (U, V) => V,              ori: (C, L) => [0, 0], fita: { C1:'b', C2:'t', L1:'l', L2:'r' } },
+  { pt: (a, b, C, L) => [b, C - a],     W: (C, L) => L, H: (C, L) => C, du: (U, V) => V,              dv: (U, V) => V3.mult(U, -1), ori: (C, L) => [C, 0], fita: { C1:'l', C2:'r', L1:'t', L2:'b' } },
+  { pt: (a, b, C, L) => [C - a, L - b], W: (C, L) => C, H: (C, L) => L, du: (U, V) => V3.mult(U, -1), dv: (U, V) => V3.mult(V, -1), ori: (C, L) => [C, L], fita: { C1:'t', C2:'b', L1:'r', L2:'l' } },
+  { pt: (a, b, C, L) => [L - b, a],     W: (C, L) => L, H: (C, L) => C, du: (U, V) => V3.mult(V, -1), dv: (U, V) => U,              ori: (C, L) => [0, L], fita: { C1:'r', C2:'l', L1:'b', L2:'t' } },
+];
+function desenhoLivre(lv, C, L) {
+  const rec = lv.recortes || [], na = r => r.u <= 0.01 || r.v <= 0.01 || r.u + r.w >= C - 0.01 || r.v + r.h >= L - 0.01;
+  const bordas = rec.filter(na);
+  for (let k = 0; k < 4; k++) {
+    const R0 = ROT_DESENHO[k], W = R0.W(C, L), H = R0.H(C, L);
+    const ret = r => { const p1 = R0.pt(r.u, r.v, C, L), p2 = R0.pt(r.u + r.w, r.v + r.h, C, L);
+      return { x: Math.min(p1[0], p2[0]), y: Math.min(p1[1], p2[1]), w: Math.abs(p2[0] - p1[0]), h: Math.abs(p2[1] - p1[1]) }; };
+    const noTopo = bordas.map(ret).every(q => q.y + q.h >= H - 0.01 && q.y > 0.01);
+    if (!noTopo) continue;
+    return { k, W, H,
+      recortes: bordas.map(ret).map(q => ({ x: q.x, w: q.w, h: q.h })),
+      rasgos: rec.filter(r => !na(r)).map(ret),
+      furos: (lv.furos || []).map(f => { const [x, y] = R0.pt(f.u, f.v, C, L); return { x, y, d: f.d, prof: f.prof || 0, tipo: 'avulso' }; }),
+      fita: Object.entries(lv.fita || {}).filter(([, e]) => e > 0).map(([lado]) => R0.fita[lado]) };
+  }
+  return null;
+}
+
+const linhaFerragem = (ref, qtd) => { const b = BIBLIOTECA[ref];
+  return { ref, item: b.nome + (b.marca ? ` — ${b.marca}${b.codigo ? ' ' + b.codigo : ''}` : ''), nome: b.nome, marca: b.marca, codigo: b.codigo, qtd,
+    unid: b.metro ? 'm' : (b.unid === 'par' ? 'par' : 'un'), obs: b.metro ? 'metros, com 10% de perda' : (b.obs || ''), var: '' }; };
+
+function pecasLivres(amb, paredes) {
+  const E = [], A = [], pecas = [], conta = new Map();
+  const somaRef = (ref, q) => { const it = BIBLIOTECA[ref]; if (!it || !(q > 0)) return;
+    if (it.componentes) it.componentes.forEach(([cr, cq]) => conta.set(cr, (conta.get(cr) || 0) + q * cq)); else conta.set(ref, (conta.get(ref) || 0) + q); };
+  let fitaFina = 0, fitaGrossa = 0;
+  (amb.livres || []).forEach((lv, k) => {
+    const tag = `L${k + 1}`, nome = lv.nome || FUNCOES_LIVRE[lv.funcao] || 'Peça livre', rot = `${tag} (${nome})`;
+    const C = Number(lv.comp), L = Number(lv.larg), esp = Number(lv.esp);
+    if (!FUNCOES_LIVRE[lv.funcao]) { E.push(`${rot}: escolha a função da peça.`); return; }
+    if (!(C > 0 && L > 0 && esp > 0)) { E.push(`${rot}: medidas inválidas.`); return; }
+    if (!MATERIAIS[lv.mat]) { E.push(`${rot}: material "${lv.mat}" não existe.`); return; }
+    if (Math.max(C, L) > Math.max(...R.chapa) || Math.min(C, L) > Math.min(...R.chapa)) E.push(`${rot}: maior que a chapa (${R.chapa.join(' × ')}).`);
+    const pos = lv.pos || { parede: 0, x: 0, y: 0, afast: 0 }, solta = !!pos.solta, parede = solta ? null : (pos.parede || 0);
+    const P = solta ? null : paredes[parede];
+    if (!solta && !P) { E.push(`${rot}: está numa parede que não existe neste formato.`); return; }
+    // eixos na parede (antes e depois do giro) e caixa da peça na parede
+    const [U0, V0] = LIVRE_APOIOS[lv.apoio] || LIVRE_APOIOS.deitada, N0 = V3.cruz(U0, V0);
+    const ext0 = V3.soma(V3.mult(V3.abs(U0), C), V3.mult(V3.abs(V0), L), V3.mult(V3.abs(N0), esp));
+    const p0 = solta ? [pos.x || 0, pos.y || 0, pos.z || 0] : [pos.x || 0, pos.y || 0, pos.afast || 0];
+    const cP = V3.soma(p0, V3.mult(ext0, 0.5));
+    const G = matrizGiro(lv.giro), alinhado = giroAlinhado(G);
+    const U = V3.limpa(V3.matVet(G, U0)), V = V3.limpa(V3.matVet(G, V0)), N = V3.cruz(U, V);
+    const quinas = []; for (const a of [-C/2, C/2]) for (const b of [-L/2, L/2]) for (const c of [-esp/2, esp/2]) quinas.push(V3.soma(cP, V3.mult(U, a), V3.mult(V, b), V3.mult(N, c)));
+    const cx = [0,1,2].map(i => [Math.min(...quinas.map(q => q[i])), Math.max(...quinas.map(q => q[i]))]);
+    // avisos de posição (na parede: medidas da parede; solta: só o chão)
+    if (cx[1][0] < -0.5) E.push(`${rot}: fica ${fmt(-cx[1][0])} mm abaixo do chão.`);
+    if (!solta) {
+      if (cx[0][0] < -0.5) E.push(`${rot}: começa antes do canto da parede ${P.nome}.`);
+      if (cx[0][1] > P.comprimento + 0.5) E.push(`${rot}: passa ${fmt(cx[0][1] - P.comprimento)} mm do fim da parede ${P.nome}.`);
+      if (cx[1][1] > P.altura + 0.5) E.push(`${rot}: passa ${fmt(cx[1][1] - P.altura)} mm da altura da parede ${P.nome}.`);
+      if (cx[2][0] < -0.5) E.push(`${rot}: entra ${fmt(-cx[2][0])} mm na parede ${P.nome}.`);
+    }
+    // da parede para o ambiente: pontos pela mesma conta dos módulos (noMundo), direções girando a parede B
+    const fake = solta ? null : { parede, x: cx[0][0], y: 0, modulo: { largura: cx[0][1] - cx[0][0] } };
+    const ponto = p => { if (solta) return p; const b = AMB.noMundo(amb, fake, [p[0] - cx[0][0], p[0] - cx[0][0], p[1], p[1], p[2], p[2]]); return [b[0], b[2], b[4]]; };
+    const dir = v => solta ? v : vetorNoMundo(parede, v);
+    const Uw = dir(U), Vw = dir(V), Nw = dir(N), cW = ponto(cP);
+    const qW = quinas.map(ponto), box = [0,1,2].flatMap(i => [Math.min(...qW.map(q => q[i])), Math.max(...qW.map(q => q[i]))]).map(x => Math.round(x * 1000) / 1000);
+    // recortes e furos dentro da peça
+    for (const r of lv.recortes || []) if (!(r.w > 0 && r.h > 0) || r.u < -0.01 || r.v < -0.01 || r.u + r.w > C + 0.01 || r.v + r.h > L + 0.01) E.push(`${rot}: recorte fora da peça (${fmt(r.u)}, ${fmt(r.v)}, ${fmt(r.w)} × ${fmt(r.h)}).`);
+    for (const f of lv.furos || []) if (!(f.d > 0) || f.u - f.d/2 < 0 || f.v - f.d/2 < 0 || f.u + f.d/2 > C || f.v + f.d/2 > L) E.push(`${rot}: furo Ø${fmt(f.d)} fora da peça (${fmt(f.u)}, ${fmt(f.v)}).`);
+    const des = desenhoLivre(lv, C, L);
+    if (!des) { E.push(`${rot}: recortes em bordas opostas ou em mais de dois lados — ainda não dá para desenhar (só recortes que caibam numa mesma borda).`); return; }
+    // eixos do desenho no ambiente: origem do desenho na face A (para o iLogic e o 3D)
+    const RD = ROT_DESENHO[des.k], du = RD.du(Uw, Vw), dv = RD.dv(Uw, Vw), [oa, ob] = RD.ori(C, L);
+    const canto0 = V3.soma(cW, V3.mult(Uw, -C/2), V3.mult(Vw, -L/2), V3.mult(Nw, -esp/2));
+    const origem = V3.soma(canto0, V3.mult(Uw, oa), V3.mult(Vw, ob), V3.mult(Nw, esp));
+    // fita, veio e medida de corte (lista de corte: comprimento = lado maior)
+    const fl = { C1: 0, C2: 0, L1: 0, L2: 0, ...(lv.fita || {}) }, temVeio = !!MATERIAIS[lv.mat].veio;
+    let veio = temVeio ? (lv.veio === 'larg' ? 'larg' : 'comp') : null, comp = C, larg = L, lados = fl;
+    if (L > C) { comp = L; larg = C; lados = { C1: fl.L1, C2: fl.L2, L1: fl.C1, L2: fl.C2 }; if (veio) veio = veio === 'comp' ? 'larg' : 'comp'; }
+    const nC = (lados.C1 > 0) + (lados.C2 > 0), nL = (lados.L1 > 0) + (lados.L2 > 0);
+    const corte = { comp: comp - lados.L1 - lados.L2, larg: larg - lados.C1 - lados.C2 }, loja = R.lojaPadrao;
+    if (Math.max(comp, larg) <= Math.max(...R.chapa) && Math.min(comp, larg) <= Math.min(...R.chapa) && veio && (veio === 'comp' ? comp : larg) > Math.max(...R.chapa)) E.push(`${rot}: com o veio na ${veio === 'comp' ? 'maior' : 'menor'} medida a peça não cabe na chapa.`);
+    const pc = { id: `${tag}-${lv.funcao}`, nome: `${tag} · ${nome}`, nomeLista: nome, cat: 'livre', mat: lv.mat, esp, lista: true, mov: null,
+      comp, larg, fita: [nC, nL], fitaLados: lados, veio, corte,
+      medidaLoja: loja.descontaFita ? { comp, larg, tipo: 'final' } : { ...corte, tipo: 'corte' },
+      box, livre: k, grupo: lv.grupo || null,
+      giro: alinhado ? null : { centro: cW, eixos: [Uw, Vw, Nw] },
+      forma: { tipo: 'livre', origem, du, dv, n: Nw, W: des.W, H: des.H, recortes: des.recortes, rasgos: des.rasgos },
+      eixos: { o: origem, u: du, v: dv, n: Nw },
+      des: { w: des.W, h: des.H, fita: des.fita, vista: 'Vista pela face A', furos: des.furos, recortes: des.recortes, rasgos: des.rasgos },
+      obs: [lv.obs, alinhado ? '' : 'Peça girada em ângulo: conferir a montagem na obra.'].filter(Boolean).join(' ') };
+    Object.assign(pc, papelDe(pc.id));
+    pecas.push(pc);
+    // compras: ferragens escolhidas e fita (metros com perda)
+    const fer = (lv.ferragens || []).filter(f => f.qtd > 0);
+    for (const f of fer) { if (!BIBLIOTECA[f.ref]) E.push(`${rot}: ferragem "${f.ref}" não existe na biblioteca.`); else somaRef(f.ref, f.qtd); }
+    if (!fer.length) A.push(`${rot}: sem fixação escolhida — escolha as ferragens que prendem a peça.`);
+    const mm = (lados.C1 > 0 ? comp : 0) + (lados.C2 > 0 ? comp : 0) + (lados.L1 > 0 ? larg : 0) + (lados.L2 > 0 ? larg : 0);
+    if (esp <= 19) fitaFina += mm; else fitaGrossa += mm;
+  });
+  if (fitaFina) somaRef('fita-pvc-22', Math.ceil(fitaFina * R.perdaFita / 1000));
+  if (fitaGrossa) somaRef('fita-pvc-35', Math.ceil(fitaGrossa * R.perdaFita / 1000));
+  return { pecas, erros: E, avisos: A, ferragens: [...conta.entries()].map(([ref, qtd]) => linhaFerragem(ref, qtd)) };
+}
+/* =====================================================================
    4. LISTAS — agrupa peças iguais e calcula chapas e fita
    ===================================================================== */
 function listaDeCorte(pecas) {
-  const ordem = ['caixa','enchimento','frente','gaveta','fundo'];
+  const ordem = ['caixa','enchimento','frente','gaveta','fundo','livre'];
   const mapa = new Map();
   for (const pc of pecas.filter(p=>p.lista)) {
     const k = [pc.mat, pc.esp, pc.nomeLista||pc.nome, pc.comp, pc.larg, pc.fita.join(), pc.forma?.tipo||''].join('|');
@@ -4989,9 +5157,10 @@ const TIPOS_FURO = {
   calco:    { l:'D', nome:'Calço da dobradiça, pré-furo' },
   corredica:{ l:'C', nome:'Corrediça, pré-furo' },
   parede:   { l:'F', nome:'Fixação na parede, passante' },
+  avulso:   { l:'A', nome:'Furo avulso (peça livre)' },
 };
 function listaDesenhos(pecas) {
-  const ordem = ['caixa','enchimento','frente','gaveta','fundo'];
+  const ordem = ['caixa','enchimento','frente','gaveta','fundo','livre'];
   const mapa = new Map();
   for (const pc of pecas.filter(p => p.lista && p.des)) {
     const k = JSON.stringify([pc.nomeLista, pc.comp, pc.larg, pc.esp, pc.mat, pc.des]);
@@ -5194,6 +5363,7 @@ const EIXO = { x:0, y:1, z:2 };
 const vetor = s => { const v = [0,0,0]; v[EIXO[s[1]]] = s[0]==='-' ? -1 : 1; return v; };
 const cruz = (a,b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
 function posicaoInventor(pc) {
+  if (pc.eixos) return { ok:true, ...pc.eixos };      // peça livre: eixos já calculados (vale também girada em ângulo)
   const [us, vs] = oriDe(pc.id), u = vetor(us), v = vetor(vs), nn = cruz(u, v);
   const ext = [pc.box[1]-pc.box[0], pc.box[3]-pc.box[2], pc.box[5]-pc.box[4]];
   const mn = [pc.box[0], pc.box[2], pc.box[4]], mx = [pc.box[1], pc.box[3], pc.box[5]];
@@ -5409,8 +5579,8 @@ function codigoProjetoPadrao() { const d = new Date(); return `${String(d.getFul
 function codigosDasPecas(pecas, codigoProjeto, ambiente = 'A') {
   const lc = listaDeCorte(pecas), mapa = new Map(); let n = 0;
   for (const its of lc.grupos.values()) for (const it of its) for (const id of it.ids) {
-    const pc = pecas.find(p => p.id === id), mod = (pc.modulo ?? 0) + 1;
-    const codigo = `${codigoProjeto} · ${ambiente}-M${String(mod).padStart(2, '0')} · P${String(++n).padStart(3, '0')}`;
+    const pc = pecas.find(p => p.id === id), livre = pc.livre !== undefined, mod = (livre ? pc.livre : (pc.modulo ?? 0)) + 1;
+    const codigo = `${codigoProjeto} · ${ambiente}-${livre ? 'L' : 'M'}${String(mod).padStart(2, '0')} · P${String(++n).padStart(3, '0')}`;
     mapa.set(id, { codigo, num: it.num, modulo: mod });
   }
   return mapa;
@@ -6007,7 +6177,16 @@ function geometriaDe(pc) {
   const [x0,x1,y0,y1,z0,z1] = pc.box, w=x1-x0, h=y1-y0, d=z1-z0;
   const c = [(x0+x1)/2, (y0+y1)/2, (z0+z1)/2];
   let g;
-  if (pc.forma?.tipo === 'recorte') {
+  if (pc.forma?.tipo === 'livre') {
+    // peça livre: contorno do desenho (recortes na borda de cima, vazados) extrudado para dentro da face A, nos eixos da peça
+    const f = pc.forma, pts = [[0,0],[f.W,0],[f.W,f.H]];
+    f.recortes.slice().sort((a,b) => b.x - a.x).forEach(r => pts.push([r.x+r.w,f.H],[r.x+r.w,f.H-r.h],[r.x,f.H-r.h],[r.x,f.H]));
+    pts.push([0,f.H]);
+    const sh = new THREE.Shape(pts.map(([u,v]) => new THREE.Vector2(u,v)));
+    f.rasgos.forEach(r => sh.holes.push(new THREE.Path([[r.x,r.y],[r.x,r.y+r.h],[r.x+r.w,r.y+r.h],[r.x+r.w,r.y]].map(([u,v]) => new THREE.Vector2(u,v)))));
+    g = new THREE.ExtrudeGeometry(sh, { depth:pc.esp, bevelEnabled:false }); g.translate(0, 0, -pc.esp);
+    g.applyMatrix4(new THREE.Matrix4().makeBasis(new THREE.Vector3(...f.du), new THREE.Vector3(...f.dv), new THREE.Vector3(...f.n)).setPosition(...f.origem));
+  } else if (pc.forma?.tipo === 'recorte') {
     const { rl, rp } = pc.forma, a=(w-rl)/2;
     const s = new THREE.Shape([[0,0],[a,0],[a,rp],[a+rl,rp],[a+rl,0],[w,0],[w,d],[0,d]].map(([u,v])=>new THREE.Vector2(u,v)));
     g = new THREE.ExtrudeGeometry(s, { depth:h, bevelEnabled:false });
@@ -6585,7 +6764,7 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { atualizar, nosAtual: () => nos, AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
 /* =====================================================================
    5a. TELA DO MÓVEL LIVRE — liga a estrutura (modelos em pagina.html) à
    lógica (js/editor-modulo.js). Aqui só se preenche e se reage a cliques;
