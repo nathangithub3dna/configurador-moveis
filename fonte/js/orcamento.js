@@ -3,27 +3,39 @@
    (Rev A, B…) e aceite do cliente. Só lógica; a tela fica em tela-orcamento.js.
 
    Fórmula (guia de precificação de marcenaria sob medida, pesquisa F9):
-     MÓVEL      = (material + serviços da loja) × (1 + markup) + horas do móvel × taxa × (1 + lucro)
-     INSTALAÇÃO = instalação terceirizada + frete + horas de montagem × taxa × (1 + lucro)
+     MÓVEL      = (material + serviços da loja) × (1 + markup) + horas do móvel × taxa × (1 + lucro) + horas do móvel × custo fixo/hora
+     INSTALAÇÃO = instalação terceirizada + frete + horas de montagem × taxa × (1 + lucro) + horas de montagem × custo fixo/hora
+     serviços da loja = corte + fita + furação + outros;  custo fixo/hora = despesas fixas do mês ÷ horas trabalhadas no mês
      TOTAL      = (MÓVEL + INSTALAÇÃO) × (1 + impostos)
    Conferência de mercado: material × 3 (só para comparar, não entra na conta).
    ===================================================================== */
+// taxa por hora e despesas fixas são da oficina: o último valor digitado vira o padrão dos projetos novos
+const CHAVE_OFICINA_ORC = 'configurador-moveis:oficina-orc', CAMPOS_OFICINA_ORC = ['taxaHora', 'despesasMes', 'horasMes'];
+function lerOficinaOrc() { try { return JSON.parse(localStorage.getItem(CHAVE_OFICINA_ORC)) || {}; } catch (e) { return {}; } }
+function gravarOficinaOrc(e) { try { const o = {}; CAMPOS_OFICINA_ORC.forEach(k => o[k] = Number(e[k]) || 0); localStorage.setItem(CHAVE_OFICINA_ORC, JSON.stringify(o)); } catch (x) {} }
 function entradasOrcamentoPadrao() {
   const O = R.orcamento;
-  return { cliente:'', horasProjeto:0, horasFabricacao:0, horasMontagem:0, taxaHora:0, servicosLoja:0, instalacao:0, frete:0,
+  return { cliente:'', horasProjeto:0, horasFabricacao:0, horasMontagem:0, taxaHora:0, despesasMes:0, horasMes:0,
+    servCorte:0, servFita:0, servFuracao:0, servicosLoja:0, instalacao:0, frete:0, ...lerOficinaOrc(),
     markup:O.markup, lucro:O.lucro, impostos:O.impostos, sinal:O.sinal, prazoDias:O.prazoDias, validadeDias:O.validadeDias, obs:'' };
 }
 function calcularOrcamento(compras, e) {
   const material = compras?.total || 0, semPreco = compras?.semPreco || 0, pct = v => (Number(v) || 0) / 100, num = v => Number(v) || 0;
-  const maoMovel = (num(e.horasProjeto) + num(e.horasFabricacao)) * num(e.taxaHora) * (1 + pct(e.lucro));
-  const movel = (material + num(e.servicosLoja)) * (1 + pct(e.markup)) + maoMovel;
-  const instalacao = num(e.instalacao) + num(e.frete) + num(e.horasMontagem) * num(e.taxaHora) * (1 + pct(e.lucro));
+  const fixoHora = num(e.horasMes) > 0 ? num(e.despesasMes) / num(e.horasMes) : 0;
+  const hMovel = num(e.horasProjeto) + num(e.horasFabricacao), hMont = num(e.horasMontagem);
+  const servicos = num(e.servCorte) + num(e.servFita) + num(e.servFuracao) + num(e.servicosLoja);
+  const maoMovel = hMovel * num(e.taxaHora) * (1 + pct(e.lucro));
+  const fixas = (hMovel + hMont) * fixoHora;
+  const movel = (material + servicos) * (1 + pct(e.markup)) + maoMovel + hMovel * fixoHora;
+  const instalacao = num(e.instalacao) + num(e.frete) + hMont * num(e.taxaHora) * (1 + pct(e.lucro)) + hMont * fixoHora;
   const total = (movel + instalacao) * (1 + pct(e.impostos));
   const avisos = [];
   if (semPreco) avisos.push(`${semPreco} item(ns) da lista de compras sem preço: o material está incompleto.`);
   if (!num(e.taxaHora)) avisos.push('Taxa por hora em branco: as horas não estão sendo cobradas.');
   if (!num(e.horasFabricacao)) avisos.push('Horas de fabricação em branco.');
-  return { material, maoMovel, movel, instalacao, total, sinal: total * pct(e.sinal), conferencia: material * 3, avisos,
+  if (num(e.despesasMes) && !num(e.horasMes)) avisos.push('Despesas fixas sem as horas trabalhadas no mês: não estão sendo cobradas.');
+  if (!num(e.despesasMes)) avisos.push('Despesas fixas do mês em branco: aluguel, luz etc. não estão no preço.');
+  return { material, servicos, fixas, fixoHora, maoMovel, movel, instalacao, total, sinal: total * pct(e.sinal), conferencia: material * 3, avisos,
     blocos: { movel: movel * (1 + pct(e.impostos)), instalacao: instalacao * (1 + pct(e.impostos)) } };
 }
 // revisão congelada: guarda os preços e o projeto daquele dia; a anterior nunca muda

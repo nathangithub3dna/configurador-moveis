@@ -448,7 +448,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <ul class="conf-lista" id="confLista"></ul>
     <label class="conf-check"><input type="checkbox" id="confAvisos"> Conferi os avisos do projeto (abertura de portas e gavetas, canto, pontos) e estão resolvidos ou aceitos</label>
     <fieldset class="ed-bloco conf-furacao">
-      <legend>Furação na loja (vale para todos os projetos deste computador)</legend>
+      <legend>Furação na loja (fica gravada neste projeto; projetos novos começam com a última escolha)</legend>
       <label class="conf-check"><input type="radio" name="confFur" value=""> Ainda não conferida</label>
       <label class="conf-check"><input type="radio" name="confFur" value="validada"> Peça de teste conferida: a loja fura certo</label>
       <label class="conf-check"><input type="radio" name="confFur" value="soCorte"> A loja só corta (a furação é feita na oficina)</label>
@@ -515,9 +515,19 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
         <label class="ed-campo">Horas de montagem<input type="number" min="0" step="0.5" data-orc="horasMontagem"></label>
       </div>
     </fieldset>
+    <fieldset class="ed-bloco"><legend>Despesas fixas da oficina</legend>
+      <div class="ed-grade2">
+        <label class="ed-campo">Despesas fixas do mês (R$)<input type="number" min="0" step="0.01" data-orc="despesasMes"></label>
+        <label class="ed-campo">Horas trabalhadas no mês<input type="number" min="0" step="1" data-orc="horasMes"></label>
+      </div>
+      <p class="ed-nota">Aluguel, luz, internet, contador, ferramentas… divididos pelas horas do mês e cobrados pelas horas deste projeto. A taxa por hora e estes dois campos ficam guardados para os próximos projetos.</p>
+    </fieldset>
     <fieldset class="ed-bloco"><legend>Terceiros e serviços (R$)</legend>
       <div class="ed-grade2">
-        <label class="ed-campo">Serviços da loja (corte, fita, furação)<input type="number" min="0" step="0.01" data-orc="servicosLoja"></label>
+        <label class="ed-campo">Loja: corte<input type="number" min="0" step="0.01" data-orc="servCorte"></label>
+        <label class="ed-campo">Loja: fita de borda<input type="number" min="0" step="0.01" data-orc="servFita"></label>
+        <label class="ed-campo">Loja: furação / usinagem<input type="number" min="0" step="0.01" data-orc="servFuracao"></label>
+        <label class="ed-campo">Loja: outros serviços<input type="number" min="0" step="0.01" data-orc="servicosLoja"></label>
         <label class="ed-campo">Instalação terceirizada<input type="number" min="0" step="0.01" data-orc="instalacao"></label>
         <label class="ed-campo">Frete<input type="number" min="0" step="0.01" data-orc="frete"></label>
       </div>
@@ -2346,12 +2356,13 @@ function pdfDesenhar(doc, cmds, ox, oy) {
 function gerarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
-  const nome = estado.projeto.nome || 'Projeto', res = estado.res, lc = listaDeCorte(res.pecas), dess = listaDesenhos(res.pecas);
+  const nome = estado.projeto.nome || 'Projeto', rot = rotuloDocumento(estado.projeto), res = estado.res, lc = listaDeCorte(res.pecas), dess = listaDesenhos(res.pecas);
   const T = (s, x, y, o) => doc.text(Array.isArray(s) ? s.map(pdfTxt) : pdfTxt(s), x, y, o);
   // Capa: lista de corte e ferragens
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(20,24,28); T(nome, 14, 18);
   doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90,98,104);
   T(`Lista de corte, plano de corte, compras e desenhos técnicos · ${new Date().toLocaleDateString('pt-BR')} · medidas em mm`, 14, 24);
+  doc.setFont('helvetica','bold'); doc.setTextColor(...(rot.fabricar ? [30,107,58] : [176,0,32])); T(rot.longo, 14, 29); doc.setFont('helvetica','normal');
   let y = 34;
   const linha = (cols, xs, neg) => { doc.setFont('helvetica', neg?'bold':'normal'); cols.forEach((c,i) => T(c, xs[i], y, { align: i>0 && i<5 ? 'right' : 'left' })); y += 5; if (y > 195) { doc.addPage(); y = 18; } };
   const xsC = [14, 100, 120, 140, 158, 166];
@@ -2413,7 +2424,8 @@ function gerarPDF() {
   });
   const N = doc.internal.getNumberOfPages();
   for (let i = 1; i <= N; i++) { doc.setPage(i); doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(130,138,144);
-    T(`${nome} · Configurador de Móveis · X e Y a partir do canto inferior esquerdo (0,0) da vista · página ${i} de ${N}`, 12, 203); }
+    T(`${nome} · ${rot.curto} · Configurador de Móveis · X e Y a partir do canto inferior esquerdo (0,0) da vista · página ${i} de ${N}`, 12, 203);
+    if (!rot.fabricar) { doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(176,0,32); T(`NÃO FABRICAR · ${rot.curto}`, 285, 10, { align:'right' }); } }
   return doc.output('arraybuffer');
 }
 
@@ -2893,27 +2905,39 @@ async function folhasPDF(pecas, extraDe) {
    (Rev A, B…) e aceite do cliente. Só lógica; a tela fica em tela-orcamento.js.
 
    Fórmula (guia de precificação de marcenaria sob medida, pesquisa F9):
-     MÓVEL      = (material + serviços da loja) × (1 + markup) + horas do móvel × taxa × (1 + lucro)
-     INSTALAÇÃO = instalação terceirizada + frete + horas de montagem × taxa × (1 + lucro)
+     MÓVEL      = (material + serviços da loja) × (1 + markup) + horas do móvel × taxa × (1 + lucro) + horas do móvel × custo fixo/hora
+     INSTALAÇÃO = instalação terceirizada + frete + horas de montagem × taxa × (1 + lucro) + horas de montagem × custo fixo/hora
+     serviços da loja = corte + fita + furação + outros;  custo fixo/hora = despesas fixas do mês ÷ horas trabalhadas no mês
      TOTAL      = (MÓVEL + INSTALAÇÃO) × (1 + impostos)
    Conferência de mercado: material × 3 (só para comparar, não entra na conta).
    ===================================================================== */
+// taxa por hora e despesas fixas são da oficina: o último valor digitado vira o padrão dos projetos novos
+const CHAVE_OFICINA_ORC = 'configurador-moveis:oficina-orc', CAMPOS_OFICINA_ORC = ['taxaHora', 'despesasMes', 'horasMes'];
+function lerOficinaOrc() { try { return JSON.parse(localStorage.getItem(CHAVE_OFICINA_ORC)) || {}; } catch (e) { return {}; } }
+function gravarOficinaOrc(e) { try { const o = {}; CAMPOS_OFICINA_ORC.forEach(k => o[k] = Number(e[k]) || 0); localStorage.setItem(CHAVE_OFICINA_ORC, JSON.stringify(o)); } catch (x) {} }
 function entradasOrcamentoPadrao() {
   const O = R.orcamento;
-  return { cliente:'', horasProjeto:0, horasFabricacao:0, horasMontagem:0, taxaHora:0, servicosLoja:0, instalacao:0, frete:0,
+  return { cliente:'', horasProjeto:0, horasFabricacao:0, horasMontagem:0, taxaHora:0, despesasMes:0, horasMes:0,
+    servCorte:0, servFita:0, servFuracao:0, servicosLoja:0, instalacao:0, frete:0, ...lerOficinaOrc(),
     markup:O.markup, lucro:O.lucro, impostos:O.impostos, sinal:O.sinal, prazoDias:O.prazoDias, validadeDias:O.validadeDias, obs:'' };
 }
 function calcularOrcamento(compras, e) {
   const material = compras?.total || 0, semPreco = compras?.semPreco || 0, pct = v => (Number(v) || 0) / 100, num = v => Number(v) || 0;
-  const maoMovel = (num(e.horasProjeto) + num(e.horasFabricacao)) * num(e.taxaHora) * (1 + pct(e.lucro));
-  const movel = (material + num(e.servicosLoja)) * (1 + pct(e.markup)) + maoMovel;
-  const instalacao = num(e.instalacao) + num(e.frete) + num(e.horasMontagem) * num(e.taxaHora) * (1 + pct(e.lucro));
+  const fixoHora = num(e.horasMes) > 0 ? num(e.despesasMes) / num(e.horasMes) : 0;
+  const hMovel = num(e.horasProjeto) + num(e.horasFabricacao), hMont = num(e.horasMontagem);
+  const servicos = num(e.servCorte) + num(e.servFita) + num(e.servFuracao) + num(e.servicosLoja);
+  const maoMovel = hMovel * num(e.taxaHora) * (1 + pct(e.lucro));
+  const fixas = (hMovel + hMont) * fixoHora;
+  const movel = (material + servicos) * (1 + pct(e.markup)) + maoMovel + hMovel * fixoHora;
+  const instalacao = num(e.instalacao) + num(e.frete) + hMont * num(e.taxaHora) * (1 + pct(e.lucro)) + hMont * fixoHora;
   const total = (movel + instalacao) * (1 + pct(e.impostos));
   const avisos = [];
   if (semPreco) avisos.push(`${semPreco} item(ns) da lista de compras sem preço: o material está incompleto.`);
   if (!num(e.taxaHora)) avisos.push('Taxa por hora em branco: as horas não estão sendo cobradas.');
   if (!num(e.horasFabricacao)) avisos.push('Horas de fabricação em branco.');
-  return { material, maoMovel, movel, instalacao, total, sinal: total * pct(e.sinal), conferencia: material * 3, avisos,
+  if (num(e.despesasMes) && !num(e.horasMes)) avisos.push('Despesas fixas sem as horas trabalhadas no mês: não estão sendo cobradas.');
+  if (!num(e.despesasMes)) avisos.push('Despesas fixas do mês em branco: aluguel, luz etc. não estão no preço.');
+  return { material, servicos, fixas, fixoHora, maoMovel, movel, instalacao, total, sinal: total * pct(e.sinal), conferencia: material * 3, avisos,
     blocos: { movel: movel * (1 + pct(e.impostos)), instalacao: instalacao * (1 + pct(e.impostos)) } };
 }
 // revisão congelada: guarda os preços e o projeto daquele dia; a anterior nunca muda
@@ -3006,12 +3030,18 @@ function diferencasDesdeRevisao(projeto, resAtual, comprasAtuais, entradasAtuais
 }
 
 /* ---------- Conferência antes de liberar para corte ---------- */
-// configuração da oficina (vale para todos os projetos deste computador): a furação da loja já foi conferida?
+// furação da loja: fica GRAVADA NO PROJETO (vai junto no .json, vale em qualquer computador).
+// A escolha deste computador só serve de ponto de partida para projetos que ainda não têm a sua.
+function furacaoDoProjeto(projeto) { const f = projeto?.conferencia?.furacao; return f !== undefined ? f : lerConfigOficina(); }
+function definirFuracao(projeto, valor) {
+  const f = { furacao: valor || null, data: new Date().toISOString() };
+  projeto.conferencia = { ...projeto.conferencia, furacao: f }; gravarConfigOficina({ ...lerConfigOficina(), ...f }); return f;
+}
 function lerConfigOficina() { try { return JSON.parse(localStorage.getItem('configurador-moveis:config')) || {}; } catch (e) { return {}; } }
 function gravarConfigOficina(c) { try { localStorage.setItem('configurador-moveis:config', JSON.stringify(c)); } catch (e) {} }
 function textoAvisos(res) { return (res?.avisos || []).join('|'); }
 function conferenciaFabricacao(projeto, res, compras) {
-  const s = situacaoProjeto(projeto), cfg = lerConfigOficina(), avisos = res?.avisos || [];
+  const s = situacaoProjeto(projeto), cfg = furacaoDoProjeto(projeto) || {}, avisos = res?.avisos || [];
   const furacao = cfg.furacao === 'validada' ? 'Furação da loja conferida com a peça de teste' + (cfg.data ? ` (${new Date(cfg.data).toLocaleDateString('pt-BR')})` : '')
     : cfg.furacao === 'soCorte' ? 'A loja só corta; a furação é feita na oficina' : 'Furação da loja ainda não conferida (mande a peça de teste)';
   return [
@@ -3126,11 +3156,11 @@ const ED = {
 const CHAVE = 'configurador-moveis:v2';
 const projetoPadrao = (tipo = 'armario') => ({ tipo, nome:TIPOS[tipo].nomePadrao, parametros:JSON.parse(JSON.stringify(TIPOS[tipo].padrao)) });
 const estado = {
-  projeto: projetoPadrao(), res:null, valido:null, sel:null, ocultas:new Set(),
+  projeto: projetoPadrao('modulo'), res:null, valido:null, sel:null, ocultas:new Set(),
   portas:false, gavetas:false, explode:0, cotas:true, medir:false, corte:'nenhum', cortePos:50,
   tampo:true, fundo:true, paredes:true, esgoto:false, fix:false, orto:false, vista:'perspectiva',
 };
-try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros }, codigo:s.codigo, orcamento:s.orcamento }; } catch(e) {}
+try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros }, codigo:s.codigo, orcamento:s.orcamento, liberacao:s.liberacao, conferencia:s.conferencia }; } catch(e) {}
 const CHAVE_PRECOS = 'configurador-moveis:precos';
 let precos = {}; try { precos = JSON.parse(localStorage.getItem(CHAVE_PRECOS) || '{}') || {}; } catch(e) {}
 const salvarPrecos = () => { try { localStorage.setItem(CHAVE_PRECOS, JSON.stringify(precos)); } catch(e) {} };
@@ -3666,7 +3696,8 @@ const slug = () => (estado.projeto.nome || 'projeto').normalize('NFD').replace(/
 function dadosProjeto() {
   const r = estado.res;
   return { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), unidade:'mm',
-    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento,
+    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento, liberacao:estado.projeto.liberacao, conferencia:estado.projeto.conferencia,
+    situacao: rotuloDocumento(estado.projeto).longo,
     pecas: r.pecas.map(pc => ({ id:pc.id, nomeGLB:`${pc.cat}_${pc.mat}_${pc.id}`, nome:pc.nome, categoria:pc.cat, material:pc.mat, espessura:pc.esp, comprimento:pc.comp ?? null, largura:pc.larg ?? null, fita:pc.fita, listaDeCorte:pc.lista, caixa_mm:pc.box, forma:pc.forma||null, movimento:pc.mov, obs:pc.obs })),
     ferragens: r.ferragens,
     planoDeCorte: estado.plano, listaDeCompras: estado.compras, precos, biblioteca: BIBLIOTECA };
@@ -3715,7 +3746,7 @@ $('btnJson').addEventListener('click', () => {
   if (!estado.res) return;
   // com erro: salva o projeto para continuar depois (sem peças, que estão inconsistentes)
   const dados = estado.res.erros.length ? { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), incompleto:true, erros:estado.res.erros,
-    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento, precos } : dadosProjeto();
+    tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento, liberacao:estado.projeto.liberacao, conferencia:estado.projeto.conferencia, precos } : dadosProjeto();
   salvar(slug() + (estado.res.erros.length ? '-incompleto' : '') + '.json', JSON.stringify(dados, null, 2));
 });
 $('btnZip').addEventListener('click', async () => {
@@ -3731,8 +3762,10 @@ $('btnZip').addEventListener('click', async () => {
     zip.file('lista-de-compras.csv', csvCompras());
     if (window.jspdf) zip.file('desenhos-tecnicos.pdf', gerarPDF());
     zip.file('inventor-gerar-pecas.iLogicVb', gerarILogic());
-    zip.file('LEIA-ME.txt', `${estado.projeto.nome}\n\nmodelo.glb — abrir no Blender: File > Import > glTF 2.0. Unidade: metro.\nCada peça se chama categoria_material_id (ex.: frente_mdf-ru-branco_porta-esq).\nPortas e gavetas levam o pivô e o curso nas propriedades personalizadas (Custom Properties).\nprojeto.json — reabre no Configurador (botão Abrir projeto).\ndesenhos-tecnicos.pdf — lista de corte, ferragens e um desenho cotado por peça, para a marcenaria.\ninventor-gerar-pecas.iLogicVb — regra iLogic: cria as peças .ipt e a montagem .iam no Inventor.\nlista-de-corte.csv e ferragens.csv — abrem no Excel.\n`);
-    await salvar(slug()+'.zip', await zip.generateAsync({ type:'blob' }));
+    const rot = rotuloDocumento(estado.projeto);
+    zip.file('SITUACAO.txt', `${estado.projeto.nome}\n${rot.longo}\n${rot.fabricar ? '' : '\nNÃO FABRICAR com estes arquivos: o projeto ainda não foi liberado para corte.\n'}`);
+    zip.file('LEIA-ME.txt', `${estado.projeto.nome}\n${rot.longo}\n\nmodelo.glb — abrir no Blender: File > Import > glTF 2.0. Unidade: metro.\nCada peça se chama categoria_material_id (ex.: frente_mdf-ru-branco_porta-esq).\nPortas e gavetas levam o pivô e o curso nas propriedades personalizadas (Custom Properties).\nprojeto.json — reabre no Configurador (botão Abrir projeto).\ndesenhos-tecnicos.pdf — lista de corte, ferragens e um desenho cotado por peça, para a marcenaria.\ninventor-gerar-pecas.iLogicVb — regra iLogic: cria as peças .ipt e a montagem .iam no Inventor.\nlista-de-corte.csv e ferragens.csv — abrem no Excel.\n`);
+    await salvar(slug() + '-' + rot.curto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '.zip', await zip.generateAsync({ type:'blob' }));
   } catch(e) { toast('Falha ao montar o pacote.'); }
   atualizarBotoesExport();
 });
@@ -3746,7 +3779,7 @@ $('arqProjeto').addEventListener('change', e => {
     try {
       const d = JSON.parse(fr.result);
       if (!TIPOS[d.tipo] || typeof d.parametros !== 'object') throw 0;
-      estado.projeto = { tipo:d.tipo, nome:d.nome || 'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[d.tipo].padrao)), ...d.parametros }, codigo:d.codigo, orcamento:d.orcamento };
+      estado.projeto = { tipo:d.tipo, nome:d.nome || 'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[d.tipo].padrao)), ...d.parametros }, codigo:d.codigo, orcamento:d.orcamento, liberacao:d.liberacao, conferencia:d.conferencia };
       if (d.precos && typeof d.precos === 'object') { precos = { ...precos, ...d.precos }; salvarPrecos(); }
       carregarProjeto(); toast('Projeto aberto.');
     } catch(err) { toast('Esse arquivo não é um projeto do Configurador.'); }
@@ -4122,7 +4155,7 @@ function mostrarOrcamento() {
   document.querySelectorAll('[data-orc]').forEach(inp => { if (document.activeElement !== inp) inp.value = e[inp.dataset.orc] ?? ''; });
   const c = ok ? calcularOrcamento(estado.compras, e) : null;
   const caixa = (rot, v, cls = '') => el('div', { class:'orc-caixa ' + cls }, el('span', { text:rot }), el('strong', { text: v == null ? '—' : reais(v) }));
-  $('orcResumo').replaceChildren(...(c ? [caixa('Material (lista de compras)', c.material), caixa('Móvel', c.blocos.movel), caixa('Instalação', c.blocos.instalacao),
+  $('orcResumo').replaceChildren(...(c ? [caixa('Material (lista de compras)', c.material), caixa('Serviços da loja', c.servicos), caixa(`Despesas fixas (${reais(c.fixoHora)}/h)`, c.fixas), caixa('Móvel', c.blocos.movel), caixa('Instalação', c.blocos.instalacao),
     caixa('Total', c.total, 'total'), caixa(`Sinal (${e.sinal}%)`, c.sinal), caixa('Conferência: material × 3', c.conferencia),
     c.avisos.length ? el('ul', { class:'orc-avisos' }, ...c.avisos.map(a => el('li', { text:a }))) : null] : [el('p', { class:'vazio', text:'Corrija os erros do projeto para orçar.' })]));
   $('btnCongelar').disabled = !ok; $('btnPdfOrc').disabled = !orc.revisoes.length || !window.jspdf;
@@ -4138,7 +4171,8 @@ function mostrarOrcamento() {
 }
 document.querySelector('.orcamento').addEventListener('change', e => {
   const k = e.target.dataset.orc; if (!k) return;
-  orcDoProjeto().entradas[k] = e.target.type === 'number' ? Number(e.target.value) : e.target.value; salvarLocal(); mostrarOrcamento();
+  const en = orcDoProjeto().entradas; en[k] = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+  if (CAMPOS_OFICINA_ORC.includes(k)) gravarOficinaOrc(en); salvarLocal(); mostrarOrcamento();
 });
 document.querySelector('.orcamento').addEventListener('click', e => {
   const b = e.target.closest('[data-aceite]'); if (!b) return;
@@ -4176,7 +4210,7 @@ mostrarSituacao();
 
 /* ---------- Conferência antes de liberar (aba Lista de corte) ---------- */
 function mostrarConferencia() {
-  const p = estado.projeto, itens = conferenciaFabricacao(p, estado.res, estado.compras), cfg = lerConfigOficina();
+  const p = estado.projeto, itens = conferenciaFabricacao(p, estado.res, estado.compras), cfg = furacaoDoProjeto(p) || {};
   $('confLista').replaceChildren(...itens.map(i => { const li = el('li', { text: i.texto + (i.obrigatorio ? '' : ' (não impede liberar)') }); li.dataset.ok = i.ok ? 'sim' : 'nao'; if (!i.obrigatorio) li.dataset.opcional = '1'; return li; }));
   $('confAvisos').checked = !!estado.res && p.conferencia?.avisosVistos === textoAvisos(estado.res) && !!estado.res.avisos.length;
   $('confAvisos').disabled = !estado.res?.avisos.length;
@@ -4190,7 +4224,7 @@ function tentarLiberar() {
 }
 $('btnLiberar2').addEventListener('click', tentarLiberar);
 $('confAvisos').addEventListener('change', e => { estado.projeto.conferencia = { ...estado.projeto.conferencia, avisosVistos: e.target.checked ? textoAvisos(estado.res) : null }; salvarLocal(); mostrarSituacao(); });
-document.querySelectorAll('input[name="confFur"]').forEach(r => r.addEventListener('change', () => { gravarConfigOficina({ ...lerConfigOficina(), furacao: r.value || null, data: new Date().toISOString() }); mostrarSituacao(); }));
+document.querySelectorAll('input[name="confFur"]').forEach(r => r.addEventListener('change', () => { definirFuracao(estado.projeto, r.value); salvarLocal(); mostrarSituacao(); }));
 $('btnTesteJson').addEventListener('click', () => { const pc = pecaDeTeste(); salvar('peca-de-teste-cortecloud.json', JSON.stringify(pedidoCorteCloud([pc], new Map([[pc.id, { codigo:'TESTE-FURACAO' }]]), 'TESTE'), null, 2)); });
 $('btnTestePdf').addEventListener('click', async () => { try { salvar('peca-de-teste-folha-A3.pdf', await folhasPDF([pecaDeTeste()], () => ({ projeto:'Peça de teste de furação', codigo:'TESTE-FURACAO', rev:'—' }))); } catch (e) { toast('Falha ao montar a folha.'); } });
 mostrarConferencia();

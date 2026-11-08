@@ -47,12 +47,18 @@ function diferencasDesdeRevisao(projeto, resAtual, comprasAtuais, entradasAtuais
 }
 
 /* ---------- Conferência antes de liberar para corte ---------- */
-// configuração da oficina (vale para todos os projetos deste computador): a furação da loja já foi conferida?
+// furação da loja: fica GRAVADA NO PROJETO (vai junto no .json, vale em qualquer computador).
+// A escolha deste computador só serve de ponto de partida para projetos que ainda não têm a sua.
+function furacaoDoProjeto(projeto) { const f = projeto?.conferencia?.furacao; return f !== undefined ? f : lerConfigOficina(); }
+function definirFuracao(projeto, valor) {
+  const f = { furacao: valor || null, data: new Date().toISOString() };
+  projeto.conferencia = { ...projeto.conferencia, furacao: f }; gravarConfigOficina({ ...lerConfigOficina(), ...f }); return f;
+}
 function lerConfigOficina() { try { return JSON.parse(localStorage.getItem('configurador-moveis:config')) || {}; } catch (e) { return {}; } }
 function gravarConfigOficina(c) { try { localStorage.setItem('configurador-moveis:config', JSON.stringify(c)); } catch (e) {} }
 function textoAvisos(res) { return (res?.avisos || []).join('|'); }
 function conferenciaFabricacao(projeto, res, compras) {
-  const s = situacaoProjeto(projeto), cfg = lerConfigOficina(), avisos = res?.avisos || [];
+  const s = situacaoProjeto(projeto), cfg = furacaoDoProjeto(projeto) || {}, avisos = res?.avisos || [];
   const furacao = cfg.furacao === 'validada' ? 'Furação da loja conferida com a peça de teste' + (cfg.data ? ` (${new Date(cfg.data).toLocaleDateString('pt-BR')})` : '')
     : cfg.furacao === 'soCorte' ? 'A loja só corta; a furação é feita na oficina' : 'Furação da loja ainda não conferida (mande a peça de teste)';
   return [

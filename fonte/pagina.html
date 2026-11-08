@@ -135,7 +135,7 @@
     <ul class="conf-lista" id="confLista"></ul>
     <label class="conf-check"><input type="checkbox" id="confAvisos"> Conferi os avisos do projeto (abertura de portas e gavetas, canto, pontos) e estão resolvidos ou aceitos</label>
     <fieldset class="ed-bloco conf-furacao">
-      <legend>Furação na loja (vale para todos os projetos deste computador)</legend>
+      <legend>Furação na loja (fica gravada neste projeto; projetos novos começam com a última escolha)</legend>
       <label class="conf-check"><input type="radio" name="confFur" value=""> Ainda não conferida</label>
       <label class="conf-check"><input type="radio" name="confFur" value="validada"> Peça de teste conferida: a loja fura certo</label>
       <label class="conf-check"><input type="radio" name="confFur" value="soCorte"> A loja só corta (a furação é feita na oficina)</label>
@@ -202,9 +202,19 @@
         <label class="ed-campo">Horas de montagem<input type="number" min="0" step="0.5" data-orc="horasMontagem"></label>
       </div>
     </fieldset>
+    <fieldset class="ed-bloco"><legend>Despesas fixas da oficina</legend>
+      <div class="ed-grade2">
+        <label class="ed-campo">Despesas fixas do mês (R$)<input type="number" min="0" step="0.01" data-orc="despesasMes"></label>
+        <label class="ed-campo">Horas trabalhadas no mês<input type="number" min="0" step="1" data-orc="horasMes"></label>
+      </div>
+      <p class="ed-nota">Aluguel, luz, internet, contador, ferramentas… divididos pelas horas do mês e cobrados pelas horas deste projeto. A taxa por hora e estes dois campos ficam guardados para os próximos projetos.</p>
+    </fieldset>
     <fieldset class="ed-bloco"><legend>Terceiros e serviços (R$)</legend>
       <div class="ed-grade2">
-        <label class="ed-campo">Serviços da loja (corte, fita, furação)<input type="number" min="0" step="0.01" data-orc="servicosLoja"></label>
+        <label class="ed-campo">Loja: corte<input type="number" min="0" step="0.01" data-orc="servCorte"></label>
+        <label class="ed-campo">Loja: fita de borda<input type="number" min="0" step="0.01" data-orc="servFita"></label>
+        <label class="ed-campo">Loja: furação / usinagem<input type="number" min="0" step="0.01" data-orc="servFuracao"></label>
+        <label class="ed-campo">Loja: outros serviços<input type="number" min="0" step="0.01" data-orc="servicosLoja"></label>
         <label class="ed-campo">Instalação terceirizada<input type="number" min="0" step="0.01" data-orc="instalacao"></label>
         <label class="ed-campo">Frete<input type="number" min="0" step="0.01" data-orc="frete"></label>
       </div>

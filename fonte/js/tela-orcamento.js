@@ -13,7 +13,7 @@ function mostrarOrcamento() {
   document.querySelectorAll('[data-orc]').forEach(inp => { if (document.activeElement !== inp) inp.value = e[inp.dataset.orc] ?? ''; });
   const c = ok ? calcularOrcamento(estado.compras, e) : null;
   const caixa = (rot, v, cls = '') => el('div', { class:'orc-caixa ' + cls }, el('span', { text:rot }), el('strong', { text: v == null ? '—' : reais(v) }));
-  $('orcResumo').replaceChildren(...(c ? [caixa('Material (lista de compras)', c.material), caixa('Móvel', c.blocos.movel), caixa('Instalação', c.blocos.instalacao),
+  $('orcResumo').replaceChildren(...(c ? [caixa('Material (lista de compras)', c.material), caixa('Serviços da loja', c.servicos), caixa(`Despesas fixas (${reais(c.fixoHora)}/h)`, c.fixas), caixa('Móvel', c.blocos.movel), caixa('Instalação', c.blocos.instalacao),
     caixa('Total', c.total, 'total'), caixa(`Sinal (${e.sinal}%)`, c.sinal), caixa('Conferência: material × 3', c.conferencia),
     c.avisos.length ? el('ul', { class:'orc-avisos' }, ...c.avisos.map(a => el('li', { text:a }))) : null] : [el('p', { class:'vazio', text:'Corrija os erros do projeto para orçar.' })]));
   $('btnCongelar').disabled = !ok; $('btnPdfOrc').disabled = !orc.revisoes.length || !window.jspdf;
@@ -29,7 +29,8 @@ function mostrarOrcamento() {
 }
 document.querySelector('.orcamento').addEventListener('change', e => {
   const k = e.target.dataset.orc; if (!k) return;
-  orcDoProjeto().entradas[k] = e.target.type === 'number' ? Number(e.target.value) : e.target.value; salvarLocal(); mostrarOrcamento();
+  const en = orcDoProjeto().entradas; en[k] = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+  if (CAMPOS_OFICINA_ORC.includes(k)) gravarOficinaOrc(en); salvarLocal(); mostrarOrcamento();
 });
 document.querySelector('.orcamento').addEventListener('click', e => {
   const b = e.target.closest('[data-aceite]'); if (!b) return;

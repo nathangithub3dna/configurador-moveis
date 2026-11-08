@@ -20,7 +20,7 @@ mostrarSituacao();
 
 /* ---------- Conferência antes de liberar (aba Lista de corte) ---------- */
 function mostrarConferencia() {
-  const p = estado.projeto, itens = conferenciaFabricacao(p, estado.res, estado.compras), cfg = lerConfigOficina();
+  const p = estado.projeto, itens = conferenciaFabricacao(p, estado.res, estado.compras), cfg = furacaoDoProjeto(p) || {};
   $('confLista').replaceChildren(...itens.map(i => { const li = el('li', { text: i.texto + (i.obrigatorio ? '' : ' (não impede liberar)') }); li.dataset.ok = i.ok ? 'sim' : 'nao'; if (!i.obrigatorio) li.dataset.opcional = '1'; return li; }));
   $('confAvisos').checked = !!estado.res && p.conferencia?.avisosVistos === textoAvisos(estado.res) && !!estado.res.avisos.length;
   $('confAvisos').disabled = !estado.res?.avisos.length;
@@ -34,7 +34,7 @@ function tentarLiberar() {
 }
 $('btnLiberar2').addEventListener('click', tentarLiberar);
 $('confAvisos').addEventListener('change', e => { estado.projeto.conferencia = { ...estado.projeto.conferencia, avisosVistos: e.target.checked ? textoAvisos(estado.res) : null }; salvarLocal(); mostrarSituacao(); });
-document.querySelectorAll('input[name="confFur"]').forEach(r => r.addEventListener('change', () => { gravarConfigOficina({ ...lerConfigOficina(), furacao: r.value || null, data: new Date().toISOString() }); mostrarSituacao(); }));
+document.querySelectorAll('input[name="confFur"]').forEach(r => r.addEventListener('change', () => { definirFuracao(estado.projeto, r.value); salvarLocal(); mostrarSituacao(); }));
 $('btnTesteJson').addEventListener('click', () => { const pc = pecaDeTeste(); salvar('peca-de-teste-cortecloud.json', JSON.stringify(pedidoCorteCloud([pc], new Map([[pc.id, { codigo:'TESTE-FURACAO' }]]), 'TESTE'), null, 2)); });
 $('btnTestePdf').addEventListener('click', async () => { try { salvar('peca-de-teste-folha-A3.pdf', await folhasPDF([pecaDeTeste()], () => ({ projeto:'Peça de teste de furação', codigo:'TESTE-FURACAO', rev:'—' }))); } catch (e) { toast('Falha ao montar a folha.'); } });
 mostrarConferencia();

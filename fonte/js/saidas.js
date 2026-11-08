@@ -208,12 +208,13 @@ function pdfDesenhar(doc, cmds, ox, oy) {
 function gerarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
-  const nome = estado.projeto.nome || 'Projeto', res = estado.res, lc = listaDeCorte(res.pecas), dess = listaDesenhos(res.pecas);
+  const nome = estado.projeto.nome || 'Projeto', rot = rotuloDocumento(estado.projeto), res = estado.res, lc = listaDeCorte(res.pecas), dess = listaDesenhos(res.pecas);
   const T = (s, x, y, o) => doc.text(Array.isArray(s) ? s.map(pdfTxt) : pdfTxt(s), x, y, o);
   // Capa: lista de corte e ferragens
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(20,24,28); T(nome, 14, 18);
   doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90,98,104);
   T(`Lista de corte, plano de corte, compras e desenhos técnicos · ${new Date().toLocaleDateString('pt-BR')} · medidas em mm`, 14, 24);
+  doc.setFont('helvetica','bold'); doc.setTextColor(...(rot.fabricar ? [30,107,58] : [176,0,32])); T(rot.longo, 14, 29); doc.setFont('helvetica','normal');
   let y = 34;
   const linha = (cols, xs, neg) => { doc.setFont('helvetica', neg?'bold':'normal'); cols.forEach((c,i) => T(c, xs[i], y, { align: i>0 && i<5 ? 'right' : 'left' })); y += 5; if (y > 195) { doc.addPage(); y = 18; } };
   const xsC = [14, 100, 120, 140, 158, 166];
@@ -275,7 +276,8 @@ function gerarPDF() {
   });
   const N = doc.internal.getNumberOfPages();
   for (let i = 1; i <= N; i++) { doc.setPage(i); doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(130,138,144);
-    T(`${nome} · Configurador de Móveis · X e Y a partir do canto inferior esquerdo (0,0) da vista · página ${i} de ${N}`, 12, 203); }
+    T(`${nome} · ${rot.curto} · Configurador de Móveis · X e Y a partir do canto inferior esquerdo (0,0) da vista · página ${i} de ${N}`, 12, 203);
+    if (!rot.fabricar) { doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(176,0,32); T(`NÃO FABRICAR · ${rot.curto}`, 285, 10, { align:'right' }); } }
   return doc.output('arraybuffer');
 }
 

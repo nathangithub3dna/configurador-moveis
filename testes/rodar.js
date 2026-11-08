@@ -348,6 +348,10 @@ function diferencas(a, b, caminho = '') {
       preencher('horasFabricacao', 30); document.getElementById('btnCongelar').click();
       const revs = e.projeto.orcamento.revisoes, pdf = window.__configurador.orcamentoPDF(revs[1]);
       return { resumo1, n: revs.length, totalA: revA.resultado.total, totalA_depois: revs[0].resultado.total, aceiteA: !!revs[0].aceite, revB: revs[1].rev, difB: revs[1].diferenca, aposAceite: revs[1].aposAceite,
+        fixas: (() => { const c = window.__configurador.calcularOrcamento({ total: 1000, semPreco: 0 }, { ...revs[1].entradas, despesasMes: 4000, horasMes: 160, servCorte: 100, servFita: 50, servFuracao: 30, servicosLoja: 20, markup: 0, impostos: 0 });
+          return { fixoHora: c.fixoHora, fixas: c.fixas, servicos: c.servicos }; })(),
+        lembra: JSON.parse(localStorage.getItem('configurador-moveis:oficina-orc') || '{}').taxaHora,
+        pdfAntigo: (() => { const t = new TextDecoder('latin1').decode(window.__configurador.gerarPDF()); return { naoFabricar: /N\S*O FABRICAR/.test(t), rotulo: /ESTUDO/.test(t) }; })(),
         linhas: document.querySelectorAll('#tabRevisoes tbody tr').length, pdfKB: Math.round(pdf.byteLength / 1024), salvo: !!JSON.parse(localStorage.getItem('configurador-moveis:v2') || '{}').orcamento };
     });
     loja.orc = orc;
@@ -361,17 +365,19 @@ function diferencas(a, b, caminho = '') {
       document.getElementById('btnLiberar').click(); await new Promise(r => setTimeout(r, 300));
       const pt = c.pecaDeTeste(), pedidoTeste = c.pedidoCorteCloud([pt], new Map([[pt.id, { codigo:'T' }]]), 'TESTE').parts[0].machining;
       const s2 = ler(), lista2 = e.textos.corte.split('\n')[1], folha2 = c.folhaPecaSVG(e.res.pecas.find(p => p.lista), { aviso:'' }).includes('NÃO FABRICAR');
-      return { s0, s1, bloqueado, confFaltas, s2, lista2, folha2, teste: { face: pedidoTeste.verticalDrills.length, topo: pedidoTeste.horizontalDrills.length } }; });
+      const furProjeto = e.projeto.conferencia?.furacao?.furacao, salvoFur = JSON.parse(localStorage.getItem('configurador-moveis:v2') || '{}').conferencia?.furacao?.furacao;
+      return { s0, s1, bloqueado, confFaltas, s2, lista2, folha2, furProjeto, salvoFur, teste: { face: pedidoTeste.verticalDrills.length, topo: pedidoTeste.horizontalDrills.length } }; });
     await passo('#etapas [data-etapa="montar"]');
     await page.evaluate(() => { const i = document.querySelector('#form [data-mod="largura"][data-i="2"]'); i.value = 500; i.dispatchEvent(new Event('change', { bubbles:true })); });
     await page.waitForTimeout(400);
     sit.depois = await page.evaluate(() => ({ rotulo: document.querySelector('#situacao .sit-rotulo').textContent, mudancas: !document.getElementById('mudancas').hidden,
       pecasMudaram: document.querySelectorAll('#mudancas [data-lista="pecas"] tbody tr').length, titulo: document.querySelector('#mudancas h3').textContent, lista: window.__configurador.estado.textos.corte.split('\n')[1] }));
     loja.situacao = sit;
-    const okSit = /ESTUDO/.test(sit.s0.rotulo) && /APROVADO/.test(sit.s1.rotulo) && sit.s1.liberar && /APROVADO/.test(sit.bloqueado) && sit.confFaltas > 0 && /LIBERADO/.test(sit.s2.rotulo) && sit.teste.face === 4 && sit.teste.topo === 1 && /LIBERADO/.test(sit.lista2)
+    const okSit = /ESTUDO/.test(sit.s0.rotulo) && /APROVADO/.test(sit.s1.rotulo) && sit.s1.liberar && /APROVADO/.test(sit.bloqueado) && sit.confFaltas > 0 && /LIBERADO/.test(sit.s2.rotulo) && sit.teste.face === 4 && sit.teste.topo === 1 && /LIBERADO/.test(sit.lista2) && sit.furProjeto === 'soCorte' && sit.salvoFur === 'soCorte'
       && /ESTUDO — alterado depois da Rev. B/.test(sit.depois.rotulo) && sit.depois.mudancas && sit.depois.pecasMudaram > 0 && /Rev. B/.test(sit.depois.titulo) && /não fabricar/.test(sit.depois.lista);
     if (!okSit) { falhas++; console.log('SITUAÇÃO E REVISÃO ERRADO  ' + JSON.stringify(sit)); } else console.log('SITUAÇÃO E REVISÃO OK  ' + JSON.stringify(sit));
-    const okOrc = orc.resumo1 >= 6 && orc.n === 2 && orc.totalA > 0 && orc.totalA === orc.totalA_depois && orc.aceiteA && orc.revB === 'B' && Math.abs(orc.difB - 10 * 50 * 1.15) < 0.01 && orc.aposAceite && orc.linhas === 2 && orc.pdfKB > 2;
+    const okOrc = orc.resumo1 >= 6 && orc.n === 2 && orc.totalA > 0 && orc.totalA === orc.totalA_depois && orc.aceiteA && orc.revB === 'B' && Math.abs(orc.difB - 10 * 50 * 1.15) < 0.01 && orc.aposAceite && orc.linhas === 2 && orc.pdfKB > 2
+      && orc.fixas.fixoHora === 25 && orc.fixas.fixas === 25 * 30 && orc.fixas.servicos === 200 && orc.lembra === 50 && orc.pdfAntigo.naoFabricar && orc.pdfAntigo.rotulo;
     if (!okOrc) { falhas++; console.log('ORÇAMENTO (5c) ERRADO  ' + JSON.stringify(orc)); } else console.log('ORÇAMENTO (5c) OK  ' + JSON.stringify(orc));
     // fora do Claude: o download sai pelo navegador; projeto com erro também salva
     const baixar = await page.evaluate(() => ({ json: !document.getElementById('btnJson').disabled, nota: document.getElementById('notaExport').textContent }));
@@ -397,11 +403,11 @@ function diferencas(a, b, caminho = '') {
     let ok = true; try { await page.waitForFunction(() => window.__configurador?.estado?.res, null, { timeout: 20000 }); } catch (e) { ok = false; }
     const off = ok ? await page.evaluate(async () => { const c = window.__configurador, e = c.estado, pcs = e.res.pecas.filter(p => p.lista);
       const pdf = await c.folhasPDF(pcs.slice(0, 2), () => ({ projeto:'offline' })), etq = c.etiquetasPDF(e.res.pecas, e.codigos, 'offline');
-      return { pecas: pcs.length, canvas3D: !!document.querySelector('#palco canvas'), libs: { three: !!window.__configurador.cam, jspdf: !!window.jspdf, jszip: !!window.JSZip, qr: !!window.qrcode, svg2pdf: !!(window.svg2pdf || window.jspdf?.jsPDF?.API?.svg) },
+      return { tipoInicial: e.projeto.tipo, pecas: pcs.length, canvas3D: !!document.querySelector('#palco canvas'), libs: { three: !!window.__configurador.cam, jspdf: !!window.jspdf, jszip: !!window.JSZip, qr: !!window.qrcode, svg2pdf: !!(window.svg2pdf || window.jspdf?.jsPDF?.API?.svg) },
         folhasKB: Math.round(pdf.byteLength / 1024), etiquetasKB: Math.round(etq.byteLength / 1024), zip: !document.getElementById('btnZip').disabled }; }) : null;
     const tamanhoMB = +(fs.statSync(path.join(__dirname, '..', 'configurador-offline.html')).size / 1048576).toFixed(1);
     const fontes = pedidos.filter(u => !/fonts\.(googleapis|gstatic)/.test(u));
-    const okOff = ok && off && off.pecas > 0 && off.canvas3D && Object.values(off.libs).every(Boolean) && off.folhasKB > 3 && off.etiquetasKB > 3 && off.zip && !errosOff.length && !fontes.length;
+    const okOff = ok && off && off.tipoInicial === 'modulo' && off.pecas > 0 && off.canvas3D && Object.values(off.libs).every(Boolean) && off.folhasKB > 3 && off.etiquetasKB > 3 && off.zip && !errosOff.length && !fontes.length;
     const t = { carregou: ok, ...off, tamanhoMB, pedidosBloqueados: pedidos.length, foraDeFontes: fontes, erros: errosOff };
     if (!okOff) { falhas++; console.log('SEM INTERNET ERRADO  ' + JSON.stringify(t)); } else console.log('SEM INTERNET OK  ' + JSON.stringify(t));
     await page.close();
