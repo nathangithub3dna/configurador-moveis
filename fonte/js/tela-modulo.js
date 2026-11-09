@@ -63,6 +63,7 @@ function montarEditorModulo() {
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
   const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
+  const sapNo = (no.conteudo || []).find(c => c.sapateira); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.sapateira.nivel;
   ed.querySelector('[data-vao="lado"]').value = no.frente?.lado || 'auto';
   ed.querySelector('[data-vao="sistema"]').value = no.frente?.sistema || 'correr-rometal-dominus';
   const selCt = ed.querySelector('[data-vao="conteudo"]');
@@ -115,6 +116,7 @@ $('form').addEventListener('change', e => {
     if (kv === 'lado') no.frente.lado = v;
     if (kv === 'sistema') no.frente.sistema = v;
     if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
+    if (kv === 'nivelSap') { const c = (no.conteudo || []).find(x => x.sapateira); if (c && Number(v) > 0) c.sapateira.nivel = Number(v); }
   });
 });
 

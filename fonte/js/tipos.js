@@ -43,7 +43,7 @@ const TIPOS = {
     nomePadrao: 'Armário da área de serviço',
     nome: 'Armário com vãos (prateleiras, gavetas, vassouras, botijão)',
     padrao: { largura:1800, altura:2100, profundidade:400, rodape:100, recuoRodape:40, espMDF:18, espFundo:6,
-      vaos:'vassoura, prateleiras, prateleiras, gavetas+botijao', prateleiras:5, alturaPratVassoura:1750, alturaNivelSapateira:250, niveisSapateira:0,
+      vaos:'vassoura, prateleiras, prateleiras, gavetas+botijao', prateleiras:5, alturaPratVassoura:1750, alturaNivelSapateira:220, niveisSapateira:0,
       gavetas:4, alturaGaveta:190, alturaBotijao:600, pratAcimaGavetas:1, puxadorPorta:2, puxadorGaveta:4, alturaPuxador:1050,
       alturaBeiral:80, paredeEsq:false, paredeDir:false },
     grupos: [
@@ -60,9 +60,9 @@ const TIPOS = {
       { titulo:'Vãos (da esquerda para a direita)', campos:[
         { id:'vaos', rot:'Conteúdo dos vãos', tipo:'txt', ajuda:'Separe por vírgula: prateleiras, vassoura, vassoura+sapateira, gavetas, gavetas+botijao, vazio. Cada vão tem uma porta.' },
         { id:'prateleiras', rot:'Prateleiras por vão', unid:'un' },
-        { id:'alturaPratVassoura', rot:'Prateleira do vão de vassouras (topo)', unid:'mm', ajuda:'Com vassoura+sapateira a prateleira desce sozinha ao mínimo (1200 mm livres embaixo).' },
-        { id:'alturaNivelSapateira', rot:'Altura de cada nível da sapateira', unid:'mm', ajuda:'Em vassoura+sapateira: níveis com esta altura, de baixo para cima; a sobra fica no nível de cima.' },
-        { id:'niveisSapateira', rot:'Níveis da sapateira', unid:'un', ajuda:'0 = quantos couberem. 1 = só a prateleira das vassouras, livre até o teto do vão.' } ]},
+        { id:'alturaPratVassoura', rot:'Prateleira do vão de vassouras (topo)', unid:'mm', ajuda:'Com vassoura+sapateira não há esta prateleira: a sapateira fica embaixo e as vassouras em pé sobre ela.' },
+        { id:'alturaNivelSapateira', rot:'Altura de cada nível da sapateira', unid:'mm', ajuda:'Altura livre entre uma prateleira e outra da sapateira (embaixo das vassouras).' },
+        { id:'niveisSapateira', rot:'Níveis da sapateira', unid:'un', ajuda:'0 = quantos couberem deixando 1200 mm para as vassouras em cima.' } ]},
       { titulo:'Gavetas e botijão', campos:[
         { id:'gavetas', rot:'Gavetas internas', unid:'un' },
         { id:'alturaGaveta', rot:'Altura de cada gaveta', unid:'mm' },

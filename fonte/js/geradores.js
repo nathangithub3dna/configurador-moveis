@@ -224,15 +224,17 @@ function gerarGabinete(p) {
 }
 
 
-// Sapateira de prateleiras retas: quantos níveis de pelo menos 'min' mm cabem entre y0 (topo do apoio) e y1 (teto do vão);
-// 'max' > 0 limita o número de níveis (0 = quantos couberem). Devolve a base de cada prateleira que separa os níveis.
-function niveisSapateira(y0, y1, t, min, max) {
-  const livre = y1 - y0, cabe = Math.max(0, Math.floor((livre + t) / (min + t))), n = max > 0 ? Math.min(cabe, Math.round(max)) : cabe;
-  if (!n) return { n, min, cabe, pedido:max, altura:0, ys:[] };
-  // níveis com a altura pedida, de baixo para cima; a sobra fica no nível de cima (pedido do Nathan: níveis mais próximos)
-  const topo = livre - (n-1)*(min + t);
-  return { n, min, cabe, pedido:max, altura:min, topo, ys: Array.from({ length:n-1 }, (_, k) => y0 + min*(k+1) + t*k) };
+// Sapateira embaixo das vassouras (pedido do Nathan): níveis de altura livre 'h' a partir do chão do vão (y0);
+// a última prateleira da sapateira é o piso das vassouras, que precisam de 'livreVassoura' até o teto do vão (y1).
+// 'max' > 0 limita o número de níveis (0 = quantos couberem). Devolve a base de cada prateleira e o piso das vassouras.
+function sapateiraEmbaixo(y0, y1, t, h, max, livreVassoura = 1200) {
+  const cabe = Math.max(0, Math.floor((y1 - y0 - livreVassoura) / (h + t))), n = max > 0 ? Math.min(cabe, Math.round(max)) : cabe;
+  const ys = Array.from({ length:n }, (_, k) => y0 + h*(k+1) + t*k), piso = n ? ys[n-1] + t : y0;
+  return { n, cabe, pedido:max, h, ys, piso, livre: y1 - piso, livreVassoura };
 }
+const avisoSapateira = (V, sap) => [
+  `Vão ${V}: sapateira embaixo com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.h)} mm; vassouras em cima, com ${fmt(sap.livre)} mm livres.`,
+  ...(sap.pedido > sap.cabe ? [`Vão ${V}: pediu ${Math.round(sap.pedido)} níveis na sapateira, mas com as vassouras em cima (${fmt(sap.livreVassoura)} mm) só cabem ${sap.cabe}.`] : []) ];
 
 /* =====================================================================
    3b. GERADOR DO ARMÁRIO — caixa única com divisórias verticais, uma porta por vão.
@@ -350,23 +352,26 @@ function gerarArmario(p) {
       for (let k = 0; k < nS; k++) prateleira(i, k+1, yI0 + vao*(k+1) + t*k, nS > 1 ? `Prateleira ${k+1} do vão ${i+1}` : `Prateleira do vão ${i+1}`);
     }
     if (v === 'vassoura' || v === 'vassoura+sapateira') {
-      // com sapateira: a prateleira das vassouras desce ao mínimo (1200 livres) e a sapateira ocupa o resto do vão
-      const comSap = v === 'vassoura+sapateira', yb = comSap ? yI0 + 1200 : n('alturaPratVassoura') - t;
-      if (yb < yI0 + 1200 || yb + t > yI1 - 100) E.push(`Vão ${i+1}: a prateleira das vassouras deve ficar entre ${fmt(yI0+1200+t)} e ${fmt(yI1-100)} mm.`);
-      prateleira(i, 1, yb, `Prateleira do vão ${i+1} (vassouras)`, `Topo a ${fmt(yb+t)} mm. Embaixo fica livre para vassoura, rodo e aspirador.${comSap ? ' Em cima é o 1º nível da sapateira.' : ''}`);
+      // com sapateira: a sapateira fica embaixo e as vassouras em pé sobre ela, até o teto do vão (sem a prateleira de cima)
+      const comSap = v === 'vassoura+sapateira';
+      let dy = 0;
       if (comSap) {
-        const sap = niveisSapateira(yb + t, yI1, t, Number(p.alturaNivelSapateira) || 250, Number(p.niveisSapateira) || 0);
-        if (sap.n < 1) E.push(`Vão ${i+1}: não cabe sapateira acima das vassouras (sobram ${fmt(yI1 - yb - t)} mm; cada nível precisa de ${fmt(sap.min)}).`);
-        else A.push(`Vão ${i+1}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} acima das vassouras: ${sap.n > 1 ? `${fmt(sap.altura)} mm cada; o de cima com ${fmt(sap.topo)} mm` : `${fmt(sap.topo)} mm`}.`);
-        if (sap.pedido > sap.cabe) A.push(`Vão ${i+1}: pediu ${Math.round(sap.pedido)} níveis na sapateira, mas acima das vassouras só cabem ${sap.cabe} de ${fmt(sap.min)} mm.`);
-        sap.ys.forEach((ys, k) => prateleira(i, k+2, ys, `Prateleira ${k+2} da sapateira (vão ${i+1})`));
+        const sap = sapateiraEmbaixo(yI0, yI1, t, Number(p.alturaNivelSapateira) || 220, Number(p.niveisSapateira) || 0);
+        if (sap.n < 1) E.push(`Vão ${i+1}: não cabe sapateira embaixo das vassouras (o vão tem ${fmt(yI1 - yI0)} mm; as vassouras precisam de ${fmt(sap.livreVassoura)}).`);
+        else A.push(...avisoSapateira(i+1, sap));
+        sap.ys.forEach((ys, k) => prateleira(i, k+1, ys, k === sap.n-1 ? `Prateleira ${k+1} da sapateira (vão ${i+1}) — piso das vassouras` : `Prateleira ${k+1} da sapateira (vão ${i+1})`));
+        dy = sap.piso - yI0;
+      } else {
+        const yb = n('alturaPratVassoura') - t;
+        if (yb < yI0 + 1200 || yb + t > yI1 - 100) E.push(`Vão ${i+1}: a prateleira das vassouras deve ficar entre ${fmt(yI0+1200+t)} e ${fmt(yI1-100)} mm.`);
+        prateleira(i, 1, yb, `Prateleira do vão ${i+1} (vassouras)`, `Topo a ${fmt(yb+t)} mm. Embaixo fica livre para vassoura, rodo e aspirador.`);
       }
-      [x0 + w*0.22, xm, x1 - w*0.22].forEach((xs, k) => ferr({ id:`vao-${i+1}-suporte-${k+1}`, nome:`Suporte de vassoura/rodo ${k+1}`, box:[xs-25, xs+25, 1250, 1300, zf+t, zf+t+45], obs:'Garra de pressão, parafusada na régua de reforço.' }));
-      ferr({ id:`vao-${i+1}-gancho`, nome:'Gancho do aspirador', box:[xm-30, xm+30, 880, 920, zf+t, zf+t+70], obs:'Gancho duplo para aspirador e mangueira.' });
+      [x0 + w*0.22, xm, x1 - w*0.22].forEach((xs, k) => ferr({ id:`vao-${i+1}-suporte-${k+1}`, nome:`Suporte de vassoura/rodo ${k+1}`, box:[xs-25, xs+25, 1250+dy, 1300+dy, zf+t, zf+t+45], obs:'Garra de pressão, parafusada na régua de reforço.' }));
+      ferr({ id:`vao-${i+1}-gancho`, nome:'Gancho do aspirador', box:[xm-30, xm+30, 880+dy, 920+dy, zf+t, zf+t+70], obs:'Gancho duplo para aspirador e mangueira.' });
       nSup += 3; nGancho += 1;
       // reforço atrás dos suportes (o fundo de 6 mm não segura parafuso)
-      add({ id:`reforco-vassoura-${i+1}`, nome:`Régua de reforço do gancho (vão ${i+1})`, nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 850, 950, zf, zf+t], obs:'Atrás do fundo não dá para parafusar (6 mm): o gancho é parafusado nesta régua.', des:{ w, h:100, vista:'Vista de frente' } });
-      add({ id:`reforco-vassoura-${i+1}b`, nome:`Régua de reforço dos suportes (vão ${i+1})`, nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 1225, 1325, zf, zf+t], obs:'Os suportes de vassoura são parafusados nesta régua.', des:{ w, h:100, vista:'Vista de frente' } });
+      add({ id:`reforco-vassoura-${i+1}`, nome:`Régua de reforço do gancho (vão ${i+1})`, nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 850+dy, 950+dy, zf, zf+t], obs:'Atrás do fundo não dá para parafusar (6 mm): o gancho é parafusado nesta régua.', des:{ w, h:100, vista:'Vista de frente' } });
+      add({ id:`reforco-vassoura-${i+1}b`, nome:`Régua de reforço dos suportes (vão ${i+1})`, nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 1225+dy, 1325+dy, zf, zf+t], obs:'Os suportes de vassoura são parafusados nesta régua.', des:{ w, h:100, vista:'Vista de frente' } });
     }
     if (v === 'gavetas' || v === 'gavetas+botijao') {
       let yAc = yI0;
