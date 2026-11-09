@@ -50,7 +50,7 @@ function montarEditorModulo() {
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
-      return { podeAnt: !!pa && pa.i > 0, podeProx: !!pa && pa.i < n - 1, rotAnt: v ? '← Juntar com o da esquerda' : '↓ Juntar com o de baixo', rotProx: v ? 'Juntar com o da direita →' : '↑ Juntar com o de cima' }; })(),
+      return { podeAnt: !!pa && pa.i > 0, podeProx: !!pa && pa.i < n - 1, podeJuntar: !!pa && n > 1, rotAnt: v ? '← Esquerda' : '↓ De baixo', rotProx: v ? 'Direita →' : '↑ De cima' }; })(),
     gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
     sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),

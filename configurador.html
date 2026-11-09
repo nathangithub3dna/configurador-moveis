@@ -251,6 +251,9 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .topo .etapas{gap:4px;padding:4px;border-radius:var(--raio);box-shadow:var(--sombra-dentro)}
 .topo .etapas button{box-shadow:none;background:transparent}
 .topo .etapas button[aria-current]{box-shadow:var(--sombra-fora-p);background:var(--surface)}
+
+/* botões do juntar: texto quebra em vez de vazar */
+.ed-remover{white-space:normal;text-align:center}
 /* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
    Estrutura em pagina.html (modelos tplEditor, tplEspaco, tplOpcao); lógica em js/editor-modulo.js. */
 .ed-bloco{display:flex;flex-direction:column;gap:8px}
@@ -769,6 +772,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
       <button type="button" class="btn" data-acao="dividir-h">▤ Deitado</button>
     </div>
+    <div class="ed-sub" data-se="podeJuntar">Juntar com o vizinho</div>
     <div class="ed-grade2">
       <button type="button" class="btn ed-remover" data-acao="juntar-ant" data-se="podeAnt" data-texto="rotAnt"></button>
       <button type="button" class="btn ed-remover" data-acao="juntar-prox" data-se="podeProx" data-texto="rotProx"></button>
@@ -10968,7 +10972,7 @@ function montarEditorModulo() {
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
-      return { podeAnt: !!pa && pa.i > 0, podeProx: !!pa && pa.i < n - 1, rotAnt: v ? '← Juntar com o da esquerda' : '↓ Juntar com o de baixo', rotProx: v ? 'Juntar com o da direita →' : '↑ Juntar com o de cima' }; })(),
+      return { podeAnt: !!pa && pa.i > 0, podeProx: !!pa && pa.i < n - 1, podeJuntar: !!pa && n > 1, rotAnt: v ? '← Esquerda' : '↓ De baixo', rotProx: v ? 'Direita →' : '↑ De cima' }; })(),
     gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
     sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),

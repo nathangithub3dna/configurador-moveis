@@ -45,3 +45,6 @@
 .topo .etapas{gap:4px;padding:4px;border-radius:var(--raio);box-shadow:var(--sombra-dentro)}
 .topo .etapas button{box-shadow:none;background:transparent}
 .topo .etapas button[aria-current]{box-shadow:var(--sombra-fora-p);background:var(--surface)}
+
+/* botões do juntar: texto quebra em vez de vazar */
+.ed-remover{white-space:normal;text-align:center}
