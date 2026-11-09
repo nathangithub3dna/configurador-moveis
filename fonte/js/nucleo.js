@@ -127,7 +127,7 @@ function gerarModuloV3(m) {
   function porta(g, lado, x0, x1, pivX, puxador) {
     const k = ++cont.porta, id = `porta-${k}`;
     const y0 = g.fy0 + folga(g.b.baixo), y1 = g.fy1 - folga(g.b.cima), hp = y1 - y0, dw = x1 - x0;
-    if (dw > R.portaMaxLarg) E.push(`Porta ${k} com ${fmt(dw)} mm de largura (máximo ${R.portaMaxLarg}).`);
+    if (dw > R.portaMaxLarg) E.push(`Vão ${cont.vao}: porta com ${fmt(dw)} mm de largura (máximo ${R.portaMaxLarg}). Use 2 portas, porta de correr ou divida o vão.`);
     const dr = dobradicasRegra(hp, dw, t), nd = dr.n;
     if (dr.acimaTabela) A.push(`Porta ${k}: ${fmt(dr.peso)} kg passa da tabela de dobradiças (32 kg) — conferir com o fabricante.`);
     const pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(hp-2*R.dobradicaBorda)/(nd-1));

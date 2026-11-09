@@ -164,3 +164,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .topo-sep{width:1px;height:24px;background:var(--line);margin:0 4px}
 .topo .etapas{width:auto;flex:1 1 auto;justify-content:center}
 .topo .btn.discreto{margin-left:auto}
+
+/* faixa do 3D desatualizado: acima das cotas e da ficha, para aparecer também no celular */
+.faixa-desat{z-index:5;font-size:13px;box-shadow:0 4px 14px rgb(0 0 0 / .18)}
