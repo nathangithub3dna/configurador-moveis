@@ -19,6 +19,8 @@
   <span class="status ok" id="status">Pronto para exportar</span>
   <div class="acoes">
     <button class="btn" id="btnDesfazer" type="button" disabled title="Nada para desfazer">↶ Desfazer</button>
+    <button class="btn prim" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
+    <button class="btn" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
     <button class="btn" id="btnAbrir" type="button">Abrir projeto</button>
     <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
     <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
@@ -517,6 +519,11 @@
 </template>
 <template id="tplAjusteMedida"><label class="aj-linha"><span data-texto="rot"></span><input type="number" inputmode="decimal" data-aj-valor><select data-aj-fixo aria-label="O que fica no lugar"></select></label></template>
 <template id="tplAjusteItem"><li class="ed-ajuste"><span><strong data-texto="nome"></strong><span data-texto="desc"></span></span><button type="button" class="btn" data-acao="ajuste-voltar">Voltar à regra</button></li></template>
+<dialog id="dlgDrive" class="dlg-drive" aria-label="Abrir do Google Drive">
+  <div class="dlg-cab"><strong>Abrir do Drive</strong><button type="button" class="btn" data-acao="fechar-drive">Fechar</button></div>
+  <p class="ed-nota" data-texto="nota"></p>
+  <ul class="dlg-lista" data-lista="arquivos"></ul>
+</dialog>
 <template id="tplEspaco"><li><button type="button" class="ed-espaco" data-acao="selecionar"><strong data-texto="nome"></strong><span data-texto="desc"></span></button></li></template>
 <template id="tplOpcao"><button type="button" class="btn ed-op" data-acao="frente"></button></template>
 
