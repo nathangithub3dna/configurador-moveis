@@ -744,6 +744,10 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       <strong data-texto="nPrat"></strong>
       <button type="button" class="btn" data-acao="prat-mais" aria-label="Mais uma prateleira">+</button>
     </div>
+    <div class="ed-bloco" data-se="prateleiras">
+      <span class="ed-nota">Altura de cada prateleira: espaço livre do fundo do vão até ela, em mm. Vazio = automático.</span>
+      <div class="ed-grade2" data-lista="alturasPrat"></div>
+    </div>
     <div class="ed-contador" data-se="gavetas">
       <span>Gavetas internas</span>
       <button type="button" class="btn" data-acao="gav-menos" aria-label="Menos uma gaveta">−</button>
@@ -8218,9 +8222,28 @@ function gerarModuloV3(m) {
     let kPrat = 0;
     for (const ct of (no.conteudo || [])) {
       if (ct.tipo === 'prateleiras') {
-        const nS = ct.n, vaoP = (g.iy1 - y - nS*t)/(nS+1);
-        if (nS && vaoP < ct.min) E.push(`Vão ${V}: com ${nS} prateleiras o espaço fica ${fmt(vaoP)} mm (mínimo ${ct.min}).`);
-        for (let k = 0; k < nS; k++) prateleira(g, V, ++kPrat, y + vaoP*(k+1) + t*k, `Prateleira ${kPrat}`);
+        const nS = ct.n, alt = (ct.alturas || []).slice(0, nS).map(v => Number(v) > 0 ? Number(v) : null);
+        if (!alt.some(v => v != null)) {                              // todas automáticas: distribuídas por igual (como sempre foi)
+          const vaoP = (g.iy1 - y - nS*t)/(nS+1);
+          if (nS && vaoP < ct.min) E.push(`Vão ${V}: com ${nS} prateleiras o espaço fica ${fmt(vaoP)} mm (mínimo ${ct.min}).`);
+          for (let k = 0; k < nS; k++) prateleira(g, V, ++kPrat, y + vaoP*(k+1) + t*k, `Prateleira ${kPrat}`);
+        } else {
+          // altura de cada prateleira = espaço livre do piso do vão até ela; as vazias se repartem por igual entre as vizinhas
+          const H = g.iy1 - y, base = new Array(nS).fill(null);
+          alt.forEach((v, k) => { base[k] = v; });
+          let k = 0;
+          while (k < nS) {
+            if (base[k] != null) { k++; continue; }
+            let f = k; while (f < nS && base[f] == null) f++;            // k..f-1 automáticas
+            const ini = k ? base[k-1] + t : 0, fim = f < nS ? base[f] : H, m = f - k, gap = (fim - ini - m*t)/(m+1);
+            for (let i = 0; i < m; i++) base[k+i] = ini + gap*(i+1) + t*i;
+            k = f;
+          }
+          const ruim = base.some((b, i) => b < 0 || b + t > H || (i && b < base[i-1] + t));
+          if (ruim) E.push(`Vão ${V}: as alturas das prateleiras estão fora de ordem ou passam do vão (por dentro: ${fmt(H)} mm).`);
+          else base.forEach((b, i) => { const livre = b - (i ? base[i-1] + t : 0); if (livre < 50) A.push(`Vão ${V}: prateleira ${i+1} fica só ${fmt(livre)} mm acima da de baixo.`); });
+          base.forEach(b => prateleira(g, V, ++kPrat, y + b, `Prateleira ${kPrat}`));
+        }
       }
       if (ct.tipo === 'prateleiras-acima') {
         const livre = g.iy1 - y;
@@ -10930,6 +10953,15 @@ function montarEditorModulo() {
   }));
 
   const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
+  // um campo por prateleira; o automático aparece como sugestão (posição calculada agora)
+  if (prat) {
+    const pecasVao = (rLocal?.pecas || []).filter(p => p.papel === 'prateleira' && reg && p.box[0] >= reg.x0 - 1 && p.box[1] <= reg.x1 + 1 && p.box[2] >= reg.y0 - 1 && p.box[3] <= reg.y1 + 1).sort((a, b) => a.box[2] - b.box[2]);
+    ed.querySelector('[data-lista="alturasPrat"]').replaceChildren(...Array.from({ length:prat.n }, (_, k) => {
+      const inp = el('input', { type:'number', inputmode:'decimal', placeholder: pecasVao[k] ? `auto (${Math.round(pecasVao[k].box[2] - reg.y0)})` : 'auto' });
+      inp.dataset.vao = 'prat'; inp.dataset.k = k; const vv = prat.alturas?.[k]; if (vv) inp.value = vv;
+      return el('label', { class:'ed-campo' }, `Prateleira ${k+1}`, inp);
+    }));
+  }
   const gavNo = (no.conteudo || []).find(c => c.tipo === 'gavetas-internas'), botNo = (no.conteudo || []).find(c => c.tipo === 'botijao');
   if (gavNo) ed.querySelector('[data-vao="altGav"]').value = gavNo.altura;
   if (botNo) ed.querySelector('[data-vao="altBot"]').value = botNo.altura;
@@ -10988,6 +11020,7 @@ $('form').addEventListener('change', e => {
     if (kv === 'lado') no.frente.lado = v;
     if (kv === 'sistema') no.frente.sistema = v;
     if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
+    if (kv === 'prat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { c.alturas = [...(c.alturas || [])]; c.alturas[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'altGav') { const c = (no.conteudo || []).find(x => x.tipo === 'gavetas-internas'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'altBot') { const c = (no.conteudo || []).find(x => x.tipo === 'botijao'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'nivelSap') { const c = (no.conteudo || []).find(x => x.sapateira); if (c && Number(v) > 0) c.sapateira.nivel = Number(v); }

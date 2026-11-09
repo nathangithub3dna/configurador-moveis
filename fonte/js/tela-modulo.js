@@ -65,6 +65,15 @@ function montarEditorModulo() {
   }));
 
   const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
+  // um campo por prateleira; o automático aparece como sugestão (posição calculada agora)
+  if (prat) {
+    const pecasVao = (rLocal?.pecas || []).filter(p => p.papel === 'prateleira' && reg && p.box[0] >= reg.x0 - 1 && p.box[1] <= reg.x1 + 1 && p.box[2] >= reg.y0 - 1 && p.box[3] <= reg.y1 + 1).sort((a, b) => a.box[2] - b.box[2]);
+    ed.querySelector('[data-lista="alturasPrat"]').replaceChildren(...Array.from({ length:prat.n }, (_, k) => {
+      const inp = el('input', { type:'number', inputmode:'decimal', placeholder: pecasVao[k] ? `auto (${Math.round(pecasVao[k].box[2] - reg.y0)})` : 'auto' });
+      inp.dataset.vao = 'prat'; inp.dataset.k = k; const vv = prat.alturas?.[k]; if (vv) inp.value = vv;
+      return el('label', { class:'ed-campo' }, `Prateleira ${k+1}`, inp);
+    }));
+  }
   const gavNo = (no.conteudo || []).find(c => c.tipo === 'gavetas-internas'), botNo = (no.conteudo || []).find(c => c.tipo === 'botijao');
   if (gavNo) ed.querySelector('[data-vao="altGav"]').value = gavNo.altura;
   if (botNo) ed.querySelector('[data-vao="altBot"]').value = botNo.altura;
@@ -123,6 +132,7 @@ $('form').addEventListener('change', e => {
     if (kv === 'lado') no.frente.lado = v;
     if (kv === 'sistema') no.frente.sistema = v;
     if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
+    if (kv === 'prat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { c.alturas = [...(c.alturas || [])]; c.alturas[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'altGav') { const c = (no.conteudo || []).find(x => x.tipo === 'gavetas-internas'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'altBot') { const c = (no.conteudo || []).find(x => x.tipo === 'botijao'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'nivelSap') { const c = (no.conteudo || []).find(x => x.sapateira); if (c && Number(v) > 0) c.sapateira.nivel = Number(v); }
