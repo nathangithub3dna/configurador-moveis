@@ -27,7 +27,7 @@ function medidasLocais(pc, mod) {
 function podeMudarMedida(pc) {
   return !['ferragem', 'referencia', 'tampo', 'frente', 'gaveta'].includes(pc.cat) && !pc.mov && pc.forma?.tipo !== 'recorte' && !PAPEIS_COM_FUROS_PROPRIOS.includes(pc.papel);
 }
-const nomeSemModulo = pc => pc.nome.replace(/^M\d+ · /, '');
+function nomeSemModulo(pc) { return pc.nome.replace(/^M\d+ · /, ''); }   // função (não const): pode ser chamada antes deste arquivo terminar de carregar
 
 function preencherAjustePeca(pc) {
   const caixa = $('fAjuste'), dono = donoDaPeca(pc);

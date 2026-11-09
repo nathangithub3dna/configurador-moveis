@@ -62,7 +62,7 @@ function nomesFita(lv) {
   if (lv.apoio === 'lado')   return { C1:'de baixo', C2:'de cima', L1:'de trás', L2:'da frente' };
   return { C1:'de trás', C2:'da frente', L1:ini, L2:fim };
 }
-const gruposDe = a => [...new Set((a.livres || []).map(l => (l.grupo || '').trim()).filter(Boolean))];
+function gruposDe(a) { return [...new Set((a.livres || []).map(l => (l.grupo || '').trim()).filter(Boolean))]; }   // função (não const): ao abrir com um Ambiente guardado, a tela chama antes deste arquivo terminar de carregar
 
 function montarLivres(ed, a, ps) {
   const livres = a.livres || [], res = estado.res;
