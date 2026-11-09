@@ -22,7 +22,9 @@ let toastT; const toast = msg => { const t=$('toast'); t.textContent=msg; t.hidd
 function montarFormulario() {
   const tipo = TIPOS[estado.projeto.tipo], form = $('form'), par = estado.projeto.parametros;
   $('btnParaLivre').hidden = !CONVERSORES_V3[estado.projeto.tipo];
-  $('tipoMovel').replaceChildren(...Object.entries(TIPOS).map(([k,t]) => el('option', { value:k, selected:k===estado.projeto.tipo }, t.nome)));
+  // móvel convertido pelo "Editar no esquema" continua com o nome do tipo de origem (pedido do Nathan)
+  const origem = estado.projeto.tipo === 'modulo' && TIPOS[par.origem] ? par.origem : null;
+  $('tipoMovel').replaceChildren(...Object.entries(TIPOS).map(([k,t]) => el('option', { value:k, selected:k===estado.projeto.tipo }, k === 'modulo' && origem ? `${TIPOS[origem].nome.split(' (')[0]} — esquema` : t.nome)));
   if (tipo.editor === 'ambiente' && !moduloEmEdicao()) { montarEditorAmbiente(); return; }   // ambiente (js/tela-ambiente.js)
   if (tipo.editor) { montarEditorModulo(); return; }                  // móvel livre ou módulo aberto do ambiente (js/tela-modulo.js)
   form.replaceChildren(...tipo.grupos.map(g => el('fieldset', {}, el('legend', { text:g.titulo }), ...g.campos.map(c => {
@@ -651,9 +653,9 @@ $('btnPadrao').addEventListener('click', () => { estado.projeto = projetoPadrao(
 $('btnParaLivre').addEventListener('click', () => {
   const conv = CONVERSORES_V3[estado.projeto.tipo]; if (!conv) return;
   const antigo = estado.projeto;
-  estado.projeto = { ...antigo, tipo:'modulo', parametros:{ ...conv(antigo.parametros), entrega:'desmontado' } };
+  estado.projeto = { ...antigo, tipo:'modulo', parametros:{ ...conv(antigo.parametros), entrega:'desmontado', origem:antigo.tipo } };
   estado.ocultas.clear(); estado.vaoSel = ''; carregarProjeto();
-  toast('Agora é um Móvel livre: toque nos vãos no Esquema. Este móvel não volta para o formulário antigo.');
+  toast('Agora é editado pelo Esquema: toque nos vãos. Este móvel não volta para o formulário antigo.');
 });
 $('tipoMovel').addEventListener('change', e => { estado.projeto = projetoPadrao(e.target.value); estado.ocultas.clear(); carregarProjeto(); });
 
