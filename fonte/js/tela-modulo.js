@@ -59,6 +59,7 @@ function montarEditorModulo() {
     temMedida: !!info, rotMedida: info?.divisao.dir === 'v' ? 'Largura (mm ou auto)' : 'Altura (mm ou auto)',
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: !!info,
+    sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
   const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
@@ -90,6 +91,8 @@ $('form').addEventListener('click', e => {
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
     if (a === 'prat-mais') ED.prateleiras(m, cam, 1);
     if (a === 'prat-menos') ED.prateleiras(m, cam, -1);
+    if (a === 'sap-mais') ED.niveisSapateira(m, cam, 1);
+    if (a === 'sap-menos') ED.niveisSapateira(m, cam, -1);
     if (a === 'dividir-v') ED.dividir(m, cam, 'v');
     if (a === 'dividir-h') ED.dividir(m, cam, 'h');
     if (a === 'remover' && ED.remover(m, cam)) estado.vaoSel = null;

@@ -15,6 +15,7 @@
 <header class="topo">
   <span class="marca">Configurador de Móveis<small>Fase 1 · técnico</small></span>
   <input id="nomeProjeto" aria-label="Nome do projeto" value="Gabinete do banheiro">
+  <select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select>
   <span class="status ok" id="status">Pronto para exportar</span>
   <div class="acoes">
     <button class="btn" id="btnAbrir" type="button">Abrir projeto</button>
@@ -41,7 +42,6 @@
       <button role="tab" id="abaPecas" aria-selected="false" aria-controls="painelPecas">Peças</button>
     </div>
     <div class="painel" id="painelParam" role="tabpanel">
-      <div class="campo"><label for="tipoMovel">Tipo de móvel</label><div class="entrada"><select id="tipoMovel"></select></div></div>
       <div class="alertas" id="alertas"></div>
       <form id="form" autocomplete="off"></form>
       <div class="export">
@@ -307,6 +307,13 @@
       <strong data-texto="nPrat"></strong>
       <button type="button" class="btn" data-acao="prat-mais" aria-label="Mais uma prateleira">+</button>
     </div>
+    <div class="ed-contador" data-se="sapateira">
+      <span>Níveis da sapateira</span>
+      <button type="button" class="btn" data-acao="sap-menos" aria-label="Menos um nível">−</button>
+      <strong data-texto="nSap"></strong>
+      <button type="button" class="btn" data-acao="sap-mais" aria-label="Mais um nível">+</button>
+    </div>
+    <span class="ed-nota" data-se="sapateira">Vassouras embaixo (1,2 m livres); a sapateira fica acima, com níveis de pelo menos 250 mm. "máx" = quantos couberem.</span>
     <div class="ed-sub">Dividir em mais espaços</div>
     <div class="ed-grade2">
       <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>

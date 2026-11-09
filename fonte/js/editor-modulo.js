@@ -9,7 +9,7 @@ const FRENTES_EDITOR = [
   ['gaveta', 'Gaveta'], ['correr', 'Correr'], ['basculante', 'Abre p/ cima'],
 ];
 const CONTEUDOS_EDITOR = [
-  ['vazio', 'Vazio'], ['prateleiras', 'Prateleiras'], ['vassoura', 'Vassoura e aspirador'],
+  ['vazio', 'Vazio'], ['prateleiras', 'Prateleiras'], ['vassoura', 'Vassoura e aspirador'], ['vassoura+sapateira', 'Vassoura + sapateira'],
   ['gavetas', 'Gavetas internas'], ['gavetas+botijao', 'Botijão + gavetas'],
 ];
 const ED = {
@@ -62,7 +62,7 @@ const ED = {
     const t = (no.conteudo || []).map(c => c.tipo);
     if (t.includes('botijao')) return 'gavetas+botijao';
     if (t.includes('gavetas-internas')) return 'gavetas';
-    if (t.includes('vassoura')) return 'vassoura';
+    if (t.includes('vassoura')) return (no.conteudo || []).some(c => c.sapateira) ? 'vassoura+sapateira' : 'vassoura';
     if (t.includes('prateleiras')) return 'prateleiras';
     return 'vazio';
   },
@@ -72,8 +72,14 @@ const ED = {
     const acima = { tipo: 'prateleiras-acima', n: P.pratAcimaGavetas, minLivre: 250 };
     no.conteudo = tipo === 'prateleiras' ? [{ tipo: 'prateleiras', n: 3, min: 150 }]
       : tipo === 'vassoura' ? [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura }]
+      : tipo === 'vassoura+sapateira' ? [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura, sapateira: { nivel: P.alturaNivelSapateira, max: P.niveisSapateira } }]
       : tipo === 'gavetas' ? [gav, acima]
       : tipo === 'gavetas+botijao' ? [{ tipo: 'botijao', altura: P.alturaBotijao }, gav, acima] : [];
+  },
+  // níveis da sapateira: 0 = quantos couberem; menos que 0 não existe
+  niveisSapateira(m, cam, delta) {
+    const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.sapateira);
+    if (c) c.sapateira.max = Math.max(0, (c.sapateira.max || 0) + delta);
   },
   prateleiras(m, cam, delta) {
     const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.tipo === 'prateleiras');

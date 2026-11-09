@@ -27,3 +27,6 @@
 .diag-carga{position:relative;z-index:30;margin:8px;padding:10px 12px;border-radius:var(--raio-p);background:var(--warn-bg);color:var(--warn);font-size:12px;display:flex;flex-direction:column;gap:6px}
 .diag-carga pre{margin:0;white-space:pre-wrap;word-break:break-all;font:11px/1.35 var(--f-mono);color:var(--fg)}
 .diag-carga .btn{align-self:flex-start}
+
+/* tipo de móvel na barra do projeto (pedido do Nathan: escolha do móvel no topo) */
+#tipoMovel.sel-tipo{flex:0 1 260px;min-width:0;max-width:100%;padding:6px 10px;border:0;border-radius:var(--raio-p);background:var(--surface);box-shadow:var(--sombra-dentro);font-weight:700}
