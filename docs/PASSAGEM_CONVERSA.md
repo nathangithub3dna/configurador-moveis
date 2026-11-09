@@ -1,46 +1,48 @@
-# Passagem — Configurador de Móveis — 08/11/2026 (noite)
+# Passagem — Configurador de Móveis — 09/11/2026 00:20
 
 ## Onde paramos
-Sub-etapa **1c-i pronta e publicada** (commit `fb0a3d7`, artifact versão 28): em qualquer módulo (móvel livre ou módulo do ambiente) dá para **desligar uma peça** ou **mudar a medida** dela; aceite feito com a caixa da geladeira (aéreo a 1800 mm, laterais descendo até o chão, sem fundo). A 1c foi dividida a pedido do Nathan ("pode dividir o quanto for necessário"): 1c-i (feita), 1c-ii, 1c-iii. A 1c-i ainda não foi aprovada pelo Nathan. A 1b foi tomada como aprovada (o Nathan pediu para seguir para as próximas alterações).
+A 1c-i (desligar ou mudar a medida de qualquer peça) está pronta e publicada. O programa voltou a abrir no celular (artifact v30), confirmado por print do Nathan. Começamos o **planejamento da tela nova do celular**, só com protótipos: nada da tela nova foi para o programa.
 
 ## Próximo passo
-1. Aprovação da 1c-i pelo Nathan (testar: 3D → tocar numa peça → "Ajuste desta peça"; no ambiente, "Abrir" o módulo → "Peças ajustadas").
-2. **1c-ii — caixa livre:** módulo solto no ambiente (X, Y, Z) ou afastado da parede, virado para os 4 lados. Definir o aceite com o Nathan antes.
-3. **1c-iii — giro em ângulo livre da caixa** (3D, planta, portas abrindo, choques, iLogic).
-4. Confirmar no celular que o programa abre (artifact v30).
+Continuar os protótipos da tela do celular no quadro de design "Configurador no celular — 3 protótipos" (artifact Xf8Ai3JkhcJCWCQdo13bHm), partindo das telas que o Nathan gostou: **D · Novo móvel** e **E1 · Desenho dominante**. Perguntar ao Nathan, em múltipla escolha, se segue por: completar a E1 mostrando onde fica cada função de hoje (menus Ver/Abrir/Medir, ficha da peça, vãos, ambiente, peças livres, saídas); ou versões de Obra e Conferir no estilo da E1, fiéis às funções de hoje. Usar o inventário de funções em `claude/tela-celular.md` e marcar com "novo" o que não existe no programa. **Só planejamento: não mexer no código** até o Nathan escolher e aprovar um plano.
 
 ## Feito nesta conversa
-- Ajuste por peça (`modulo.pecasAjuste`, lógica em `fonte/js/nucleo.js` → `aplicarAjustesPecas`): desligar (leva junto dobradiças/puxador da porta, caixa da gaveta) ou mudar medida por eixo do módulo com "o que fica no lugar". Aplicado antes da furação.
-- Furação das laterais (e base/topo passantes) medida a partir da própria peça, não do módulo — sem ajuste, resultado idêntico (referências iguais).
-- Ambiente: erro se peça esticada fica abaixo do chão; aviso se ocupa o lugar de outro módulo (peça a peça).
-- Tela (`fonte/js/tela-ajuste.js`, `fonte/estilos/ajuste.css`, modelos `tplAjuste*`): bloco na ficha da peça e lista "Peças ajustadas" no editor do módulo.
-- Esquema de frente enquadra peças que saem do módulo; ficha à frente das cotas do 3D (no celular os números passavam por cima).
-- **Versão sem internet:** passou a declarar `<meta charset="utf-8">` (`ferramentas/offline.js`). Sem isso o navegador adivinhava a codificação; com o arquivo maior adivinhou errado e um acento quebrou o programa inteiro (teste "SEM INTERNET" falhou e voltou a passar com a correção).
-- Teste novo "AJUSTE POR PEÇA (1c)" em `testes/rodar.js`. Todos os casos iguais à referência.
-- Publicado: artifact v28; cópia em `codigo/configurador-moveis.html`; `claude/peca-caixa-livre.md` atualizado (divisão da 1c, o que ficou pronto, limites).
+- 1c-i: desligar ou mudar a medida de qualquer peça de qualquer módulo, com tela (ficha da peça + "Peças ajustadas") e teste com a caixa da geladeira (commit fb0a3d7, artifact v28). Detalhes em `claude/peca-caixa-livre.md`.
+- Furação das laterais medida pela própria peça (sem ajuste, resultado idêntico).
+- Versão offline passou a declarar `<meta charset="utf-8">` — sem isso um acento quebrava o programa inteiro.
+- Diagnóstico de carregamento (`fonte/js/diagnostico.js`): aviso no topo quando o programa não abre em 10 s (commit fc4bcc0, v29).
+- **Celular:** a causa foi confirmada pelo diagnóstico. O app do Claude no Android (Chrome 111) põe scripts próprios antes da página e rejeita o `importmap`, e o 3D não carregava. A correção tirou o importmap: o three.js principal vem por endereço completo e as partes extras são embutidas pelo montador (`ferramentas/three-embutido.js`) (commit cd605cb, v30). O Nathan confirmou que o programa abre.
+- Protótipos da tela do celular (quadro de design): A, B, C, D (4 telas) e E (4 variações da tela Projetar).
+- `claude/tela-celular.md` no projeto: escolhas do Nathan e inventário das funções que existem hoje.
 
 ## Decisões tomadas
-- 1c dividida em 1c-i / 1c-ii / 1c-iii (Nathan).
-- Mudar a medida só em peças de caixa/fundo/enchimento sem furos próprios; porta, gaveta, ferragem, prateleira com recorte e travessa de fixação dão erro explicando — escolha do Claude para não gerar furação errada.
-- Medida padrão do "o que fica no lugar": esquerda/embaixo/atrás — escolha do Claude.
+- 1c dividida em 1c-i / 1c-ii (caixa solta ou afastada, virada para os 4 lados) / 1c-iii (giro em ângulo livre) — Nathan ("pode dividir o quanto for necessário").
+- Tela do celular no estilo Samsung/Apple, sem neomorfismo — Nathan.
+- Base visual C (One UI) e três modos embaixo: Projetar · Obra · Conferir — Nathan.
+- Projetar: guiado só ao criar, com opção de modelo; depois livre, com cartão "Falta" e menus de contexto por função e proximidade; o desenho abre na última vista usada — Nathan.
+- Obra: uma medida por vez, grande. Conferir: marcar peça por peça — Nathan.
+- Gostou de **D · Novo móvel** e **E1 · Desenho dominante** — Nathan.
+- **Estamos em planejamento:** só protótipos, sem executar nem mudar o sistema — Nathan.
+- Mudar medida só em peças de caixa/fundo/enchimento sem furos próprios; padrão "o que fica no lugar" = esquerda/embaixo/atrás — sugestões do Claude, não contestadas.
 
 ## Tentado e descartado
-- nada
+- Versões E (2, 3, 4) da tela Projetar — o Nathan achou todas parecidas entre si e não fiéis às funções de hoje (ficou só a E1).
+- D · Obra com só largura/altura/profundidade — não corresponde ao que o programa mede (paredes, formato, pontos de esgoto/água/gás/tomada).
 
 ## Sem testar / riscos
-- **Celular (app do Claude, Android, Chrome 111): causa confirmada e corrigida, falta o Nathan confirmar no aparelho.** O diagnóstico de carregamento (`fonte/js/diagnostico.js`, aviso no topo se o programa não abrir em 10 s) mostrou: o app põe 2 scripts próprios antes da página e rejeita o `importmap`; sem ele o `'three'` não era achado e o programa inteiro não iniciava (por isso o tipo de móvel vazio e o desenho vazio). Correção: sem importmap — three.js principal por endereço completo e as partes extras (câmera, rótulos, GLB, juntar formas) embutidas pelo montador (`ferramentas/three-embutido.js`); a versão offline troca o endereço por um `data:`.
-- Uso real da 1c-i pelo Nathan.
-- Ajuste guardado pelo nome interno da peça: mexer na árvore de vãos pode fazê-lo deixar de servir (vira aviso).
+- Uso real da 1c-i pelo Nathan — testar no 3D: tocar numa peça → "Ajuste desta peça"; no ambiente, "Abrir" o módulo → "Peças ajustadas".
+- O programa abriu no celular, mas o print mostrava "2 erros · exportação bloqueada" no armário. A causa não foi vista: provavelmente medidas mudadas ou guardadas no aparelho. Testar com "Restaurar medidas padrão" ou mandar o print da lista de erros.
 - iLogic de peça girada continua sem rodar no Inventor.
 
 ## Pendências
-- Decisão do Nathan sobre cópias duplicadas (A: parar de copiar o programa para `codigo/configurador-moveis.html`; B: também a passagem só no GitHub; C: deixar como está). Até lá, seguir copiando.
-- Limites da 1c-i, 1b e 1a: ver `claude/peca-caixa-livre.md`.
+- **Botão de tema** (automático/claro/escuro no topo): feito e testado só na cópia de trabalho da nuvem, **não foi para o GitHub** e se perde com a sessão. O Nathan interrompeu antes de publicar. Refazer se ele quiser; a ideia é entrar no menu de opções da tela nova.
+- Aprovação da 1c-i; depois 1c-ii e 1c-iii.
+- Tela nova: definir como fica no computador e onde entram Ambiente e Peças livres.
+- Decisão sobre cópias duplicadas (parar de copiar o programa para `codigo/configurador-moveis.html`?).
 
 ## Arquivos tocados
-- `fonte/js/nucleo.js` — `aplicarAjustesPecas`, `eixosDoDesenho`; furação relativa à peça.
-- `fonte/js/ambiente.js` — erro/aviso de peça esticada.
-- `fonte/js/tela-ajuste.js` (novo), `fonte/estilos/ajuste.css` (novo), `fonte/pagina.html` (modelos e inclusões), `fonte/js/tela.js` (ficha chama o ajuste; `selecionar` exposto aos testes), `fonte/js/tela-modulo.js` (lista no editor; enquadramento do esquema), `fonte/estilos/layout.css` (camada das cotas).
-- `ferramentas/offline.js` — `<meta charset="utf-8">`.
+- `fonte/js/nucleo.js`, `fonte/js/ambiente.js`, `fonte/js/tela-ajuste.js` (novo), `fonte/estilos/ajuste.css` (novo), `fonte/pagina.html`, `fonte/js/tela.js`, `fonte/js/tela-modulo.js`, `fonte/estilos/layout.css` — 1c-i.
+- `fonte/js/diagnostico.js` (novo), `fonte/estilos/componentes.css` — diagnóstico de carregamento.
+- `ferramentas/three-embutido.js` (novo), `ferramentas/montar.js`, `ferramentas/offline.js` — 3D sem importmap; offline com UTF-8.
 - `testes/rodar.js` — teste "AJUSTE POR PEÇA (1c)".
-- Projeto MÓVEIS PLANEJADOS: `claude/peca-caixa-livre.md`, `codigo/configurador-moveis.html`, `claude/passagem-conversa.md`.
+- Projeto MÓVEIS PLANEJADOS: `claude/peca-caixa-livre.md`, `claude/tela-celular.md` (novo), `codigo/configurador-moveis.html`, `claude/passagem-conversa.md`.
