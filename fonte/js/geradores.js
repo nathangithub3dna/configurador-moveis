@@ -417,8 +417,14 @@ function gerarArmario(p) {
           ferr({ id:`gaveta-${kk}-corredica-dir`, nome:`Corrediça ${Lc} mm direita da gaveta ${kk}`, box:[xg1,xr1,yc-22.5,yc+22.5,zg0,zg1], ref:'corr-tel45-amort', obs:'Telescópica 45 mm com amortecedor.' });
           ferr({ id:`gaveta-${kk}-puxador`, nome:`Puxador da gaveta ${kk}`, forma:{tipo:'puxador',dir:'h',modelo:PxG.modelo,furacao:PxG.furacao}, cor:PxG.cor, ref:PxG.ref, box:[xmf-PxG.comp/2,xmf+PxG.comp/2,ymf-PxG.larg/2,ymf+PxG.larg/2,zF1,zF1+PxG.proj], mov, expPai:frente.id, obs:`${PxG.rot}. Fica ${fmt(recG-PxG.proj)} mm atrás da porta.` });
         }
-        const nAc = Math.max(0, Math.round(n('pratAcimaGavetas'))), livre = yI1 - ytop;
-        if (nAc && livre > 250) { const vao = (livre - nAc*t)/(nAc+1); for (let k = 0; k < nAc; k++) prateleira(i, k+1, ytop + vao*(k+1) + t*k, `Prateleira ${k+1} acima das gavetas (vão ${i+1})`); }
+        // tampo fixo logo acima da última gaveta, se sobrar espaço (a gaveta não fica aberta por cima)
+        let yAc2 = ytop;
+        if (yI1 - ytop > t + 100) {
+          add({ id:`prateleira-fixa-g${i+1}`, nome:`Tampo das gavetas (vão ${i+1})`, nomeLista:'Prateleira fixa', cat:'caixa', a:w, b:Dc, fita:[1,0], box:[x0, x1, ytop, ytop+t, zf, zFr], obs:`Fixa (parafusada), logo acima da última gaveta; topo a ${fmt(ytop+t)} mm do chão.`, des:{ w, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+          yAc2 = ytop + t;
+        }
+        const nAc = Math.max(0, Math.round(n('pratAcimaGavetas'))), livre = yI1 - yAc2;
+        if (nAc && livre > 250) { const vao = (livre - nAc*t)/(nAc+1); for (let k = 0; k < nAc; k++) prateleira(i, k+1, yAc2 + vao*(k+1) + t*k, `Prateleira ${k+1} acima das gavetas (vão ${i+1})`); }
       }
     }
   });

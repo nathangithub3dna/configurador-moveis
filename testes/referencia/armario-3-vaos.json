@@ -2282,6 +2282,32 @@
    "rasgos": 0
   },
   {
+   "id": "prateleira-fixa-g3",
+   "papel": "prateleira-fixa",
+   "lado": null,
+   "nome": "Tampo das gavetas (vão 3)",
+   "cat": "caixa",
+   "lista": true,
+   "comp": 576,
+   "larg": 376,
+   "esp": 18,
+   "mat": "mdf-ru-branco",
+   "fita": [
+    1,
+    0
+   ],
+   "box": [
+    1206,
+    1782,
+    1496,
+    1514,
+    6,
+    382
+   ],
+   "furos": [],
+   "rasgos": 0
+  },
+  {
    "id": "prateleira-3-1",
    "papel": "prateleira",
    "lado": null,
@@ -2299,8 +2325,8 @@
    "box": [
     1207,
     1781,
-    1780,
-    1798,
+    1789,
+    1807,
     12,
     362
    ],
@@ -2308,7 +2334,7 @@
    "rasgos": 0
   }
  ],
- "listaDeCorte": "LISTA DE CORTE — Armário da área de serviço\nESTUDO — não fabricar\nMedidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.\n\nMDF RU BRANCO FOSCO 18 MM\n1× Lateral — 2100 × 376 — fita 1C\n1× Lateral com ventilação — 2100 × 376 — fita 1C\n2× Divisória vertical — 1964 × 376 — fita 1C\n1× Topo — 1764 × 376 — fita 1C\n1× Base — 1764 × 376 — fita 1C\n2× Rodapé — 1764 × 100 — fita —\n1× Espaçador das corrediças — 760 × 331 — fita —\n3× Travessa de fixação — 576 × 80 — fita —\n2× Régua de reforço — 576 × 100 — fita —\n1× Prateleira fixa — 576 × 376 — fita 1C\n7× Prateleira — 574 × 350 — fita 1C\n2× Porta — 1997 × 600 — fita 2C 2L\n1× Porta — 1997 × 591 — fita 2C 2L\n4× Frente da gaveta interna — 552 × 187 — fita 2C 2L\n8× Frente/traseira da gaveta — 496 × 150 — fita 1C\n8× Lateral da gaveta — 300 × 150 — fita 1C\n\nMDF BRANCO 6 MM\n4× Fundo da gaveta — 532 × 300 — fita —\n1× Fundo do móvel — 2000 × 1800 — fita —",
+ "listaDeCorte": "LISTA DE CORTE — Armário da área de serviço\nESTUDO — não fabricar\nMedidas em mm (comprimento × largura). Fita: C = lados do comprimento, L = lados da largura.\n\nMDF RU BRANCO FOSCO 18 MM\n1× Lateral — 2100 × 376 — fita 1C\n1× Lateral com ventilação — 2100 × 376 — fita 1C\n2× Divisória vertical — 1964 × 376 — fita 1C\n1× Topo — 1764 × 376 — fita 1C\n1× Base — 1764 × 376 — fita 1C\n2× Rodapé — 1764 × 100 — fita —\n1× Espaçador das corrediças — 760 × 331 — fita —\n3× Travessa de fixação — 576 × 80 — fita —\n2× Régua de reforço — 576 × 100 — fita —\n2× Prateleira fixa — 576 × 376 — fita 1C\n7× Prateleira — 574 × 350 — fita 1C\n2× Porta — 1997 × 600 — fita 2C 2L\n1× Porta — 1997 × 591 — fita 2C 2L\n4× Frente da gaveta interna — 552 × 187 — fita 2C 2L\n8× Frente/traseira da gaveta — 496 × 150 — fita 1C\n8× Lateral da gaveta — 300 × 150 — fita 1C\n\nMDF BRANCO 6 MM\n4× Fundo da gaveta — 532 × 300 — fita —\n1× Fundo do móvel — 2000 × 1800 — fita —",
  "ferragens": [
   "12 un Dobradiça CLIP top BLUMOTION 110°, reta, com amortecedor — Blum 71B3550",
   "12 un Calço reto CLIP, 0 mm (porta sobreposta) — Blum 173L6100 (confirmar)",
@@ -2318,12 +2344,12 @@
   "28 un Suporte de prateleira, pino 5 mm",
   "3 un Suporte para vassoura/rodo (garra de pressão)",
   "1 un Gancho duplo para aspirador e mangueira",
-  "190 un Parafuso 4,0 × 50 (montagem da caixa)",
+  "200 un Parafuso 4,0 × 50 (montagem da caixa)",
   "10 un Parafuso 4,0 × 30 (espaçador das corrediças)",
-  "240 un Parafuso 3,5 × 14 (dobradiças, corrediças, fundos)",
+  "250 un Parafuso 3,5 × 14 (dobradiças, corrediças, fundos)",
   "16 un Parafuso 3,5 × 25 (frente da gaveta)",
   "6 un Parafuso 5,0 × 60 + bucha S8 (parede)",
-  "49 m Fita de borda PVC 22 mm branca"
+  "50 m Fita de borda PVC 22 mm branca"
  ],
  "plano": [
   {
@@ -2332,7 +2358,7 @@
    "pecasPorChapa": [
     9,
     17,
-    19
+    20
    ]
   },
   {
@@ -2356,7 +2382,7 @@
   "    \"07 - Travessa de fixação|Travessa de fixação|AAS-07|576|80|18|—|3|MDF RU branco fosco|50:40:6:0;526:40:6:0||Atrás, sob o topo. 2 parafusos na parede.|\", _",
   "    \"08 - Prateleira|Prateleira|AAS-08|574|350|18|1C|7|MDF RU branco fosco|||Topo a 1750 mm. Embaixo fica livre para vassoura, rodo e aspirador.|\", _",
   "    \"09 - Régua de reforço|Régua de reforço|AAS-09|576|100|18|—|2|MDF RU branco fosco|||Atrás do fundo não dá para parafusar (6 mm): o gancho é parafusado nesta régua.|\", _",
-  "    \"10 - Tampo do compartimento do botijão (vão 3)|Tampo do compartimento do botijão (vão 3)|AAS-10|576|376|18|1C|1|MDF RU branco fosco|||Fixa (parafusada), topo a 736 mm do chão.|\", _",
+  "    \"10 - Prateleira fixa|Prateleira fixa|AAS-10|576|376|18|1C|2|MDF RU branco fosco|||Fixa (parafusada), topo a 736 mm do chão.|\", _",
   "    \"11 - Espaçador das corrediças (vão 3)|Espaçador das corrediças (vão 3)|AAS-11|331|760|18|—|1|MDF RU branco fosco|||Afasta as corrediças das dobradiças. Parafusado na lateral/divisória.|\", _",
   "    \"12 - Porta|Porta|AAS-12|600|1997|18|2C 2L|2|MDF RU branco fosco|578:100:35:13;578:699:35:13;578:1298:35:13;578:1897:35:13;35:788.5:5:0;35:1108.5:5:0||4 dobradiças do lado esquerdo. Caneco Ø35 × 13 com centro a 22 mm da borda, a 100 / 699 / 1298 / 1897 mm da base da porta.|\", _",
   "    \"13 - Porta 2|Porta 2|AAS-13|591|1997|18|2C 2L|1|MDF RU branco fosco|22:100:35:13;22:699:35:13;22:1298:35:13;22:1897:35:13;556:788.5:5:0;556:1108.5:5:0||4 dobradiças do lado direito. Caneco Ø35 × 13 com centro a 22 mm da borda, a 100 / 699 / 1298 / 1897 mm da base da porta.|\", _",
@@ -2382,8 +2408,9 @@
   "    \"7|613|1109|362|1|0|0|0|0|-1|0|1|0|Prateleira 3 do vão 2\", _",
   "    \"7|613|1439.333|362|1|0|0|0|0|-1|0|1|0|Prateleira 4 do vão 2\", _",
   "    \"7|613|1769.667|362|1|0|0|0|0|-1|0|1|0|Prateleira 5 do vão 2\", _",
-  "    \"7|1207|1798|362|1|0|0|0|0|-1|0|1|0|Prateleira 1 acima das gavetas (vão 3)\", _",
+  "    \"7|1207|1807|362|1|0|0|0|0|-1|0|1|0|Prateleira 1 acima das gavetas (vão 3)\", _",
   "    \"9|1206|736|382|1|0|0|0|0|-1|0|1|0|Tampo do compartimento do botijão (vão 3)\", _",
+  "    \"9|1206|1514|382|1|0|0|0|0|-1|0|1|0|Tampo das gavetas (vão 3)\", _",
   "    \"10|1224|736|337|0|0|-1|0|1|0|1|0|0|Espaçador das corrediças (vão 3)\", _",
   "    \"11|601.5|101.5|382|-1|0|0|0|1|0|0|0|-1|Porta 1\", _",
   "    \"11|1798.5|101.5|382|-1|0|0|0|1|0|0|0|-1|Porta 3\", _",
@@ -2415,8 +2442,8 @@
   "    \"17|1800|100|0|-1|0|0|0|1|0|0|0|-1|Fundo do móvel\" }"
  ],
  "fixacoes": {
-  "paraf-40x50": 157,
-  "paraf-35x14": 93,
+  "paraf-40x50": 165,
+  "paraf-35x14": 98,
   "paraf-40x30": 8,
   "paraf-35x25": 16,
   "paraf-50x60-bucha": 6,

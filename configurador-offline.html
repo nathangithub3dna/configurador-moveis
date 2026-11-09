@@ -10135,7 +10135,7 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'],
   [/^travessa-(frontal|traseira)$/, 'travessa'], [/^travessa-fixacao(-\d+)?$/, 'travessa-fixacao'],
   [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'], [/^ponto-\d+$/, 'ponto'], [/^peca-teste$/, 'teste'],
-  [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-\d+$/, 'prateleira-fixa'],
+  [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-g?\d+$/, 'prateleira-fixa'],
   [/^reforco-/, 'reforco'], [/^beiral-frontal$/, 'beiral-frontal'], [/^beiral-(esq|dir)$/, 'beiral-lateral'],
   [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+$/, 'espacador'],
   [/^porta-(esq|dir|\d+)$/, 'porta'], [/^porta-correr-\d+$/, 'porta-correr'], [/^porta-basculante-\d+$/, 'porta-basculante'],
@@ -10682,8 +10682,14 @@ function gerarArmario(p) {
           ferr({ id:`gaveta-${kk}-corredica-dir`, nome:`Corrediça ${Lc} mm direita da gaveta ${kk}`, box:[xg1,xr1,yc-22.5,yc+22.5,zg0,zg1], ref:'corr-tel45-amort', obs:'Telescópica 45 mm com amortecedor.' });
           ferr({ id:`gaveta-${kk}-puxador`, nome:`Puxador da gaveta ${kk}`, forma:{tipo:'puxador',dir:'h',modelo:PxG.modelo,furacao:PxG.furacao}, cor:PxG.cor, ref:PxG.ref, box:[xmf-PxG.comp/2,xmf+PxG.comp/2,ymf-PxG.larg/2,ymf+PxG.larg/2,zF1,zF1+PxG.proj], mov, expPai:frente.id, obs:`${PxG.rot}. Fica ${fmt(recG-PxG.proj)} mm atrás da porta.` });
         }
-        const nAc = Math.max(0, Math.round(n('pratAcimaGavetas'))), livre = yI1 - ytop;
-        if (nAc && livre > 250) { const vao = (livre - nAc*t)/(nAc+1); for (let k = 0; k < nAc; k++) prateleira(i, k+1, ytop + vao*(k+1) + t*k, `Prateleira ${k+1} acima das gavetas (vão ${i+1})`); }
+        // tampo fixo logo acima da última gaveta, se sobrar espaço (a gaveta não fica aberta por cima)
+        let yAc2 = ytop;
+        if (yI1 - ytop > t + 100) {
+          add({ id:`prateleira-fixa-g${i+1}`, nome:`Tampo das gavetas (vão ${i+1})`, nomeLista:'Prateleira fixa', cat:'caixa', a:w, b:Dc, fita:[1,0], box:[x0, x1, ytop, ytop+t, zf, zFr], obs:`Fixa (parafusada), logo acima da última gaveta; topo a ${fmt(ytop+t)} mm do chão.`, des:{ w, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+          yAc2 = ytop + t;
+        }
+        const nAc = Math.max(0, Math.round(n('pratAcimaGavetas'))), livre = yI1 - yAc2;
+        if (nAc && livre > 250) { const vao = (livre - nAc*t)/(nAc+1); for (let k = 0; k < nAc; k++) prateleira(i, k+1, yAc2 + vao*(k+1) + t*k, `Prateleira ${k+1} acima das gavetas (vão ${i+1})`); }
       }
     }
   });
@@ -11004,6 +11010,11 @@ function gerarModuloV3(m) {
         }
       }
       if (ct.tipo === 'prateleiras-acima') {
+        // tampo fixo logo acima da última gaveta (pedido do Nathan: a gaveta não fica aberta por cima), se sobrar espaço
+        if (g.iy1 - y > t + 100) {
+          add({ id:`prateleira-fixa-g${V}`, nome:'Tampo das gavetas', nomeLista:'Prateleira fixa', cat:'caixa', a:w, b:Dc, fita:[1,0], box:[x0, x1, y, y+t, zf, zFr], des:{ w, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
+          y += t;
+        }
         const livre = g.iy1 - y;
         if (ct.n && livre > ct.minLivre) { const vaoP = (livre - ct.n*t)/(ct.n+1); for (let k = 0; k < ct.n; k++) prateleira(g, V, ++kPrat, y + vaoP*(k+1) + t*k, `Prateleira ${kPrat} acima das gavetas`); }
       }
