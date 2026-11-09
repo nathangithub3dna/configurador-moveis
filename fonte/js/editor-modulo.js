@@ -76,6 +76,11 @@ const ED = {
       : tipo === 'gavetas' ? [gav, acima]
       : tipo === 'gavetas+botijao' ? [{ tipo: 'botijao', altura: P.alturaBotijao }, gav, acima] : [];
   },
+  // gavetas internas: no mínimo 1 (sem gaveta, escolha outro conteúdo)
+  gavetas(m, cam, delta) {
+    const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.tipo === 'gavetas-internas');
+    if (c) c.n = Math.max(1, c.n + delta);
+  },
   // níveis da sapateira: 0 = quantos couberem; menos que 0 não existe
   niveisSapateira(m, cam, delta) {
     const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.sapateira);

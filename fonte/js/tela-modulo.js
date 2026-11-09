@@ -41,7 +41,20 @@ function montarEditorModulo() {
     e.value = valor[k];
   });
 
-  // árvore de espaços
+  // vão escolhido
+  const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
+  preencherModelo(ed, {
+    titulo: 'Vão ' + sel.num,
+    medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
+    temMedida: !!info, rotMedida: info?.divisao.dir === 'v' ? 'Largura (mm ou auto)' : 'Altura (mm ou auto)',
+    porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
+    prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: !!info,
+    gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'gavetas+botijao',
+    nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
+    sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),
+    dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
+  });
+  // árvore de espaços — depois do vão: preencherModelo(ed, …) apagaria os nomes da lista
   ed.querySelector('[data-lista="espacos"]').replaceChildren(...espacos.map(e => {
     const li = modeloDe('tplEspaco'), b = li.querySelector('button');
     preencherModelo(li, e.divisao ? { nome: e.cam ? 'Divisão' : 'Móvel inteiro', desc: ED.resumoDivisao(e.no) } : { nome: 'Vão ' + e.num, desc: ED.resumo(e.no) });
@@ -51,18 +64,10 @@ function montarEditorModulo() {
     return li;
   }));
 
-  // vão escolhido
-  const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
-  preencherModelo(ed, {
-    titulo: 'Vão ' + sel.num,
-    medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
-    temMedida: !!info, rotMedida: info?.divisao.dir === 'v' ? 'Largura (mm ou auto)' : 'Altura (mm ou auto)',
-    porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
-    prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: !!info,
-    sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),
-    dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
-  });
   const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
+  const gavNo = (no.conteudo || []).find(c => c.tipo === 'gavetas-internas'), botNo = (no.conteudo || []).find(c => c.tipo === 'botijao');
+  if (gavNo) ed.querySelector('[data-vao="altGav"]').value = gavNo.altura;
+  if (botNo) ed.querySelector('[data-vao="altBot"]').value = botNo.altura;
   const sapNo = (no.conteudo || []).find(c => c.sapateira); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.sapateira.nivel;
   ed.querySelector('[data-vao="lado"]').value = no.frente?.lado || 'auto';
   ed.querySelector('[data-vao="sistema"]').value = no.frente?.sistema || 'correr-rometal-dominus';
@@ -92,6 +97,8 @@ $('form').addEventListener('click', e => {
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
     if (a === 'prat-mais') ED.prateleiras(m, cam, 1);
     if (a === 'prat-menos') ED.prateleiras(m, cam, -1);
+    if (a === 'gav-mais') ED.gavetas(m, cam, 1);
+    if (a === 'gav-menos') ED.gavetas(m, cam, -1);
     if (a === 'sap-mais') ED.niveisSapateira(m, cam, 1);
     if (a === 'sap-menos') ED.niveisSapateira(m, cam, -1);
     if (a === 'dividir-v') ED.dividir(m, cam, 'v');
@@ -116,6 +123,8 @@ $('form').addEventListener('change', e => {
     if (kv === 'lado') no.frente.lado = v;
     if (kv === 'sistema') no.frente.sistema = v;
     if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
+    if (kv === 'altGav') { const c = (no.conteudo || []).find(x => x.tipo === 'gavetas-internas'); if (c && Number(v) > 0) c.altura = Number(v); }
+    if (kv === 'altBot') { const c = (no.conteudo || []).find(x => x.tipo === 'botijao'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'nivelSap') { const c = (no.conteudo || []).find(x => x.sapateira); if (c && Number(v) > 0) c.sapateira.nivel = Number(v); }
   });
 });

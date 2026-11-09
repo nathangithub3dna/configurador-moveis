@@ -20,6 +20,7 @@
   <div class="acoes">
     <button class="btn" id="btnAbrir" type="button">Abrir projeto</button>
     <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
+    <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
     <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
   </div>
   <div class="situacao" id="situacao" role="status">
@@ -307,6 +308,14 @@
       <strong data-texto="nPrat"></strong>
       <button type="button" class="btn" data-acao="prat-mais" aria-label="Mais uma prateleira">+</button>
     </div>
+    <div class="ed-contador" data-se="gavetas">
+      <span>Gavetas internas</span>
+      <button type="button" class="btn" data-acao="gav-menos" aria-label="Menos uma gaveta">−</button>
+      <strong data-texto="nGav"></strong>
+      <button type="button" class="btn" data-acao="gav-mais" aria-label="Mais uma gaveta">+</button>
+    </div>
+    <label class="ed-linha" data-se="gavetas">Altura de cada gaveta (mm)<input type="number" inputmode="decimal" data-vao="altGav"></label>
+    <label class="ed-linha" data-se="botijao">Altura livre do botijão (mm)<input type="number" inputmode="decimal" data-vao="altBot"></label>
     <div class="ed-contador" data-se="sapateira">
       <span>Níveis da sapateira</span>
       <button type="button" class="btn" data-acao="sap-menos" aria-label="Menos um nível">−</button>

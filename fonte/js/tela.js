@@ -21,6 +21,7 @@ let toastT; const toast = msg => { const t=$('toast'); t.textContent=msg; t.hidd
 /* ---------- Formulário gerado a partir do tipo ---------- */
 function montarFormulario() {
   const tipo = TIPOS[estado.projeto.tipo], form = $('form'), par = estado.projeto.parametros;
+  $('btnParaLivre').hidden = !CONVERSORES_V3[estado.projeto.tipo];
   $('tipoMovel').replaceChildren(...Object.entries(TIPOS).map(([k,t]) => el('option', { value:k, selected:k===estado.projeto.tipo }, t.nome)));
   if (tipo.editor === 'ambiente' && !moduloEmEdicao()) { montarEditorAmbiente(); return; }   // ambiente (js/tela-ambiente.js)
   if (tipo.editor) { montarEditorModulo(); return; }                  // móvel livre ou módulo aberto do ambiente (js/tela-modulo.js)
@@ -646,6 +647,14 @@ $('arqProjeto').addEventListener('change', e => {
   fr.readAsText(f);
 });
 $('btnPadrao').addEventListener('click', () => { estado.projeto = projetoPadrao(estado.projeto.tipo); estado.ocultas.clear(); carregarProjeto(); toast('Medidas padrão restauradas.'); });
+// Editar no esquema: o Armário com vãos e o Gabinete viram Móvel livre com as mesmas peças (conversor do núcleo, conferido pelo teste)
+$('btnParaLivre').addEventListener('click', () => {
+  const conv = CONVERSORES_V3[estado.projeto.tipo]; if (!conv) return;
+  const antigo = estado.projeto;
+  estado.projeto = { ...antigo, tipo:'modulo', parametros:{ ...conv(antigo.parametros), entrega:'desmontado' } };
+  estado.ocultas.clear(); estado.vaoSel = ''; carregarProjeto();
+  toast('Agora é um Móvel livre: toque nos vãos no Esquema. Este móvel não volta para o formulário antigo.');
+});
 $('tipoMovel').addEventListener('change', e => { estado.projeto = projetoPadrao(e.target.value); estado.ocultas.clear(); carregarProjeto(); });
 
 /* =====================================================================
