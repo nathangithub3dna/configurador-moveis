@@ -213,6 +213,7 @@ function gerarModuloV3(m) {
           const sap = niveisSapateira(yb + t, g.iy1, t, ct.sapateira.nivel, ct.sapateira.max || 0);
           if (sap.n < 1) E.push(`Vão ${V}: não cabe sapateira acima das vassouras (cada nível precisa de ${fmt(sap.min)} mm).`);
           else A.push(`Vão ${V}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.altura)} mm acima das vassouras.`);
+          if (sap.pedido > sap.cabe) A.push(`Vão ${V}: pediu ${Math.round(sap.pedido)} níveis na sapateira, mas acima das vassouras só cabem ${sap.cabe} de ${fmt(sap.min)} mm.`);
           sap.ys.forEach(ys => prateleira(g, V, ++kPrat, ys, `Prateleira ${kPrat} da sapateira`));
         }
         [x0 + w*0.22, xm, x1 - w*0.22].forEach((xs, k) => ferr({ id:`vao-${V}-suporte-${k+1}`, nome:`Suporte de vassoura/rodo ${k+1}`, box:[xs-25, xs+25, 1250, 1300, zf+t, zf+t+45] }));
