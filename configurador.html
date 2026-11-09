@@ -257,6 +257,10 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 
 /* botões do juntar: texto quebra em vez de vazar */
 .ed-remover{white-space:normal;text-align:center}
+/* Móvel livre: Construção e Peças ajustadas recolhidas no fim (usadas menos que Espaços) */
+.ed-mais{border-radius:var(--raio-p);box-shadow:var(--sombra-fora-p);padding:10px 12px}
+.ed-mais summary{cursor:pointer;font-weight:800;font-size:13px}
+.ed-mais[open]{display:flex;flex-direction:column;gap:14px}
 /* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
    Estrutura em pagina.html (modelos tplEditor, tplEspaco, tplOpcao); lógica em js/editor-modulo.js. */
 .ed-bloco{display:flex;flex-direction:column;gap:8px}
@@ -710,27 +714,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <strong data-texto="nomeModulo"></strong>
   </div>
   <fieldset class="ed-bloco">
-    <legend>Medidas do móvel</legend>
-    <div class="ed-grade2">
-      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-modulo="largura"></label>
-      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-modulo="altura"></label>
-      <label class="ed-campo">Profundidade<input type="number" inputmode="decimal" data-modulo="profundidade"></label>
-      <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
-    </div>
-  </fieldset>
-  <fieldset class="ed-bloco">
-    <legend>Construção</legend>
-    <label class="ed-linha">Método<select data-modulo="metodo"></select></label>
-    <label class="ed-linha">Entrega<select data-modulo="entrega"><option value="desmontado">Desmontado (volumes)</option><option value="montado">Montado</option></select></label>
-    <label class="ed-linha">Puxador das portas<select data-modulo="puxador"></select></label>
-    <label class="ed-linha">Material das frentes<select data-modulo="materialFrentes"></select></label>
-  </fieldset>
-  <fieldset class="ed-bloco">
-    <legend>Peças ajustadas</legend>
-    <ul class="ed-ajustes" data-lista="ajustes"></ul>
-    <span class="ed-nota" data-texto="notaAjustes"></span>
-  </fieldset>
-  <fieldset class="ed-bloco">
     <legend>Espaços</legend>
     <ul class="ed-arvore" data-lista="espacos"></ul>
   </fieldset>
@@ -781,6 +764,30 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       <button type="button" class="btn ed-remover" data-acao="juntar-prox" data-se="podeProx" data-texto="rotProx"></button>
     </div>
   </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Medidas do móvel</legend>
+    <div class="ed-grade2">
+      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-modulo="largura"></label>
+      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-modulo="altura"></label>
+      <label class="ed-campo">Profundidade<input type="number" inputmode="decimal" data-modulo="profundidade"></label>
+      <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
+    </div>
+  </fieldset>
+  <details class="ed-mais">
+    <summary>Construção e peças ajustadas</summary>
+  <fieldset class="ed-bloco">
+    <legend>Construção</legend>
+    <label class="ed-linha">Método<select data-modulo="metodo"></select></label>
+    <label class="ed-linha">Entrega<select data-modulo="entrega"><option value="desmontado">Desmontado (volumes)</option><option value="montado">Montado</option></select></label>
+    <label class="ed-linha">Puxador das portas<select data-modulo="puxador"></select></label>
+    <label class="ed-linha">Material das frentes<select data-modulo="materialFrentes"></select></label>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Peças ajustadas</legend>
+    <ul class="ed-ajustes" data-lista="ajustes"></ul>
+    <span class="ed-nota" data-texto="notaAjustes"></span>
+  </fieldset>
+  </details>
 </template>
 <!-- MODELOS DO AMBIENTE (5b) -->
 <template id="tplAmbiente">
@@ -11025,6 +11032,9 @@ function montarEditorModulo() {
     b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
   }));
   preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela-ajuste.js)
+  // "Construção e peças ajustadas" fica recolhido; abre sozinho se há peça ajustada e lembra se você abriu
+  const mais = ed.querySelector('.ed-mais');
+  if (mais) { mais.open = !!estado.edMaisAberto || Object.keys(m.pecasAjuste || {}).length > 0; mais.addEventListener('toggle', () => { estado.edMaisAberto = mais.open; }); }
   $('form').replaceChildren(ed);
 }
 

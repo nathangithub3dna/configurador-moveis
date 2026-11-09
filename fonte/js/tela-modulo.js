@@ -89,6 +89,9 @@ function montarEditorModulo() {
     b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
   }));
   preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela-ajuste.js)
+  // "Construção e peças ajustadas" fica recolhido; abre sozinho se há peça ajustada e lembra se você abriu
+  const mais = ed.querySelector('.ed-mais');
+  if (mais) { mais.open = !!estado.edMaisAberto || Object.keys(m.pecasAjuste || {}).length > 0; mais.addEventListener('toggle', () => { estado.edMaisAberto = mais.open; }); }
   $('form').replaceChildren(ed);
 }
 

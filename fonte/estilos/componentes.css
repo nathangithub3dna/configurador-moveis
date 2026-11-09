@@ -48,3 +48,7 @@
 
 /* botões do juntar: texto quebra em vez de vazar */
 .ed-remover{white-space:normal;text-align:center}
+/* Móvel livre: Construção e Peças ajustadas recolhidas no fim (usadas menos que Espaços) */
+.ed-mais{border-radius:var(--raio-p);box-shadow:var(--sombra-fora-p);padding:10px 12px}
+.ed-mais summary{cursor:pointer;font-weight:800;font-size:13px}
+.ed-mais[open]{display:flex;flex-direction:column;gap:14px}
