@@ -317,7 +317,9 @@ function gerarArmario(p) {
   const yp0 = RD + R.borda, yp1 = H - R.borda, hp = yp1 - yp0;
   const nd = dobradicasPorAltura(hp);
   const pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(hp-2*R.dobradicaBorda)/(nd-1));
-  const ladoDob = i => (i % 2 === 0) ? 'esq' : 'dir';
+  // dobradiças nas pontas e puxadores no meio: metade da esquerda abre pela esquerda, metade da direita pela direita
+  // (alternar esq/dir punha duas dobradiças na mesma divisória e as portas batiam uma na outra)
+  const ladoDob = i => (i < Math.ceil(vaos.length / 2)) ? 'esq' : 'dir';
   for (let i = 0; i < nV; i++) {
     const lado = ladoDob(i);
     const x0 = cortes[i] + (i === 0 ? R.borda : R.entre/2), x1 = cortes[i+1] - (i === nV-1 ? R.borda : R.entre/2), dw = x1 - x0;

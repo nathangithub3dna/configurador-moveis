@@ -10592,7 +10592,9 @@ function gerarArmario(p) {
   const yp0 = RD + R.borda, yp1 = H - R.borda, hp = yp1 - yp0;
   const nd = dobradicasPorAltura(hp);
   const pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(hp-2*R.dobradicaBorda)/(nd-1));
-  const ladoDob = i => (i % 2 === 0) ? 'esq' : 'dir';
+  // dobradiças nas pontas e puxadores no meio: metade da esquerda abre pela esquerda, metade da direita pela direita
+  // (alternar esq/dir punha duas dobradiças na mesma divisória e as portas batiam uma na outra)
+  const ladoDob = i => (i < Math.ceil(vaos.length / 2)) ? 'esq' : 'dir';
   for (let i = 0; i < nV; i++) {
     const lado = ladoDob(i);
     const x0 = cortes[i] + (i === 0 ? R.borda : R.entre/2), x1 = cortes[i+1] - (i === nV-1 ? R.borda : R.entre/2), dw = x1 - x0;
@@ -10923,9 +10925,13 @@ function gerarModuloV3(m) {
     if (no.tipo === 'vao') { regioes.push({ caminho:cam, num:cont.vao + 1, x0:g.ix0, x1:g.ix1, y0:g.iy0, y1:g.iy1, fx0:g.fx0, fx1:g.fx1, fy0:g.fy0, fy1:g.fy1 }); vao(no, g, nivel); }
   }
 
+  // eixos das portas já feitas: para a dobradiça automática não cair na mesma divisória da vizinha (as portas bateriam)
+  const eixos = [];
+  const mesmoEixo = (a, b) => Math.abs(a.pivX - b.pivX) < 40 && Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0) > 50;
   function porta(g, lado, x0, x1, pivX, puxador) {
     const k = ++cont.porta, id = `porta-${k}`;
     const y0 = g.fy0 + folga(g.b.baixo), y1 = g.fy1 - folga(g.b.cima), hp = y1 - y0, dw = x1 - x0;
+    eixos.push({ k, V:cont.vao, lado, pivX, y0, y1 });
     if (dw > R.portaMaxLarg) E.push(`Vão ${cont.vao}: porta com ${fmt(dw)} mm de largura (máximo ${R.portaMaxLarg}). Use 2 portas, porta de correr ou divida o vão.`);
     const dr = dobradicasRegra(hp, dw, t), nd = dr.n;
     if (dr.acimaTabela) A.push(`Porta ${k}: ${fmt(dr.peso)} kg passa da tabela de dobradiças (32 kg) — conferir com o fabricante.`);
@@ -10972,7 +10978,9 @@ function gerarModuloV3(m) {
     if (fr.tipo === 'porta') {
       const x0 = g.fx0 + folga(g.b.esq), x1 = g.fx1 - folga(g.b.dir);
       // lado automático: dobradiça longe da parede (a porta abre sem bater nela)
-      const lado = fr.lado && fr.lado !== 'auto' ? fr.lado : ((g.b.esq === 'externa' && c.paredeEsq) ? 'dir' : 'esq');
+      // e longe da dobradiça da porta vizinha da esquerda, se ela abre na mesma divisória
+      const vizDir = eixos.some(e => e.lado === 'dir' && mesmoEixo(e, { pivX:g.fx0, y0:g.fy0, y1:g.fy1 }));
+      const lado = fr.lado && fr.lado !== 'auto' ? fr.lado : ((g.b.esq === 'externa' && c.paredeEsq) || vizDir ? 'dir' : 'esq');
       ladoFrente = lado;
       porta(g, lado, x0, x1, lado === 'esq' ? g.fx0 : g.fx1, m.puxadorPorta);
     } else if (fr.tipo === 'portas') {
@@ -11323,6 +11331,9 @@ function gerarModuloV3(m) {
   if (!montado && fundosT > 3) A.push(`Transporte: com o limite de ${fmt(limT)} mm o fundo ficou em ${fundosT} peças (${fundosT - 1} emendas). Confira se o limite não está baixo demais.`);
   acabamentoPecas(pecas, m.materiais || {});
   const volumes = volumesDe(pecas, { montado, L, H:H0, P, A });
+  // portas com dobradiça na mesma divisória, uma de cada lado: batem ao abrir
+  eixos.forEach(a => eixos.forEach(b => { if (a.lado === 'dir' && b.lado === 'esq' && a.V !== b.V && mesmoEixo(a, b))
+    A.push(`Vão ${a.V} e vão ${b.V}: as portas têm dobradiça na mesma divisória e batem uma na outra ao abrir. Troque a dobradiça de uma delas.`); }));
   return { pecas, erros:E, avisos:A, volumes, compras: comprasV3(pecas), vaos: regioes };
 }
 
@@ -11479,7 +11490,7 @@ function moduloDeArmario(p) {
     : v === 'vassoura+sapateira' ? [{ tipo:'vassoura', alturaPrat:n('alturaPratVassoura'), sapateira:{ nivel:Number(p.alturaNivelSapateira) || 220, max:Number(p.niveisSapateira) || 0 } }]
     : v === 'gavetas' ? (gav.n ? [gav, acima] : [])
     : v === 'gavetas+botijao' ? [{ tipo:'botijao', altura:n('alturaBotijao') }, ...(gav.n ? [gav, acima] : [])] : [];
-  const folhas = vaos.map((v, i) => ({ tipo:'vao', frente:{ tipo:'porta', lado: i % 2 === 0 ? 'esq' : 'dir' }, conteudo:conteudoDe(v) }));
+  const folhas = vaos.map((v, i) => ({ tipo:'vao', frente:{ tipo:'porta', lado: i < Math.ceil(vaos.length / 2) ? 'esq' : 'dir' }, conteudo:conteudoDe(v) }));
   const raiz = folhas.length > 1 ? { tipo:'dividir', dir:'v', sep:'divisoria', partes:folhas.map(no => ({ medida:'auto', no })) } : folhas[0];
   return {
     largura:n('largura'), altura:n('altura'), profundidade:n('profundidade'),

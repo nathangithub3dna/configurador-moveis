@@ -722,42 +722,42 @@
    ],
    "furos": [
     [
-     22,
+     420.5,
      100,
      35,
      13,
      "caneco"
     ],
     [
-     22,
+     420.5,
      672.3,
      35,
      13,
      "caneco"
     ],
     [
-     22,
+     420.5,
      1244.7,
      35,
      13,
      "caneco"
     ],
     [
-     22,
+     420.5,
      1817,
      35,
      13,
      "caneco"
     ],
     [
-     407.5,
+     35,
      788.5,
      5,
      0,
      "puxador"
     ],
     [
-     407.5,
+     35,
      1108.5,
      5,
      0,
@@ -780,8 +780,8 @@
     0
    ],
    "box": [
-    859,
-    894,
+    460.5,
+    495.5,
     184,
     219,
     381,
@@ -804,8 +804,8 @@
     0
    ],
    "box": [
-    859,
-    894,
+    460.5,
+    495.5,
     756.3,
     791.3,
     381,
@@ -828,8 +828,8 @@
     0
    ],
    "box": [
-    859,
-    894,
+    460.5,
+    495.5,
     1328.7,
     1363.7,
     381,
@@ -852,8 +852,8 @@
     0
    ],
    "box": [
-    859,
-    894,
+    460.5,
+    495.5,
     1901,
     1936,
     381,
@@ -876,8 +876,8 @@
     0
    ],
    "box": [
-    478,
-    504,
+    850.5,
+    876.5,
     884,
     1216,
     400,
@@ -911,42 +911,42 @@
    ],
    "furos": [
     [
-     420.5,
+     22,
      100,
      35,
      13,
      "caneco"
     ],
     [
-     420.5,
+     22,
      672.3,
      35,
      13,
      "caneco"
     ],
     [
-     420.5,
+     22,
      1244.7,
      35,
      13,
      "caneco"
     ],
     [
-     420.5,
+     22,
      1817,
      35,
      13,
      "caneco"
     ],
     [
-     35,
+     407.5,
      788.5,
      5,
      0,
      "puxador"
     ],
     [
-     35,
+     407.5,
      1108.5,
      5,
      0,
@@ -969,8 +969,8 @@
     0
    ],
    "box": [
-    906,
-    941,
+    1304.5,
+    1339.5,
     184,
     219,
     381,
@@ -993,8 +993,8 @@
     0
    ],
    "box": [
-    906,
-    941,
+    1304.5,
+    1339.5,
     756.3,
     791.3,
     381,
@@ -1017,8 +1017,8 @@
     0
    ],
    "box": [
-    906,
-    941,
+    1304.5,
+    1339.5,
     1328.7,
     1363.7,
     381,
@@ -1041,8 +1041,8 @@
     0
    ],
    "box": [
-    906,
-    941,
+    1304.5,
+    1339.5,
     1901,
     1936,
     381,
@@ -1065,8 +1065,8 @@
     0
    ],
    "box": [
-    1296,
-    1322,
+    923.5,
+    949.5,
     884,
     1216,
     400,
@@ -2879,8 +2879,8 @@
   "    \"12 - Prateleira fixa|Prateleira fixa|AAS-12|427.5|376|18|1C|2|MDF RU branco fosco|||Fixa (parafusada), topo a 736 mm do chão.|\", _",
   "    \"13 - Espaçador das corrediças (vão 4)|Espaçador das corrediças (vão 4)|AAS-13|331|760|18|—|1|MDF RU branco fosco|||Afasta as corrediças das dobradiças. Parafusado na lateral/divisória.|\", _",
   "    \"14 - Porta 1|Porta 1|AAS-14|451.5|1917|18|2C 2L|1|MDF RU branco fosco|429.5:100:35:13;429.5:672.333:35:13;429.5:1244.667:35:13;429.5:1817:35:13;35:788.5:5:0;35:1108.5:5:0||4 dobradiças do lado esquerdo. Caneco Ø35 × 13 com centro a 22 mm da borda, a 100 / 672,3 / 1244,7 / 1817 mm da base da porta.|\", _",
-  "    \"15 - Porta 2|Porta 2|AAS-15|442.5|1917|18|2C 2L|1|MDF RU branco fosco|22:100:35:13;22:672.333:35:13;22:1244.667:35:13;22:1817:35:13;407.5:788.5:5:0;407.5:1108.5:5:0||4 dobradiças do lado direito. Caneco Ø35 × 13 com centro a 22 mm da borda, a 100 / 672,3 / 1244,7 / 1817 mm da base da porta.|\", _",
-  "    \"16 - Porta 3|Porta 3|AAS-16|442.5|1917|18|2C 2L|1|MDF RU branco fosco|420.5:100:35:13;420.5:672.333:35:13;420.5:1244.667:35:13;420.5:1817:35:13;35:788.5:5:0;35:1108.5:5:0||4 dobradiças do lado esquerdo. Caneco Ø35 × 13 com centro a 22 mm da borda, a 100 / 672,3 / 1244,7 / 1817 mm da base da porta.|\", _",
+  "    \"15 - Porta 2|Porta 2|AAS-15|442.5|1917|18|2C 2L|1|MDF RU branco fosco|420.5:100:35:13;420.5:672.333:35:13;420.5:1244.667:35:13;420.5:1817:35:13;35:788.5:5:0;35:1108.5:5:0||4 dobradiças do lado esquerdo. Caneco Ø35 × 13 com centro a 22 mm da borda, a 100 / 672,3 / 1244,7 / 1817 mm da base da porta.|\", _",
+  "    \"16 - Porta 3|Porta 3|AAS-16|442.5|1917|18|2C 2L|1|MDF RU branco fosco|22:100:35:13;22:672.333:35:13;22:1244.667:35:13;22:1817:35:13;407.5:788.5:5:0;407.5:1108.5:5:0||4 dobradiças do lado direito. Caneco Ø35 × 13 com centro a 22 mm da borda, a 100 / 672,3 / 1244,7 / 1817 mm da base da porta.|\", _",
   "    \"17 - Porta 4|Porta 4|AAS-17|451.5|1917|18|2C 2L|1|MDF RU branco fosco|22:100:35:13;22:672.333:35:13;22:1244.667:35:13;22:1817:35:13;416.5:788.5:5:0;416.5:1108.5:5:0||4 dobradiças do lado direito. Caneco Ø35 × 13 com centro a 22 mm da borda, a 100 / 672,3 / 1244,7 / 1817 mm da base da porta.|\", _",
   "    \"18 - Frente da gaveta interna|Frente da gaveta interna|AAS-18|403.5|187|18|2C 2L|4|MDF RU branco fosco|137.75:93.5:5:0;265.75:93.5:5:0||Gaveta interna, atrás da porta (frente recuada 45 mm).|\", _",
   "    \"19 - Lateral da gaveta|Lateral da gaveta|AAS-19|300|150|18|1C|8|MDF RU branco fosco||||\", _",

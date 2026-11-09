@@ -294,7 +294,7 @@ function diferencas(a, b, caminho = '') {
     await passo('#esquema button[data-cam=".1.0"]');                 // parte de baixo
     await passo('[data-acao="frente"][data-valor="gaveta"]');        // vira gaveta
     const depois = await foto();
-    await passo('[data-acao="remover"]');                            // junta de novo
+    await passo('[data-acao="juntar-prox"]');                        // junta de novo (com o de cima)
     const juntou = await foto();
     await passo('#etapas [data-etapa="plano"]');
     const abas = await page.evaluate(() => ({ montar: document.querySelector('[data-secao="montar"]').hidden, plano: document.querySelector('[data-secao="plano"]').hidden }));
