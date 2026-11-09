@@ -225,12 +225,13 @@ function gerarGabinete(p) {
 
 
 // Sapateira de prateleiras retas: quantos níveis de pelo menos 'min' mm cabem entre y0 (topo do apoio) e y1 (teto do vão);
-// 'max' > 0 limita o número de níveis (0 = quantos couberem); os níveis ficam iguais, repartindo a sobra. Devolve a base de cada prateleira que separa os níveis.
+// 'max' > 0 limita o número de níveis (0 = quantos couberem). Devolve a base de cada prateleira que separa os níveis.
 function niveisSapateira(y0, y1, t, min, max) {
   const livre = y1 - y0, cabe = Math.max(0, Math.floor((livre + t) / (min + t))), n = max > 0 ? Math.min(cabe, Math.round(max)) : cabe;
   if (!n) return { n, min, cabe, pedido:max, altura:0, ys:[] };
-  const altura = (livre - (n-1)*t) / n;
-  return { n, min, cabe, pedido:max, altura, ys: Array.from({ length:n-1 }, (_, k) => y0 + altura*(k+1) + t*k) };
+  // níveis com a altura pedida, de baixo para cima; a sobra fica no nível de cima (pedido do Nathan: níveis mais próximos)
+  const topo = livre - (n-1)*(min + t);
+  return { n, min, cabe, pedido:max, altura:min, topo, ys: Array.from({ length:n-1 }, (_, k) => y0 + min*(k+1) + t*k) };
 }
 
 /* =====================================================================
@@ -356,7 +357,7 @@ function gerarArmario(p) {
       if (comSap) {
         const sap = niveisSapateira(yb + t, yI1, t, Number(p.alturaNivelSapateira) || 250, Number(p.niveisSapateira) || 0);
         if (sap.n < 1) E.push(`Vão ${i+1}: não cabe sapateira acima das vassouras (sobram ${fmt(yI1 - yb - t)} mm; cada nível precisa de ${fmt(sap.min)}).`);
-        else A.push(`Vão ${i+1}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.altura)} mm acima das vassouras.`);
+        else A.push(`Vão ${i+1}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} acima das vassouras: ${sap.n > 1 ? `${fmt(sap.altura)} mm cada; o de cima com ${fmt(sap.topo)} mm` : `${fmt(sap.topo)} mm`}.`);
         if (sap.pedido > sap.cabe) A.push(`Vão ${i+1}: pediu ${Math.round(sap.pedido)} níveis na sapateira, mas acima das vassouras só cabem ${sap.cabe} de ${fmt(sap.min)} mm.`);
         sap.ys.forEach((ys, k) => prateleira(i, k+2, ys, `Prateleira ${k+2} da sapateira (vão ${i+1})`));
       }

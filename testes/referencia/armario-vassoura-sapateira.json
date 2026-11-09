@@ -1,7 +1,7 @@
 {
  "erros": [],
  "avisos": [
-  "Vão 1: sapateira com 2 níveis de 324 mm acima das vassouras.",
+  "Vão 1: sapateira com 2 níveis acima das vassouras: 250 mm cada; o de cima com 398 mm.",
   "Móvel alto: fixe na parede antes de colocar peso (risco de tombar)."
  ],
  "semPapel": [],
@@ -1308,8 +1308,8 @@
    "box": [
     19,
     444.5,
-    1660,
-    1678,
+    1586,
+    1604,
     12,
     362
    ],
@@ -2878,7 +2878,7 @@
   "    \"8|909|1922|24|1|0|0|0|1|0|0|0|1|Travessa de fixação 3\", _",
   "    \"8|1354.5|1922|24|1|0|0|0|1|0|0|0|1|Travessa de fixação 4\", _",
   "    \"9|19|1336|362|1|0|0|0|0|-1|0|1|0|Prateleira do vão 1 (vassouras)\", _",
-  "    \"9|19|1678|362|1|0|0|0|0|-1|0|1|0|Prateleira 2 da sapateira (vão 1)\", _",
+  "    \"9|19|1604|362|1|0|0|0|0|-1|0|1|0|Prateleira 2 da sapateira (vão 1)\", _",
   "    \"9|464.5|435|362|1|0|0|0|0|-1|0|1|0|Prateleira 1 do vão 2\", _",
   "    \"9|464.5|752|362|1|0|0|0|0|-1|0|1|0|Prateleira 2 do vão 2\", _",
   "    \"9|464.5|1069|362|1|0|0|0|0|-1|0|1|0|Prateleira 3 do vão 2\", _",

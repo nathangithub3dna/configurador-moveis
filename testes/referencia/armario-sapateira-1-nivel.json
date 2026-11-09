@@ -1,7 +1,7 @@
 {
  "erros": [],
  "avisos": [
-  "Vão 1: sapateira com 1 nível de 666 mm acima das vassouras.",
+  "Vão 1: sapateira com 1 nível acima das vassouras: 666 mm.",
   "Móvel alto: fixe na parede antes de colocar peso (risco de tombar)."
  ],
  "semPapel": [],

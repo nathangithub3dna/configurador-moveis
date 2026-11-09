@@ -710,7 +710,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       <strong data-texto="nSap"></strong>
       <button type="button" class="btn" data-acao="sap-mais" aria-label="Mais um nível">+</button>
     </div>
-    <span class="ed-nota" data-se="sapateira">Vassouras embaixo (1,2 m livres); a sapateira fica acima, com níveis de pelo menos 250 mm. "máx" = quantos couberem.</span>
+    <span class="ed-nota" data-se="sapateira">Vassouras embaixo (1,2 m livres); a sapateira fica acima, com níveis de 250 mm; a sobra fica no nível de cima. "máx" = quantos couberem.</span>
     <div class="ed-sub">Dividir em mais espaços</div>
     <div class="ed-grade2">
       <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
@@ -7413,7 +7413,7 @@ const TIPOS = {
         { id:'vaos', rot:'Conteúdo dos vãos', tipo:'txt', ajuda:'Separe por vírgula: prateleiras, vassoura, vassoura+sapateira, gavetas, gavetas+botijao, vazio. Cada vão tem uma porta.' },
         { id:'prateleiras', rot:'Prateleiras por vão', unid:'un' },
         { id:'alturaPratVassoura', rot:'Prateleira do vão de vassouras (topo)', unid:'mm', ajuda:'Com vassoura+sapateira a prateleira desce sozinha ao mínimo (1200 mm livres embaixo).' },
-        { id:'alturaNivelSapateira', rot:'Altura mínima de cada nível da sapateira', unid:'mm', ajuda:'Em vassoura+sapateira: cabem quantos níveis der acima das vassouras, todos iguais.' },
+        { id:'alturaNivelSapateira', rot:'Altura de cada nível da sapateira', unid:'mm', ajuda:'Em vassoura+sapateira: níveis com esta altura, de baixo para cima; a sobra fica no nível de cima.' },
         { id:'niveisSapateira', rot:'Níveis da sapateira', unid:'un', ajuda:'0 = quantos couberem. 1 = só a prateleira das vassouras, livre até o teto do vão.' } ]},
       { titulo:'Gavetas e botijão', campos:[
         { id:'gavetas', rot:'Gavetas internas', unid:'un' },
@@ -7674,12 +7674,13 @@ function gerarGabinete(p) {
 
 
 // Sapateira de prateleiras retas: quantos níveis de pelo menos 'min' mm cabem entre y0 (topo do apoio) e y1 (teto do vão);
-// 'max' > 0 limita o número de níveis (0 = quantos couberem); os níveis ficam iguais, repartindo a sobra. Devolve a base de cada prateleira que separa os níveis.
+// 'max' > 0 limita o número de níveis (0 = quantos couberem). Devolve a base de cada prateleira que separa os níveis.
 function niveisSapateira(y0, y1, t, min, max) {
   const livre = y1 - y0, cabe = Math.max(0, Math.floor((livre + t) / (min + t))), n = max > 0 ? Math.min(cabe, Math.round(max)) : cabe;
   if (!n) return { n, min, cabe, pedido:max, altura:0, ys:[] };
-  const altura = (livre - (n-1)*t) / n;
-  return { n, min, cabe, pedido:max, altura, ys: Array.from({ length:n-1 }, (_, k) => y0 + altura*(k+1) + t*k) };
+  // níveis com a altura pedida, de baixo para cima; a sobra fica no nível de cima (pedido do Nathan: níveis mais próximos)
+  const topo = livre - (n-1)*(min + t);
+  return { n, min, cabe, pedido:max, altura:min, topo, ys: Array.from({ length:n-1 }, (_, k) => y0 + min*(k+1) + t*k) };
 }
 
 /* =====================================================================
@@ -7805,7 +7806,7 @@ function gerarArmario(p) {
       if (comSap) {
         const sap = niveisSapateira(yb + t, yI1, t, Number(p.alturaNivelSapateira) || 250, Number(p.niveisSapateira) || 0);
         if (sap.n < 1) E.push(`Vão ${i+1}: não cabe sapateira acima das vassouras (sobram ${fmt(yI1 - yb - t)} mm; cada nível precisa de ${fmt(sap.min)}).`);
-        else A.push(`Vão ${i+1}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.altura)} mm acima das vassouras.`);
+        else A.push(`Vão ${i+1}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} acima das vassouras: ${sap.n > 1 ? `${fmt(sap.altura)} mm cada; o de cima com ${fmt(sap.topo)} mm` : `${fmt(sap.topo)} mm`}.`);
         if (sap.pedido > sap.cabe) A.push(`Vão ${i+1}: pediu ${Math.round(sap.pedido)} níveis na sapateira, mas acima das vassouras só cabem ${sap.cabe} de ${fmt(sap.min)} mm.`);
         sap.ys.forEach((ys, k) => prateleira(i, k+2, ys, `Prateleira ${k+2} da sapateira (vão ${i+1})`));
       }
@@ -8173,7 +8174,7 @@ function gerarModuloV3(m) {
         if (ct.sapateira) {
           const sap = niveisSapateira(yb + t, g.iy1, t, ct.sapateira.nivel, ct.sapateira.max || 0);
           if (sap.n < 1) E.push(`Vão ${V}: não cabe sapateira acima das vassouras (cada nível precisa de ${fmt(sap.min)} mm).`);
-          else A.push(`Vão ${V}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.altura)} mm acima das vassouras.`);
+          else A.push(`Vão ${V}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} acima das vassouras: ${sap.n > 1 ? `${fmt(sap.altura)} mm cada; o de cima com ${fmt(sap.topo)} mm` : `${fmt(sap.topo)} mm`}.`);
           if (sap.pedido > sap.cabe) A.push(`Vão ${V}: pediu ${Math.round(sap.pedido)} níveis na sapateira, mas acima das vassouras só cabem ${sap.cabe} de ${fmt(sap.min)} mm.`);
           sap.ys.forEach(ys => prateleira(g, V, ++kPrat, ys, `Prateleira ${kPrat} da sapateira`));
         }

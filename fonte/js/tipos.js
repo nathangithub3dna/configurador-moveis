@@ -61,7 +61,7 @@ const TIPOS = {
         { id:'vaos', rot:'Conteúdo dos vãos', tipo:'txt', ajuda:'Separe por vírgula: prateleiras, vassoura, vassoura+sapateira, gavetas, gavetas+botijao, vazio. Cada vão tem uma porta.' },
         { id:'prateleiras', rot:'Prateleiras por vão', unid:'un' },
         { id:'alturaPratVassoura', rot:'Prateleira do vão de vassouras (topo)', unid:'mm', ajuda:'Com vassoura+sapateira a prateleira desce sozinha ao mínimo (1200 mm livres embaixo).' },
-        { id:'alturaNivelSapateira', rot:'Altura mínima de cada nível da sapateira', unid:'mm', ajuda:'Em vassoura+sapateira: cabem quantos níveis der acima das vassouras, todos iguais.' },
+        { id:'alturaNivelSapateira', rot:'Altura de cada nível da sapateira', unid:'mm', ajuda:'Em vassoura+sapateira: níveis com esta altura, de baixo para cima; a sobra fica no nível de cima.' },
         { id:'niveisSapateira', rot:'Níveis da sapateira', unid:'un', ajuda:'0 = quantos couberem. 1 = só a prateleira das vassouras, livre até o teto do vão.' } ]},
       { titulo:'Gavetas e botijão', campos:[
         { id:'gavetas', rot:'Gavetas internas', unid:'un' },
