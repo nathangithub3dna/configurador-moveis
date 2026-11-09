@@ -48,7 +48,9 @@ function montarEditorModulo() {
     medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
     temMedida: !!info, rotMedida: info?.divisao.dir === 'v' ? 'Largura (mm ou auto)' : 'Altura (mm ou auto)',
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
-    prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: !!info,
+    prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
+    ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
+      return { podeAnt: !!pa && pa.i > 0, podeProx: !!pa && pa.i < n - 1, rotAnt: v ? '← Juntar com o da esquerda' : '↓ Juntar com o de baixo', rotProx: v ? 'Juntar com o da direita →' : '↑ Juntar com o de cima' }; })(),
     gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
     sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),
@@ -113,6 +115,11 @@ $('form').addEventListener('click', e => {
     if (a === 'dividir-v') ED.dividir(m, cam, 'v');
     if (a === 'dividir-h') ED.dividir(m, cam, 'h');
     if (a === 'remover' && ED.remover(m, cam)) estado.vaoSel = null;
+    if (a === 'juntar-ant' || a === 'juntar-prox') {
+      const dirV = ED.parte(m, cam)?.divisao.dir === 'v';
+      const medidaAtual = c => { const r = ((TIPOS[estado.projeto.tipo].editor === 'ambiente' ? resultadoLocal() : estado.res)?.vaos || []).find(x => x.caminho === c); return r ? (dirV ? r.x1 - r.x0 : r.y1 - r.y0) : null; };
+      if (ED.juntar(m, cam, a === 'juntar-ant' ? -1 : 1, medidaAtual)) estado.vaoSel = null;
+    }
   });
 });
 $('form').addEventListener('change', e => {

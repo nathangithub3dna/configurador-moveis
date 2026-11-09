@@ -48,6 +48,22 @@ const ED = {
     if (div.partes.length === 1) ED.trocar(m, p.cam, div.partes[0].no);
     return true;
   },
+  // juntar com o vizinho escolhido (lado -1 = esquerda/baixo, +1 = direita/cima): fica o conteúdo do vão escolhido.
+  // Para os outros vãos não mudarem: o vão junto mede a soma dos dois mais a divisória que sai. Só fica "auto"
+  // quando não sobra outro vão automático (aí ele absorve a sobra) ou quando não se sabe a medida atual.
+  // medidaAtual(caminho) devolve a medida que o vão tem agora (a tela sabe; o editor não calcula geometria).
+  juntar(m, cam, lado, medidaAtual = () => null) {
+    const p = ED.pai(cam); if (!p) return false;
+    const div = ED.no(m.raiz, p.cam), j = p.i + lado; if (j < 0 || j >= div.partes.length) return false;
+    const a = div.partes[p.i], b = div.partes[j], t = div.sep === 'divisoria' ? (m.construcao?.espMDF ?? 18) : 0;
+    const outrosAuto = div.partes.some((x, k) => k !== p.i && k !== j && x.medida === 'auto');
+    const ma = a.medida !== 'auto' ? a.medida : medidaAtual(`${p.cam}.${p.i}`), mb = b.medida !== 'auto' ? b.medida : medidaAtual(`${p.cam}.${j}`);
+    a.medida = a.medida !== 'auto' && b.medida !== 'auto' ? a.medida + b.medida + t
+      : outrosAuto && ma > 0 && mb > 0 ? Math.round((ma + mb + t) * 10) / 10 : 'auto';
+    div.partes.splice(j, 1);
+    if (div.partes.length === 1) ED.trocar(m, p.cam, div.partes[0].no);
+    return true;
+  },
   definirMedida(m, cam, texto) {
     const info = ED.parte(m, cam); if (!info) return;
     const v = Number(String(texto).replace(',', '.'));
