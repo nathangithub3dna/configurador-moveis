@@ -416,6 +416,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
   <select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select>
   <span class="status ok" id="status">Pronto para exportar</span>
   <div class="acoes">
+    <button class="btn" id="btnDesfazer" type="button" disabled title="Nada para desfazer">↶ Desfazer</button>
     <button class="btn" id="btnAbrir" type="button">Abrir projeto</button>
     <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
     <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
@@ -12808,7 +12809,24 @@ try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[
 const CHAVE_PRECOS = 'configurador-moveis:precos';
 let precos = {}; try { precos = JSON.parse(localStorage.getItem(CHAVE_PRECOS) || '{}') || {}; } catch(e) {}
 const salvarPrecos = () => { try { localStorage.setItem(CHAVE_PRECOS, JSON.stringify(precos)); } catch(e) {} };
-const salvarLocal = () => { try { localStorage.setItem(CHAVE, JSON.stringify(estado.projeto)); } catch(e) {} };
+// DESFAZER: cada gravação guarda a versão anterior do projeto (até 20); mudanças em menos de 0,8 s contam como uma (digitar um número)
+const HIST = [], HIST_MAX = 20; let histUltimo = null, histT = 0, histPulando = false;
+const salvarLocal = () => {
+  const atual = JSON.stringify(estado.projeto);
+  if (!histPulando && histUltimo !== null && atual !== histUltimo) {
+    const agora = Date.now();
+    if (!(HIST.length && agora - histT < 800)) { HIST.push(histUltimo); if (HIST.length > HIST_MAX) HIST.shift(); }
+    histT = agora;
+  }
+  histUltimo = atual; histPulando = false; atualizarDesfazer();
+  try { localStorage.setItem(CHAVE, atual); } catch(e) {}
+};
+function atualizarDesfazer() { const b = document.getElementById('btnDesfazer'); if (b) { b.disabled = !HIST.length; b.title = HIST.length ? `Desfazer (${HIST.length} guardada${HIST.length > 1 ? 's' : ''})` : 'Nada para desfazer'; } }
+function desfazer() {
+  if (!HIST.length) return;
+  estado.projeto = JSON.parse(HIST.pop()); histPulando = true; histT = 0;
+  estado.ocultas.clear(); carregarProjeto(); toast('Desfeito.');
+}
 
 const $ = id => document.getElementById(id);
 const el = (tag, attrs={}, ...filhos) => { const e = document.createElement(tag); for (const [k,v] of Object.entries(attrs)) { if (k==='class') e.className=v; else if (k==='text') e.textContent=v; else if (k.startsWith('on')) e.addEventListener(k.slice(2),v); else if (v!==false && v!=null) e.setAttribute(k, v===true?'':v); } filhos.flat().forEach(f => f!=null && e.append(f)); return e; };
@@ -13443,6 +13461,11 @@ $('arqProjeto').addEventListener('change', e => {
     e.target.value = '';
   };
   fr.readAsText(f);
+});
+$('btnDesfazer').addEventListener('click', desfazer);
+document.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.key.toLowerCase() !== 'z' || e.target.closest('input,textarea,select')) return;
+  e.preventDefault(); desfazer();
 });
 $('btnPadrao').addEventListener('click', () => { estado.projeto = projetoPadrao(estado.projeto.tipo); estado.ocultas.clear(); carregarProjeto(); toast('Medidas padrão restauradas.'); });
 // Editar no esquema: o Armário com vãos e o Gabinete viram Móvel livre com as mesmas peças (conversor do núcleo, conferido pelo teste)
