@@ -224,6 +224,15 @@ function gerarGabinete(p) {
 }
 
 
+// Sapateira de prateleiras retas: quantos níveis de pelo menos 'min' mm cabem entre y0 (topo do apoio) e y1 (teto do vão);
+// 'max' > 0 limita o número de níveis (0 = quantos couberem); os níveis ficam iguais, repartindo a sobra. Devolve a base de cada prateleira que separa os níveis.
+function niveisSapateira(y0, y1, t, min, max) {
+  const livre = y1 - y0, cabe = Math.max(0, Math.floor((livre + t) / (min + t))), n = max > 0 ? Math.min(cabe, Math.round(max)) : cabe;
+  if (!n) return { n, min, altura:0, ys:[] };
+  const altura = (livre - (n-1)*t) / n;
+  return { n, min, altura, ys: Array.from({ length:n-1 }, (_, k) => y0 + altura*(k+1) + t*k) };
+}
+
 /* =====================================================================
    3b. GERADOR DO ARMÁRIO — caixa única com divisórias verticais, uma porta por vão.
    Conteúdo por vão: prateleiras | vassoura | gavetas | gavetas+botijao | vazio
@@ -238,7 +247,7 @@ function gerarArmario(p) {
   const PxP = PUXADORES[n('puxadorPorta')], PxG = PUXADORES[n('puxadorGaveta')];
   if (!PxP || !PxG) E.push('Escolha os puxadores.');
   const vaos = String(p.vaos).split(',').map(x => x.trim().toLowerCase().replace(/\s+/g,'')).filter(Boolean).map(x => x === 'botijao+gavetas' ? 'gavetas+botijao' : x);
-  const validos = ['prateleiras','vassoura','gavetas','gavetas+botijao','vazio'];
+  const validos = ['prateleiras','vassoura','vassoura+sapateira','gavetas','gavetas+botijao','vazio'];
   if (!vaos.length || vaos.length > 8) E.push('Informe de 1 a 8 vãos no conteúdo.');
   vaos.forEach((v,i) => { if (!validos.includes(v)) E.push(`Vão ${i+1}: "${v}" não é reconhecido. Use: ${validos.join(', ')}.`); });
   if (E.length) return { pecas, erros:E, avisos:A, ferragens:[], dims:null };
@@ -339,10 +348,17 @@ function gerarArmario(p) {
       if (nS && vao < 150) E.push(`Vão ${i+1}: com ${nS} prateleiras o espaço fica ${fmt(vao)} mm (mínimo 150).`);
       for (let k = 0; k < nS; k++) prateleira(i, k+1, yI0 + vao*(k+1) + t*k, nS > 1 ? `Prateleira ${k+1} do vão ${i+1}` : `Prateleira do vão ${i+1}`);
     }
-    if (v === 'vassoura') {
-      const yb = n('alturaPratVassoura') - t;
+    if (v === 'vassoura' || v === 'vassoura+sapateira') {
+      // com sapateira: a prateleira das vassouras desce ao mínimo (1200 livres) e a sapateira ocupa o resto do vão
+      const comSap = v === 'vassoura+sapateira', yb = comSap ? yI0 + 1200 : n('alturaPratVassoura') - t;
       if (yb < yI0 + 1200 || yb + t > yI1 - 100) E.push(`Vão ${i+1}: a prateleira das vassouras deve ficar entre ${fmt(yI0+1200+t)} e ${fmt(yI1-100)} mm.`);
-      prateleira(i, 1, yb, `Prateleira do vão ${i+1} (vassouras)`, `Topo a ${fmt(yb+t)} mm. Embaixo fica livre para vassoura, rodo e aspirador.`);
+      prateleira(i, 1, yb, `Prateleira do vão ${i+1} (vassouras)`, `Topo a ${fmt(yb+t)} mm. Embaixo fica livre para vassoura, rodo e aspirador.${comSap ? ' Em cima é o 1º nível da sapateira.' : ''}`);
+      if (comSap) {
+        const sap = niveisSapateira(yb + t, yI1, t, Number(p.alturaNivelSapateira) || 250, Number(p.niveisSapateira) || 0);
+        if (sap.n < 1) E.push(`Vão ${i+1}: não cabe sapateira acima das vassouras (sobram ${fmt(yI1 - yb - t)} mm; cada nível precisa de ${fmt(sap.min)}).`);
+        else A.push(`Vão ${i+1}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.altura)} mm acima das vassouras.`);
+        sap.ys.forEach((ys, k) => prateleira(i, k+2, ys, `Prateleira ${k+2} da sapateira (vão ${i+1})`));
+      }
       [x0 + w*0.22, xm, x1 - w*0.22].forEach((xs, k) => ferr({ id:`vao-${i+1}-suporte-${k+1}`, nome:`Suporte de vassoura/rodo ${k+1}`, box:[xs-25, xs+25, 1250, 1300, zf+t, zf+t+45], obs:'Garra de pressão, parafusada na régua de reforço.' }));
       ferr({ id:`vao-${i+1}-gancho`, nome:'Gancho do aspirador', box:[xm-30, xm+30, 880, 920, zf+t, zf+t+70], obs:'Gancho duplo para aspirador e mangueira.' });
       nSup += 3; nGancho += 1;

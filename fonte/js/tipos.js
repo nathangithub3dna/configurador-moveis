@@ -43,7 +43,7 @@ const TIPOS = {
     nomePadrao: 'Armário da área de serviço',
     nome: 'Armário com vãos (prateleiras, gavetas, vassouras, botijão)',
     padrao: { largura:1800, altura:2100, profundidade:400, rodape:100, recuoRodape:40, espMDF:18, espFundo:6,
-      vaos:'vassoura, prateleiras, prateleiras, gavetas+botijao', prateleiras:5, alturaPratVassoura:1750,
+      vaos:'vassoura, prateleiras, prateleiras, gavetas+botijao', prateleiras:5, alturaPratVassoura:1750, alturaNivelSapateira:250, niveisSapateira:0,
       gavetas:4, alturaGaveta:190, alturaBotijao:600, pratAcimaGavetas:1, puxadorPorta:2, puxadorGaveta:4, alturaPuxador:1050,
       alturaBeiral:80, paredeEsq:false, paredeDir:false },
     grupos: [
@@ -58,9 +58,11 @@ const TIPOS = {
         { id:'espMDF', rot:'Espessura do MDF', unid:'mm' },
         { id:'espFundo', rot:'Espessura do fundo', unid:'mm' } ]},
       { titulo:'Vãos (da esquerda para a direita)', campos:[
-        { id:'vaos', rot:'Conteúdo dos vãos', tipo:'txt', ajuda:'Separe por vírgula: prateleiras, vassoura, gavetas, gavetas+botijao, vazio. Cada vão tem uma porta.' },
+        { id:'vaos', rot:'Conteúdo dos vãos', tipo:'txt', ajuda:'Separe por vírgula: prateleiras, vassoura, vassoura+sapateira, gavetas, gavetas+botijao, vazio. Cada vão tem uma porta.' },
         { id:'prateleiras', rot:'Prateleiras por vão', unid:'un' },
-        { id:'alturaPratVassoura', rot:'Prateleira do vão de vassouras (topo)', unid:'mm' } ]},
+        { id:'alturaPratVassoura', rot:'Prateleira do vão de vassouras (topo)', unid:'mm', ajuda:'Com vassoura+sapateira a prateleira desce sozinha ao mínimo (1200 mm livres embaixo).' },
+        { id:'alturaNivelSapateira', rot:'Altura mínima de cada nível da sapateira', unid:'mm', ajuda:'Em vassoura+sapateira: cabem quantos níveis der acima das vassouras, todos iguais.' },
+        { id:'niveisSapateira', rot:'Níveis da sapateira', unid:'un', ajuda:'0 = quantos couberem. 1 = só a prateleira das vassouras, livre até o teto do vão.' } ]},
       { titulo:'Gavetas e botijão', campos:[
         { id:'gavetas', rot:'Gavetas internas', unid:'un' },
         { id:'alturaGaveta', rot:'Altura de cada gaveta', unid:'mm' },

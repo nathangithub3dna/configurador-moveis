@@ -10143,7 +10143,7 @@ const TIPOS = {
     nomePadrao: 'Armário da área de serviço',
     nome: 'Armário com vãos (prateleiras, gavetas, vassouras, botijão)',
     padrao: { largura:1800, altura:2100, profundidade:400, rodape:100, recuoRodape:40, espMDF:18, espFundo:6,
-      vaos:'vassoura, prateleiras, prateleiras, gavetas+botijao', prateleiras:5, alturaPratVassoura:1750,
+      vaos:'vassoura, prateleiras, prateleiras, gavetas+botijao', prateleiras:5, alturaPratVassoura:1750, alturaNivelSapateira:250, niveisSapateira:0,
       gavetas:4, alturaGaveta:190, alturaBotijao:600, pratAcimaGavetas:1, puxadorPorta:2, puxadorGaveta:4, alturaPuxador:1050,
       alturaBeiral:80, paredeEsq:false, paredeDir:false },
     grupos: [
@@ -10158,9 +10158,11 @@ const TIPOS = {
         { id:'espMDF', rot:'Espessura do MDF', unid:'mm' },
         { id:'espFundo', rot:'Espessura do fundo', unid:'mm' } ]},
       { titulo:'Vãos (da esquerda para a direita)', campos:[
-        { id:'vaos', rot:'Conteúdo dos vãos', tipo:'txt', ajuda:'Separe por vírgula: prateleiras, vassoura, gavetas, gavetas+botijao, vazio. Cada vão tem uma porta.' },
+        { id:'vaos', rot:'Conteúdo dos vãos', tipo:'txt', ajuda:'Separe por vírgula: prateleiras, vassoura, vassoura+sapateira, gavetas, gavetas+botijao, vazio. Cada vão tem uma porta.' },
         { id:'prateleiras', rot:'Prateleiras por vão', unid:'un' },
-        { id:'alturaPratVassoura', rot:'Prateleira do vão de vassouras (topo)', unid:'mm' } ]},
+        { id:'alturaPratVassoura', rot:'Prateleira do vão de vassouras (topo)', unid:'mm', ajuda:'Com vassoura+sapateira a prateleira desce sozinha ao mínimo (1200 mm livres embaixo).' },
+        { id:'alturaNivelSapateira', rot:'Altura mínima de cada nível da sapateira', unid:'mm', ajuda:'Em vassoura+sapateira: cabem quantos níveis der acima das vassouras, todos iguais.' },
+        { id:'niveisSapateira', rot:'Níveis da sapateira', unid:'un', ajuda:'0 = quantos couberem. 1 = só a prateleira das vassouras, livre até o teto do vão.' } ]},
       { titulo:'Gavetas e botijão', campos:[
         { id:'gavetas', rot:'Gavetas internas', unid:'un' },
         { id:'alturaGaveta', rot:'Altura de cada gaveta', unid:'mm' },
@@ -10419,6 +10421,15 @@ function gerarGabinete(p) {
 }
 
 
+// Sapateira de prateleiras retas: quantos níveis de pelo menos 'min' mm cabem entre y0 (topo do apoio) e y1 (teto do vão);
+// 'max' > 0 limita o número de níveis (0 = quantos couberem); os níveis ficam iguais, repartindo a sobra. Devolve a base de cada prateleira que separa os níveis.
+function niveisSapateira(y0, y1, t, min, max) {
+  const livre = y1 - y0, cabe = Math.max(0, Math.floor((livre + t) / (min + t))), n = max > 0 ? Math.min(cabe, Math.round(max)) : cabe;
+  if (!n) return { n, min, altura:0, ys:[] };
+  const altura = (livre - (n-1)*t) / n;
+  return { n, min, altura, ys: Array.from({ length:n-1 }, (_, k) => y0 + altura*(k+1) + t*k) };
+}
+
 /* =====================================================================
    3b. GERADOR DO ARMÁRIO — caixa única com divisórias verticais, uma porta por vão.
    Conteúdo por vão: prateleiras | vassoura | gavetas | gavetas+botijao | vazio
@@ -10433,7 +10444,7 @@ function gerarArmario(p) {
   const PxP = PUXADORES[n('puxadorPorta')], PxG = PUXADORES[n('puxadorGaveta')];
   if (!PxP || !PxG) E.push('Escolha os puxadores.');
   const vaos = String(p.vaos).split(',').map(x => x.trim().toLowerCase().replace(/\s+/g,'')).filter(Boolean).map(x => x === 'botijao+gavetas' ? 'gavetas+botijao' : x);
-  const validos = ['prateleiras','vassoura','gavetas','gavetas+botijao','vazio'];
+  const validos = ['prateleiras','vassoura','vassoura+sapateira','gavetas','gavetas+botijao','vazio'];
   if (!vaos.length || vaos.length > 8) E.push('Informe de 1 a 8 vãos no conteúdo.');
   vaos.forEach((v,i) => { if (!validos.includes(v)) E.push(`Vão ${i+1}: "${v}" não é reconhecido. Use: ${validos.join(', ')}.`); });
   if (E.length) return { pecas, erros:E, avisos:A, ferragens:[], dims:null };
@@ -10534,10 +10545,17 @@ function gerarArmario(p) {
       if (nS && vao < 150) E.push(`Vão ${i+1}: com ${nS} prateleiras o espaço fica ${fmt(vao)} mm (mínimo 150).`);
       for (let k = 0; k < nS; k++) prateleira(i, k+1, yI0 + vao*(k+1) + t*k, nS > 1 ? `Prateleira ${k+1} do vão ${i+1}` : `Prateleira do vão ${i+1}`);
     }
-    if (v === 'vassoura') {
-      const yb = n('alturaPratVassoura') - t;
+    if (v === 'vassoura' || v === 'vassoura+sapateira') {
+      // com sapateira: a prateleira das vassouras desce ao mínimo (1200 livres) e a sapateira ocupa o resto do vão
+      const comSap = v === 'vassoura+sapateira', yb = comSap ? yI0 + 1200 : n('alturaPratVassoura') - t;
       if (yb < yI0 + 1200 || yb + t > yI1 - 100) E.push(`Vão ${i+1}: a prateleira das vassouras deve ficar entre ${fmt(yI0+1200+t)} e ${fmt(yI1-100)} mm.`);
-      prateleira(i, 1, yb, `Prateleira do vão ${i+1} (vassouras)`, `Topo a ${fmt(yb+t)} mm. Embaixo fica livre para vassoura, rodo e aspirador.`);
+      prateleira(i, 1, yb, `Prateleira do vão ${i+1} (vassouras)`, `Topo a ${fmt(yb+t)} mm. Embaixo fica livre para vassoura, rodo e aspirador.${comSap ? ' Em cima é o 1º nível da sapateira.' : ''}`);
+      if (comSap) {
+        const sap = niveisSapateira(yb + t, yI1, t, Number(p.alturaNivelSapateira) || 250, Number(p.niveisSapateira) || 0);
+        if (sap.n < 1) E.push(`Vão ${i+1}: não cabe sapateira acima das vassouras (sobram ${fmt(yI1 - yb - t)} mm; cada nível precisa de ${fmt(sap.min)}).`);
+        else A.push(`Vão ${i+1}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.altura)} mm acima das vassouras.`);
+        sap.ys.forEach((ys, k) => prateleira(i, k+2, ys, `Prateleira ${k+2} da sapateira (vão ${i+1})`));
+      }
       [x0 + w*0.22, xm, x1 - w*0.22].forEach((xs, k) => ferr({ id:`vao-${i+1}-suporte-${k+1}`, nome:`Suporte de vassoura/rodo ${k+1}`, box:[xs-25, xs+25, 1250, 1300, zf+t, zf+t+45], obs:'Garra de pressão, parafusada na régua de reforço.' }));
       ferr({ id:`vao-${i+1}-gancho`, nome:'Gancho do aspirador', box:[xm-30, xm+30, 880, 920, zf+t, zf+t+70], obs:'Gancho duplo para aspirador e mangueira.' });
       nSup += 3; nGancho += 1;
@@ -10896,9 +10914,15 @@ function gerarModuloV3(m) {
         if (ct.n && livre > ct.minLivre) { const vaoP = (livre - ct.n*t)/(ct.n+1); for (let k = 0; k < ct.n; k++) prateleira(g, V, ++kPrat, y + vaoP*(k+1) + t*k, `Prateleira ${kPrat} acima das gavetas`); }
       }
       if (ct.tipo === 'vassoura') {
-        const yb = ct.alturaPrat - t;
+        const yb = ct.sapateira ? g.iy0 + 1200 : ct.alturaPrat - t;
         if (yb < g.iy0 + 1200 || yb + t > g.iy1 - 100) E.push(`Vão ${V}: a prateleira das vassouras deve ficar entre ${fmt(g.iy0+1200+t)} e ${fmt(g.iy1-100)} mm.`);
         prateleira(g, V, ++kPrat, yb, 'Prateleira das vassouras');
+        if (ct.sapateira) {
+          const sap = niveisSapateira(yb + t, g.iy1, t, ct.sapateira.nivel, ct.sapateira.max || 0);
+          if (sap.n < 1) E.push(`Vão ${V}: não cabe sapateira acima das vassouras (cada nível precisa de ${fmt(sap.min)} mm).`);
+          else A.push(`Vão ${V}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.altura)} mm acima das vassouras.`);
+          sap.ys.forEach(ys => prateleira(g, V, ++kPrat, ys, `Prateleira ${kPrat} da sapateira`));
+        }
         [x0 + w*0.22, xm, x1 - w*0.22].forEach((xs, k) => ferr({ id:`vao-${V}-suporte-${k+1}`, nome:`Suporte de vassoura/rodo ${k+1}`, box:[xs-25, xs+25, 1250, 1300, zf+t, zf+t+45] }));
         ferr({ id:`vao-${V}-gancho`, nome:'Gancho do aspirador', box:[xm-30, xm+30, 880, 920, zf+t, zf+t+70] });
         add({ id:`reforco-vassoura-${V}`, nome:'Régua de reforço do gancho', nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 850, 950, zf, zf+t], des:{ w, h:100, vista:'Vista de frente' } });
@@ -11334,6 +11358,7 @@ function moduloDeArmario(p) {
   const acima = { tipo:'prateleiras-acima', n:Math.max(0, Math.round(n('pratAcimaGavetas'))), minLivre:250 };
   const conteudoDe = v => v === 'prateleiras' ? [{ tipo:'prateleiras', n:Math.max(0, Math.round(n('prateleiras'))), min:150 }]
     : v === 'vassoura' ? [{ tipo:'vassoura', alturaPrat:n('alturaPratVassoura') }]
+    : v === 'vassoura+sapateira' ? [{ tipo:'vassoura', alturaPrat:n('alturaPratVassoura'), sapateira:{ nivel:Number(p.alturaNivelSapateira) || 250, max:Number(p.niveisSapateira) || 0 } }]
     : v === 'gavetas' ? (gav.n ? [gav, acima] : [])
     : v === 'gavetas+botijao' ? [{ tipo:'botijao', altura:n('alturaBotijao') }, ...(gav.n ? [gav, acima] : [])] : [];
   const folhas = vaos.map((v, i) => ({ tipo:'vao', frente:{ tipo:'porta', lado: i % 2 === 0 ? 'esq' : 'dir' }, conteudo:conteudoDe(v) }));

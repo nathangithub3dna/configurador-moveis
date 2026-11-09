@@ -206,9 +206,15 @@ function gerarModuloV3(m) {
         if (ct.n && livre > ct.minLivre) { const vaoP = (livre - ct.n*t)/(ct.n+1); for (let k = 0; k < ct.n; k++) prateleira(g, V, ++kPrat, y + vaoP*(k+1) + t*k, `Prateleira ${kPrat} acima das gavetas`); }
       }
       if (ct.tipo === 'vassoura') {
-        const yb = ct.alturaPrat - t;
+        const yb = ct.sapateira ? g.iy0 + 1200 : ct.alturaPrat - t;
         if (yb < g.iy0 + 1200 || yb + t > g.iy1 - 100) E.push(`Vão ${V}: a prateleira das vassouras deve ficar entre ${fmt(g.iy0+1200+t)} e ${fmt(g.iy1-100)} mm.`);
         prateleira(g, V, ++kPrat, yb, 'Prateleira das vassouras');
+        if (ct.sapateira) {
+          const sap = niveisSapateira(yb + t, g.iy1, t, ct.sapateira.nivel, ct.sapateira.max || 0);
+          if (sap.n < 1) E.push(`Vão ${V}: não cabe sapateira acima das vassouras (cada nível precisa de ${fmt(sap.min)} mm).`);
+          else A.push(`Vão ${V}: sapateira com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.altura)} mm acima das vassouras.`);
+          sap.ys.forEach(ys => prateleira(g, V, ++kPrat, ys, `Prateleira ${kPrat} da sapateira`));
+        }
         [x0 + w*0.22, xm, x1 - w*0.22].forEach((xs, k) => ferr({ id:`vao-${V}-suporte-${k+1}`, nome:`Suporte de vassoura/rodo ${k+1}`, box:[xs-25, xs+25, 1250, 1300, zf+t, zf+t+45] }));
         ferr({ id:`vao-${V}-gancho`, nome:'Gancho do aspirador', box:[xm-30, xm+30, 880, 920, zf+t, zf+t+70] });
         add({ id:`reforco-vassoura-${V}`, nome:'Régua de reforço do gancho', nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 850, 950, zf, zf+t], des:{ w, h:100, vista:'Vista de frente' } });
@@ -644,6 +650,7 @@ function moduloDeArmario(p) {
   const acima = { tipo:'prateleiras-acima', n:Math.max(0, Math.round(n('pratAcimaGavetas'))), minLivre:250 };
   const conteudoDe = v => v === 'prateleiras' ? [{ tipo:'prateleiras', n:Math.max(0, Math.round(n('prateleiras'))), min:150 }]
     : v === 'vassoura' ? [{ tipo:'vassoura', alturaPrat:n('alturaPratVassoura') }]
+    : v === 'vassoura+sapateira' ? [{ tipo:'vassoura', alturaPrat:n('alturaPratVassoura'), sapateira:{ nivel:Number(p.alturaNivelSapateira) || 250, max:Number(p.niveisSapateira) || 0 } }]
     : v === 'gavetas' ? (gav.n ? [gav, acima] : [])
     : v === 'gavetas+botijao' ? [{ tipo:'botijao', altura:n('alturaBotijao') }, ...(gav.n ? [gav, acima] : [])] : [];
   const folhas = vaos.map((v, i) => ({ tipo:'vao', frente:{ tipo:'porta', lado: i % 2 === 0 ? 'esq' : 'dir' }, conteudo:conteudoDe(v) }));

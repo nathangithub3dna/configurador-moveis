@@ -18,6 +18,8 @@ const CASOS = [
   { nome: 'gabinete-3-gavetas-sem-portas', tipo: 'gabinete', mudar: { portas: 0, gavetas: 3, alturasGavetas: '150, 200, 250', pes: 100, paredeDir: true, enchimento: true } },
   { nome: 'gabinete-so-portas', tipo: 'gabinete', mudar: { gavetas: 0, prateleiras: 1, esgoto: 1500 } },
   { nome: 'armario-2-vaos-gavetas', tipo: 'armario', mudar: { vaos: 'gavetas, prateleiras', largura: 900, paredeEsq: true, rodape: 0, alturaBeiral: 0 } },
+  { nome: 'armario-vassoura-sapateira', tipo: 'armario', mudar: { vaos: 'vassoura+sapateira, prateleiras, prateleiras, gavetas+botijao' } },
+  { nome: 'armario-sapateira-1-nivel', tipo: 'armario', mudar: { vaos: 'vassoura+sapateira, prateleiras, prateleiras, gavetas+botijao', niveisSapateira: 1 } },
   { nome: 'armario-1-vao', tipo: 'armario', mudar: { vaos: 'prateleiras', largura: 500, altura: 900, prateleiras: 2 } },
 ];
 
