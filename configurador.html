@@ -193,6 +193,17 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .leg-fix { position:absolute; top:10px; left:10px; z-index:3; display:flex; flex-wrap:wrap; gap:4px 12px; max-width:calc(100% - 20px); padding:8px 10px; border-radius:8px; background:color-mix(in srgb, var(--surface, #fff) 88%, transparent); font-size:12px; pointer-events:none; }
 .leg-fix[hidden] { display:none; }
 .leg-fix i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
+
+/* Topo 2.0 (desktop): duas linhas — projeto em cima; arquivo, etapas e restaurar embaixo */
+.topo{flex-direction:column;align-items:stretch;gap:10px}
+.topo-linha{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.topo-projeto{display:flex;flex-wrap:wrap;align-items:center;gap:8px;flex:1 1 440px;min-width:0}
+.topo-projeto #nomeProjeto{flex:1 1 220px}
+.topo-estado{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto}
+.topo .acoes{margin-left:0;align-items:center}
+.topo-sep{width:1px;height:24px;background:var(--line);margin:0 4px}
+.topo .etapas{width:auto;flex:1 1 auto;justify-content:center}
+.topo .btn.discreto{margin-left:auto}
 /* COMPONENTES — o formato de painéis, botões e campos (neomorfismo).
    As cores e sombras vêm de tema.css; aqui só se diz quem usa qual. */
 .lado,.vista,.cartao{border:0;border-radius:var(--raio);box-shadow:var(--sombra-fora)}
@@ -232,6 +243,14 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .dlg-cab{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
 .dlg-lista{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;overflow:auto;max-height:60vh}
 .dlg-lista .btn{width:100%;justify-content:flex-start;white-space:normal;text-align:left}
+
+/* botão discreto: ação rara ou que apaga (ex.: Restaurar medidas padrão) */
+.btn.discreto{box-shadow:none;background:transparent;color:var(--muted);font-weight:600}
+.btn.discreto:hover{color:var(--danger)}
+/* Topo 2.0: etapas como abas (trilho afundado; a aba atual em relevo), para não parecerem os botões de arquivo */
+.topo .etapas{gap:4px;padding:4px;border-radius:var(--raio);box-shadow:var(--sombra-dentro)}
+.topo .etapas button{box-shadow:none;background:transparent}
+.topo .etapas button[aria-current]{box-shadow:var(--sombra-fora-p);background:var(--surface)}
 /* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
    Estrutura em pagina.html (modelos tplEditor, tplEspaco, tplOpcao); lógica em js/editor-modulo.js. */
 .ed-bloco{display:flex;flex-direction:column;gap:8px}
@@ -417,30 +436,40 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 })();</script>
 
 <header class="topo">
-  <span class="marca">Configurador de Móveis<small>Fase 1 · técnico</small></span>
-  <input id="nomeProjeto" aria-label="Nome do projeto" value="Gabinete do banheiro">
-  <select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select>
-  <span class="status ok" id="status">Pronto para exportar</span>
-  <div class="acoes">
-    <button class="btn" id="btnDesfazer" type="button" disabled title="Nada para desfazer">↶ Desfazer</button>
-    <button class="btn prim" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
-    <button class="btn" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
-    <button class="btn" id="btnAbrir" type="button">Abrir projeto</button>
-    <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
-    <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
-    <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
+  <!-- Topo 2.0: linha 1 = o que é o projeto; linha 2 = arquivo à esquerda, etapas no meio, recomeçar à direita -->
+  <div class="topo-linha">
+    <span class="marca">Configurador de Móveis<small>Fase 1 · técnico</small></span>
+    <div class="topo-projeto">
+      <input id="nomeProjeto" aria-label="Nome do projeto" value="Gabinete do banheiro">
+      <select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select>
+      <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
+    </div>
+    <div class="topo-estado">
+      <span class="status ok" id="status">Pronto para exportar</span>
+      <div class="situacao" id="situacao" role="status">
+        <span class="sit-rotulo" data-texto="rotulo"></span>
+        <button type="button" class="btn" id="btnLiberar" data-se="podeLiberar">Liberar para corte</button>
+      </div>
+    </div>
   </div>
-  <div class="situacao" id="situacao" role="status">
-    <span class="sit-rotulo" data-texto="rotulo"></span>
-    <button type="button" class="btn" id="btnLiberar" data-se="podeLiberar">Liberar para corte</button>
+  <div class="topo-linha">
+    <div class="acoes" role="group" aria-label="Arquivo">
+      <button class="btn" id="btnDesfazer" type="button" disabled title="Nada para desfazer">↶ Desfazer</button>
+      <span class="topo-sep" aria-hidden="true"></span>
+      <button class="btn prim" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
+      <button class="btn" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
+      <button class="btn" id="btnAbrir" type="button" title="Abrir um arquivo .json do aparelho">Abrir projeto</button>
+      <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
+    </div>
+    <nav class="etapas" id="etapas" aria-label="Etapas">
+      <button type="button" data-etapa="montar" aria-current="page">Montar</button>
+      <button type="button" data-etapa="corte">Lista de corte</button>
+      <button type="button" data-etapa="plano">Plano de corte</button>
+      <button type="button" data-etapa="compras">Compras e orçamento</button>
+      <button type="button" data-etapa="desenhos">Desenhos</button>
+    </nav>
+    <button class="btn discreto" id="btnPadrao" type="button" title="Apaga as mudanças deste móvel e volta às medidas padrão">Restaurar medidas padrão</button>
   </div>
-  <nav class="etapas" id="etapas" aria-label="Etapas">
-    <button type="button" data-etapa="montar" aria-current="page">Montar</button>
-    <button type="button" data-etapa="corte">Lista de corte</button>
-    <button type="button" data-etapa="plano">Plano de corte</button>
-    <button type="button" data-etapa="compras">Compras e orçamento</button>
-    <button type="button" data-etapa="desenhos">Desenhos</button>
-  </nav>
 </header>
 
 <main class="app" data-secao="montar">

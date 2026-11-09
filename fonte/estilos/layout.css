@@ -153,3 +153,14 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .leg-fix { position:absolute; top:10px; left:10px; z-index:3; display:flex; flex-wrap:wrap; gap:4px 12px; max-width:calc(100% - 20px); padding:8px 10px; border-radius:8px; background:color-mix(in srgb, var(--surface, #fff) 88%, transparent); font-size:12px; pointer-events:none; }
 .leg-fix[hidden] { display:none; }
 .leg-fix i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
+
+/* Topo 2.0 (desktop): duas linhas — projeto em cima; arquivo, etapas e restaurar embaixo */
+.topo{flex-direction:column;align-items:stretch;gap:10px}
+.topo-linha{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.topo-projeto{display:flex;flex-wrap:wrap;align-items:center;gap:8px;flex:1 1 440px;min-width:0}
+.topo-projeto #nomeProjeto{flex:1 1 220px}
+.topo-estado{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto}
+.topo .acoes{margin-left:0;align-items:center}
+.topo-sep{width:1px;height:24px;background:var(--line);margin:0 4px}
+.topo .etapas{width:auto;flex:1 1 auto;justify-content:center}
+.topo .btn.discreto{margin-left:auto}

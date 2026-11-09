@@ -37,3 +37,11 @@
 .dlg-cab{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
 .dlg-lista{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;overflow:auto;max-height:60vh}
 .dlg-lista .btn{width:100%;justify-content:flex-start;white-space:normal;text-align:left}
+
+/* botão discreto: ação rara ou que apaga (ex.: Restaurar medidas padrão) */
+.btn.discreto{box-shadow:none;background:transparent;color:var(--muted);font-weight:600}
+.btn.discreto:hover{color:var(--danger)}
+/* Topo 2.0: etapas como abas (trilho afundado; a aba atual em relevo), para não parecerem os botões de arquivo */
+.topo .etapas{gap:4px;padding:4px;border-radius:var(--raio);box-shadow:var(--sombra-dentro)}
+.topo .etapas button{box-shadow:none;background:transparent}
+.topo .etapas button[aria-current]{box-shadow:var(--sombra-fora-p);background:var(--surface)}

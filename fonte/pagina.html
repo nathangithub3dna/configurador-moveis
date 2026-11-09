@@ -13,30 +13,40 @@
 <script>/*@inclui:js/diagnostico.js*/</script>
 
 <header class="topo">
-  <span class="marca">Configurador de Móveis<small>Fase 1 · técnico</small></span>
-  <input id="nomeProjeto" aria-label="Nome do projeto" value="Gabinete do banheiro">
-  <select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select>
-  <span class="status ok" id="status">Pronto para exportar</span>
-  <div class="acoes">
-    <button class="btn" id="btnDesfazer" type="button" disabled title="Nada para desfazer">↶ Desfazer</button>
-    <button class="btn prim" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
-    <button class="btn" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
-    <button class="btn" id="btnAbrir" type="button">Abrir projeto</button>
-    <button class="btn" id="btnPadrao" type="button">Restaurar medidas padrão</button>
-    <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
-    <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
+  <!-- Topo 2.0: linha 1 = o que é o projeto; linha 2 = arquivo à esquerda, etapas no meio, recomeçar à direita -->
+  <div class="topo-linha">
+    <span class="marca">Configurador de Móveis<small>Fase 1 · técnico</small></span>
+    <div class="topo-projeto">
+      <input id="nomeProjeto" aria-label="Nome do projeto" value="Gabinete do banheiro">
+      <select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select>
+      <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
+    </div>
+    <div class="topo-estado">
+      <span class="status ok" id="status">Pronto para exportar</span>
+      <div class="situacao" id="situacao" role="status">
+        <span class="sit-rotulo" data-texto="rotulo"></span>
+        <button type="button" class="btn" id="btnLiberar" data-se="podeLiberar">Liberar para corte</button>
+      </div>
+    </div>
   </div>
-  <div class="situacao" id="situacao" role="status">
-    <span class="sit-rotulo" data-texto="rotulo"></span>
-    <button type="button" class="btn" id="btnLiberar" data-se="podeLiberar">Liberar para corte</button>
+  <div class="topo-linha">
+    <div class="acoes" role="group" aria-label="Arquivo">
+      <button class="btn" id="btnDesfazer" type="button" disabled title="Nada para desfazer">↶ Desfazer</button>
+      <span class="topo-sep" aria-hidden="true"></span>
+      <button class="btn prim" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
+      <button class="btn" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
+      <button class="btn" id="btnAbrir" type="button" title="Abrir um arquivo .json do aparelho">Abrir projeto</button>
+      <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
+    </div>
+    <nav class="etapas" id="etapas" aria-label="Etapas">
+      <button type="button" data-etapa="montar" aria-current="page">Montar</button>
+      <button type="button" data-etapa="corte">Lista de corte</button>
+      <button type="button" data-etapa="plano">Plano de corte</button>
+      <button type="button" data-etapa="compras">Compras e orçamento</button>
+      <button type="button" data-etapa="desenhos">Desenhos</button>
+    </nav>
+    <button class="btn discreto" id="btnPadrao" type="button" title="Apaga as mudanças deste móvel e volta às medidas padrão">Restaurar medidas padrão</button>
   </div>
-  <nav class="etapas" id="etapas" aria-label="Etapas">
-    <button type="button" data-etapa="montar" aria-current="page">Montar</button>
-    <button type="button" data-etapa="corte">Lista de corte</button>
-    <button type="button" data-etapa="plano">Plano de corte</button>
-    <button type="button" data-etapa="compras">Compras e orçamento</button>
-    <button type="button" data-etapa="desenhos">Desenhos</button>
-  </nav>
 </header>
 
 <main class="app" data-secao="montar">
