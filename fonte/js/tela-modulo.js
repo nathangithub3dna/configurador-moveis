@@ -51,7 +51,12 @@ function montarEditorModulo() {
     perfil: m.puxadorPorta?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
-      return { podeAnt: !!pa && pa.i > 0, podeProx: !!pa && pa.i < n - 1, podeJuntar: !!pa && n > 1, rotAnt: v ? '← Esquerda' : '↓ De baixo', rotProx: v ? 'Direita →' : '↑ De cima' }; })(),
+      const podeAnt = !!pa && pa.i > 0, podeProx = !!pa && pa.i < n - 1;
+      // vizinhos de outra coluna/faixa (a árvore é refeita ao juntar): só nas direções que o juntar comum não cobre
+      const tEsp = m.construcao?.espMDF ?? 18, regsG = rLocal?.vaos || [], temG = lado => !!ED.vizinhoGeo(regsG, sel.cam, lado, tEsp);
+      const cobre = { esq: v && podeAnt, dir: v && podeProx, baixo: !v && !!pa && podeAnt, cima: !v && !!pa && podeProx };
+      const geo = Object.fromEntries(['esq', 'dir', 'baixo', 'cima'].map(l => ['geo' + l[0].toUpperCase() + l.slice(1), !cobre[l] && temG(l)]));
+      return { podeAnt, podeProx, podeJuntar: (!!pa && n > 1) || Object.values(geo).some(Boolean), rotAnt: v ? '← Esquerda' : '↓ De baixo', rotProx: v ? 'Direita →' : '↑ De cima', ...geo }; })(),
     gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
     sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),
@@ -139,6 +144,11 @@ $('form').addEventListener('click', e => {
     if (a === 'dividir-v') ED.dividir(m, cam, 'v');
     if (a === 'dividir-h') ED.dividir(m, cam, 'h');
     if (a === 'remover' && ED.remover(m, cam)) estado.vaoSel = null;
+    if (a === 'juntar-geo') {
+      const regs = resultadoLocal()?.vaos || [], t = m.construcao?.espMDF ?? 18, b2 = ED.vizinhoGeo(regs, cam, b.dataset.lado, t);
+      if (b2 && ED.juntarGeo(m, regs, cam, b2.caminho, t)) estado.vaoSel = null;
+      else toast('Não deu para juntar: a junção não forma um retângulo inteiro.');
+    }
     if (a === 'juntar-ant' || a === 'juntar-prox') {
       const dirV = ED.parte(m, cam)?.divisao.dir === 'v';
       const medidaAtual = c => { const r = ((TIPOS[estado.projeto.tipo].editor === 'ambiente' ? resultadoLocal() : estado.res)?.vaos || []).find(x => x.caminho === c); return r ? (dirV ? r.x1 - r.x0 : r.y1 - r.y0) : null; };
