@@ -9,7 +9,9 @@ const estado = {
   tampo:true, fundo:true, paredes:true, esgoto:false, fix:false, orto:false, vista:'perspectiva',
 };
 let temProjetoLocal = false;   // havia projeto salvo neste aparelho ao abrir (sem ele, a nuvem abre o mais recente)
-try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros && (temProjetoLocal = true)) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros }, codigo:s.codigo, orcamento:s.orcamento, liberacao:s.liberacao, conferencia:s.conferencia }; } catch(e) {}
+let localMaisNovo = false;     // a cópia do aparelho é de uma versão mais nova do programa: não abre e não é sobrescrita
+let formatoConvertidoDe = 0;   // o projeto aberto veio de um formato antigo: a nuvem guarda o original antes de gravar por cima
+try { const c = converterFormato(JSON.parse(localStorage.getItem(CHAVE)||'null')); if (c.erro === 'mais-novo') localMaisNovo = true; const s = c.projeto; if (c.convertido) formatoConvertidoDe = c.de; if (s && TIPOS[s.tipo] && s.parametros && (temProjetoLocal = true)) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros }, codigo:s.codigo, orcamento:s.orcamento, liberacao:s.liberacao, conferencia:s.conferencia }; } catch(e) {}
 const CHAVE_PRECOS = 'configurador-moveis:precos';
 let precos = {}; try { precos = JSON.parse(localStorage.getItem(CHAVE_PRECOS) || '{}') || {}; } catch(e) {}
 const salvarPrecos = () => { try { localStorage.setItem(CHAVE_PRECOS, JSON.stringify(precos)); } catch(e) {} };
@@ -23,7 +25,7 @@ const salvarLocal = () => {
     histT = agora;
   }
   histUltimo = atual; histPulando = false; atualizarDesfazer();
-  try { localStorage.setItem(CHAVE, atual); } catch(e) {}
+  if (!localMaisNovo) try { localStorage.setItem(CHAVE, JSON.stringify({ ...estado.projeto, versao: FORMATO.versao })); } catch(e) {}
   mostrarNaoSalvo();
 };
 // AVISO "NÃO SALVO": compara o projeto com o último salvo de verdade (Drive ou .json, ou aberto de um arquivo).
@@ -645,7 +647,7 @@ function atualizarBotoesExport() {
 const slug = () => (estado.projeto.nome || 'projeto').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'projeto';
 function dadosProjeto() {
   const r = estado.res;
-  return { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), unidade:'mm',
+  return { app:'Configurador de Móveis', versao:FORMATO.versao, exportadoEm:new Date().toISOString(), unidade:'mm',
     tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento, liberacao:estado.projeto.liberacao, conferencia:estado.projeto.conferencia,
     situacao: rotuloDocumento(estado.projeto).longo,
     pecas: r.pecas.map(pc => ({ id:pc.id, nomeGLB:`${pc.cat}_${pc.mat}_${pc.id}`, nome:pc.nome, categoria:pc.cat, material:pc.mat, espessura:pc.esp, comprimento:pc.comp ?? null, largura:pc.larg ?? null, fita:pc.fita, listaDeCorte:pc.lista, caixa_mm:pc.box, forma:pc.forma||null, movimento:pc.mov, obs:pc.obs })),
@@ -700,7 +702,7 @@ $('btnPdf').addEventListener('click', async () => {
 $('btnPdf2').addEventListener('click', baixarPDF);
 // o projeto como texto (.json): com erro, salva só o projeto para continuar depois (sem peças, que estão inconsistentes)
 function projetoJSON() {
-  const dados = estado.res.erros.length ? { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), incompleto:true, erros:estado.res.erros,
+  const dados = estado.res.erros.length ? { app:'Configurador de Móveis', versao:FORMATO.versao, exportadoEm:new Date().toISOString(), incompleto:true, erros:estado.res.erros,
     tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento, liberacao:estado.projeto.liberacao, conferencia:estado.projeto.conferencia, precos } : dadosProjeto();
   return JSON.stringify(dados, null, 2);
 }
@@ -739,13 +741,17 @@ $('btnZip').addEventListener('click', async () => {
 
 /* ---------- Abrir projeto / padrão ---------- */
 $('btnAbrir').addEventListener('click', () => $('arqProjeto').click());
+const AVISO_CONVERTIDO = 'Projeto aberto e atualizado para o formato novo. O original não foi alterado.';
 function abrirProjetoTexto(texto) {
   try {
-    const d = JSON.parse(texto);
-    if (!TIPOS[d.tipo] || typeof d.parametros !== 'object') throw 0;
+    const c = converterFormato(JSON.parse(texto));
+    if (c.erro === 'mais-novo') { toast(AVISO_FORMATO_NOVO); return false; }
+    const d = c.projeto;
+    if (!d || !TIPOS[d.tipo] || typeof d.parametros !== 'object') throw 0;
     estado.projeto = { tipo:d.tipo, nome:d.nome || 'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[d.tipo].padrao)), ...d.parametros }, codigo:d.codigo, orcamento:d.orcamento, liberacao:d.liberacao, conferencia:d.conferencia };
     if (d.precos && typeof d.precos === 'object') { precos = { ...precos, ...d.precos }; salvarPrecos(); }
-    carregarProjeto(); marcarSalvo(); toast('Projeto aberto.'); return true;
+    formatoConvertidoDe = c.convertido ? c.de : 0;
+    carregarProjeto(); marcarSalvo(); toast(c.convertido ? AVISO_CONVERTIDO : 'Projeto aberto.'); return true;
   } catch(err) { toast('Esse arquivo não é um projeto do Configurador.'); return false; }
 }
 /* ---------- Google Drive (só no programa publicado, pelo app do Claude) ----------
@@ -823,6 +829,7 @@ async function salvarNuvem() {
   const id = idNuvem(), salvoEm = new Date().toISOString();
   try {
     const texto = JSON.stringify(JSON.parse(projetoJSON()));     // compacto: cada documento cabe até 256 KB
+    if (formatoConvertidoDe) await guardarOriginalNuvem(id, formatoConvertidoDe);
     await colNuvem().doc(id).set({ nome: estado.projeto.nome || 'Projeto', tipo: estado.projeto.tipo, salvoEm, projeto: texto });
     ultimoSalvo = atual; try { localStorage.setItem(CHAVE_SALVO, atual); localStorage.setItem(CHAVE_NUVEM, JSON.stringify({ id, salvoEm })); } catch(e) {}
     estadoNuvem('☁ Salvo ' + horaCurta(salvoEm)); mostrarNaoSalvo();
@@ -831,6 +838,17 @@ async function salvarNuvem() {
     estadoNuvem(e?.code === 'invalid_argument' ? '☁ Projeto grande demais para a nuvem: salve no Drive' : e?.code === 'quota_exceeded' ? '☁ Nuvem cheia: apague projetos antigos' : '☁ Não salvou (sem conexão?)', true);
   }
   nuvemSalvando = false;
+}
+// o documento da nuvem com este nome ainda está no formato antigo: copia ele à parte, uma vez, antes de gravar por cima
+async function guardarOriginalNuvem(id, de) {
+  const d = await colNuvem().doc(id).get();
+  if (d.exists) {
+    let versao = 1; try { versao = JSON.parse(d.data().projeto).versao || 1; } catch(e) {}
+    const idOrig = (id + '-original-formato-' + versao).slice(0, 190);
+    if (versao < FORMATO.versao && !(await colNuvem().doc(idOrig).get()).exists)
+      await colNuvem().doc(idOrig).set({ ...d.data(), nome: `${d.data().nome || 'Projeto'} (original, formato ${versao})`, copia: true });
+  }
+  formatoConvertidoDe = 0;
 }
 async function copiaDriveDeHoraEmHora() {
   if (!mcpDrive || Date.now() - ultimaCopiaDrive < COPIA_DRIVE_MS) return;
@@ -844,7 +862,7 @@ async function copiaDriveDeHoraEmHora() {
 function abrirDaNuvem(doc, aviso) {
   if (!abrirProjetoTexto(doc.projeto)) return false;
   ultimoSalvo = JSON.stringify(estado.projeto); try { localStorage.setItem(CHAVE_SALVO, ultimoSalvo); localStorage.setItem(CHAVE_NUVEM, JSON.stringify({ id: idNuvem(), salvoEm: doc.salvoEm })); } catch(e) {}
-  clearTimeout(nuvemTimer); estadoNuvem('☁ Salvo ' + horaCurta(doc.salvoEm)); mostrarNaoSalvo(); if (aviso) toast(aviso);
+  clearTimeout(nuvemTimer); estadoNuvem('☁ Salvo ' + horaCurta(doc.salvoEm)); mostrarNaoSalvo(); if (aviso) toast(formatoConvertidoDe ? AVISO_CONVERTIDO : aviso);
   return true;
 }
 (async () => {
@@ -959,4 +977,4 @@ aplicarTema();
 carregarProjeto();
 redimensionar();
 quadro();
-window.__configurador = { atualizar, selecionar, nosAtual: () => nos, AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
+window.__configurador = { FORMATO, converterFormato, abrirProjetoTexto, salvarNuvem, atualizar, selecionar, nosAtual: () => nos, AMB, pecaDeTeste, conferenciaFabricacao, calcularOrcamento, congelarRevisao, orcamentoPDF, folhaPecaSVG, folhasPDF, ED, pedidoCorteCloud, codigosDasPecas, etiquetasPDF, planoDeCorte, gerarModuloV3, CONVERSORES_V3, resolverMetodo, METODOS_CONSTRUCAO, estado, TIPOS, listaDeCorte, nos, gerarPDF, listaDesenhos, gerarILogic, posicaoInventor, cam: () => ({ camera: cam, controles }) };
