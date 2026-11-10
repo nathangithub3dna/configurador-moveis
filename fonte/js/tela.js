@@ -850,19 +850,29 @@ function abrirDaNuvem(doc, aviso) {
 (async () => {
   try {
     const [db, user] = await Promise.all([window.claude?.use ? window.claude.use('db') : null, window.claude?.use ? window.claude.use('user') : null]);
-    if (!db || !user) return;
-    const uid = await user.id(); if (!uid) return;
+    const semNuvem = () => estadoNuvem('Sem nuvem: abra pelo link do Claude para salvar sozinho', true);
+    if (!db || !user) { semNuvem(); return; }
+    const uid = await user.id(); if (!uid) { semNuvem(); return; }
     nuvem = db; nuvemUid = uid; $('btnNuvem').hidden = false;
     let loc = null; try { loc = JSON.parse(localStorage.getItem(CHAVE_NUVEM) || 'null'); } catch(e) {}
     // ao abrir: se a nuvem tem uma versão mais nova deste projeto (salva em outro aparelho), abre ela; num aparelho novo, abre o mais recente
     let alvo = null;
-    if (temProjetoLocal && loc?.id) { const d = await colNuvem().doc(loc.id).get(); if (d.exists && String(d.data().salvoEm) > String(loc.salvoEm || '')) alvo = d.data(); }
-    else if (!temProjetoLocal) { const q = await colNuvem().orderBy('salvoEm', 'desc').limit(1).get(); alvo = q.docs[0]?.data() || null; }
+    if (temProjetoLocal && loc?.id && loc.id === idNuvem()) { const d = await colNuvem().doc(loc.id).get(); if (d.exists && String(d.data().salvoEm) > String(loc.salvoEm || '')) alvo = d.data(); }
+    else if (temProjetoLocal) {
+      // cópia deste aparelho que nunca foi salva na nuvem com este nome: se a nuvem já tem esse projeto, a nuvem vence
+      // (a cópia do aparelho costuma ser mais velha) — e a cópia do aparelho fica guardada à parte, para não se perder
+      const d = await colNuvem().doc(idNuvem()).get();
+      if (d.exists) {
+        const agora = new Date().toISOString(), marca = agora.slice(0, 16).replace(/[-:T]/g, '');
+        await colNuvem().doc((idNuvem() + '-copia-aparelho-' + marca).slice(0, 190)).set({ nome: `${estado.projeto.nome || 'Projeto'} (cópia deste aparelho)`, tipo: estado.projeto.tipo, salvoEm: agora, copia: true, projeto: JSON.stringify(JSON.parse(projetoJSON())) });
+        alvo = d.data();
+      }
+    } else { const q = await colNuvem().orderBy('salvoEm', 'desc').limit(20).get(); alvo = q.docs.map(x => x.data()).find(x => !x.copia) || null; }   // aparelho novo: o mais recente (sem contar as cópias guardadas à parte)
     if (alvo && abrirDaNuvem(alvo, 'Abri a versão mais nova, salva na nuvem em ' + horaCurta(alvo.salvoEm) + '.')) return;
     if (!loc || loc.id !== idNuvem()) ultimoSalvo = null;        // este projeto ainda não está na nuvem: guarda já
     else if (JSON.stringify(estado.projeto) === ultimoSalvo) estadoNuvem('☁ Salvo ' + horaCurta(loc.salvoEm));
     mostrarNaoSalvo();                                            // mudança ainda não guardada: salva agora
-  } catch (e) { nuvem = null; nuvemUid = null; }
+  } catch (e) { nuvem = null; nuvemUid = null; estadoNuvem('Sem nuvem agora (sem conexão?): use Salvar no Drive ou .json', true); }
 })();
 $('btnNuvem').addEventListener('click', async () => {
   if (!nuvemPronta()) return;
