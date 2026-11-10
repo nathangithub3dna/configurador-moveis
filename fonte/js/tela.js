@@ -23,7 +23,14 @@ const salvarLocal = () => {
   }
   histUltimo = atual; histPulando = false; atualizarDesfazer();
   try { localStorage.setItem(CHAVE, atual); } catch(e) {}
+  mostrarNaoSalvo();
 };
+// AVISO "NÃO SALVO": compara o projeto com o último salvo de verdade (Drive ou .json, ou aberto de um arquivo).
+// O salvamento automático do navegador pode se perder no app do Claude (ex.: quando o programa é atualizado), então o aviso fica até salvar.
+const CHAVE_SALVO = 'configurador-moveis:ultimo-salvo';
+let ultimoSalvo = null; try { ultimoSalvo = localStorage.getItem(CHAVE_SALVO); } catch(e) {}
+function marcarSalvo() { ultimoSalvo = JSON.stringify(estado.projeto); try { localStorage.setItem(CHAVE_SALVO, ultimoSalvo); } catch(e) {} mostrarNaoSalvo(); }
+function mostrarNaoSalvo() { const b = document.getElementById('naoSalvo'); if (b) b.hidden = JSON.stringify(estado.projeto) === ultimoSalvo; }
 function atualizarDesfazer() { const b = document.getElementById('btnDesfazer'); if (b) { b.disabled = !HIST.length; b.title = HIST.length ? `Desfazer (${HIST.length} guardada${HIST.length > 1 ? 's' : ''})` : 'Nada para desfazer'; } }
 function desfazer() {
   if (!HIST.length) return;
@@ -661,15 +668,15 @@ async function gerarGLB() {
 // salvar: dentro do Claude usa o recurso de downloads dele; em qualquer outro navegador, baixa direto (arquivo comum)
 async function salvar(nome, dados) {
   if (downloads) {
-    try { await downloads.save({ filename:nome, data:dados }); toast('Arquivo salvo.'); }
+    try { await downloads.save({ filename:nome, data:dados }); toast('Arquivo salvo.'); return true; }
     catch(e) { toast(e?.code === 'declined' ? 'Download cancelado.' : `Não foi possível salvar (${e?.code || 'erro'}).`); }
-    return;
+    return false;
   }
   try {
     const tipo = /\.json$/.test(nome) ? 'application/json' : /\.pdf$/.test(nome) ? 'application/pdf' : /\.zip$/.test(nome) ? 'application/zip' : 'text/plain';
     const url = URL.createObjectURL(new Blob([dados], { type:tipo })), a = document.createElement('a');
     a.href = url; a.download = nome; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
-    toast('Arquivo baixado.');
+    toast('Arquivo baixado.'); return true;
   } catch(e) { toast('Não foi possível baixar o arquivo neste navegador.'); }
 }
 const baixarPDF = () => { if (estado.res.erros.length || !window.jspdf) return; try { salvar(slug()+'-desenhos.pdf', gerarPDF()); } catch(e) { toast('Falha ao montar o PDF.'); } };
@@ -688,10 +695,10 @@ function projetoJSON() {
     tipo:estado.projeto.tipo, nome:estado.projeto.nome, parametros:estado.projeto.parametros, codigo:estado.projeto.codigo, orcamento:estado.projeto.orcamento, liberacao:estado.projeto.liberacao, conferencia:estado.projeto.conferencia, precos } : dadosProjeto();
   return JSON.stringify(dados, null, 2);
 }
-$('btnJson').addEventListener('click', () => {
-  if (!estado.res) return;
-  salvar(slug() + (estado.res.erros.length ? '-incompleto' : '') + '.json', projetoJSON());
-});
+async function salvarJson() { if (!estado.res) return; if (await salvar(slug() + (estado.res.erros.length ? '-incompleto' : '') + '.json', projetoJSON())) marcarSalvo(); }
+$('btnJson').addEventListener('click', salvarJson);
+// clicar no aviso "Não salvo" salva: no Drive quando a ligação existe (app do Claude), senão baixa o .json
+$('naoSalvo').addEventListener('click', () => { if (mcpDrive && !$('btnDriveSalvar').hidden) $('btnDriveSalvar').click(); else salvarJson(); });
 // menu Exportar da barra de cima: fecha ao clicar fora, com Esc e depois de escolher uma saída (o "Copiar iLogic" mantém aberto para mostrar o texto)
 document.addEventListener('click', e => { const m = $('menuExportar'); if (m.open && !m.contains(e.target)) m.open = false; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('menuExportar').open = false; });
@@ -729,7 +736,7 @@ function abrirProjetoTexto(texto) {
     if (!TIPOS[d.tipo] || typeof d.parametros !== 'object') throw 0;
     estado.projeto = { tipo:d.tipo, nome:d.nome || 'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[d.tipo].padrao)), ...d.parametros }, codigo:d.codigo, orcamento:d.orcamento, liberacao:d.liberacao, conferencia:d.conferencia };
     if (d.precos && typeof d.precos === 'object') { precos = { ...precos, ...d.precos }; salvarPrecos(); }
-    carregarProjeto(); toast('Projeto aberto.'); return true;
+    carregarProjeto(); marcarSalvo(); toast('Projeto aberto.'); return true;
   } catch(err) { toast('Esse arquivo não é um projeto do Configurador.'); return false; }
 }
 /* ---------- Google Drive (só no programa publicado, pelo app do Claude) ----------
@@ -757,7 +764,7 @@ $('btnDriveSalvar').addEventListener('click', async () => {
     const d = new Date(), quando = `${d.getFullYear()}-${doisDig(d.getMonth()+1)}-${doisDig(d.getDate())} ${doisDig(d.getHours())}h${doisDig(d.getMinutes())}`;
     await mcpDrive.callTool(DRIVE, 'create_file', { title:`${estado.projeto.nome || 'Projeto'} — ${quando}.json`, parentId:await pastaDrive(),
       textContent:projetoJSON(), contentMimeType:'application/json', disableConversionToGoogleType:true });
-    toast(`Salvo no Drive, na pasta "${PASTA_DRIVE}".`);
+    toast(`Salvo no Drive, na pasta "${PASTA_DRIVE}".`); marcarSalvo();
   } catch(e) { toast(erroDrive(e)); }
   b.disabled = false; b.textContent = 'Salvar no Drive';
 });

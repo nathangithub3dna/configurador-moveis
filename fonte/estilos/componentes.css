@@ -65,3 +65,6 @@
 .previa-peca{background:var(--surface);border-radius:var(--raio-p);box-shadow:var(--sombra-fora),0 8px 24px rgb(0 0 0 / .18)}
 .previa-peca[hidden]{display:none}
 .previa-peca .num{color:var(--muted);font-family:var(--f-mono)}
+/* aviso "Não salvo" no topo: vermelho até salvar no Drive ou em .json */
+.btn.nao-salvo{color:var(--danger);background:var(--danger-bg);box-shadow:none;font-weight:800}
+.btn.nao-salvo:hover{color:var(--danger);filter:brightness(.97)}
