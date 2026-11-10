@@ -4,20 +4,9 @@
    mudança de antes, então a lógica (tela/paineis/modulo.js) e os testes continuam iguais.
    ===================================================================== */
 const RET_B = '<rect x="4" y="3" width="26" height="34"/>';
+// desenhos de frente e conteúdo: vêm das escolhas registradas (icone); aqui ficam os dos outros campos
 const ICONES_B = {
-  'frente:nenhuma': '<rect x="4" y="3" width="26" height="34" stroke-dasharray="3 2"/>',
-  'frente:porta': RET_B + '<line x1="25" y1="16" x2="25" y2="24" stroke-width="2.5"/>',
-  'frente:2portas': '<rect x="4" y="3" width="12.5" height="34"/><rect x="17.5" y="3" width="12.5" height="34"/><line x1="13" y1="16" x2="13" y2="24" stroke-width="2.5"/><line x1="21" y1="16" x2="21" y2="24" stroke-width="2.5"/>',
-  'frente:gaveta': '<rect x="4" y="3" width="26" height="10"/><rect x="4" y="14" width="26" height="11"/><rect x="4" y="26" width="26" height="11"/><line x1="13" y1="8" x2="21" y2="8" stroke-width="2"/>',
-  'frente:correr': '<rect x="4" y="3" width="15" height="34"/><rect x="15" y="5" width="15" height="32"/><path d="M8 20h6m-2-2 2 2-2 2"/>',
-  'frente:basculante': '<rect x="4" y="11" width="26" height="22"/><path d="M17 9V2m-3 3 3-3 3 3"/>',
-  'conteudo:vazio': RET_B,
-  'conteudo:prateleiras': RET_B + '<line x1="4" y1="12" x2="30" y2="12"/><line x1="4" y1="20" x2="30" y2="20"/><line x1="4" y1="28" x2="30" y2="28"/>',
-  'conteudo:divisorias': RET_B + '<line x1="13" y1="3" x2="13" y2="37"/><line x1="21" y1="3" x2="21" y2="37"/>',
-  'conteudo:vassoura': RET_B + '<line x1="4" y1="9" x2="30" y2="9"/><line x1="12" y1="12" x2="12" y2="34"/><path d="M9 34h6"/><line x1="22" y1="12" x2="22" y2="30"/>',
-  'conteudo:vassoura+sapateira': RET_B + '<line x1="12" y1="5" x2="12" y2="22"/><line x1="4" y1="25" x2="30" y2="25"/><line x1="4" y1="31" x2="30" y2="31"/>',
-  'conteudo:gavetas': RET_B + '<rect x="7" y="18" width="20" height="5"/><rect x="7" y="25" width="20" height="5"/><rect x="7" y="32" width="20" height="4"/>',
-  'conteudo:gavetas+botijao': RET_B + '<rect x="7" y="6" width="20" height="5"/><rect x="11" y="18" width="12" height="17" rx="5"/>',
+  ...Object.fromEntries(['frente', 'conteudo'].flatMap(g => escolhasDe(g).map(e => [g + ':' + e.id, e.icone]))),
   'lado:auto': RET_B + '<path d="M10 20h14M20 16l4 4-4 4M14 16l-4 4 4 4"/>',
   'lado:dir': RET_B + '<line x1="9" y1="16" x2="9" y2="24" stroke-width="2.5"/><circle cx="29" cy="10" r="1.3"/><circle cx="29" cy="30" r="1.3"/>',    // dobradiça à direita = puxador à esquerda
   'lado:esq': RET_B + '<line x1="25" y1="16" x2="25" y2="24" stroke-width="2.5"/><circle cx="5" cy="10" r="1.3"/><circle cx="5" cy="30" r="1.3"/>',

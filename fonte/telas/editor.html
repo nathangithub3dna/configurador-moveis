@@ -1,0 +1,98 @@
+<!-- MODELOS DO EDITOR DO MÓVEL LIVRE (5a): a estrutura fica aqui; tela/paineis/modulo.js só preenche -->
+<template id="tplEditor">
+  <div class="ed-voltar" data-se="dentroAmbiente">
+    <button type="button" class="btn" data-acao="voltar-ambiente">← Voltar ao ambiente</button>
+    <strong data-texto="nomeModulo"></strong>
+  </div>
+  <fieldset class="ed-bloco">
+    <legend>Medidas do móvel</legend>
+    <div class="ed-grade2">
+      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-modulo="largura"></label>
+      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-modulo="altura"></label>
+      <label class="ed-campo">Profundidade<input type="number" inputmode="decimal" data-modulo="profundidade"></label>
+      <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
+    </div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Espaços</legend>
+    <span class="ed-nota"><strong>Móvel inteiro</strong> · <span data-texto="resumoMovel"></span></span>
+    <!-- mini desenho de frente: um botão por vão, na posição real (tela/paineis/modulo.js) -->
+    <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
+    <span class="ed-nota" data-texto="resumoVao"></span>
+  </fieldset>
+  <fieldset class="ed-bloco ed-vao">
+    <legend data-texto="titulo"></legend>
+    <span class="ed-nota" data-texto="medida"></span>
+    <label class="ed-linha"><span data-texto="rotLarg"></span><input type="text" data-vao="larg" placeholder="auto"></label>
+    <label class="ed-linha"><span data-texto="rotAlt"></span><input type="text" data-vao="alt" placeholder="auto"></label>
+    <div class="ed-sub">O que fecha este espaço?</div>
+    <div class="ed-grade3" data-lista="frentes"></div>
+    <label class="ed-linha" data-se="porta">Puxador<select data-vao="lado" title="A dobradiça fica sempre do lado oposto ao puxador"><option value="auto">Automático</option><option value="dir">À esquerda</option><option value="esq">À direita</option></select></label>
+    <label class="ed-linha" data-se="perfil">Perfil na borda<select data-vao="perfil" title="Onde vai o perfil G nesta porta; na lateral, fica do lado do puxador"><option value="auto">Automático</option><option value="cima">Em cima</option><option value="baixo">Embaixo</option><option value="lateral">Na lateral (lado do puxador)</option></select></label>
+    <label class="ed-linha" data-se="correr">Sistema<select data-vao="sistema"><option value="correr-rometal-dominus">Rometal Dominus (até 80 kg)</option><option value="correr-rometal-ro27">Rometal RO-27 (até 20 kg)</option></select></label>
+    <label class="ed-linha" data-se="correr">Ao abrir, libera o lado<select data-vao="abrirCorrer" title="Qual lado fica livre quando as portas de correr abrem no 3D"><option value="esq">Esquerdo (folha de trás corre para a direita)</option><option value="dir">Direito (folha da frente corre para a esquerda)</option></select></label>
+    <div class="ed-sub">O que tem dentro?</div>
+    <select class="ed-select" data-vao="conteudo" aria-label="Conteúdo do espaço"></select>
+    <div class="ed-contador" data-se="divisorias">
+      <span>Divisórias em pé</span>
+      <button type="button" class="btn" data-acao="div-menos" aria-label="Menos uma divisória">−</button>
+      <strong data-texto="nDiv"></strong>
+      <button type="button" class="btn" data-acao="div-mais" aria-label="Mais uma divisória">+</button>
+    </div>
+    <div class="ed-contador" data-se="prateleiras">
+      <span>Prateleiras</span>
+      <button type="button" class="btn" data-acao="prat-menos" aria-label="Menos uma prateleira">−</button>
+      <strong data-texto="nPrat"></strong>
+      <button type="button" class="btn" data-acao="prat-mais" aria-label="Mais uma prateleira">+</button>
+    </div>
+    <div class="ed-bloco" data-se="prateleiras">
+      <span class="ed-nota">Altura de cada prateleira: espaço livre do fundo do vão até ela, em mm. Vazio = automático.</span>
+      <div class="ed-grade2" data-lista="alturasPrat"></div>
+    </div>
+    <div class="ed-contador" data-se="gavetas">
+      <span>Gavetas internas</span>
+      <button type="button" class="btn" data-acao="gav-menos" aria-label="Menos uma gaveta">−</button>
+      <strong data-texto="nGav"></strong>
+      <button type="button" class="btn" data-acao="gav-mais" aria-label="Mais uma gaveta">+</button>
+    </div>
+    <label class="ed-linha" data-se="gavetas">Altura de cada gaveta (mm)<input type="number" inputmode="decimal" data-vao="altGav"></label>
+    <label class="ed-linha" data-se="botijao">Altura livre do botijão (mm)<input type="number" inputmode="decimal" data-vao="altBot"></label>
+    <div class="ed-contador" data-se="sapateira">
+      <span>Níveis da sapateira</span>
+      <button type="button" class="btn" data-acao="sap-menos" aria-label="Menos um nível">−</button>
+      <strong data-texto="nSap"></strong>
+      <button type="button" class="btn" data-acao="sap-mais" aria-label="Mais um nível">+</button>
+    </div>
+    <label class="ed-linha" data-se="sapateira">Altura de cada nível (mm)<input type="number" inputmode="decimal" data-vao="nivelSap"></label>
+    <span class="ed-nota" data-se="sapateira">Sapateira embaixo, níveis de 220 mm; vassouras em pé sobre ela, com pelo menos 1,2 m livres até o teto do vão. "máx" = quantos couberem.</span>
+    <div class="ed-sub">Dividir em mais espaços</div>
+    <div class="ed-grade2">
+      <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
+      <button type="button" class="btn" data-acao="dividir-h">▤ Deitado</button>
+    </div>
+    <div class="ed-sub" data-se="podeJuntar">Juntar com o vizinho</div>
+    <div class="ed-grade2">
+      <button type="button" class="btn ed-remover" data-acao="juntar-ant" data-se="podeAnt" data-texto="rotAnt"></button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-prox" data-se="podeProx" data-texto="rotProx"></button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="esq" data-se="geoEsq">← Esquerda</button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="dir" data-se="geoDir">Direita →</button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="baixo" data-se="geoBaixo">↓ De baixo</button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="cima" data-se="geoCima">↑ De cima</button>
+    </div>
+  </fieldset>
+  <details class="ed-mais">
+    <summary>Construção e peças ajustadas</summary>
+  <fieldset class="ed-bloco">
+    <legend>Construção</legend>
+    <label class="ed-linha">Método<select data-modulo="metodo"></select></label>
+    <label class="ed-linha">Entrega<select data-modulo="entrega"><option value="desmontado">Desmontado (volumes)</option><option value="montado">Montado</option></select></label>
+    <label class="ed-linha">Puxador das portas<select data-modulo="puxador"></select></label>
+    <label class="ed-linha">Material das frentes<select data-modulo="materialFrentes"></select></label>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Peças ajustadas</legend>
+    <ul class="ed-ajustes" data-lista="ajustes"></ul>
+    <span class="ed-nota" data-texto="notaAjustes"></span>
+  </fieldset>
+  </details>
+</template>

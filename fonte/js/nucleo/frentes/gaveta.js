@@ -29,3 +29,7 @@ function fazerGavetaExterna(ctx, g) {
   if (perfil) ferr({ id:`gaveta-${k}-puxador`, nome:`Perfil puxador da gaveta ${k}`, forma:{ tipo:'puxador', dir:'h', modelo:'perfil' }, cor:px.cor, ref:px.ref, comp:wf, larg:px.reducao, box:[fx0,fx1,fy1,fy1+px.reducao,zFr,P], mov, expPai:frente.id, obs:`${px.rot}: cortar com ${fmt(wf)} mm.` });
   else ferr({ id:`gaveta-${k}-puxador`, nome:`Puxador da gaveta ${k}`, forma:{ tipo:'puxador', dir:'h', modelo:px.modelo, furacao:px.furacao }, cor:px.cor, ref:px.ref, box:[xm-px.comp/2,xm+px.comp/2,ym-px.larg/2,ym+px.larg/2,P,P+proj], mov, expPai:frente.id });
 }
+
+// gaveta de frente ocupa o espaço inteiro: tira o conteúdo do vão
+registrarEscolha({ grupo:'frente', id:'gaveta', rotulo:'Gaveta', ordem:30, icone:'<rect x="4" y="3" width="26" height="10"/><rect x="4" y="14" width="26" height="11"/><rect x="4" y="26" width="26" height="11"/><line x1="13" y1="8" x2="21" y2="8" stroke-width="2"/>',
+  aplicar(no) { no.conteudo = []; no.frente = { tipo:'gaveta' }; } });

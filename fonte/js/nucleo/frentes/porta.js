@@ -10,3 +10,6 @@ registrarFrente({ id:'porta', gerar(ctx, g, fr) {
   porta(g, lado, x0, x1, lado === 'esq' ? g.fx0 : g.fx1, m.puxadorPorta, fr.perfil);
   return lado;
 } });
+
+registrarEscolha({ grupo:'frente', id:'porta', rotulo:'Porta', ordem:10, icone:'<rect x="4" y="3" width="26" height="34"/><line x1="25" y1="16" x2="25" y2="24" stroke-width="2.5"/>',
+  aplicar(no) { no.frente = { tipo:'porta', lado: 'auto' }; } });

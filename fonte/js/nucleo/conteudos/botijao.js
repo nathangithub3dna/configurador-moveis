@@ -15,3 +15,7 @@ registrarConteudo({ id:'botijao', gerar(ctx, ct, est) {
     y = yf + t;
   est.y = y;
 } });
+
+registrarEscolha({ grupo:'conteudo', id:'gavetas+botijao', rotulo:'Botijão + gavetas', ordem:60, prioridade:10, icone:'<rect x="4" y="3" width="26" height="34"/><rect x="7" y="6" width="20" height="5"/><rect x="11" y="18" width="12" height="17" rx="5"/>',
+  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'botijao'),
+  aplicar(no, m) { no.conteudo = [{ tipo: 'botijao', altura: TIPOS.armario.padrao.alturaBotijao }, ...gavetasEAcima(m)]; } });

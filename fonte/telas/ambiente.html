@@ -1,0 +1,169 @@
+<!-- MODELOS DO AMBIENTE (5b) -->
+<template id="tplAmbiente">
+  <fieldset class="ed-bloco">
+    <legend>Paredes</legend>
+    <label class="ed-linha">Formato<select data-amb="formato"><option value="reta">Parede reta</option><option value="L">Em L (canto)</option></select></label>
+    <div class="amb-lista" data-lista="paredes"></div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Módulos</legend>
+    <label class="ed-linha">Adicionar na<select data-amb="paredeAdd"></select></label>
+    <div class="ed-grade2">
+      <button type="button" class="btn" data-acao="add" data-modelo="balcao">+ Balcão</button>
+      <button type="button" class="btn" data-acao="add" data-modelo="gaveteiro">+ Gaveteiro</button>
+      <button type="button" class="btn" data-acao="add" data-modelo="aereo">+ Aéreo</button>
+      <button type="button" class="btn" data-acao="add" data-modelo="torre">+ Torre</button>
+    </div>
+    <div class="amb-lista" data-lista="modulos"></div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Peças livres</legend>
+    <p class="amb-nota">Chapas soltas (painel, forro, mesa, cortineiro…). Cada peça é posicionada à mão; a fixação também é escolhida à mão.</p>
+    <div class="amb-add"><select class="ed-select" data-amb="funcaoAdd" aria-label="Função da peça nova"></select><button type="button" class="btn" data-acao="add-livre">+ Peça</button></div>
+    <div class="amb-lista" data-lista="livres"></div>
+    <div class="amb-lista" data-lista="grupos"></div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Pontos na parede</legend>
+    <div class="amb-lista" data-lista="pontos"></div>
+    <button type="button" class="btn" data-acao="add-ponto">+ Ponto (água, esgoto, gás, tomada)</button>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Tampo (pedra, orçado à parte)</legend>
+    <div class="ed-grade2">
+      <label class="ed-campo">Espessura<input type="number" inputmode="decimal" data-amb="tampoEsp"></label>
+      <label class="ed-campo">Balanço na frente<input type="number" inputmode="decimal" data-amb="tampoBalanco"></label>
+    </div>
+  </fieldset>
+</template>
+<template id="tplParede">
+  <div class="amb-item">
+    <strong data-texto="nome"></strong>
+    <div class="ed-grade2">
+      <label class="ed-campo">Comprimento<input type="number" inputmode="decimal" data-parede="comprimento"></label>
+      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-parede="altura"></label>
+    </div>
+  </div>
+</template>
+<template id="tplModuloAmb">
+  <div class="amb-item">
+    <div class="amb-cab"><strong data-texto="nome"></strong><span data-texto="onde"></span></div>
+    <div class="ed-grade3">
+      <label class="ed-campo">Do canto<input type="number" inputmode="decimal" data-mod="x"></label>
+      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-mod="largura"></label>
+      <label class="ed-campo">Do chão<input type="number" inputmode="decimal" data-mod="y"></label>
+    </div>
+    <div class="ed-grade2">
+      <button type="button" class="btn" data-acao="abrir">Abrir (por dentro)</button>
+      <button type="button" class="btn" data-acao="remover-mod">Remover</button>
+    </div>
+  </div>
+</template>
+<template id="tplLivre">
+  <div class="amb-item amb-livre">
+    <button type="button" class="amb-cab amb-cab-btn" data-acao="sel-livre"><strong data-texto="titulo"></strong><span data-texto="resumo"></span></button>
+    <div class="ed-grade3">
+      <button type="button" class="btn" data-acao="sel-livre" data-texto="botaoEditar"></button>
+      <button type="button" class="btn" data-acao="dup-livre">Duplicar</button>
+      <button type="button" class="btn" data-acao="rem-livre">Remover</button>
+    </div>
+    <div class="amb-livre-corpo" data-se="aberta">
+      <div class="ed-grade2">
+        <label class="ed-campo">Nome<input type="text" data-livre="nome"></label>
+        <label class="ed-campo">Função<select class="ed-select" data-livre="funcao"></select></label>
+      </div>
+      <label class="ed-campo">Grupo (peças do mesmo grupo andam juntas)<input type="text" data-livre="grupo" list="listaGrupos" placeholder="sem grupo"></label>
+      <h4 class="amb-sub">Medidas e material</h4>
+      <div class="ed-grade3">
+        <label class="ed-campo">Medida 1<input type="number" inputmode="decimal" data-livre="comp"></label>
+        <label class="ed-campo">Medida 2<input type="number" inputmode="decimal" data-livre="larg"></label>
+        <label class="ed-campo">Espessura<input type="number" inputmode="decimal" data-livre="esp"></label>
+      </div>
+      <div class="ed-grade2">
+        <label class="ed-campo">Material<select class="ed-select" data-livre="mat"></select></label>
+        <label class="ed-campo" data-se="comVeio">Veio<select class="ed-select" data-livre="veio"><option value="comp">Na medida 1</option><option value="larg">Na medida 2</option></select></label>
+      </div>
+      <div class="amb-fita"><span>Fita de borda</span><div data-lista="fita"></div></div>
+      <h4 class="amb-sub">Posição</h4>
+      <div class="ed-grade2">
+        <label class="ed-campo">Como nasce<select class="ed-select" data-livre="apoio"><option value="deitada">Deitada</option><option value="frente">Em pé, de frente</option><option value="lado">Em pé, de lado</option></select></label>
+        <label class="ed-campo">Onde<select class="ed-select" data-livre="onde"></select></label>
+      </div>
+      <div class="ed-grade3" data-se="naParede">
+        <label class="ed-campo">Do canto<input type="number" inputmode="decimal" data-livre="x"></label>
+        <label class="ed-campo">Do chão<input type="number" inputmode="decimal" data-livre="y"></label>
+        <label class="ed-campo">Da parede<input type="number" inputmode="decimal" data-livre="afast"></label>
+      </div>
+      <div class="ed-grade3" data-se="solta">
+        <label class="ed-campo">X<input type="number" inputmode="decimal" data-livre="sx"></label>
+        <label class="ed-campo">Y (do chão)<input type="number" inputmode="decimal" data-livre="sy"></label>
+        <label class="ed-campo">Z<input type="number" inputmode="decimal" data-livre="sz"></label>
+      </div>
+      <p class="amb-nota" data-texto="ajudaPos"></p>
+      <h4 class="amb-sub">Giro (graus, em volta do centro da peça)</h4>
+      <div class="ed-grade3">
+        <label class="ed-campo">Tombar<input type="number" inputmode="decimal" data-livre="gx" title="Eixo ao longo da parede"></label>
+        <label class="ed-campo">Virar (vertical)<input type="number" inputmode="decimal" data-livre="gy" title="Eixo vertical"></label>
+        <label class="ed-campo">Inclinar<input type="number" inputmode="decimal" data-livre="gz" title="Eixo saindo da parede"></label>
+      </div>
+      <h4 class="amb-sub">Recortes</h4>
+      <p class="amb-nota">Medidas no plano da peça, a partir do canto onde começam a medida 1 e a medida 2. Encostado na borda = recorte; por dentro = vazado.</p>
+      <div class="amb-lista" data-lista="recortes"></div>
+      <button type="button" class="btn" data-acao="add-rec">+ Recorte</button>
+      <h4 class="amb-sub">Furos (na face A)</h4>
+      <div class="amb-lista" data-lista="furos"></div>
+      <button type="button" class="btn" data-acao="add-furo">+ Furo</button>
+      <h4 class="amb-sub">Fixação (ferragens)</h4>
+      <div class="amb-lista" data-lista="ferragens"></div>
+      <button type="button" class="btn" data-acao="add-fer">+ Ferragem</button>
+    </div>
+  </div>
+</template>
+<template id="tplLivreRec">
+  <div class="amb-sublinha">
+    <label class="ed-campo">Pos. 1<input type="number" inputmode="decimal" data-rec="u"></label>
+    <label class="ed-campo">Pos. 2<input type="number" inputmode="decimal" data-rec="v"></label>
+    <label class="ed-campo">Tam. 1<input type="number" inputmode="decimal" data-rec="w"></label>
+    <label class="ed-campo">Tam. 2<input type="number" inputmode="decimal" data-rec="h"></label>
+    <button type="button" class="btn" data-acao="rem-rec" aria-label="Remover recorte">×</button>
+  </div>
+</template>
+<template id="tplLivreFuro">
+  <div class="amb-sublinha">
+    <label class="ed-campo">Pos. 1<input type="number" inputmode="decimal" data-furo="u"></label>
+    <label class="ed-campo">Pos. 2<input type="number" inputmode="decimal" data-furo="v"></label>
+    <label class="ed-campo">Ø<input type="number" inputmode="decimal" data-furo="d"></label>
+    <label class="ed-campo" title="0 = passante">Prof.<input type="number" inputmode="decimal" data-furo="prof"></label>
+    <button type="button" class="btn" data-acao="rem-furo" aria-label="Remover furo">×</button>
+  </div>
+</template>
+<template id="tplLivreFer">
+  <div class="amb-sublinha amb-fer">
+    <select class="ed-select" data-fer="ref" aria-label="Ferragem"></select>
+    <label class="ed-campo">Qtd.<input type="number" inputmode="decimal" data-fer="qtd"></label>
+    <button type="button" class="btn" data-acao="rem-fer" aria-label="Remover ferragem">×</button>
+  </div>
+</template>
+<template id="tplGrupo">
+  <div class="amb-item amb-grupo">
+    <div class="amb-cab"><strong data-texto="titulo"></strong><span data-texto="pecas"></span></div>
+    <div class="ed-grade3">
+      <label class="ed-campo">Mover X<input type="number" inputmode="decimal" data-gdelta="0"></label>
+      <label class="ed-campo">Mover Y<input type="number" inputmode="decimal" data-gdelta="1"></label>
+      <label class="ed-campo">Mover Z<input type="number" inputmode="decimal" data-gdelta="2"></label>
+    </div>
+    <div class="ed-grade2">
+      <button type="button" class="btn" data-acao="mover-grupo">Mover o grupo</button>
+      <button type="button" class="btn" data-acao="dup-grupo">Duplicar o grupo</button>
+    </div>
+  </div>
+</template>
+<template id="tplPonto">
+  <div class="amb-item amb-ponto">
+    <select data-ponto="tipo" aria-label="Tipo do ponto"><option value="esgoto">Esgoto</option><option value="agua">Água</option><option value="gas">Gás</option><option value="tomada">Tomada</option></select>
+    <select data-ponto="parede" aria-label="Parede do ponto"></select>
+    <label class="ed-campo">Do canto<input type="number" inputmode="decimal" data-ponto="x"></label>
+    <label class="ed-campo">Do chão<input type="number" inputmode="decimal" data-ponto="altura"></label>
+    <button type="button" class="btn" data-acao="remover-ponto" aria-label="Remover ponto">×</button>
+  </div>
+</template>

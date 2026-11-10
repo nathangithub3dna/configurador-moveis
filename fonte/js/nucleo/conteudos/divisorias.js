@@ -12,3 +12,7 @@ registrarConteudo({ id:'divisorias', gerar(ctx, ct, est) {
         des:{ w:Dc, h:hD, fita:['l'], frente:'l', vista:'Vista lateral (lado direito)' } }); }
   est.y = y;
 } });
+
+registrarEscolha({ grupo:'conteudo', id:'divisorias', rotulo:'Divisórias em pé', ordem:20, prioridade:40, icone:'<rect x="4" y="3" width="26" height="34"/><line x1="13" y1="3" x2="13" y2="37"/><line x1="21" y1="3" x2="21" y2="37"/>',
+  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'divisorias'),
+  aplicar(no) { no.conteudo = [{ tipo: 'divisorias', n: 1 }]; } });

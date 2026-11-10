@@ -43,3 +43,12 @@ function fazerGavetasInternas(ctx, ct, g, yAc, lado, V) {
   }
   return ytop;
 }
+
+// gavetas internas + prateleiras acima (o que sobra em cima vira prateleiras)
+function gavetasEAcima(m) {
+  const P = TIPOS.armario.padrao;
+  return [{ tipo: 'gavetas-internas', n: P.gavetas, altura: P.alturaGaveta, recuo: 45, puxador: m.puxadorGaveta }, { tipo: 'prateleiras-acima', n: P.pratAcimaGavetas, minLivre: 250 }];
+}
+registrarEscolha({ grupo:'conteudo', id:'gavetas', rotulo:'Gavetas internas', ordem:50, prioridade:20, icone:'<rect x="4" y="3" width="26" height="34"/><rect x="7" y="18" width="20" height="5"/><rect x="7" y="25" width="20" height="5"/><rect x="7" y="32" width="20" height="4"/>',
+  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'gavetas-internas'),
+  aplicar(no, m) { no.conteudo = gavetasEAcima(m); } });

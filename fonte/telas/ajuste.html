@@ -1,0 +1,15 @@
+<!-- AJUSTE POR PEÇA (1c): na ficha da peça clicada e na lista do editor — tela/paineis/ajuste.js só preenche -->
+<template id="tplAjustePeca">
+  <div class="aj-peca">
+    <div class="aj-tit">Ajuste desta peça <em data-texto="situacao"></em></div>
+    <div class="aj-medidas" data-se="mede"></div>
+    <span class="aj-nota" data-texto="nota"></span>
+    <div class="aj-botoes">
+      <button class="btn" type="button" data-aj="aplicar" data-se="mede">Aplicar medida</button>
+      <button class="btn" type="button" data-aj="desligar">Desligar peça</button>
+      <button class="btn" type="button" data-aj="voltar" data-se="ajustada">Voltar à regra</button>
+    </div>
+  </div>
+</template>
+<template id="tplAjusteMedida"><label class="aj-linha"><span data-texto="rot"></span><input type="number" inputmode="decimal" data-aj-valor><select data-aj-fixo aria-label="O que fica no lugar"></select></label></template>
+<template id="tplAjusteItem"><li class="ed-ajuste"><span><strong data-texto="nome"></strong><span data-texto="desc"></span></span><button type="button" class="btn" data-acao="ajuste-voltar">Voltar à regra</button></li></template>

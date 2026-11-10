@@ -25,3 +25,6 @@ function fazerBasculante(ctx, g, fr) {
   else ferr({ id:`${id}-puxador`, nome:`Puxador da basculante ${k}`, forma:{ tipo:'puxador', dir:'h', modelo:px.modelo, furacao:px.furacao }, cor:px.cor, ref:px.ref, box:[xm-px.comp/2, xm+px.comp/2, yp-px.larg/2, yp+px.larg/2, P, P+px.proj], mov:movB, expPai:id });
   return pt;
 }
+
+registrarEscolha({ grupo:'frente', id:'basculante', rotulo:'Abre p/ cima', ordem:50, icone:'<rect x="4" y="11" width="26" height="22"/><path d="M17 9V2m-3 3 3-3 3 3"/>',
+  aplicar(no) { no.frente = { tipo:'basculante' }; } });

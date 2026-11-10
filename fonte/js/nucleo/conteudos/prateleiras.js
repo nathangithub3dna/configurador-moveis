@@ -46,3 +46,7 @@ function fazerPrateleira(ctx, g, V, k, yb, nome) {
     box:[g.ix0+R.folgaPrat, g.ix1-R.folgaPrat, yb, yb+t, zf+R.folgaFundoPrat, zf+R.folgaFundoPrat+dp],
     des:{ w, h:dp, fita:['b'], frente:'b', vista:'Vista de cima', recortes: forma ? [{ x:(w-forma.rl)/2, w:forma.rl, h:forma.rp }] : [] } });
 }
+
+registrarEscolha({ grupo:'conteudo', id:'prateleiras', rotulo:'Prateleiras', ordem:10, prioridade:50, icone:'<rect x="4" y="3" width="26" height="34"/><line x1="4" y1="12" x2="30" y2="12"/><line x1="4" y1="20" x2="30" y2="20"/><line x1="4" y1="28" x2="30" y2="28"/>',
+  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'prateleiras'),
+  aplicar(no) { no.conteudo = [{ tipo: 'prateleiras', n: 3, min: 150 }]; } });

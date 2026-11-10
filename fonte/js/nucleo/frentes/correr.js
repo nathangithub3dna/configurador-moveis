@@ -45,3 +45,6 @@ function fazerPortasCorrer(ctx, g, fr, V) {
   }
   ['superior','inferior'].forEach(q => ferr({ id:`trilho-${q}-${V}`, nome:`Trilho ${q} do vão ${V}`, ref:sisRef, box:[X0, X1, q === 'superior' ? Y1 - 10 : Y0, q === 'superior' ? Y1 : Y0 + 10, z1 - 2*tp - gapTr - (emb ? 0 : -tp - gapTr), z1 + (emb ? 0 : tp + gapTr)] }));
 }
+
+registrarEscolha({ grupo:'frente', id:'correr', rotulo:'Correr', ordem:40, icone:'<rect x="4" y="3" width="15" height="34"/><rect x="15" y="5" width="15" height="32"/><path d="M8 20h6m-2-2 2 2-2 2"/>',
+  aplicar(no) { no.frente = { tipo:'correr', sistema: 'correr-rometal-dominus', n: 'auto' }; } });

@@ -4,14 +4,9 @@
    Cada vão é achado pelo seu "caminho": '' é o móvel inteiro, '.0' a 1ª parte,
    '.1.2' a 3ª parte da 2ª parte, e assim por diante.
    ===================================================================== */
-const FRENTES_EDITOR = [
-  ['nenhuma', 'Nada'], ['porta', 'Porta'], ['2portas', '2 portas'],
-  ['gaveta', 'Gaveta'], ['correr', 'Correr'], ['basculante', 'Abre p/ cima'],
-];
-const CONTEUDOS_EDITOR = [
-  ['vazio', 'Vazio'], ['prateleiras', 'Prateleiras'], ['divisorias', 'Divisórias em pé'], ['vassoura', 'Vassoura e aspirador'], ['vassoura+sapateira', 'Vassoura + sapateira'],
-  ['gavetas', 'Gavetas internas'], ['gavetas+botijao', 'Botijão + gavetas'],
-];
+// listas do painel do vão: vêm das escolhas registradas (nucleo/registro.js, frentes/*.js, conteudos/*.js)
+const FRENTES_EDITOR = escolhasDe('frente').map(e => [e.id, e.rotulo]);
+const CONTEUDOS_EDITOR = escolhasDe('conteudo').map(e => [e.id, e.rotulo]);
 const ED = {
   indices: cam => cam.split('.').filter(Boolean).map(Number),
   no(raiz, cam) { return ED.indices(cam).reduce((n, i) => n.partes[i].no, raiz); },
@@ -127,29 +122,16 @@ const ED = {
     info.parte.medida = String(texto).trim() === '' || /auto/i.test(texto) || !(v > 0) ? 'auto' : v;
   },
   definirFrente(m, cam, tipo) {
-    const no = ED.no(m.raiz, cam);
-    if (tipo === 'gaveta') no.conteudo = [];                       // gaveta de frente ocupa o espaço inteiro
-    no.frente = tipo === 'porta' ? { tipo, lado: 'auto' } : tipo === 'correr' ? { tipo, sistema: 'correr-rometal-dominus', n: 'auto' } : { tipo };
+    const no = ED.no(m.raiz, cam), e = ESCOLHAS.frente[tipo];
+    if (e) e.aplicar(no, m); else no.frente = { tipo };
   },
+  // a escolha de conteúdo que um vão já montado mostra: a primeira (por prioridade) que o reconhece
   tipoConteudo(no) {
-    const t = (no.conteudo || []).map(c => c.tipo);
-    if (t.includes('botijao')) return 'gavetas+botijao';
-    if (t.includes('gavetas-internas')) return 'gavetas';
-    if (t.includes('vassoura')) return (no.conteudo || []).some(c => c.sapateira) ? 'vassoura+sapateira' : 'vassoura';
-    if (t.includes('divisorias')) return 'divisorias';
-    if (t.includes('prateleiras')) return 'prateleiras';
-    return 'vazio';
+    return Object.values(ESCOLHAS.conteudo).sort((a, b) => a.prioridade - b.prioridade).find(e => e.reconhece(no)).id;
   },
   definirConteudo(m, cam, tipo) {
-    const no = ED.no(m.raiz, cam), P = TIPOS.armario.padrao;
-    const gav = { tipo: 'gavetas-internas', n: P.gavetas, altura: P.alturaGaveta, recuo: 45, puxador: m.puxadorGaveta };
-    const acima = { tipo: 'prateleiras-acima', n: P.pratAcimaGavetas, minLivre: 250 };
-    no.conteudo = tipo === 'prateleiras' ? [{ tipo: 'prateleiras', n: 3, min: 150 }]
-      : tipo === 'divisorias' ? [{ tipo: 'divisorias', n: 1 }]
-      : tipo === 'vassoura' ? [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura }]
-      : tipo === 'vassoura+sapateira' ? [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura, sapateira: { nivel: P.alturaNivelSapateira, max: P.niveisSapateira } }]
-      : tipo === 'gavetas' ? [gav, acima]
-      : tipo === 'gavetas+botijao' ? [{ tipo: 'botijao', altura: P.alturaBotijao }, gav, acima] : [];
+    const no = ED.no(m.raiz, cam), e = ESCOLHAS.conteudo[tipo];
+    if (e) e.aplicar(no, m); else no.conteudo = [];
   },
   // gavetas internas: no mínimo 1 (sem gaveta, escolha outro conteúdo)
   gavetas(m, cam, delta) {
