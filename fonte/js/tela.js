@@ -8,7 +8,8 @@ const estado = {
   portas:false, gavetas:false, explode:0, cotas:true, medir:false, corte:'nenhum', cortePos:50,
   tampo:true, fundo:true, paredes:true, esgoto:false, fix:false, orto:false, vista:'perspectiva',
 };
-try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros }, codigo:s.codigo, orcamento:s.orcamento, liberacao:s.liberacao, conferencia:s.conferencia }; } catch(e) {}
+let temProjetoLocal = false;   // havia projeto salvo neste aparelho ao abrir (sem ele, a nuvem abre o mais recente)
+try { const s = JSON.parse(localStorage.getItem(CHAVE)||'null'); if (s && TIPOS[s.tipo] && s.parametros && (temProjetoLocal = true)) estado.projeto = { tipo:s.tipo, nome:s.nome||'Projeto', parametros:{ ...JSON.parse(JSON.stringify(TIPOS[s.tipo].padrao)), ...s.parametros }, codigo:s.codigo, orcamento:s.orcamento, liberacao:s.liberacao, conferencia:s.conferencia }; } catch(e) {}
 const CHAVE_PRECOS = 'configurador-moveis:precos';
 let precos = {}; try { precos = JSON.parse(localStorage.getItem(CHAVE_PRECOS) || '{}') || {}; } catch(e) {}
 const salvarPrecos = () => { try { localStorage.setItem(CHAVE_PRECOS, JSON.stringify(precos)); } catch(e) {} };
@@ -29,8 +30,16 @@ const salvarLocal = () => {
 // O salvamento automático do navegador pode se perder no app do Claude (ex.: quando o programa é atualizado), então o aviso fica até salvar.
 const CHAVE_SALVO = 'configurador-moveis:ultimo-salvo';
 let ultimoSalvo = null; try { ultimoSalvo = localStorage.getItem(CHAVE_SALVO); } catch(e) {}
-function marcarSalvo() { ultimoSalvo = JSON.stringify(estado.projeto); try { localStorage.setItem(CHAVE_SALVO, ultimoSalvo); } catch(e) {} mostrarNaoSalvo(); }
-function mostrarNaoSalvo() { const b = document.getElementById('naoSalvo'); if (b) b.hidden = JSON.stringify(estado.projeto) === ultimoSalvo; }
+// Com a nuvem do programa ligada, "salvo" quer dizer salvo nela (Drive e .json viram cópias extras e a nuvem salva logo em seguida)
+function marcarSalvo(origem) {
+  if (nuvemPronta() && origem !== 'nuvem') { agendarNuvem(0); return; }
+  ultimoSalvo = JSON.stringify(estado.projeto); try { localStorage.setItem(CHAVE_SALVO, ultimoSalvo); } catch(e) {} mostrarNaoSalvo();
+}
+function mostrarNaoSalvo() {
+  const b = document.getElementById('naoSalvo'), mudou = JSON.stringify(estado.projeto) !== ultimoSalvo;
+  if (b) b.hidden = !mudou;
+  if (mudou && nuvemPronta()) agendarNuvem();
+}
 function atualizarDesfazer() { const b = document.getElementById('btnDesfazer'); if (b) { b.disabled = !HIST.length; b.title = HIST.length ? `Desfazer (${HIST.length} guardada${HIST.length > 1 ? 's' : ''})` : 'Nada para desfazer'; } }
 function desfazer() {
   if (!HIST.length) return;
@@ -698,7 +707,7 @@ function projetoJSON() {
 async function salvarJson() { if (!estado.res) return; if (await salvar(slug() + (estado.res.erros.length ? '-incompleto' : '') + '.json', projetoJSON())) marcarSalvo(); }
 $('btnJson').addEventListener('click', salvarJson);
 // clicar no aviso "Não salvo" salva: no Drive quando a ligação existe (app do Claude), senão baixa o .json
-$('naoSalvo').addEventListener('click', () => { if (mcpDrive && !$('btnDriveSalvar').hidden) $('btnDriveSalvar').click(); else salvarJson(); });
+$('naoSalvo').addEventListener('click', () => { if (nuvemPronta()) salvarNuvem(); else if (mcpDrive && !$('btnDriveSalvar').hidden) $('btnDriveSalvar').click(); else salvarJson(); });
 // menu Exportar da barra de cima: fecha ao clicar fora, com Esc e depois de escolher uma saída (o "Copiar iLogic" mantém aberto para mostrar o texto)
 document.addEventListener('click', e => { const m = $('menuExportar'); if (m.open && !m.contains(e.target)) m.open = false; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('menuExportar').open = false; });
@@ -791,6 +800,87 @@ $('dlgDrive').addEventListener('click', async e => {
     if (abrirProjetoTexto(textoDeBase64(r.payload?.content ?? r.payload?.base64Content ?? ''))) dlg.close();
     else dlg.querySelector('[data-texto="nota"]').textContent = 'Esse arquivo não é um projeto do Configurador.';
   } catch(err) { dlg.querySelector('[data-texto="nota"]').textContent = erroDrive(err); }
+});
+/* ---------- Projetos guardados no próprio programa (capability db do artifact) ----------
+   Cada projeto vira um documento privado do Nathan (data/users/<id>/<nome do projeto>): o mesmo no computador e no celular,
+   e não se perde quando o programa é atualizado. O salvamento é automático, 3 s depois de cada mudança.
+   De hora em hora, enquanto há mudanças, vai também uma cópia para o Google Drive (pasta "Projetos de móveis").
+   Fora do Claude (arquivo solto ou sem internet) nada disso existe: vale o aviso "Não salvo" + Drive/.json. */
+const CHAVE_NUVEM = 'configurador-moveis:nuvem';           // { id, salvoEm } do último salvamento na nuvem feito neste aparelho
+const COPIA_DRIVE_MS = 60 * 60 * 1000;
+var nuvem = null, nuvemUid = null, nuvemTimer = null, nuvemSalvando = false, ultimaCopiaDrive = 0;   // var: o aviso "Não salvo" consulta antes desta linha rodar
+function nuvemPronta() { return !!(nuvem && nuvemUid); }
+const colNuvem = () => nuvem.collection('data/users/' + nuvemUid);
+const idNuvem = () => slug().slice(0, 150);
+const horaCurta = iso => { const d = new Date(iso); return `${doisDig(d.getDate())}/${doisDig(d.getMonth()+1)} ${doisDig(d.getHours())}:${doisDig(d.getMinutes())}`; };
+function estadoNuvem(texto, erro) { const e = $('estadoNuvem'); e.hidden = !texto; e.textContent = texto || ''; e.classList.toggle('erro', !!erro); }
+function agendarNuvem(ms = 3000) { clearTimeout(nuvemTimer); nuvemTimer = setTimeout(salvarNuvem, ms); }
+async function salvarNuvem() {
+  if (!nuvemPronta()) return;
+  if (nuvemSalvando) { agendarNuvem(); return; }
+  const atual = JSON.stringify(estado.projeto); if (atual === ultimoSalvo) return;
+  nuvemSalvando = true; estadoNuvem('☁ Salvando…');
+  const id = idNuvem(), salvoEm = new Date().toISOString();
+  try {
+    const texto = JSON.stringify(JSON.parse(projetoJSON()));     // compacto: cada documento cabe até 256 KB
+    await colNuvem().doc(id).set({ nome: estado.projeto.nome || 'Projeto', tipo: estado.projeto.tipo, salvoEm, projeto: texto });
+    ultimoSalvo = atual; try { localStorage.setItem(CHAVE_SALVO, atual); localStorage.setItem(CHAVE_NUVEM, JSON.stringify({ id, salvoEm })); } catch(e) {}
+    estadoNuvem('☁ Salvo ' + horaCurta(salvoEm)); mostrarNaoSalvo();
+    copiaDriveDeHoraEmHora();
+  } catch (e) {
+    estadoNuvem(e?.code === 'invalid_argument' ? '☁ Projeto grande demais para a nuvem: salve no Drive' : e?.code === 'quota_exceeded' ? '☁ Nuvem cheia: apague projetos antigos' : '☁ Não salvou (sem conexão?)', true);
+  }
+  nuvemSalvando = false;
+}
+async function copiaDriveDeHoraEmHora() {
+  if (!mcpDrive || Date.now() - ultimaCopiaDrive < COPIA_DRIVE_MS) return;
+  ultimaCopiaDrive = Date.now();
+  try {
+    const d = new Date(), quando = `${d.getFullYear()}-${doisDig(d.getMonth()+1)}-${doisDig(d.getDate())} ${doisDig(d.getHours())}h${doisDig(d.getMinutes())}`;
+    await mcpDrive.callTool(DRIVE, 'create_file', { title:`${estado.projeto.nome || 'Projeto'} — ${quando}.json`, parentId:await pastaDrive(),
+      textContent:projetoJSON(), contentMimeType:'application/json', disableConversionToGoogleType:true });
+  } catch (e) { /* a cópia no Drive é extra: a nuvem já guardou */ }
+}
+function abrirDaNuvem(doc, aviso) {
+  if (!abrirProjetoTexto(doc.projeto)) return false;
+  ultimoSalvo = JSON.stringify(estado.projeto); try { localStorage.setItem(CHAVE_SALVO, ultimoSalvo); localStorage.setItem(CHAVE_NUVEM, JSON.stringify({ id: idNuvem(), salvoEm: doc.salvoEm })); } catch(e) {}
+  clearTimeout(nuvemTimer); estadoNuvem('☁ Salvo ' + horaCurta(doc.salvoEm)); mostrarNaoSalvo(); if (aviso) toast(aviso);
+  return true;
+}
+(async () => {
+  try {
+    const [db, user] = await Promise.all([window.claude?.use ? window.claude.use('db') : null, window.claude?.use ? window.claude.use('user') : null]);
+    if (!db || !user) return;
+    const uid = await user.id(); if (!uid) return;
+    nuvem = db; nuvemUid = uid; $('btnNuvem').hidden = false;
+    let loc = null; try { loc = JSON.parse(localStorage.getItem(CHAVE_NUVEM) || 'null'); } catch(e) {}
+    // ao abrir: se a nuvem tem uma versão mais nova deste projeto (salva em outro aparelho), abre ela; num aparelho novo, abre o mais recente
+    let alvo = null;
+    if (temProjetoLocal && loc?.id) { const d = await colNuvem().doc(loc.id).get(); if (d.exists && String(d.data().salvoEm) > String(loc.salvoEm || '')) alvo = d.data(); }
+    else if (!temProjetoLocal) { const q = await colNuvem().orderBy('salvoEm', 'desc').limit(1).get(); alvo = q.docs[0]?.data() || null; }
+    if (alvo && abrirDaNuvem(alvo, 'Abri a versão mais nova, salva na nuvem em ' + horaCurta(alvo.salvoEm) + '.')) return;
+    if (!loc || loc.id !== idNuvem()) ultimoSalvo = null;        // este projeto ainda não está na nuvem: guarda já
+    else if (JSON.stringify(estado.projeto) === ultimoSalvo) estadoNuvem('☁ Salvo ' + horaCurta(loc.salvoEm));
+    mostrarNaoSalvo();                                            // mudança ainda não guardada: salva agora
+  } catch (e) { nuvem = null; nuvemUid = null; }
+})();
+$('btnNuvem').addEventListener('click', async () => {
+  if (!nuvemPronta()) return;
+  const dlg = $('dlgNuvem'), lista = dlg.querySelector('[data-lista="projetos"]'), nota = dlg.querySelector('[data-texto="nota"]');
+  lista.replaceChildren(); nota.textContent = 'Buscando…'; dlg.showModal();
+  try {
+    const q = await colNuvem().orderBy('salvoEm', 'desc').limit(100).get();
+    nota.textContent = q.docs.length ? 'Toque para abrir. O projeto aberto agora já está salvo.' : 'Nenhum projeto guardado ainda.';
+    lista.replaceChildren(...q.docs.map(d => { const v = d.data(), bt = el('button', { type:'button', class:'btn nuvem-arq' }, `${v.nome} · ${horaCurta(v.salvoEm)}`); bt.dataset.id = d.id; return el('li', {}, bt); }));
+  } catch (e) { nota.textContent = 'Não deu para ler os projetos agora. Tente de novo.'; }
+});
+$('dlgNuvem').addEventListener('click', async e => {
+  const dlg = $('dlgNuvem');
+  if (e.target.closest('[data-acao="fechar-nuvem"]')) { dlg.close(); return; }
+  const bt = e.target.closest('.nuvem-arq'); if (!bt) return;
+  if (JSON.stringify(estado.projeto) !== ultimoSalvo) await salvarNuvem();   // guarda o atual antes de trocar
+  try { const d = await colNuvem().doc(bt.dataset.id).get(); if (d.exists && abrirDaNuvem(d.data(), 'Projeto aberto.')) dlg.close(); else dlg.querySelector('[data-texto="nota"]').textContent = 'Não deu para abrir esse projeto.'; }
+  catch (err) { dlg.querySelector('[data-texto="nota"]').textContent = 'Não deu para abrir agora. Tente de novo.'; }
 });
 $('arqProjeto').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return;

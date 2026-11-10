@@ -68,3 +68,6 @@
 /* aviso "Não salvo" no topo: vermelho até salvar no Drive ou em .json */
 .btn.nao-salvo{color:var(--danger);background:var(--danger-bg);box-shadow:none;font-weight:800}
 .btn.nao-salvo:hover{color:var(--danger);filter:brightness(.97)}
+/* estado da nuvem no topo ("☁ Salvo 10/11 00:59") */
+.estado-nuvem{font-size:12px;font-weight:700;color:var(--ok);white-space:nowrap}
+.estado-nuvem.erro{color:var(--danger)}

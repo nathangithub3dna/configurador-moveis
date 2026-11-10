@@ -22,6 +22,7 @@
       <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
     </div>
     <div class="topo-estado">
+      <span class="estado-nuvem" id="estadoNuvem" hidden></span>
       <button class="btn nao-salvo" id="naoSalvo" type="button" hidden title="Há mudanças que ainda não foram salvas no Drive nem em arquivo. Clique para salvar.">● Não salvo</button>
       <span class="status ok" id="status">Pronto para exportar</span>
       <div class="situacao" id="situacao" role="status">
@@ -34,6 +35,7 @@
     <div class="acoes" role="group" aria-label="Arquivo">
       <button class="btn" id="btnDesfazer" type="button" disabled title="Nada para desfazer">↶ Desfazer</button>
       <span class="topo-sep" aria-hidden="true"></span>
+      <button class="btn" id="btnNuvem" type="button" hidden title="Projetos guardados no programa: os mesmos no computador e no celular">Meus projetos</button>
       <button class="btn prim" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
       <button class="btn" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
       <button class="btn" id="btnAbrir" type="button" title="Abrir um arquivo .json do aparelho">Abrir projeto</button>
@@ -557,6 +559,11 @@
   <div class="dlg-cab"><strong>Abrir do Drive</strong><button type="button" class="btn" data-acao="fechar-drive">Fechar</button></div>
   <p class="ed-nota" data-texto="nota"></p>
   <ul class="dlg-lista" data-lista="arquivos"></ul>
+</dialog>
+<dialog id="dlgNuvem" class="dlg-drive" aria-label="Meus projetos">
+  <div class="dlg-cab"><strong>Meus projetos</strong><button type="button" class="btn" data-acao="fechar-nuvem">Fechar</button></div>
+  <p class="ed-nota" data-texto="nota"></p>
+  <ul class="dlg-lista" data-lista="projetos"></ul>
 </dialog>
 <template id="tplOpcao"><button type="button" class="btn ed-op" data-acao="frente"></button></template>
 
