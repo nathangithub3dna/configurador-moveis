@@ -7,7 +7,14 @@
 - **Plano de execução aprovado:** `claude/plano-execucao.md` diz onde cada função mora no código, o custo de cada item (P/M/G/GG), as regras de cada tipo de arquivo e a **Fase 0**.
 - O programa publicado está no **artifact v62** (commit 72a9191). O último commit é 3dc1374 (só documentos).
 
-## Próximo passo
+## Atualização — 10/11/2026 14:10 (Fase 0 em andamento)
+- **Feito:** 0.1 (montador: `@inclui-pasta` e `dados/<nome>/*.json`, commit 3aa04c6) · 0.2 (número do formato + conversor; nuvem guarda o original antes de gravar convertido; teste FORMATO DO PROJETO, commit 8b0fe6a) · 0.3a (núcleo dividido em `fonte/js/nucleo/`, só mudança de lugar, commit 6e9a4a9) · 0.3b parte 1 (registro: `nucleo/registro.js`, `nucleo/frentes/*.js`, `nucleo/conteudos/*.js`; o `vao()` do gerador só consulta o registro).
+- **Teste completo igual em todos os passos.** Nada publicado: artifact continua na v62 (o Nathan escolheu publicar uma vez depois do 0.4).
+- **Próximo:** 0.3b parte 2 — tirar de `nucleo/gerar-modulo.js` as funções `porta`, `portasCorrer`, `basculante`, `gavetaExterna`, `gavetasInternas`, `prateleira` para os arquivos de frentes/conteúdos/ferragens, passando o que usam pelo `ctx`; depois caixa, fundo, furação e validações (estrutura alvo em `plano-execucao.md`). Depois 0.4 → 0.9.
+- **Entra no 0.8 (decisão do Nathan):** abrir um .json com o mesmo nome de um projeto da nuvem grava por cima da nuvem sem cópia (risco que já existia).
+- **Codex:** o Nathan pode continuar no Codex quando o limite do Claude acabar. Instruções num Claude Doc ("Continuar o Configurador no Codex"). Decisão: a pasta `docs/` do repositório vira a fonte oficial dos documentos (o Nathan copia os do projeto à mão); o Codex cria o `AGENTS.md` a partir do `CLAUDE.md`.
+
+## Próximo passo (de 10/11 13:05, já cumprido até o 0.3b parte 1)
 1. Ler `claude/plano-mestre.md` e `claude/plano-execucao.md`.
 2. **Começar a Fase 0, passo 0.1** (montador inclui pasta inteira e junta `dados/biblioteca/*.json`).
    - Depois seguir 0.2 → 0.9, um passo por vez, com teste igual a cada passo e sem mudar nada que o Nathan veja.

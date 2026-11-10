@@ -170,108 +170,10 @@ function gerarModuloV3(m) {
 
   function vao(no, g) {
     const V = ++cont.vao, fr = no.frente || { tipo:'nenhuma' };
-    let ladoFrente = null;
-    // FRENTE
-    if (fr.tipo === 'porta') {
-      const x0 = g.fx0 + folga(g.b.esq), x1 = g.fx1 - folga(g.b.dir);
-      // lado automático: dobradiça longe da parede (a porta abre sem bater nela)
-      // e longe da dobradiça da porta vizinha da esquerda, se ela abre na mesma divisória
-      const vizDir = eixos.some(e => e.lado === 'dir' && mesmoEixo(e, { pivX:g.fx0, y0:g.fy0, y1:g.fy1 }));
-      const lado = fr.lado && fr.lado !== 'auto' ? fr.lado : ((g.b.esq === 'externa' && c.paredeEsq) || vizDir ? 'dir' : 'esq');
-      ladoFrente = lado;
-      porta(g, lado, x0, x1, lado === 'esq' ? g.fx0 : g.fx1, m.puxadorPorta, fr.perfil);
-    } else if (fr.tipo === 'portas') {
-      // quantidade automática pela largura máxima de porta; portas iguais, em pares que se encontram no meio
-      const x0 = g.fx0 + folga(g.b.esq), x1 = g.fx1 - folga(g.b.dir);
-      const n = fr.n && fr.n !== 'auto' ? fr.n : Math.max(1, Math.ceil((x1 - x0) / R.portaMaxLarg)), w = (x1 - x0 - (n - 1)*R.entre) / n;
-      for (let i = 0; i < n; i++) {
-        const a = x0 + i*(w + R.entre), b = a + w, lado = n === 1 ? 'esq' : (i % 2 === 0 ? 'esq' : 'dir');
-        porta(g, lado, a, b, lado === 'esq' ? a - (i === 0 ? folga(g.b.esq) : R.entre/2) : b + (i === n-1 ? folga(g.b.dir) : R.entre/2), m.puxadorPorta, fr.perfil);
-      }
-    } else if (fr.tipo === 'correr') portasCorrer(g, fr, V);
-    else if (fr.tipo === 'basculante') basculante(g, fr);
-    else if (fr.tipo === '2portas') {
-      const meio = (g.fx0 + g.fx1)/2;
-      porta(g, 'esq', g.fx0 + folga(g.b.esq), meio - R.entre/2, g.fx0, m.puxadorPorta, fr.perfil);
-      porta(g, 'dir', meio + R.entre/2, g.fx1 - folga(g.b.dir), g.fx1, m.puxadorPorta, fr.perfil);
-    } else if (fr.tipo === 'gaveta') gavetaExterna(g);
-    // CONTEÚDO (de baixo para cima)
-    let y = g.iy0;
-    const x0 = g.ix0, x1 = g.ix1, w = x1 - x0, xm = (x0 + x1)/2;
-    let kPrat = 0;
-    for (const ct of (no.conteudo || [])) {
-      if (ct.tipo === 'prateleiras') {
-        const nS = ct.n, alt = (ct.alturas || []).slice(0, nS).map(v => Number(v) > 0 ? Number(v) : null);
-        if (!alt.some(v => v != null)) {                              // todas automáticas: distribuídas por igual (como sempre foi)
-          const vaoP = (g.iy1 - y - nS*t)/(nS+1);
-          if (nS && vaoP < ct.min) E.push(`Vão ${V}: com ${nS} prateleiras o espaço fica ${fmt(vaoP)} mm (mínimo ${ct.min}).`);
-          for (let k = 0; k < nS; k++) prateleira(g, V, ++kPrat, y + vaoP*(k+1) + t*k, `Prateleira ${kPrat}`);
-        } else {
-          // altura de cada prateleira = espaço livre do piso do vão até ela; as vazias se repartem por igual entre as vizinhas
-          const H = g.iy1 - y, base = new Array(nS).fill(null);
-          alt.forEach((v, k) => { base[k] = v; });
-          let k = 0;
-          while (k < nS) {
-            if (base[k] != null) { k++; continue; }
-            let f = k; while (f < nS && base[f] == null) f++;            // k..f-1 automáticas
-            const ini = k ? base[k-1] + t : 0, fim = f < nS ? base[f] : H, m = f - k, gap = (fim - ini - m*t)/(m+1);
-            for (let i = 0; i < m; i++) base[k+i] = ini + gap*(i+1) + t*i;
-            k = f;
-          }
-          const ruim = base.some((b, i) => b < 0 || b + t > H || (i && b < base[i-1] + t));
-          if (ruim) E.push(`Vão ${V}: as alturas das prateleiras estão fora de ordem ou passam do vão (por dentro: ${fmt(H)} mm).`);
-          else base.forEach((b, i) => { const livre = b - (i ? base[i-1] + t : 0); if (livre < 50) A.push(`Vão ${V}: prateleira ${i+1} fica só ${fmt(livre)} mm acima da de baixo.`); });
-          base.forEach(b => prateleira(g, V, ++kPrat, y + b, `Prateleira ${kPrat}`));
-        }
-      }
-      if (ct.tipo === 'divisorias') {
-        // divisórias em pé dentro do vão (atrás da mesma porta): repartem a largura por igual, do piso ao teto do vão
-        const nD = Math.max(0, Math.round(ct.n) || 0), livre = (w - nD*t)/(nD + 1);
-        if (nD && livre < 100) E.push(`Vão ${V}: com ${nD} divisória${nD === 1 ? '' : 's'} em pé cada espaço fica ${fmt(livre)} mm (mínimo 100).`);
-        for (let k = 0; k < nD; k++) { const xa = x0 + livre*(k + 1) + t*k, hD = g.iy1 - y;
-          add({ id:`divisoria-int-${V}-${k + 1}`, nome:`Divisória interna ${k + 1} do vão ${V}`, nomeLista:'Divisória interna', cat:'caixa', a:hD, b:Dc, fita:[1,0], box:[xa, xa + t, y, g.iy1, zf, zFr],
-            des:{ w:Dc, h:hD, fita:['l'], frente:'l', vista:'Vista lateral (lado direito)' } }); }
-      }
-      if (ct.tipo === 'prateleiras-acima') {
-        // tampo fixo logo acima da última gaveta (pedido do Nathan: a gaveta não fica aberta por cima), se sobrar espaço
-        if (g.iy1 - y > t + 100) {
-          add({ id:`prateleira-fixa-g${V}`, nome:'Tampo das gavetas', nomeLista:'Prateleira fixa', cat:'caixa', a:w, b:Dc, fita:[1,0], box:[x0, x1, y, y+t, zf, zFr], des:{ w, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
-          y += t;
-        }
-        const livre = g.iy1 - y;
-        if (ct.n && livre > ct.minLivre) { const vaoP = (livre - ct.n*t)/(ct.n+1); for (let k = 0; k < ct.n; k++) prateleira(g, V, ++kPrat, y + vaoP*(k+1) + t*k, `Prateleira ${kPrat} acima das gavetas`); }
-      }
-      if (ct.tipo === 'vassoura') {
-        let dy = 0;
-        if (ct.sapateira) {                                          // sapateira embaixo, vassouras em pé sobre ela
-          const sap = sapateiraEmbaixo(g.iy0, g.iy1, t, ct.sapateira.nivel, ct.sapateira.max || 0);
-          if (sap.n < 1) E.push(`Vão ${V}: não cabe sapateira embaixo das vassouras (as vassouras precisam de ${fmt(sap.livreVassoura)} mm).`);
-          else A.push(...avisoSapateira(V, sap));
-          sap.ys.forEach(ys => prateleira(g, V, ++kPrat, ys, `Prateleira ${kPrat} da sapateira`));
-          dy = sap.piso - g.iy0;
-        } else {
-          const yb = ct.alturaPrat - t;
-          if (yb < g.iy0 + 1200 || yb + t > g.iy1 - 100) E.push(`Vão ${V}: a prateleira das vassouras deve ficar entre ${fmt(g.iy0+1200+t)} e ${fmt(g.iy1-100)} mm.`);
-          prateleira(g, V, ++kPrat, yb, 'Prateleira das vassouras');
-        }
-        [x0 + w*0.22, xm, x1 - w*0.22].forEach((xs, k) => ferr({ id:`vao-${V}-suporte-${k+1}`, nome:`Suporte de vassoura/rodo ${k+1}`, box:[xs-25, xs+25, 1250+dy, 1300+dy, zf+t, zf+t+45] }));
-        ferr({ id:`vao-${V}-gancho`, nome:'Gancho do aspirador', box:[xm-30, xm+30, 880+dy, 920+dy, zf+t, zf+t+70] });
-        add({ id:`reforco-vassoura-${V}`, nome:'Régua de reforço do gancho', nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 850+dy, 950+dy, zf, zf+t], des:{ w, h:100, vista:'Vista de frente' } });
-        add({ id:`reforco-vassoura-${V}b`, nome:'Régua de reforço dos suportes', nomeLista:'Régua de reforço', cat:'caixa', a:w, b:100, box:[x0, x1, 1225+dy, 1325+dy, zf, zf+t], des:{ w, h:100, vista:'Vista de frente' } });
-      }
-      if (ct.tipo === 'botijao') {
-        const hB = ct.altura;
-        if (hB < 520) E.push(`Vão ${V}: altura livre do botijão de ${fmt(hB)} mm é pouca (mínimo 520).`);
-        if (w < 390) E.push(`Vão ${V}: largura de ${fmt(w)} mm não passa o botijão P13.`);
-        if (Dc < 370) E.push(`Profundidade interna de ${fmt(Dc)} mm não comporta o botijão P13.`);
-        add({ id:`botijao-${V}`, nome:'Botijão P13 (referência)', cat:'referencia', mat:'mdf-branco', lista:false, forma:{ tipo:'cil', eixo:'y' }, box:[xm-180, xm+180, y, y+480, zf+(Dc-360)/2, zf+(Dc+360)/2] });
-        const yf = y + hB;
-        add({ id:`prateleira-fixa-${V}`, nome:'Tampo do compartimento do botijão', nomeLista:'Prateleira fixa', cat:'caixa', a:w, b:Dc, fita:[1,0], box:[x0, x1, yf, yf+t, zf, zFr], des:{ w, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
-        if (Math.abs(x1 - regiao0.ix1) < 0.5) ventilacao.push({ lado:'dir', y0:y, hB }); else A.push('O botijão não encosta na lateral externa: a ventilação não alcança o compartimento.');
-        y = yf + t;
-      }
-      if (ct.tipo === 'gavetas-internas') y = gavetasInternas(ct, g, y, ladoFrente, V);
-    }
+    // FRENTE e CONTEÚDO (de baixo para cima) vêm do registro: nucleo/frentes/*.js e nucleo/conteudos/*.js
+    const ladoFrente = FRENTES[fr.tipo] ? FRENTES[fr.tipo].gerar(ctx, g, fr, V) || null : null;
+    const est = { g, V, y:g.iy0, kPrat:0, ladoFrente, x0:g.ix0, x1:g.ix1, w:g.ix1 - g.ix0, xm:(g.ix0 + g.ix1)/2 };
+    for (const ct of (no.conteudo || [])) CONTEUDOS[ct.tipo]?.gerar(ctx, ct, est);
   }
 
   // PORTA DE CORRER — sistema da biblioteca: desconto de altura, transpasse, peso máximo, desempenador
@@ -405,6 +307,9 @@ function gerarModuloV3(m) {
     return ytop;
   }
 
+  // o que as frentes e os conteúdos registrados enxergam do módulo
+  const ctx = { m, c, t, P, Dc, zf, zFr, E, A, add, ferr, cont, folga, eixos, mesmoEixo, regiao0, ventilacao,
+    porta, prateleira, portasCorrer, basculante, gavetaExterna, gavetasInternas };
   percorrer(m.raiz, regiao0, 0);
 
   // FUNDO SOBREPOSTO — peças limitadas pelo transporte; usa a chapa de mercado que dá menos chapas; emenda sobre divisória ou, sem divisória, com perfil H plástico
