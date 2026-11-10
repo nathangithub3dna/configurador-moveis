@@ -143,7 +143,7 @@
         <button class="btn" id="fDesenho" type="button" hidden>Ver desenho técnico</button>
         <div id="fAjuste"></div>
       </div>
-      <!-- menu do clique direito no 3D (no celular: toque longo); js/tela.js mostra e posiciona -->
+      <!-- menu do clique direito no 3D (no celular: toque longo); js/tela/3d/clique.js mostra e posiciona -->
       <div class="menu-3d" id="menu3d" role="menu" aria-label="Opções do 3D" hidden>
         <button class="btn" id="bPortas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir portas</button>
         <button class="btn" id="bGavetas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir gavetas</button>
@@ -283,7 +283,7 @@
 </section>
 <div class="toast" id="toast" hidden></div>
 
-<!-- MODELOS DO EDITOR DO MÓVEL LIVRE (5a): a estrutura fica aqui; js/tela-modulo.js só preenche -->
+<!-- MODELOS DO EDITOR DO MÓVEL LIVRE (5a): a estrutura fica aqui; tela/paineis/modulo.js só preenche -->
 <template id="tplEditor">
   <div class="ed-voltar" data-se="dentroAmbiente">
     <button type="button" class="btn" data-acao="voltar-ambiente">← Voltar ao ambiente</button>
@@ -301,7 +301,7 @@
   <fieldset class="ed-bloco">
     <legend>Espaços</legend>
     <span class="ed-nota"><strong>Móvel inteiro</strong> · <span data-texto="resumoMovel"></span></span>
-    <!-- mini desenho de frente: um botão por vão, na posição real (js/tela-modulo.js) -->
+    <!-- mini desenho de frente: um botão por vão, na posição real (tela/paineis/modulo.js) -->
     <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
     <span class="ed-nota" data-texto="resumoVao"></span>
   </fieldset>
@@ -550,7 +550,7 @@
     <button type="button" class="btn" data-acao="remover-ponto" aria-label="Remover ponto">×</button>
   </div>
 </template>
-<!-- AJUSTE POR PEÇA (1c): na ficha da peça clicada e na lista do editor — js/tela-ajuste.js só preenche -->
+<!-- AJUSTE POR PEÇA (1c): na ficha da peça clicada e na lista do editor — tela/paineis/ajuste.js só preenche -->
 <template id="tplAjustePeca">
   <div class="aj-peca">
     <div class="aj-tit">Ajuste desta peça <em data-texto="situacao"></em></div>
@@ -615,14 +615,31 @@
 /*@inclui:js/orcamento.js*/
 /*@inclui:js/revisao.js*/
 /*@inclui:js/editor-modulo.js*/
-/*@inclui:js/miniatura.js*/
-/*@inclui:js/painel-b.js*/
+/*@inclui:js/tela/paineis/miniatura.js*/
+/*@inclui:js/tela/paineis/painel-b.js*/
 /*@inclui:js/base/formato.js*/
-/*@inclui:js/tela.js*/
-/*@inclui:js/tela-modulo.js*/
-/*@inclui:js/tela-ambiente.js*/
-/*@inclui:js/tela-ajuste.js*/
-/*@inclui:js/tela-loja.js*/
-/*@inclui:js/tela-orcamento.js*/
-/*@inclui:js/tela-revisao.js*/
+/*@inclui:js/tela/estado.js*/
+/*@inclui:js/tela/formulario.js*/
+/*@inclui:js/tela/3d/cena.js*/
+/*@inclui:js/tela/3d/cotas.js*/
+/*@inclui:js/tela/3d/camera.js*/
+/*@inclui:js/tela/3d/selecao.js*/
+/*@inclui:js/tela/3d/medir.js*/
+/*@inclui:js/tela/3d/clique.js*/
+/*@inclui:js/tela/paineis/barra-abas.js*/
+/*@inclui:js/tela/paineis/arvore-pecas.js*/
+/*@inclui:js/tela/paineis/listas.js*/
+/*@inclui:js/tela/salvar/exportar.js*/
+/*@inclui:js/tela/salvar/abrir.js*/
+/*@inclui:js/tela/salvar/drive.js*/
+/*@inclui:js/tela/salvar/nuvem.js*/
+/*@inclui:js/tela/salvar/eventos-projeto.js*/
+/*@inclui:js/tela/ciclo.js*/
+/*@inclui:js/tela/inicio.js*/
+/*@inclui:js/tela/paineis/modulo.js*/
+/*@inclui:js/tela/paineis/ambiente.js*/
+/*@inclui:js/tela/paineis/ajuste.js*/
+/*@inclui:js/tela/paineis/loja.js*/
+/*@inclui:js/tela/paineis/orcamento.js*/
+/*@inclui:js/tela/paineis/revisao.js*/
 </script>

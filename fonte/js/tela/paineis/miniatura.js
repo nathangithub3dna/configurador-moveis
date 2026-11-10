@@ -1,7 +1,7 @@
 /* =====================================================================
    MINIATURA DA PEÇA — desenho 2D bem simples para a lista de Peças (pedido do Nathan, 09/11):
    chapas = contorno + recortes de borda + vazados (do desenho da peça, pc.des);
-   ferragens = um ícone por tipo. Só gera o SVG; a tela (tela.js) põe na lista e mostra a prévia maior.
+   ferragens = um ícone por tipo. Só gera o SVG; a tela (js/tela/paineis/listas.js) põe na lista e mostra a prévia maior.
    ===================================================================== */
 const ICONES_FERRAGEM = {
   dobradica:        '<circle cx="8" cy="12" r="5"/><rect x="13" y="9" width="8" height="6" rx="1"/>',

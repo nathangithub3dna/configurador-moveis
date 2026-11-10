@@ -1,7 +1,7 @@
 /* =====================================================================
    PAINEL — VISUAL B (10/11/2026): escolhas com desenho e números com − e +.
    Só aparência: cada grupo de botões preenche o campo de escolha que já existia (escondido) e dispara a mesma
-   mudança de antes, então a lógica (tela-modulo.js) e os testes continuam iguais.
+   mudança de antes, então a lógica (tela/paineis/modulo.js) e os testes continuam iguais.
    ===================================================================== */
 const RET_B = '<rect x="4" y="3" width="26" height="34"/>';
 const ICONES_B = {

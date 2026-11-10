@@ -1,6 +1,6 @@
 /* =====================================================================
    5c. SAÍDAS PARA A LOJA — códigos das peças, pedido no formato CorteCloud
-   (JSON) e etiquetas com QR em PDF. Só lógica; a tela fica em tela-loja.js.
+   (JSON) e etiquetas com QR em PDF. Só lógica; a tela fica em tela/paineis/loja.js.
 
    Código da peça (especificação, seção 15):  projeto · ambiente-módulo · peça
      ex.: 2611-03 · A-M02 · P014   (AAMM-NN · letra-M nº do módulo · P nº no projeto)

@@ -1,6 +1,6 @@
 /* =====================================================================
    5c (parte 3). ORÇAMENTO — blocos MÓVEL e INSTALAÇÃO, revisões congeladas
-   (Rev A, B…) e aceite do cliente. Só lógica; a tela fica em tela-orcamento.js.
+   (Rev A, B…) e aceite do cliente. Só lógica; a tela fica em tela/paineis/orcamento.js.
 
    Fórmula (guia de precificação de marcenaria sob medida, pesquisa F9):
      MÓVEL      = (material + serviços da loja) × (1 + markup) + horas do móvel × taxa × (1 + lucro) + horas do móvel × custo fixo/hora

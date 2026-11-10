@@ -174,7 +174,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .menu-exportar>summary::-webkit-details-marker{display:none}
 .menu-exportar .menu-painel{position:absolute;top:calc(100% + 8px);left:0;z-index:30;width:min(380px,calc(100vw - 32px));padding:14px;border-top:0}
 @media (max-width:900px){
-  /* celular: a janelinha fica presa na tela, logo abaixo do botão (o topo é calculado pelo tela.js ao abrir) */
+  /* celular: a janelinha fica presa na tela, logo abaixo do botão (o topo é calculado pelo js/tela/salvar/exportar.js ao abrir) */
   .menu-exportar .menu-painel{position:fixed;left:16px;right:16px;width:auto;top:var(--exp-topo,120px);max-height:calc(100dvh - var(--exp-topo,120px) - 16px);overflow:auto}
 }
 

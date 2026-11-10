@@ -5,7 +5,7 @@
    - Mudou o jeito de guardar o projeto (ex.: paredes em U, vários ambientes)? Aumente FORMATO.versao
      e acrescente FORMATO.conversores[n]: recebe o projeto no formato n e devolve no formato n+1.
    - O conversor trabalha numa cópia: o original nunca é alterado. Na nuvem, a primeira gravação depois
-     de uma conversão guarda o original à parte (tela.js, salvarNuvem); Drive e .json sempre criam arquivo novo.
+     de uma conversão guarda o original à parte (tela/salvar/nuvem.js, salvarNuvem); Drive e .json sempre criam arquivo novo.
    - Projeto de formato mais novo que este programa: não abre (abriria pela metade e perderia o que não entende).
    ===================================================================== */
 const FORMATO = { versao: 1, conversores: {} };

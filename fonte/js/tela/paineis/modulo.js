@@ -114,8 +114,8 @@ function montarEditorModulo() {
     const b = modeloDe('tplOpcao').querySelector('button'); b.textContent = r; b.dataset.valor = v;
     b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
   }));
-  aplicarPainelB(ed);                                                   // visual B: botões com desenho e − / + (painel-b.js)
-  preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela-ajuste.js)
+  aplicarPainelB(ed);                                                   // visual B: botões com desenho e − / + (tela/paineis/painel-b.js)
+  preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela/paineis/ajuste.js)
   // "Construção e peças ajustadas" fica recolhido; abre sozinho se há peça ajustada e lembra se você abriu
   const mais = ed.querySelector('.ed-mais');
   if (mais) { mais.open = !!estado.edMaisAberto || Object.keys(m.pecasAjuste || {}).length > 0; mais.addEventListener('toggle', () => { estado.edMaisAberto = mais.open; }); }
@@ -131,8 +131,8 @@ function ehModulo() { const ed = TIPOS[estado.projeto.tipo].editor; return ed ==
 $('form').addEventListener('click', e => {
   const b = e.target.closest('[data-acao]'); if (!b || !ehModulo()) return;
   const cam = estado.vaoSel, a = b.dataset.acao;
-  if (a === 'voltar-ambiente') return;                                 // tela-ambiente.js cuida
-  if (a.startsWith('ajuste-')) return;                                  // tela-ajuste.js cuida
+  if (a === 'voltar-ambiente') return;                                 // tela/paineis/ambiente.js cuida
+  if (a.startsWith('ajuste-')) return;                                  // tela/paineis/ajuste.js cuida
   if (a === 'selecionar') { estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema(); return; }
   mudarModulo(m => {
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
@@ -194,7 +194,7 @@ function atualizarEsquema() {
   $('palco').classList.toggle('com-esquema', !caixa.hidden);
   $('bEsquema').setAttribute('aria-pressed', String(estado.esquema)); $('b3D').setAttribute('aria-pressed', String(!estado.esquema));
   if (caixa.hidden) return;
-  if (amb && !mod) { desenharPlanta(caixa); return; }                  // ambiente: planta vista de cima (js/tela-ambiente.js)
+  if (amb && !mod) { desenharPlanta(caixa); return; }                  // ambiente: planta vista de cima (tela/paineis/ambiente.js)
   const r = amb ? resultadoLocal() : (estado.res?.dims ? estado.res : estado.valido); if (!r?.dims) { caixa.replaceChildren(); return; }   // mesmo com erro, mostra os vãos para corrigir
   // enquadra pelo módulo e por peças que saem dele (medida mudada à mão — 1c)
   const bx = r.pecas.filter(p => p.box && p.lista), xMin = Math.min(0, ...bx.map(p => p.box[0])), yMin = Math.min(0, ...bx.map(p => p.box[2]));

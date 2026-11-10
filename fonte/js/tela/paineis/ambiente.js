@@ -177,7 +177,7 @@ $('form').addEventListener('click', e => {
   const b = e.target.closest('[data-acao]'); if (!b || !ehAmbiente()) return;
   const a = b.dataset.acao, i = Number(b.dataset.i);
   if (a === 'voltar-ambiente') { estado.modAberto = null; montarFormulario(); atualizarEsquema(); return; }
-  if (moduloEmEdicao()) return;                                         // dentro de um módulo: quem cuida é tela-modulo.js
+  if (moduloEmEdicao()) return;                                         // dentro de um módulo: quem cuida é tela/paineis/modulo.js
   if (a === 'abrir') { estado.modAberto = i; estado.modSel = i; estado.vaoSel = null; montarFormulario(); atualizarEsquema(); return; }
   if (a === 'sel-livre') { selecionarLivre(i); return; }
   mudarAmbiente(amb => {

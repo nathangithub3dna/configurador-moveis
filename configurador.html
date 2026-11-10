@@ -214,7 +214,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .menu-exportar>summary::-webkit-details-marker{display:none}
 .menu-exportar .menu-painel{position:absolute;top:calc(100% + 8px);left:0;z-index:30;width:min(380px,calc(100vw - 32px));padding:14px;border-top:0}
 @media (max-width:900px){
-  /* celular: a janelinha fica presa na tela, logo abaixo do botão (o topo é calculado pelo tela.js ao abrir) */
+  /* celular: a janelinha fica presa na tela, logo abaixo do botão (o topo é calculado pelo js/tela/salvar/exportar.js ao abrir) */
   .menu-exportar .menu-painel{position:fixed;left:16px;right:16px;width:auto;top:var(--exp-topo,120px);max-height:calc(100dvh - var(--exp-topo,120px) - 16px);overflow:auto}
 }
 
@@ -389,7 +389,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .esq-puxador{position:absolute;box-sizing:border-box;background:var(--v-ferragem);border-radius:2px;min-width:3px;min-height:3px;pointer-events:none}
 .mini-pux{position:absolute;background:var(--v-ferragem);border-radius:1px;min-width:2px;min-height:2px;pointer-events:none;z-index:2}
 
-/* Painel no visual B (10/11): escolhas em botões com desenho, números com − e + (js/painel-b.js) */
+/* Painel no visual B (10/11): escolhas em botões com desenho, números com − e + (tela/paineis/painel-b.js) */
 .ed-grade-b{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .ed-op-b{flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;padding:8px 4px 6px;font-size:11.5px;line-height:1.2;white-space:normal;text-align:center;min-height:68px}
 .ed-op-b .ico-b{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-linecap:round;flex:none}
@@ -637,7 +637,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
         <button class="btn" id="fDesenho" type="button" hidden>Ver desenho técnico</button>
         <div id="fAjuste"></div>
       </div>
-      <!-- menu do clique direito no 3D (no celular: toque longo); js/tela.js mostra e posiciona -->
+      <!-- menu do clique direito no 3D (no celular: toque longo); js/tela/3d/clique.js mostra e posiciona -->
       <div class="menu-3d" id="menu3d" role="menu" aria-label="Opções do 3D" hidden>
         <button class="btn" id="bPortas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir portas</button>
         <button class="btn" id="bGavetas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir gavetas</button>
@@ -777,7 +777,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 </section>
 <div class="toast" id="toast" hidden></div>
 
-<!-- MODELOS DO EDITOR DO MÓVEL LIVRE (5a): a estrutura fica aqui; js/tela-modulo.js só preenche -->
+<!-- MODELOS DO EDITOR DO MÓVEL LIVRE (5a): a estrutura fica aqui; tela/paineis/modulo.js só preenche -->
 <template id="tplEditor">
   <div class="ed-voltar" data-se="dentroAmbiente">
     <button type="button" class="btn" data-acao="voltar-ambiente">← Voltar ao ambiente</button>
@@ -795,7 +795,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
   <fieldset class="ed-bloco">
     <legend>Espaços</legend>
     <span class="ed-nota"><strong>Móvel inteiro</strong> · <span data-texto="resumoMovel"></span></span>
-    <!-- mini desenho de frente: um botão por vão, na posição real (js/tela-modulo.js) -->
+    <!-- mini desenho de frente: um botão por vão, na posição real (tela/paineis/modulo.js) -->
     <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
     <span class="ed-nota" data-texto="resumoVao"></span>
   </fieldset>
@@ -1044,7 +1044,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <button type="button" class="btn" data-acao="remover-ponto" aria-label="Remover ponto">×</button>
   </div>
 </template>
-<!-- AJUSTE POR PEÇA (1c): na ficha da peça clicada e na lista do editor — js/tela-ajuste.js só preenche -->
+<!-- AJUSTE POR PEÇA (1c): na ficha da peça clicada e na lista do editor — tela/paineis/ajuste.js só preenche -->
 <template id="tplAjustePeca">
   <div class="aj-peca">
     <div class="aj-tit">Ajuste desta peça <em data-texto="situacao"></em></div>
@@ -9879,7 +9879,7 @@ End Function
 
 /* =====================================================================
    5c. SAÍDAS PARA A LOJA — códigos das peças, pedido no formato CorteCloud
-   (JSON) e etiquetas com QR em PDF. Só lógica; a tela fica em tela-loja.js.
+   (JSON) e etiquetas com QR em PDF. Só lógica; a tela fica em tela/paineis/loja.js.
 
    Código da peça (especificação, seção 15):  projeto · ambiente-módulo · peça
      ex.: 2611-03 · A-M02 · P014   (AAMM-NN · letra-M nº do módulo · P nº no projeto)
@@ -10146,7 +10146,7 @@ async function folhasPDF(pecas, extraDe) {
 }
 /* =====================================================================
    5c (parte 3). ORÇAMENTO — blocos MÓVEL e INSTALAÇÃO, revisões congeladas
-   (Rev A, B…) e aceite do cliente. Só lógica; a tela fica em tela-orcamento.js.
+   (Rev A, B…) e aceite do cliente. Só lógica; a tela fica em tela/paineis/orcamento.js.
 
    Fórmula (guia de precificação de marcenaria sob medida, pesquisa F9):
      MÓVEL      = (material + serviços da loja) × (1 + markup) + horas do móvel × taxa × (1 + lucro) + horas do móvel × custo fixo/hora
@@ -10489,7 +10489,7 @@ const ED = {
 /* =====================================================================
    MINIATURA DA PEÇA — desenho 2D bem simples para a lista de Peças (pedido do Nathan, 09/11):
    chapas = contorno + recortes de borda + vazados (do desenho da peça, pc.des);
-   ferragens = um ícone por tipo. Só gera o SVG; a tela (tela.js) põe na lista e mostra a prévia maior.
+   ferragens = um ícone por tipo. Só gera o SVG; a tela (js/tela/paineis/listas.js) põe na lista e mostra a prévia maior.
    ===================================================================== */
 const ICONES_FERRAGEM = {
   dobradica:        '<circle cx="8" cy="12" r="5"/><rect x="13" y="9" width="8" height="6" rx="1"/>',
@@ -10526,7 +10526,7 @@ function miniaturaPeca(pc, px) {
 /* =====================================================================
    PAINEL — VISUAL B (10/11/2026): escolhas com desenho e números com − e +.
    Só aparência: cada grupo de botões preenche o campo de escolha que já existia (escondido) e dispara a mesma
-   mudança de antes, então a lógica (tela-modulo.js) e os testes continuam iguais.
+   mudança de antes, então a lógica (tela/paineis/modulo.js) e os testes continuam iguais.
    ===================================================================== */
 const RET_B = '<rect x="4" y="3" width="26" height="34"/>';
 const ICONES_B = {
@@ -10603,7 +10603,7 @@ function aplicarPainelB(ed) {
    - Mudou o jeito de guardar o projeto (ex.: paredes em U, vários ambientes)? Aumente FORMATO.versao
      e acrescente FORMATO.conversores[n]: recebe o projeto no formato n e devolve no formato n+1.
    - O conversor trabalha numa cópia: o original nunca é alterado. Na nuvem, a primeira gravação depois
-     de uma conversão guarda o original à parte (tela.js, salvarNuvem); Drive e .json sempre criam arquivo novo.
+     de uma conversão guarda o original à parte (tela/salvar/nuvem.js, salvarNuvem); Drive e .json sempre criam arquivo novo.
    - Projeto de formato mais novo que este programa: não abre (abriria pela metade e perderia o que não entende).
    ===================================================================== */
 const FORMATO = { versao: 1, conversores: {} };
@@ -10619,6 +10619,7 @@ function converterFormato(d) {
   return { projeto: p, de, convertido: de < FORMATO.versao };
 }
 const AVISO_FORMATO_NOVO = 'Este projeto foi salvo por uma versão mais nova do programa. Abra pelo link do Claude (a versão atualizada); nada foi alterado.';
+// TELA — estado da página, salvar no aparelho, desfazer, aviso "Não salvo" (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* =====================================================================
    5. ESTADO DA PÁGINA
    ===================================================================== */
@@ -10673,7 +10674,7 @@ function desfazer() {
 const $ = id => document.getElementById(id);
 const el = (tag, attrs={}, ...filhos) => { const e = document.createElement(tag); for (const [k,v] of Object.entries(attrs)) { if (k==='class') e.className=v; else if (k==='text') e.textContent=v; else if (k.startsWith('on')) e.addEventListener(k.slice(2),v); else if (v!==false && v!=null) e.setAttribute(k, v===true?'':v); } filhos.flat().forEach(f => f!=null && e.append(f)); return e; };
 let toastT; const toast = msg => { const t=$('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 2600); };
-
+// TELA — formulário gerado a partir do tipo de móvel (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Formulário gerado a partir do tipo ---------- */
 function montarFormulario() {
   const tipo = TIPOS[estado.projeto.tipo], form = $('form'), par = estado.projeto.parametros;
@@ -10681,8 +10682,8 @@ function montarFormulario() {
   // móvel convertido pelo "Editar no esquema" continua com o nome do tipo de origem (pedido do Nathan)
   const origem = estado.projeto.tipo === 'modulo' && TIPOS[par.origem] ? par.origem : null;
   $('tipoMovel').replaceChildren(...Object.entries(TIPOS).map(([k,t]) => el('option', { value:k, selected:k===estado.projeto.tipo }, k === 'modulo' && origem ? `${TIPOS[origem].nome.split(' (')[0]} — esquema` : t.nome)));
-  if (tipo.editor === 'ambiente' && !moduloEmEdicao()) { montarEditorAmbiente(); return; }   // ambiente (js/tela-ambiente.js)
-  if (tipo.editor) { montarEditorModulo(); return; }                  // móvel livre ou módulo aberto do ambiente (js/tela-modulo.js)
+  if (tipo.editor === 'ambiente' && !moduloEmEdicao()) { montarEditorAmbiente(); return; }   // ambiente (tela/paineis/ambiente.js)
+  if (tipo.editor) { montarEditorModulo(); return; }                  // móvel livre ou módulo aberto do ambiente (tela/paineis/modulo.js)
   form.replaceChildren(...tipo.grupos.map(g => el('fieldset', {}, el('legend', { text:g.titulo }), ...g.campos.map(c => {
     const id = 'p-'+c.id;
     if (c.tipo === 'sim') return el('div', { class:'campo sim' }, el('input', { type:'checkbox', id, checked:!!par[c.id], 'data-c':c.id }), el('label', { for:id, text:c.rot }));
@@ -10700,7 +10701,7 @@ $('form').addEventListener('input', e => {
   clearTimeout(debounceT); debounceT = setTimeout(atualizar, 120);
 });
 $('nomeProjeto').addEventListener('input', e => { estado.projeto.nome = e.target.value; salvarLocal(); });
-
+// TELA — cena 3D técnica: materiais, peças, luzes, explodir, cortes, tema (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* =====================================================================
    6. CENA 3D TÉCNICA
    ===================================================================== */
@@ -10902,7 +10903,7 @@ function aplicarTema() {
 }
 try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', aplicarTema); } catch(e) {}
 new MutationObserver(aplicarTema).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
-
+// TELA — cotas no 3D (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Cotas ---------- */
 function cota(a, b, desl, texto) {
   const A = a.clone().add(desl), B = b.clone().add(desl);
@@ -10927,7 +10928,7 @@ function construirCotas() {
     cota(V(x1,y1,z0), V(x1,y1,z1), V(50,50,0), fmt(z1-z0));
   }
 }
-
+// TELA — câmera e vistas (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Câmera e vistas ---------- */
 function ajustarOrto() {
   const w = palco.clientWidth || 1, h = palco.clientHeight || 1, m = dimsCena ? Math.max(dimsCena.L, dimsCena.H, dimsCena.P) : 1000;
@@ -10949,7 +10950,7 @@ function trocarCamera(orto) {
   nova.position.copy(cam.position); nova.quaternion.copy(cam.quaternion);
   cam = nova; controles.object = cam; ajustarOrto(); cam.updateProjectionMatrix(); controles.update();
 }
-
+// TELA — seleção de peça e ficha (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Seleção e ficha ---------- */
 function destacar() {
   for (const { pc, mesh } of nos.values()) mesh.material = pc.id === estado.sel ? matSel : matDe(pc);
@@ -10965,13 +10966,13 @@ function destacar() {
   else { $('fMed').textContent = `${fmt(pc.comp)} × ${fmt(pc.larg)} × ${fmt(pc.esp)} mm`; $('fDet').textContent = `${MATERIAIS[pc.mat].nome} · fita ${fitaTxt(pc.fita)}${pc.lista ? '' : ' · fora da lista de corte'}`; }
   $('fObs').textContent = pc.obs || '';
   $('fGlb').textContent = `${pc.cat}_${pc.mat}_${pc.id}`;
-  preencherAjustePeca(pc);                                             // desligar / mudar medida (tela-ajuste.js)
+  preencherAjustePeca(pc);                                             // desligar / mudar medida (tela/paineis/ajuste.js)
   $('ficha').hidden = false;
 }
 function selecionar(id) { estado.sel = id; limparMedida(false); destacar(); construirCotas(); }
 $('fDesenho').addEventListener('click', () => { const card = [...document.querySelectorAll('.des[data-ids]')].find(a => a.dataset.ids.split(' ').includes(estado.sel)); card?.scrollIntoView({ behavior:'smooth', block:'start' }); });
 $('fFechar').addEventListener('click', () => { selecionar(null); limparMedida(); $('ficha').hidden = true; });
-
+// TELA — medir no 3D (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Medir ---------- */
 const medida = { pts:[] };
 function limparMedida(fecharFicha = true) {
@@ -11000,7 +11001,7 @@ function pontoMedida(hit) {
     $('ficha').hidden = false;
   }
 }
-
+// TELA — clique, botão direito e toque longo no 3D (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Clique no 3D ---------- */
 const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
 let baixo = null;
@@ -11040,7 +11041,7 @@ renderer.domElement.addEventListener('pointerup', e => {
   selecionar(hit ? hit.object.userData.peca.id : null);
 });
 addEventListener('keydown', e => { if (e.key === 'Escape') { limparMedida(); selecionar(null); } });
-
+// TELA — barra de ferramentas e abas (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Barra de ferramentas ---------- */
 const alternar = (id, chave, depois) => $(id).addEventListener('click', () => {
   estado[chave] = !estado[chave]; $(id).setAttribute('aria-pressed', estado[chave]); depois && depois();
@@ -11076,9 +11077,9 @@ $('rCorte').addEventListener('input', e => { estado.cortePos = Number(e.target.v
 [['abaParam','painelParam'],['abaPecas','painelPecas']].forEach(([a,p], _, todos) => $(a).addEventListener('click', () => {
   todos.forEach(([a2,p2]) => { $(a2).setAttribute('aria-selected', a2===a); $(p2).hidden = a2!==a; });
 }));
-
+// TELA — árvore de peças (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Árvore de peças ---------- */
-// miniatura 2D da peça (js/miniatura.js) e a prévia maior: ao passar o mouse; no celular, ao tocar na miniatura
+// miniatura 2D da peça (tela/paineis/miniatura.js) e a prévia maior: ao passar o mouse; no celular, ao tocar na miniatura
 function miniaturaNaLista(pc) {
   const s = el('span', { class:'miniatura', 'aria-hidden':'true' }); s.innerHTML = miniaturaPeca(pc, 28);
   s.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') mostrarPrevia(pc, s); });
@@ -11113,7 +11114,7 @@ function montarArvore(pecas) {
     })))));
   destacar();
 }
-
+// TELA — alertas, status e listas (corte, compras, ferragens, desenhos) (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Alertas e status ---------- */
 function mostrarAlertas(res) {
   $('alertas').replaceChildren(...res.erros.map(m => el('div', { class:'alerta erro', role:'alert', text:m })), ...res.avisos.map(m => el('div', { class:'alerta aviso', text:m })));
@@ -11251,7 +11252,7 @@ function copiar(texto, areaId) {
 }
 $('copCorte').addEventListener('click', () => estado.textos && copiar(estado.textos.corte, 'copiaCorte'));
 $('copFerr').addEventListener('click', () => estado.textos && copiar(estado.textos.ferr, 'copiaFerr'));
-
+// TELA — exportar: projeto .json, PDF, iLogic, pacote .zip do Blender (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* =====================================================================
    7. EXPORTAÇÃO — projeto (.json) e pacote para o Blender (.zip)
    ===================================================================== */
@@ -11359,7 +11360,7 @@ $('btnZip').addEventListener('click', async () => {
   } catch(e) { toast('Falha ao montar o pacote.'); }
   atualizarBotoesExport();
 });
-
+// TELA — abrir projeto (.json, Drive, nuvem passam por aqui; conversor de formato) (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Abrir projeto / padrão ---------- */
 $('btnAbrir').addEventListener('click', () => $('arqProjeto').click());
 const AVISO_CONVERTIDO = 'Projeto aberto e atualizado para o formato novo. O original não foi alterado.';
@@ -11375,6 +11376,7 @@ function abrirProjetoTexto(texto) {
     carregarProjeto(); marcarSalvo(); toast(c.convertido ? AVISO_CONVERTIDO : 'Projeto aberto.'); return true;
   } catch(err) { toast('Esse arquivo não é um projeto do Configurador.'); return false; }
 }
+// TELA — Google Drive: salvar e abrir na pasta "Projetos de móveis" (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Google Drive (só no programa publicado, pelo app do Claude) ----------
    Salvar grava uma cópia nova na pasta "Projetos de móveis" (o Drive não deixa trocar o conteúdo pela ligação:
    cada salvamento vira um arquivo com data e hora). Abrir lista os arquivos da pasta, do mais novo ao mais antigo. */
@@ -11428,6 +11430,7 @@ $('dlgDrive').addEventListener('click', async e => {
     else dlg.querySelector('[data-texto="nota"]').textContent = 'Esse arquivo não é um projeto do Configurador.';
   } catch(err) { dlg.querySelector('[data-texto="nota"]').textContent = erroDrive(err); }
 });
+// TELA — nuvem do próprio programa: salvar sozinho, Meus projetos, cópia no Drive (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Projetos guardados no próprio programa (capability db do artifact) ----------
    Cada projeto vira um documento privado do Nathan (data/users/<id>/<nome do projeto>): o mesmo no computador e no celular,
    e não se perde quando o programa é atualizado. O salvamento é automático, 3 s depois de cada mudança.
@@ -11531,6 +11534,7 @@ $('dlgNuvem').addEventListener('click', async e => {
   try { const d = await colNuvem().doc(bt.dataset.id).get(); if (d.exists && abrirDaNuvem(d.data(), 'Projeto aberto.')) dlg.close(); else dlg.querySelector('[data-texto="nota"]').textContent = 'Não deu para abrir esse projeto.'; }
   catch (err) { dlg.querySelector('[data-texto="nota"]').textContent = 'Não deu para abrir agora. Tente de novo.'; }
 });
+// TELA — botões de projeto: abrir arquivo, desfazer, medidas padrão, passar para o esquema, trocar tipo (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 $('arqProjeto').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return;
   const fr = new FileReader();
@@ -11552,7 +11556,7 @@ $('btnParaLivre').addEventListener('click', () => {
   toast('Agora é editado pelo Esquema: toque nos vãos. Este móvel não volta para o formulário antigo.');
 });
 $('tipoMovel').addEventListener('change', e => { estado.projeto = projetoPadrao(e.target.value); estado.ocultas.clear(); carregarProjeto(); });
-
+// TELA — ciclo: parâmetros → peças → 3D e listas (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* =====================================================================
    8. CICLO: parâmetros → peças → 3D e listas
    ===================================================================== */
@@ -11569,7 +11573,7 @@ function atualizar(primeira = false) {
   mostrarAlertas(res); mostrarListas(res); mostrarDesenhos(res); destacar(); salvarLocal(); atualizarEsquema(); mostrarLoja(); mostrarFolha(); mostrarSituacao();
 }
 function carregarProjeto() { $('nomeProjeto').value = estado.projeto.nome; montarFormulario(); estado.valido = null; atualizar(true); }
-
+// TELA — tamanho da tela, animação e início (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Tamanho e animação ---------- */
 function redimensionar() {
   const w = palco.clientWidth, h = palco.clientHeight; if (!w || !h) return;
@@ -11715,8 +11719,8 @@ function montarEditorModulo() {
     const b = modeloDe('tplOpcao').querySelector('button'); b.textContent = r; b.dataset.valor = v;
     b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
   }));
-  aplicarPainelB(ed);                                                   // visual B: botões com desenho e − / + (painel-b.js)
-  preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela-ajuste.js)
+  aplicarPainelB(ed);                                                   // visual B: botões com desenho e − / + (tela/paineis/painel-b.js)
+  preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela/paineis/ajuste.js)
   // "Construção e peças ajustadas" fica recolhido; abre sozinho se há peça ajustada e lembra se você abriu
   const mais = ed.querySelector('.ed-mais');
   if (mais) { mais.open = !!estado.edMaisAberto || Object.keys(m.pecasAjuste || {}).length > 0; mais.addEventListener('toggle', () => { estado.edMaisAberto = mais.open; }); }
@@ -11732,8 +11736,8 @@ function ehModulo() { const ed = TIPOS[estado.projeto.tipo].editor; return ed ==
 $('form').addEventListener('click', e => {
   const b = e.target.closest('[data-acao]'); if (!b || !ehModulo()) return;
   const cam = estado.vaoSel, a = b.dataset.acao;
-  if (a === 'voltar-ambiente') return;                                 // tela-ambiente.js cuida
-  if (a.startsWith('ajuste-')) return;                                  // tela-ajuste.js cuida
+  if (a === 'voltar-ambiente') return;                                 // tela/paineis/ambiente.js cuida
+  if (a.startsWith('ajuste-')) return;                                  // tela/paineis/ajuste.js cuida
   if (a === 'selecionar') { estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema(); return; }
   mudarModulo(m => {
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
@@ -11795,7 +11799,7 @@ function atualizarEsquema() {
   $('palco').classList.toggle('com-esquema', !caixa.hidden);
   $('bEsquema').setAttribute('aria-pressed', String(estado.esquema)); $('b3D').setAttribute('aria-pressed', String(!estado.esquema));
   if (caixa.hidden) return;
-  if (amb && !mod) { desenharPlanta(caixa); return; }                  // ambiente: planta vista de cima (js/tela-ambiente.js)
+  if (amb && !mod) { desenharPlanta(caixa); return; }                  // ambiente: planta vista de cima (tela/paineis/ambiente.js)
   const r = amb ? resultadoLocal() : (estado.res?.dims ? estado.res : estado.valido); if (!r?.dims) { caixa.replaceChildren(); return; }   // mesmo com erro, mostra os vãos para corrigir
   // enquadra pelo módulo e por peças que saem dele (medida mudada à mão — 1c)
   const bx = r.pecas.filter(p => p.box && p.lista), xMin = Math.min(0, ...bx.map(p => p.box[0])), yMin = Math.min(0, ...bx.map(p => p.box[2]));
@@ -12010,7 +12014,7 @@ $('form').addEventListener('click', e => {
   const b = e.target.closest('[data-acao]'); if (!b || !ehAmbiente()) return;
   const a = b.dataset.acao, i = Number(b.dataset.i);
   if (a === 'voltar-ambiente') { estado.modAberto = null; montarFormulario(); atualizarEsquema(); return; }
-  if (moduloEmEdicao()) return;                                         // dentro de um módulo: quem cuida é tela-modulo.js
+  if (moduloEmEdicao()) return;                                         // dentro de um módulo: quem cuida é tela/paineis/modulo.js
   if (a === 'abrir') { estado.modAberto = i; estado.modSel = i; estado.vaoSel = null; montarFormulario(); atualizarEsquema(); return; }
   if (a === 'sel-livre') { selecionarLivre(i); return; }
   mudarAmbiente(amb => {
