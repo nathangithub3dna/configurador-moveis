@@ -127,12 +127,15 @@ function gerarModuloV3(m) {
   // eixos das portas já feitas: para a dobradiça automática não cair na mesma divisória da vizinha (as portas bateriam)
   const eixos = [];
   const mesmoEixo = (a, b) => Math.abs(a.pivX - b.pivX) < 40 && Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0) > 50;
-  function porta(g, lado, x0, x1, pivX, puxador) {
+  function porta(g, lado, x0, x1, pivX, puxador, borda = 'auto') {
     const k = ++cont.porta, id = `porta-${k}`, perfil = puxador?.modelo === 'perfil';
     let y0 = g.fy0 + folga(g.b.baixo), y1 = g.fy1 - folga(g.b.cima);
-    // perfil de borda (cava): a porta fica mais curta e o perfil ocupa a sobra; no aéreo (puxador baixo) vai na borda de baixo, nos outros em cima
-    const perfilEmCima = perfil && (puxador.altura === 'topo-120' || !(Number(puxador.altura) < y0 + (y1 - y0) / 4));   // embaixo só com o puxador no quarto de baixo da porta (aéreo)
-    if (perfil) { if (perfilEmCima) y1 -= puxador.reducao; else y0 += puxador.reducao; }
+    // perfil de borda (cava): a porta fica mais curta e o perfil ocupa a sobra, em cima, embaixo ou na lateral do lado do puxador (oposta à dobradiça).
+    // Automático: embaixo no aéreo (puxador no quarto de baixo da porta), em cima nos outros
+    const bordaPerfil = !perfil ? null : borda === 'cima' || borda === 'baixo' ? borda : borda === 'lateral' ? (lado === 'esq' ? 'dir' : 'esq')
+      : (puxador.altura === 'topo-120' || !(Number(puxador.altura) < y0 + (y1 - y0) / 4)) ? 'cima' : 'baixo';
+    const red = perfil ? puxador.reducao : 0;
+    if (bordaPerfil === 'cima') y1 -= red; else if (bordaPerfil === 'baixo') y0 += red; else if (bordaPerfil === 'dir') x1 -= red; else if (bordaPerfil === 'esq') x0 += red;
     const hp = y1 - y0, dw = x1 - x0;
     eixos.push({ k, V:cont.vao, lado, pivX, y0, y1 });
     if (dw > R.portaMaxLarg) E.push(`Vão ${cont.vao}: porta com ${fmt(dw)} mm de largura (máximo ${R.portaMaxLarg}). Use 2 portas, porta de correr ou divida o vão.`);
@@ -140,7 +143,7 @@ function gerarModuloV3(m) {
     if (dr.acimaTabela) A.push(`Porta ${k}: ${fmt(dr.peso)} kg passa da tabela de dobradiças (32 kg) — conferir com o fabricante.`);
     const pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(hp-2*R.dobradicaBorda)/(nd-1));
     const px = puxador, proj = px.proj;
-    const xp = lado === 'esq' ? x1 - 35 : x0 + 35;
+    const xp = bordaPerfil === 'dir' ? x1 + red/2 : bordaPerfil === 'esq' ? x0 - red/2 : lado === 'esq' ? x1 - 35 : x0 + 35;
     const ypc = px.altura === 'topo-120' ? (hp > 320 ? y1 - 120 : (y0 + y1)/2) : Math.min(Math.max(px.altura, y0 + px.comp/2 + 20), y1 - px.comp/2 - 20);
     const naBorda = lado === 'esq' ? g.b.esq === 'externa' : g.b.dir === 'externa';
     const temParede = naBorda && (lado === 'esq' ? !!c.paredeEsq : !!c.paredeDir), eW = naBorda ? (lado === 'esq' ? eE : eD) : 0;
@@ -152,8 +155,10 @@ function gerarModuloV3(m) {
         ...(perfil ? [] : [-1,1].map(sn => ({ x: dw-(xp-x0), y: ypc-y0+sn*px.furacao/2, d:5, prof:0, tipo:'puxador' }))) ] } });
     const xc = lado === 'esq' ? x0 + R.canecoBorda : x1 - R.canecoBorda;
     pos.forEach((py,j) => ferr({ id:`${id}-dobradica-${j+1}`, nome:`Dobradiça ${j+1} da porta ${k}`, ref:'kit-dobradica-blum-reta', forma:{tipo:'cil',eixo:'z'}, box:[xc-17.5,xc+17.5,y0+py-17.5,y0+py+17.5,P-t-1,P-t+12], mov, expPai:id }));
-    if (perfil) ferr({ id:`${id}-puxador`, nome:`Perfil puxador da porta ${k}`, forma:{ tipo:'puxador', dir:'h', modelo:'perfil', embaixo:!perfilEmCima }, cor:px.cor, ref:px.ref, comp:dw, larg:px.reducao,
-      box: perfilEmCima ? [x0,x1,y1,y1+px.reducao,P-t,P] : [x0,x1,y0-px.reducao,y0,P-t,P], mov, expPai:id, obs:`${px.rot}: cortar com ${fmt(dw)} mm.` });
+    if (perfil) { const deLado = bordaPerfil === 'esq' || bordaPerfil === 'dir', compP = deLado ? hp : dw;
+      const boxP = { cima:[x0,x1,y1,y1+red,P-t,P], baixo:[x0,x1,y0-red,y0,P-t,P], dir:[x1,x1+red,y0,y1,P-t,P], esq:[x0-red,x0,y0,y1,P-t,P] }[bordaPerfil];
+      ferr({ id:`${id}-puxador`, nome:`Perfil puxador da porta ${k}`, forma:{ tipo:'puxador', dir: deLado ? 'v' : 'h', modelo:'perfil', saida:bordaPerfil, embaixo: bordaPerfil === 'baixo' }, cor:px.cor, ref:px.ref, comp:compP, larg:red,
+        box:boxP, mov, expPai:id, obs:`${px.rot}: cortar com ${fmt(compP)} mm.` }); }
     else ferr({ id:`${id}-puxador`, nome:`Puxador da porta ${k}`, forma:{ tipo:'puxador', dir:'v', modelo:px.modelo, furacao:px.furacao }, cor:px.cor, ref:px.ref, box:[xp-px.larg/2,xp+px.larg/2,ypc-px.comp/2,ypc+px.comp/2,P,P+proj], mov, expPai:id });
     if (temParede && lim.ang < 90) A.push(`Porta ${k} abre só até ${fmt(lim.ang)}°: ${lim.motivo}.`);
     return pt;
@@ -187,21 +192,21 @@ function gerarModuloV3(m) {
       const vizDir = eixos.some(e => e.lado === 'dir' && mesmoEixo(e, { pivX:g.fx0, y0:g.fy0, y1:g.fy1 }));
       const lado = fr.lado && fr.lado !== 'auto' ? fr.lado : ((g.b.esq === 'externa' && c.paredeEsq) || vizDir ? 'dir' : 'esq');
       ladoFrente = lado;
-      porta(g, lado, x0, x1, lado === 'esq' ? g.fx0 : g.fx1, m.puxadorPorta);
+      porta(g, lado, x0, x1, lado === 'esq' ? g.fx0 : g.fx1, m.puxadorPorta, fr.perfil);
     } else if (fr.tipo === 'portas') {
       // quantidade automática pela largura máxima de porta; portas iguais, em pares que se encontram no meio
       const x0 = g.fx0 + folga(g.b.esq), x1 = g.fx1 - folga(g.b.dir);
       const n = fr.n && fr.n !== 'auto' ? fr.n : Math.max(1, Math.ceil((x1 - x0) / R.portaMaxLarg)), w = (x1 - x0 - (n - 1)*R.entre) / n;
       for (let i = 0; i < n; i++) {
         const a = x0 + i*(w + R.entre), b = a + w, lado = n === 1 ? 'esq' : (i % 2 === 0 ? 'esq' : 'dir');
-        porta(g, lado, a, b, lado === 'esq' ? a - (i === 0 ? folga(g.b.esq) : R.entre/2) : b + (i === n-1 ? folga(g.b.dir) : R.entre/2), m.puxadorPorta);
+        porta(g, lado, a, b, lado === 'esq' ? a - (i === 0 ? folga(g.b.esq) : R.entre/2) : b + (i === n-1 ? folga(g.b.dir) : R.entre/2), m.puxadorPorta, fr.perfil);
       }
     } else if (fr.tipo === 'correr') portasCorrer(g, fr, V);
     else if (fr.tipo === 'basculante') basculante(g, fr);
     else if (fr.tipo === '2portas') {
       const meio = (g.fx0 + g.fx1)/2;
-      porta(g, 'esq', g.fx0 + folga(g.b.esq), meio - R.entre/2, g.fx0, m.puxadorPorta);
-      porta(g, 'dir', meio + R.entre/2, g.fx1 - folga(g.b.dir), g.fx1, m.puxadorPorta);
+      porta(g, 'esq', g.fx0 + folga(g.b.esq), meio - R.entre/2, g.fx0, m.puxadorPorta, fr.perfil);
+      porta(g, 'dir', meio + R.entre/2, g.fx1 - folga(g.b.dir), g.fx1, m.puxadorPorta, fr.perfil);
     } else if (fr.tipo === 'gaveta') gavetaExterna(g);
     // CONTEÚDO (de baixo para cima)
     let y = g.iy0;
@@ -293,10 +298,20 @@ function gerarModuloV3(m) {
       const zz1 = frenteTr ? z1 + (emb ? 0 : tp + gapTr) : z1 - (emb ? tp + gapTr : 0), zz0 = zz1 - tp;
       const peso = pesoPeca({ comp:h, larg:w, esp:tp, mat:'mdf' });
       if (peso > d.pesoMax) E.push(`Porta de correr ${k}: ${fmt(peso)} kg passa do máximo de ${d.pesoMax} kg do ${sis.nome}.`);
-      add({ id, nome:`Porta de correr ${k}`, nomeLista:'Porta de correr', cat:'frente', a:h, b:w, fita:[2,2], box:[xa0, xa0 + w, Y0 + (emb ? d.descAltura.embutido/2 : 0), Y0 + (emb ? d.descAltura.embutido/2 : 0) + h, zz0, zz1],
-        mov:{ tipo:'correr', eixo:'x', curso: (X1 - X0) - w, sentido: i === 0 ? 1 : -1 }, obs:`${sis.nome}. Peso ${fmt(peso)} kg. Trilho da ${frenteTr ? 'frente' : 'trás'}.`,
-        des:{ w, h, fita:['t','b','l','r'], vista:'Vista pela face interna' } });
-      { const pc = Object.values(PUXADORES).find(x => x.modelo === 'concha'), ypc = Y0 + h/2, xpc = i === 0 ? xa0 + 50 : xa0 + w - 50;
+      // perfil G: a folha fica mais curta e o perfil ocupa a sobra — por padrão em pé, na borda de fora da folha (onde ficaria a concha)
+      const pxC = m.puxadorPorta, perfilC = pxC?.modelo === 'perfil', redC = perfilC ? pxC.reducao : 0;
+      const bordaC = !perfilC ? null : fr.perfil === 'cima' || fr.perfil === 'baixo' ? fr.perfil : (i === 0 ? 'esq' : 'dir');
+      let fx0 = xa0, fx1 = xa0 + w, fy0 = Y0 + (emb ? d.descAltura.embutido/2 : 0), fy1 = fy0 + h;
+      if (bordaC === 'cima') fy1 -= redC; else if (bordaC === 'baixo') fy0 += redC; else if (bordaC === 'esq') fx0 += redC; else if (bordaC === 'dir') fx1 -= redC;
+      const movC = { tipo:'correr', eixo:'x', curso: (X1 - X0) - w, sentido: i === 0 ? 1 : -1 };
+      add({ id, nome:`Porta de correr ${k}`, nomeLista:'Porta de correr', cat:'frente', a:fy1 - fy0, b:fx1 - fx0, fita:[2,2], box:[fx0, fx1, fy0, fy1, zz0, zz1],
+        mov:movC, obs:`${sis.nome}. Peso ${fmt(peso)} kg. Trilho da ${frenteTr ? 'frente' : 'trás'}.`,
+        des:{ w:fx1 - fx0, h:fy1 - fy0, fita:['t','b','l','r'], vista:'Vista pela face interna' } });
+      if (perfilC) { const deLado = bordaC === 'esq' || bordaC === 'dir', compP = deLado ? fy1 - fy0 : fx1 - fx0;
+        const boxP = { cima:[fx0,fx1,fy1,fy1+redC,zz0,zz1], baixo:[fx0,fx1,fy0-redC,fy0,zz0,zz1], esq:[fx0-redC,fx0,fy0,fy1,zz0,zz1], dir:[fx1,fx1+redC,fy0,fy1,zz0,zz1] }[bordaC];
+        ferr({ id:`${id}-puxador`, nome:`Perfil puxador da porta de correr ${k}`, forma:{ tipo:'puxador', dir: deLado ? 'v' : 'h', modelo:'perfil', saida:bordaC, embaixo: bordaC === 'baixo' }, cor:pxC.cor, ref:pxC.ref, comp:compP, larg:redC,
+          box:boxP, expPai:id, obs:`${pxC.rot}: cortar com ${fmt(compP)} mm.` });
+      } else { const pc = Object.values(PUXADORES).find(x => x.modelo === 'concha'), ypc = Y0 + h/2, xpc = i === 0 ? xa0 + 50 : xa0 + w - 50;
         if (pc) ferr({ id:`${id}-puxador`, nome:`Puxador concha da porta de correr ${k}`, forma:{ tipo:'puxador', dir:'v', modelo:pc.modelo, furacao:pc.furacao }, cor:pc.cor, ref:pc.ref, box:[xpc-pc.larg/2, xpc+pc.larg/2, ypc-pc.comp/2, ypc+pc.comp/2, zz1, zz1 + Math.min(pc.proj, 5)], expPai:id, obs:'Concha: na porta de correr o puxador não pode sair da face (bate na outra folha).' }); }
       ferr({ id:`${id}-kit-correr`, nome:`Kit do sistema de correr da porta ${k}`, ref:sisRef, box:[xa0 + 40, xa0 + w - 40, Y0, Y0 + 20, zz0, zz1], expPai:id, obs:d.kitPorPorta || '' });
       const nDes = d.desempenadorObrigatorio || h > 2*w ? 2 : 0;
