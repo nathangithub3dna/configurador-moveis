@@ -167,3 +167,13 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 
 /* faixa do 3D desatualizado: acima das cotas e da ficha, para aparecer também no celular */
 .faixa-desat{z-index:5;font-size:13px;box-shadow:0 4px 14px rgb(0 0 0 / .18)}
+
+/* Exportar na barra de cima: botão que abre uma janelinha com as saídas (pedido do Nathan, 09/11) */
+.menu-exportar{position:relative}
+.menu-exportar>summary{list-style:none}
+.menu-exportar>summary::-webkit-details-marker{display:none}
+.menu-exportar .menu-painel{position:absolute;top:calc(100% + 8px);left:0;z-index:30;width:min(380px,calc(100vw - 32px));padding:14px;border-top:0}
+@media (max-width:900px){
+  /* celular: a janelinha fica presa na tela, logo abaixo do botão (o topo é calculado pelo tela.js ao abrir) */
+  .menu-exportar .menu-painel{position:fixed;left:16px;right:16px;width:auto;top:var(--exp-topo,120px);max-height:calc(100dvh - var(--exp-topo,120px) - 16px);overflow:auto}
+}

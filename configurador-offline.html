@@ -208,6 +208,16 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 
 /* faixa do 3D desatualizado: acima das cotas e da ficha, para aparecer também no celular */
 .faixa-desat{z-index:5;font-size:13px;box-shadow:0 4px 14px rgb(0 0 0 / .18)}
+
+/* Exportar na barra de cima: botão que abre uma janelinha com as saídas (pedido do Nathan, 09/11) */
+.menu-exportar{position:relative}
+.menu-exportar>summary{list-style:none}
+.menu-exportar>summary::-webkit-details-marker{display:none}
+.menu-exportar .menu-painel{position:absolute;top:calc(100% + 8px);left:0;z-index:30;width:min(380px,calc(100vw - 32px));padding:14px;border-top:0}
+@media (max-width:900px){
+  /* celular: a janelinha fica presa na tela, logo abaixo do botão (o topo é calculado pelo tela.js ao abrir) */
+  .menu-exportar .menu-painel{position:fixed;left:16px;right:16px;width:auto;top:var(--exp-topo,120px);max-height:calc(100dvh - var(--exp-topo,120px) - 16px);overflow:auto}
+}
 /* COMPONENTES — o formato de painéis, botões e campos (neomorfismo).
    As cores e sombras vêm de tema.css; aqui só se diz quem usa qual. */
 .lado,.vista,.cartao{border:0;border-radius:var(--raio);box-shadow:var(--sombra-fora)}
@@ -262,6 +272,9 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .ed-mais{border-radius:var(--raio-p);box-shadow:var(--sombra-fora-p);padding:10px 12px}
 .ed-mais summary{cursor:pointer;font-weight:800;font-size:13px}
 .ed-mais[open]{display:flex;flex-direction:column;gap:14px}
+/* janelinha do Exportar */
+.menu-exportar .menu-painel{background:var(--surface);border-radius:var(--raio);box-shadow:var(--sombra-fora),0 10px 30px rgb(0 0 0 / .18)}
+.menu-exportar[open]>summary{color:var(--accent);box-shadow:var(--sombra-dentro)}
 /* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
    Estrutura em pagina.html (modelos tplEditor, tplEspaco, tplOpcao); lógica em js/editor-modulo.js. */
 .ed-bloco{display:flex;flex-direction:column;gap:8px}
@@ -470,6 +483,20 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       <button class="btn prim" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
       <button class="btn" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
       <button class="btn" id="btnAbrir" type="button" title="Abrir um arquivo .json do aparelho">Abrir projeto</button>
+      <details class="menu-exportar" id="menuExportar">
+        <summary class="btn">Exportar ▾</summary>
+        <div class="export menu-painel" role="group" aria-label="Exportar">
+          <div class="linha">
+            <button class="btn prim" id="btnZip" type="button">Pacote para o Blender (.zip)</button>
+            <button class="btn" id="btnPdf" type="button">Desenhos (.pdf)</button>
+            <button class="btn" id="btnJson" type="button">Projeto (.json)</button>
+            <button class="btn" id="btnIlogic" type="button">Script iLogic (.txt)</button>
+            <button class="btn" id="copIlogic" type="button">Copiar script iLogic</button>
+          </div>
+          <textarea class="copia" id="copiaIlogic" readonly hidden aria-label="Texto do script iLogic"></textarea>
+          <span class="nota" id="notaExport">O pacote leva o modelo 3D (.glb), os desenhos em PDF, o projeto e as listas em planilha.</span>
+        </div>
+      </details>
       <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
     </div>
     <nav class="etapas" id="etapas" aria-label="Etapas">
@@ -492,18 +519,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <div class="painel" id="painelParam" role="tabpanel">
       <div class="alertas" id="alertas"></div>
       <form id="form" autocomplete="off"></form>
-      <div class="export">
-        <legend>Exportar</legend>
-        <div class="linha">
-          <button class="btn prim" id="btnZip" type="button">Pacote para o Blender (.zip)</button>
-          <button class="btn" id="btnPdf" type="button">Desenhos (.pdf)</button>
-          <button class="btn" id="btnJson" type="button">Projeto (.json)</button>
-          <button class="btn" id="btnIlogic" type="button">Script iLogic (.txt)</button>
-          <button class="btn" id="copIlogic" type="button">Copiar script iLogic</button>
-        </div>
-        <textarea class="copia" id="copiaIlogic" readonly hidden aria-label="Texto do script iLogic"></textarea>
-        <span class="nota" id="notaExport">O pacote leva o modelo 3D (.glb), os desenhos em PDF, o projeto e as listas em planilha.</span>
-      </div>
     </div>
     <div class="painel" id="painelPecas" role="tabpanel" hidden>
       <div class="arvore" id="arvore"></div>
@@ -13554,6 +13569,11 @@ $('btnJson').addEventListener('click', () => {
   if (!estado.res) return;
   salvar(slug() + (estado.res.erros.length ? '-incompleto' : '') + '.json', projetoJSON());
 });
+// menu Exportar da barra de cima: fecha ao clicar fora, com Esc e depois de escolher uma saída (o "Copiar iLogic" mantém aberto para mostrar o texto)
+document.addEventListener('click', e => { const m = $('menuExportar'); if (m.open && !m.contains(e.target)) m.open = false; });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('menuExportar').open = false; });
+$('menuExportar').addEventListener('toggle', e => { const m = e.currentTarget; if (m.open) m.style.setProperty('--exp-topo', Math.round(m.querySelector('summary').getBoundingClientRect().bottom + 8) + 'px'); });
+$('menuExportar').addEventListener('click', e => { const b = e.target.closest('button'); if (b && b.id !== 'copIlogic') setTimeout(() => { $('menuExportar').open = false; }, 0); });
 $('btnZip').addEventListener('click', async () => {
   if (estado.res.erros.length || !window.JSZip) return;
   $('btnZip').disabled = true; $('notaExport').textContent = 'Montando o pacote…';
