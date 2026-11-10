@@ -148,7 +148,14 @@ function geometriaDe(pc) {
     g = new THREE.CylinderGeometry(w/2, w/2, d, 28); g.rotateX(Math.PI/2); g.translate(...c);
   } else if (pc.forma?.tipo === 'puxador') {
     const v = pc.forma.dir === 'v', comp = v ? h : w, larg = v ? w : h, mod = pc.forma.modelo || 'barra';
-    if (mod === 'bloco') {
+    if (mod === 'perfil') {
+      // perfil G de borda (cava): tampa em cima na profundidade toda + aba na frente cobrindo a parte de cima; a cava fica atrás da aba
+      const sy = pc.forma.embaixo ? -1 : 1;   // no aéreo o perfil fica na borda de baixo, virado para baixo
+      const tampa = new THREE.BoxGeometry(w, 3, d); tampa.translate(0, sy*(h/2 - 1.5), 0);
+      const aba = new THREE.BoxGeometry(w, h*0.55, 2); aba.translate(0, sy*(h/2 - h*0.275), d/2 - 1);
+      const fundo = new THREE.BoxGeometry(w, h, 2); fundo.translate(0, 0, -d/2 + 1);
+      g = mergeGeometries([tampa, aba, fundo].map(q => q.toNonIndexed())); g.translate(...c);
+    } else if (mod === 'bloco') {
       g = new THREE.BoxGeometry(v?larg:comp, v?comp:larg, d); g.translate(c[0], c[1], z0 + d/2);
     } else if (mod === 'concha') {
       // concha: base fina na frente + casca saliente (o dedo entra por baixo)

@@ -50,5 +50,17 @@
     "proj": 24,
     "cor": "#c8a35e",
     "conf": "largura e saliência"
+  },
+  "6": {
+    "ref": "pux-perfil-g-18x30",
+    "rot": "Perfil G 18 × 30 (cava na borda) · alumínio",
+    "modelo": "perfil",
+    "furacao": 0,
+    "comp": 0,
+    "larg": 30,
+    "proj": 0,
+    "reducao": 20,
+    "cor": "#c3c7ca",
+    "conf": "encaixe de 10 mm na borda da porta (a porta fica 20 mm mais curta) — medida suposta, conferir na peça"
   }
 }

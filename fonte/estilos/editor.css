@@ -83,3 +83,6 @@
 .mini-vao[aria-current]{background:color-mix(in srgb,var(--accent) 22%,var(--v-frente));color:var(--accent);outline:2px solid var(--accent);outline-offset:-2px;z-index:1}
 .mini-frente.mini-lista{width:100%;aspect-ratio:auto;border:0;background:none;display:flex;flex-wrap:wrap;gap:6px}
 .mini-frente.mini-lista .mini-vao{position:static;width:44px;height:36px;border-radius:var(--raio-p)}
+/* puxador no Esquema e no mini desenho: mostra de que lado a porta abre */
+.esq-puxador{position:absolute;box-sizing:border-box;background:var(--v-ferragem);border-radius:2px;min-width:3px;min-height:3px;pointer-events:none}
+.mini-pux{position:absolute;background:var(--v-ferragem);border-radius:1px;min-width:2px;min-height:2px;pointer-events:none;z-index:2}

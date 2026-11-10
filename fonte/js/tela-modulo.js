@@ -69,7 +69,10 @@ function montarEditorModulo() {
     return b; };
   mini.classList.toggle('mini-lista', !desenha);                       // sem o desenho (erro sem medidas): botões em fila
   if (desenha) mini.style.setProperty('--rw', (L / H).toFixed(4));
-  mini.replaceChildren(...vaos.map(botao));
+  // puxadores no mini desenho: um traço na posição real (para ver de que lado a porta abre)
+  const marcas = desenha ? (rDes.pecas || []).filter(p => p.papel === 'puxador' && p.box && p.mov?.tipo === 'porta').map(p => { const d = el('span', { class:'mini-pux' });
+    Object.assign(d.style, { left: p.box[0] / L * 100 + '%', top: (H - p.box[3]) / H * 100 + '%', width: Math.max(0.6, (p.box[1] - p.box[0]) / L * 100) + '%', height: Math.max(0.6, (p.box[3] - p.box[2]) / H * 100) + '%' }); return d; }) : [];
+  mini.replaceChildren(...vaos.map(botao), ...marcas);
 
   const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
   // um campo por prateleira; o automático aparece como sugestão (posição calculada agora)
@@ -85,7 +88,11 @@ function montarEditorModulo() {
   if (gavNo) ed.querySelector('[data-vao="altGav"]').value = gavNo.altura;
   if (botNo) ed.querySelector('[data-vao="altBot"]').value = botNo.altura;
   const sapNo = (no.conteudo || []).find(c => c.sapateira); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.sapateira.nivel;
-  ed.querySelector('[data-vao="lado"]').value = no.frente?.lado || 'auto';
+  // campo "Puxador": o valor guardado continua sendo o lado da dobradiça (puxador à esquerda = dobradiça à direita);
+  // no automático, o texto diz para que lado o puxador ficou
+  const selLado = ed.querySelector('[data-vao="lado"]'); selLado.value = no.frente?.lado || 'auto';
+  const regN = (rNovo?.vaos || []).find(r => r.caminho === sel.cam), portaVao = regN && (rNovo?.pecas || []).find(p => p.mov?.tipo === 'porta' && p.cat === 'frente' && p.box[0] >= regN.fx0 - 1 && p.box[1] <= regN.fx1 + 1 && p.box[2] >= regN.fy0 - 1 && p.box[3] <= regN.fy1 + 1);
+  if (portaVao) selLado.options[0].textContent = `Automático (à ${portaVao.mov.lado === 'esq' ? 'direita' : 'esquerda'})`;
   ed.querySelector('[data-vao="sistema"]').value = no.frente?.sistema || 'correr-rometal-dominus';
   const selCt = ed.querySelector('[data-vao="conteudo"]');
   selCt.replaceChildren(...CONTEUDOS_EDITOR.map(([v, r]) => el('option', { value:v }, r))); selCt.value = tipoCt;
@@ -138,7 +145,7 @@ $('form').addEventListener('change', e => {
     if (k === 'beiral') m.construcao = { ...m.construcao, beiral: Number(v) || 0 };
     if (k === 'metodo') { m.metodo = v; m.metodoAjustes = {}; }
     if (k === 'entrega') m.entrega = v;
-    if (k === 'puxador') m.puxadorPorta = { ...PUXADORES[v], altura: m.puxadorPorta?.altura ?? 1050 };
+    if (k === 'puxador') { m.puxadorPorta = { ...PUXADORES[v], altura: m.puxadorPorta?.altura ?? 1050 }; m.puxadorGaveta = { ...PUXADORES[v] }; }   // o mesmo modelo nas portas e nas gavetas (o perfil de borda corre nas duas)
     if (k === 'materialFrentes') m.materiais = { ...m.materiais, frentes: v };
   });
   if (kv) mudarModulo(m => {
@@ -180,7 +187,8 @@ function atualizarEsquema() {
     const b = ret([v.x0, v.x1, v.y0, v.y1], 'esq-vao'), bt = el('button', { type:'button', class:'esq-vao', 'aria-label':'Editar o vão ' + v.num, 'data-cam':v.caminho }, el('span', { text:'Vão ' + v.num }));
     bt.style.cssText = b.style.cssText; if (v.caminho === estado.vaoSel) bt.setAttribute('aria-current', 'true'); return bt;
   });
-  caixa.replaceChildren(...nos, ...vaos);
+  const puxadores = r.pecas.filter(p => p.papel === 'puxador' && p.box).map(p => ret(p.box, 'esq-puxador'));   // mostra o lado do puxador (as portas não são desenhadas)
+  caixa.replaceChildren(...nos, ...puxadores, ...vaos);
 }
 $('esquema').addEventListener('click', e => {
   const b = e.target.closest('[data-cam]'); if (!b) return;

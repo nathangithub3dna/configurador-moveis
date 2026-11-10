@@ -559,5 +559,15 @@
         1
       ]
     ]
+  },
+  "pux-perfil-g-18x30": {
+    "grupo": "Ferragens",
+    "nome": "Perfil puxador G 18 × 30 mm, alumínio anodizado",
+    "marca": "DMA",
+    "codigo": "",
+    "unid": "barra 3 m",
+    "emb": 3,
+    "metro": true,
+    "obs": "Cortado no tamanho de cada porta e gaveta; preço de referência R$ 273,73 o par de barras (Mark Ferragens, 11/2026)."
   }
 }

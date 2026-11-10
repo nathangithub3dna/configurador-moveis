@@ -4,7 +4,7 @@
 const R = (({ _explicacao, ...r }) => r)(/*@dados:regras*/null);
 // Puxadores reais (medidas do fabricante; "conf" = medida não publicada, estimada — confirmar na loja)
 const PUXADORES = Object.fromEntries(Object.entries(/*@dados:puxadores*/null).map(([k, v]) => [k, { ...v, cor: parseInt(v.cor.slice(1), 16) }]));
-const opcoesPuxador = Object.entries(PUXADORES).map(([k,v]) => [Number(k), v.rot]);
+const opcoesPuxador = Object.entries(PUXADORES).filter(([,v]) => v.modelo !== 'perfil').map(([k,v]) => [Number(k), v.rot]);   // perfil de borda: só no Móvel livre e no ambiente (núcleo)
 const dobradicasPorAltura = h => R.dobradicasPorAltura.find(f => f.ateAltura === null || h <= f.ateAltura).quantidade;
 // REGRA DE DOBRADIÇA (núcleo novo): o maior entre altura, peso (Blum) e distância máxima (Duratex); +1 se a porta passa de 600 de largura
 function dobradicasRegra(h, w, esp) {
