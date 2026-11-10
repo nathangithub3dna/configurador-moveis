@@ -28,3 +28,21 @@ registrarConteudo({ id:'prateleiras', gerar(ctx, ct, est) {
     }
   est.y = y; est.kPrat = kPrat;
 } });
+
+function fazerPrateleira(ctx, g, V, k, yb, nome) {
+  const { E, A, amb, t, zf, add, dp } = ctx;
+  const w = g.ix1 - g.ix0 - 2*R.folgaPrat;
+  let forma = null;
+  const esg = amb.esgoto;
+  if (esg) {
+    const f0 = esg.altura - R.faixaEsgoto, f1 = esg.altura + R.faixaEsgoto;
+    if (yb + t > f0 && yb < f1) {
+      if (!(esg.recorteLarg > 0 && esg.recorteProf > 0) || esg.recorteLarg > w-80 || esg.recorteProf > dp-80) E.push('Recorte do sifão não cabe na prateleira.');
+      else forma = { tipo:'recorte', rl:esg.recorteLarg, rp:esg.recorteProf };
+      A.push(`Prateleira cruza a faixa do esgoto e recebeu recorte.`);
+    }
+  }
+  add({ id:`prateleira-${V}-${k}`, nome, nomeLista: forma ? 'Prateleira com recorte' : 'Prateleira', cat:'caixa', a:w, b:dp, fita:[1,0], forma,
+    box:[g.ix0+R.folgaPrat, g.ix1-R.folgaPrat, yb, yb+t, zf+R.folgaFundoPrat, zf+R.folgaFundoPrat+dp],
+    des:{ w, h:dp, fita:['b'], frente:'b', vista:'Vista de cima', recortes: forma ? [{ x:(w-forma.rl)/2, w:forma.rl, h:forma.rp }] : [] } });
+}
