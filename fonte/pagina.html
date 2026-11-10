@@ -296,7 +296,10 @@
   </fieldset>
   <fieldset class="ed-bloco">
     <legend>Espaços</legend>
-    <ul class="ed-arvore" data-lista="espacos"></ul>
+    <span class="ed-nota"><strong>Móvel inteiro</strong> · <span data-texto="resumoMovel"></span></span>
+    <!-- mini desenho de frente: um botão por vão, na posição real (js/tela-modulo.js) -->
+    <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
+    <span class="ed-nota" data-texto="resumoVao"></span>
   </fieldset>
   <fieldset class="ed-bloco ed-vao">
     <legend data-texto="titulo"></legend>
@@ -550,7 +553,6 @@
   <p class="ed-nota" data-texto="nota"></p>
   <ul class="dlg-lista" data-lista="arquivos"></ul>
 </dialog>
-<template id="tplEspaco"><li><button type="button" class="ed-espaco" data-acao="selecionar"><strong data-texto="nome"></strong><span data-texto="desc"></span></button></li></template>
 <template id="tplOpcao"><button type="button" class="btn ed-op" data-acao="frente"></button></template>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>

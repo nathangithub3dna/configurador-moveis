@@ -286,7 +286,7 @@ function diferencas(a, b, caminho = '') {
     await page.selectOption('#tipoMovel', 'modulo'); await page.waitForTimeout(500);
     const passo = async (sel) => { await page.click(sel); await page.waitForTimeout(250); };
     const foto = () => page.evaluate(() => { const e = window.__configurador.estado, r = e.res;
-      return { erros: r.erros, vaos: (r.vaos || []).length, botoesEsquema: document.querySelectorAll('#esquema button[data-cam]').length, espacos: document.querySelectorAll('#form .ed-espaco:not(.divisao)').length,
+      return { erros: r.erros, vaos: (r.vaos || []).length, botoesEsquema: document.querySelectorAll('#esquema button[data-cam]').length, espacos: document.querySelectorAll('#form .mini-vao').length,
         gavetas: r.pecas.filter(p => p.papel === 'frente-gaveta').length, prateleiras: r.pecas.filter(p => p.papel === 'prateleira').length, semFuncao: r.pecas.filter(p => !p.papel).map(p => p.id), ferragens: r.ferragens.length }; });
     const inicio = await foto();
     await passo('#esquema button[data-cam=".1"]');                   // clica no vão 2 do desenho

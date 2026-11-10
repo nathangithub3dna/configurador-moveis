@@ -358,6 +358,14 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .conf-lista li[data-opcional]{opacity:.85}
 .conf-check{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:4px 0}
 .conf-furacao .linha{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Espaços como mini desenho de frente (09/11): o contorno é o móvel; cada vão é um botão na posição real */
+.mini-frente{position:relative;width:min(100%,calc(170px * var(--rw,1)));aspect-ratio:var(--rw,1);max-height:240px;margin:2px auto;border:2px solid var(--v-linha);background:var(--v-caixa)}
+.mini-vao{position:absolute;box-sizing:border-box;border:1px solid var(--v-linha);background:var(--v-frente);cursor:pointer;font:800 12px var(--f-sans);color:var(--fg);padding:0;display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden}
+.mini-vao:hover{background:color-mix(in srgb,var(--accent) 14%,var(--v-frente))}
+.mini-vao[aria-current]{background:color-mix(in srgb,var(--accent) 22%,var(--v-frente));color:var(--accent);outline:2px solid var(--accent);outline-offset:-2px;z-index:1}
+.mini-frente.mini-lista{width:100%;aspect-ratio:auto;border:0;background:none;display:flex;flex-wrap:wrap;gap:6px}
+.mini-frente.mini-lista .mini-vao{position:static;width:44px;height:36px;border-radius:var(--raio-p)}
 /* AMBIENTE (5b) — aparência do painel do ambiente e da planta vista de cima.
    Estrutura em pagina.html (tplAmbiente, tplParede, tplModuloAmb, tplPonto); lógica em js/ambiente.js. */
 .amb-lista{display:flex;flex-direction:column;gap:10px}
@@ -749,7 +757,10 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
   </fieldset>
   <fieldset class="ed-bloco">
     <legend>Espaços</legend>
-    <ul class="ed-arvore" data-lista="espacos"></ul>
+    <span class="ed-nota"><strong>Móvel inteiro</strong> · <span data-texto="resumoMovel"></span></span>
+    <!-- mini desenho de frente: um botão por vão, na posição real (js/tela-modulo.js) -->
+    <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
+    <span class="ed-nota" data-texto="resumoVao"></span>
   </fieldset>
   <fieldset class="ed-bloco ed-vao">
     <legend data-texto="titulo"></legend>
@@ -1003,7 +1014,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
   <p class="ed-nota" data-texto="nota"></p>
   <ul class="dlg-lista" data-lista="arquivos"></ul>
 </dialog>
-<template id="tplEspaco"><li><button type="button" class="ed-espaco" data-acao="selecionar"><strong data-texto="nome"></strong><span data-texto="desc"></span></button></li></template>
 <template id="tplOpcao"><button type="button" class="btn ed-op" data-acao="frente"></button></template>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -11059,17 +11069,22 @@ function montarEditorModulo() {
     gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
     sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),
+    resumoMovel: espacos[0]?.divisao ? ED.resumoDivisao(espacos[0].no) : 'um vão só', resumoVao: `Vão ${sel.num}: ${ED.resumo(no)}`,
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
-  // árvore de espaços — depois do vão: preencherModelo(ed, …) apagaria os nomes da lista
-  ed.querySelector('[data-lista="espacos"]').replaceChildren(...espacos.map(e => {
-    const li = modeloDe('tplEspaco'), b = li.querySelector('button');
-    preencherModelo(li, e.divisao ? { nome: e.cam ? 'Divisão' : 'Móvel inteiro', desc: ED.resumoDivisao(e.no) } : { nome: 'Vão ' + e.num, desc: ED.resumo(e.no) });
-    b.dataset.cam = e.cam; b.style.setProperty('--nivel', e.nivel);
-    if (e.divisao) { b.disabled = true; b.classList.add('divisao'); }
-    if (!e.divisao && e.cam === estado.vaoSel) b.setAttribute('aria-current', 'true');
-    return li;
-  }));
+  // espaços: mini desenho de frente (pedido do Nathan, 09/11) — um botão por vão na posição real; os textos (resumo) vão no preencherModelo acima
+  const rNovo = noAmbiente ? rLocal : resultadoLocal(), rDes = rNovo?.dims ? rNovo : estado.valido,   // calculado agora: o editor é montado antes do atualizar()
+        mini = ed.querySelector('[data-lista="miniVaos"]');
+  const L = rDes?.dims?.L, H = rDes?.dims?.H, regs = rDes?.vaos || [];
+  const desenha = !!(L && H) && vaos.every(v => regs.some(x => x.caminho === v.cam));
+  const botao = v => { const r = regs.find(x => x.caminho === v.cam);
+    const b = el('button', { type:'button', class:'mini-vao', 'data-acao':'selecionar', 'data-cam':v.cam, title:`Vão ${v.num} · ${ED.resumo(v.no)}`, 'aria-label':`Vão ${v.num}: ${ED.resumo(v.no)}` }, String(v.num));
+    if (v.cam === estado.vaoSel) b.setAttribute('aria-current', 'true');
+    if (r && desenha) Object.assign(b.style, { left: r.x0 / L * 100 + '%', top: (H - r.y1) / H * 100 + '%', width: (r.x1 - r.x0) / L * 100 + '%', height: (r.y1 - r.y0) / H * 100 + '%' });
+    return b; };
+  mini.classList.toggle('mini-lista', !desenha);                       // sem o desenho (erro sem medidas): botões em fila
+  if (desenha) mini.style.setProperty('--rw', (L / H).toFixed(4));
+  mini.replaceChildren(...vaos.map(botao));
 
   const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
   // um campo por prateleira; o automático aparece como sugestão (posição calculada agora)

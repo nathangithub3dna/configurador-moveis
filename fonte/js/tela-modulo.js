@@ -54,17 +54,22 @@ function montarEditorModulo() {
     gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
     sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),
+    resumoMovel: espacos[0]?.divisao ? ED.resumoDivisao(espacos[0].no) : 'um vão só', resumoVao: `Vão ${sel.num}: ${ED.resumo(no)}`,
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
-  // árvore de espaços — depois do vão: preencherModelo(ed, …) apagaria os nomes da lista
-  ed.querySelector('[data-lista="espacos"]').replaceChildren(...espacos.map(e => {
-    const li = modeloDe('tplEspaco'), b = li.querySelector('button');
-    preencherModelo(li, e.divisao ? { nome: e.cam ? 'Divisão' : 'Móvel inteiro', desc: ED.resumoDivisao(e.no) } : { nome: 'Vão ' + e.num, desc: ED.resumo(e.no) });
-    b.dataset.cam = e.cam; b.style.setProperty('--nivel', e.nivel);
-    if (e.divisao) { b.disabled = true; b.classList.add('divisao'); }
-    if (!e.divisao && e.cam === estado.vaoSel) b.setAttribute('aria-current', 'true');
-    return li;
-  }));
+  // espaços: mini desenho de frente (pedido do Nathan, 09/11) — um botão por vão na posição real; os textos (resumo) vão no preencherModelo acima
+  const rNovo = noAmbiente ? rLocal : resultadoLocal(), rDes = rNovo?.dims ? rNovo : estado.valido,   // calculado agora: o editor é montado antes do atualizar()
+        mini = ed.querySelector('[data-lista="miniVaos"]');
+  const L = rDes?.dims?.L, H = rDes?.dims?.H, regs = rDes?.vaos || [];
+  const desenha = !!(L && H) && vaos.every(v => regs.some(x => x.caminho === v.cam));
+  const botao = v => { const r = regs.find(x => x.caminho === v.cam);
+    const b = el('button', { type:'button', class:'mini-vao', 'data-acao':'selecionar', 'data-cam':v.cam, title:`Vão ${v.num} · ${ED.resumo(v.no)}`, 'aria-label':`Vão ${v.num}: ${ED.resumo(v.no)}` }, String(v.num));
+    if (v.cam === estado.vaoSel) b.setAttribute('aria-current', 'true');
+    if (r && desenha) Object.assign(b.style, { left: r.x0 / L * 100 + '%', top: (H - r.y1) / H * 100 + '%', width: (r.x1 - r.x0) / L * 100 + '%', height: (r.y1 - r.y0) / H * 100 + '%' });
+    return b; };
+  mini.classList.toggle('mini-lista', !desenha);                       // sem o desenho (erro sem medidas): botões em fila
+  if (desenha) mini.style.setProperty('--rw', (L / H).toFixed(4));
+  mini.replaceChildren(...vaos.map(botao));
 
   const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
   // um campo por prateleira; o automático aparece como sugestão (posição calculada agora)
