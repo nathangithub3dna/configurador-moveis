@@ -108,6 +108,7 @@ function montarEditorModulo() {
     const b = modeloDe('tplOpcao').querySelector('button'); b.textContent = r; b.dataset.valor = v;
     b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
   }));
+  aplicarPainelB(ed);                                                   // visual B: botões com desenho e − / + (painel-b.js)
   preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela-ajuste.js)
   // "Construção e peças ajustadas" fica recolhido; abre sozinho se há peça ajustada e lembra se você abriu
   const mais = ed.querySelector('.ed-mais');
