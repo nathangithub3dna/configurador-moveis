@@ -222,6 +222,12 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 /* menu do clique direito no 3D (abrir portas/gavetas) */
 .menu-3d{position:absolute;z-index:6;display:flex;flex-direction:column;gap:6px;padding:8px;min-width:170px}
 .menu-3d .btn{justify-content:flex-start}
+
+/* miniatura 2D da peça na lista de Peças e a prévia maior */
+.arvore li{grid-template-columns:22px 28px minmax(0,1fr) auto}
+.miniatura{display:flex;align-items:center;justify-content:center;width:28px;height:28px}
+.previa-peca{position:fixed;z-index:40;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 12px;max-width:220px;pointer-events:none;text-align:center;font-size:12.5px}
+.previa-peca .num{font-size:11.5px}
 /* COMPONENTES — o formato de painéis, botões e campos (neomorfismo).
    As cores e sombras vêm de tema.css; aqui só se diz quem usa qual. */
 .lado,.vista,.cartao{border:0;border-radius:var(--raio);box-shadow:var(--sombra-fora)}
@@ -282,6 +288,13 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .menu-3d{background:var(--surface);border-radius:var(--raio-p);box-shadow:var(--sombra-fora),0 8px 24px rgb(0 0 0 / .18)}
 .menu-3d[hidden]{display:none}
 .palco.com-esquema .menu-3d{display:none}
+/* miniatura: chapa na cor do material da caixa; ferragem como ícone de linha */
+.mini-chapa polygon{fill:var(--v-caixa);stroke:var(--v-linha);stroke-linejoin:round}
+.mini-chapa .mini-vazado{fill:var(--surface);stroke:var(--v-linha)}
+.mini-ico{fill:none;stroke:var(--muted);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.previa-peca{background:var(--surface);border-radius:var(--raio-p);box-shadow:var(--sombra-fora),0 8px 24px rgb(0 0 0 / .18)}
+.previa-peca[hidden]{display:none}
+.previa-peca .num{color:var(--muted);font-family:var(--f-mono)}
 /* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
    Estrutura em pagina.html (modelos tplEditor, tplEspaco, tplOpcao); lógica em js/editor-modulo.js. */
 .ed-bloco{display:flex;flex-direction:column;gap:8px}
@@ -538,6 +551,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <div class="painel" id="painelPecas" role="tabpanel" hidden>
       <div class="arvore" id="arvore"></div>
     </div>
+    <div class="previa-peca" id="previaPeca" hidden aria-hidden="true"></div>
   </aside>
 
   <section class="vista" aria-label="Visualização 3D">
@@ -12952,6 +12966,43 @@ const ED = {
   resumoDivisao: no => `Dividido ${no.dir === 'v' ? 'em pé' : 'deitado'} em ${no.partes.length}`,
 };
 /* =====================================================================
+   MINIATURA DA PEÇA — desenho 2D bem simples para a lista de Peças (pedido do Nathan, 09/11):
+   chapas = contorno + recortes de borda + vazados (do desenho da peça, pc.des);
+   ferragens = um ícone por tipo. Só gera o SVG; a tela (tela.js) põe na lista e mostra a prévia maior.
+   ===================================================================== */
+const ICONES_FERRAGEM = {
+  dobradica:        '<circle cx="8" cy="12" r="5"/><rect x="13" y="9" width="8" height="6" rx="1"/>',
+  puxador:          '<path d="M4 15h16"/><path d="M6 15v-5h12v5"/>',
+  corredica:        '<rect x="2" y="7" width="20" height="4"/><rect x="5" y="13" width="17" height="4"/>',
+  'suporte-vassoura':'<path d="M6 5v7a6 6 0 0 0 12 0V5"/><path d="M4 5h4M16 5h4"/>',
+  gancho:           '<path d="M12 3v10a4 4 0 1 1-4 4"/><path d="M9 3h6"/>',
+  pistao:           '<path d="M4 19l7-5"/><path d="M11 14l9-7" stroke-width="3.2"/>',
+  'kit-correr':     '<path d="M2 7h20"/><circle cx="8" cy="11" r="2.2"/><circle cx="16" cy="11" r="2.2"/><path d="M5 14h14v5H5z"/>',
+  'trilho-correr':  '<path d="M2 9h20M2 15h20"/><path d="M2 9v6M22 9v6"/>',
+  pe:               '<rect x="7" y="4" width="10" height="3"/><path d="M10 7v12h4V7"/><path d="M8 19h8"/>',
+  minifix:          '<circle cx="12" cy="12" r="7"/><path d="M9 12h6"/>',
+  cavilha:          '<rect x="3" y="9" width="18" height="6" rx="3"/><path d="M8 9v6M12 9v6M16 9v6"/>',
+  desempenador:     '<path d="M12 2v20"/><path d="M8 6h8M8 18h8"/><circle cx="12" cy="12" r="2"/>',
+};
+const ICONE_PARAFUSO = '<path d="M8 3h8l-1.5 3h-5z"/><path d="M12 6v14"/><path d="M10 9l4 1.2M10 12l4 1.2M10 15l4 1.2"/>';
+
+// SVG da miniatura em `px` × `px`
+function miniaturaPeca(pc, px) {
+  const svg = (vb, corpo, cls) => `<svg class="${cls}" width="${px}" height="${px}" viewBox="${vb}" aria-hidden="true">${corpo}</svg>`;
+  if (pc.cat === 'ferragem') return svg('0 0 24 24', ICONES_FERRAGEM[pc.papel] || ICONE_PARAFUSO, 'mini-ico');
+  const d = pc.des, w = d?.w || pc.comp || 0, h = d?.h || pc.larg || 0;
+  if (!(w > 0 && h > 0)) return svg('0 0 24 24', '<rect x="4" y="4" width="16" height="16" stroke-dasharray="2 2"/>', 'mini-ico');
+  // contorno visto de frente (y para cima), com os recortes de borda na borda de cima — igual ao desenho da peça
+  const pts = [[0, 0], [w, 0], [w, h]];
+  (d?.recortes || []).slice().sort((a, b) => b.x - a.x).forEach(r => pts.push([r.x + r.w, h], [r.x + r.w, h - r.h], [r.x, h - r.h], [r.x, h]));
+  pts.push([0, h]);
+  const m = Math.max(w, h) * 0.06, vb = `${-m} ${-m} ${w + 2*m} ${h + 2*m}`, Y = y => h - y;
+  const sw = Math.max(w, h) / (px > 60 ? 90 : 18);   // traço com a mesma grossura na tela, qualquer que seja a peça
+  const contorno = `<polygon points="${pts.map(([x, y]) => `${x},${Y(y)}`).join(' ')}" stroke-width="${sw}"/>`;
+  const vazados = (d?.rasgos || []).map(r => `<rect class="mini-vazado" x="${r.x}" y="${Y(r.y + r.h)}" width="${r.w}" height="${r.h}" stroke-width="${sw * 0.7}"/>`).join('');
+  return svg(vb, contorno + vazados, 'mini-chapa');
+}
+/* =====================================================================
    5. ESTADO DA PÁGINA
    ===================================================================== */
 const CHAVE = 'configurador-moveis:v2';
@@ -13381,6 +13432,27 @@ $('rCorte').addEventListener('input', e => { estado.cortePos = Number(e.target.v
 }));
 
 /* ---------- Árvore de peças ---------- */
+// miniatura 2D da peça (js/miniatura.js) e a prévia maior: ao passar o mouse; no celular, ao tocar na miniatura
+function miniaturaNaLista(pc) {
+  const s = el('span', { class:'miniatura', 'aria-hidden':'true' }); s.innerHTML = miniaturaPeca(pc, 28);
+  s.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') mostrarPrevia(pc, s); });
+  s.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') esconderPrevia(); });
+  s.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') { const aberta = $('previaPeca').dataset.id === pc.id && !$('previaPeca').hidden; aberta ? esconderPrevia() : mostrarPrevia(pc, s); } });
+  return s;
+}
+function mostrarPrevia(pc, ancora) {
+  const p = $('previaPeca'), r = ancora.getBoundingClientRect();
+  p.innerHTML = miniaturaPeca(pc, 160); p.append(el('strong', { text: pc.nome }), el('span', { class:'num', text: pc.comp ? `${fmt(pc.comp)} × ${fmt(pc.larg)} mm` : (pc.ref || '') }));
+  p.dataset.id = pc.id; p.hidden = false;
+  const w = p.offsetWidth, h = p.offsetHeight;
+  const borda = $('painelPecas').getBoundingClientRect().right;   // ao lado do painel, sem cobrir os nomes (no celular fica por cima, preso na tela)
+  p.style.left = Math.max(8, Math.min(borda + 10, innerWidth - w - 8)) + 'px';
+  p.style.top = Math.max(8, Math.min(r.top - h / 2 + r.height / 2, innerHeight - h - 8)) + 'px';
+}
+function esconderPrevia() { $('previaPeca').hidden = true; }
+document.addEventListener('pointerdown', e => { if (!$('previaPeca').hidden && !e.target.closest('.miniatura')) esconderPrevia(); }, true);
+$('painelPecas').addEventListener('scroll', esconderPrevia, { passive:true });
+
 function montarArvore(pecas) {
   const por = {}; pecas.forEach(pc => (por[pc.cat] ||= []).push(pc));
   $('arvore').replaceChildren(...Object.keys(CATS).filter(c => por[c]).map(c => el('section', {},
@@ -13388,6 +13460,7 @@ function montarArvore(pecas) {
     el('ul', {}, ...por[c].map(pc => {
       const li = el('li', { 'data-id':pc.id },
         el('input', { type:'checkbox', checked:!estado.ocultas.has(pc.id), 'aria-label':'Mostrar '+pc.nome, onchange:e => { e.target.checked ? estado.ocultas.delete(pc.id) : estado.ocultas.add(pc.id); aplicarVisibilidade(); } }),
+        miniaturaNaLista(pc),
         el('button', { type:'button', text:pc.nome, title:pc.nome, onclick:() => selecionar(pc.id) }),
         el('span', { class:'num', text: pc.comp ? `${fmt(pc.comp)}×${fmt(pc.larg)}` : '' }));
       return li;

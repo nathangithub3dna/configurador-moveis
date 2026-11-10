@@ -58,3 +58,10 @@
 .menu-3d{background:var(--surface);border-radius:var(--raio-p);box-shadow:var(--sombra-fora),0 8px 24px rgb(0 0 0 / .18)}
 .menu-3d[hidden]{display:none}
 .palco.com-esquema .menu-3d{display:none}
+/* miniatura: chapa na cor do material da caixa; ferragem como ícone de linha */
+.mini-chapa polygon{fill:var(--v-caixa);stroke:var(--v-linha);stroke-linejoin:round}
+.mini-chapa .mini-vazado{fill:var(--surface);stroke:var(--v-linha)}
+.mini-ico{fill:none;stroke:var(--muted);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.previa-peca{background:var(--surface);border-radius:var(--raio-p);box-shadow:var(--sombra-fora),0 8px 24px rgb(0 0 0 / .18)}
+.previa-peca[hidden]{display:none}
+.previa-peca .num{color:var(--muted);font-family:var(--f-mono)}
