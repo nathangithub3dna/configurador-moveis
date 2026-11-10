@@ -217,6 +217,10 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
   /* celular: a janelinha fica presa na tela, logo abaixo do botão (o topo é calculado pelo tela.js ao abrir) */
   .menu-exportar .menu-painel{position:fixed;left:16px;right:16px;width:auto;top:var(--exp-topo,120px);max-height:calc(100dvh - var(--exp-topo,120px) - 16px);overflow:auto}
 }
+
+/* menu do clique direito no 3D (abrir portas/gavetas) */
+.menu-3d{position:absolute;z-index:6;display:flex;flex-direction:column;gap:6px;padding:8px;min-width:170px}
+.menu-3d .btn{justify-content:flex-start}
 /* COMPONENTES — o formato de painéis, botões e campos (neomorfismo).
    As cores e sombras vêm de tema.css; aqui só se diz quem usa qual. */
 .lado,.vista,.cartao{border:0;border-radius:var(--raio);box-shadow:var(--sombra-fora)}
@@ -274,6 +278,9 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 /* janelinha do Exportar */
 .menu-exportar .menu-painel{background:var(--surface);border-radius:var(--raio);box-shadow:var(--sombra-fora),0 10px 30px rgb(0 0 0 / .18)}
 .menu-exportar[open]>summary{color:var(--accent);box-shadow:var(--sombra-dentro)}
+.menu-3d{background:var(--surface);border-radius:var(--raio-p);box-shadow:var(--sombra-fora),0 8px 24px rgb(0 0 0 / .18)}
+.menu-3d[hidden]{display:none}
+.palco.com-esquema .menu-3d{display:none}
 /* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
    Estrutura em pagina.html (modelos tplEditor, tplEspaco, tplOpcao); lógica em js/editor-modulo.js. */
 .ed-bloco{display:flex;flex-direction:column;gap:8px}
@@ -541,8 +548,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       </div>
       <span class="sep"></span>
       <div class="grupo">
-        <button class="btn" id="bPortas" aria-pressed="false" type="button">Abrir portas</button>
-        <button class="btn" id="bGavetas" aria-pressed="false" type="button">Abrir gavetas</button>
         <button class="btn" id="bFix" aria-pressed="false" type="button" title="Deixa o MDF transparente e mostra parafusos, cavilhas e pinos">Fixações</button>
       </div>
       <span class="sep"></span>
@@ -587,7 +592,12 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
         <button class="btn" id="fDesenho" type="button" hidden>Ver desenho técnico</button>
         <div id="fAjuste"></div>
       </div>
-      <span class="dica" id="dica">Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça</span>
+      <!-- menu do clique direito no 3D (no celular: toque longo); js/tela.js mostra e posiciona -->
+      <div class="menu-3d" id="menu3d" role="menu" aria-label="Opções do 3D" hidden>
+        <button class="btn" id="bPortas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir portas</button>
+        <button class="btn" id="bGavetas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir gavetas</button>
+      </div>
+      <span class="dica" id="dica">Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça · clique direito parado (ou toque longo): abrir portas e gavetas</span>
     </div>
   </section>
 </main>
@@ -10529,10 +10539,33 @@ function pontoMedida(hit) {
 /* ---------- Clique no 3D ---------- */
 const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
 let baixo = null;
-renderer.domElement.addEventListener('pointerdown', e => { baixo = [e.clientX, e.clientY]; });
+// menu do clique direito (abrir portas/gavetas): clique direito sem arrastar; no celular, toque longo parado.
+// Arrastar com o botão direito continua movendo a vista. O clique direito não seleciona peça.
+let toqueLongo = null, menuPeloToque = false;
+function mostrarMenu3D(x, y) {
+  const m = $('menu3d'), r = $('palco').getBoundingClientRect();
+  m.hidden = false;
+  const w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = Math.max(8, Math.min(x - r.left, r.width - w - 8)) + 'px';
+  m.style.top = Math.max(8, Math.min(y - r.top, r.height - h - 8)) + 'px';
+}
+const fecharMenu3D = () => { $('menu3d').hidden = true; };
+$('menu3d').addEventListener('click', e => { if (e.target.closest('button')) setTimeout(fecharMenu3D, 0); });
+document.addEventListener('pointerdown', e => { if (!$('menu3d').hidden && !$('menu3d').contains(e.target)) fecharMenu3D(); }, true);
+addEventListener('keydown', e => { if (e.key === 'Escape') fecharMenu3D(); });
+renderer.domElement.addEventListener('contextmenu', e => e.preventDefault());
+renderer.domElement.addEventListener('pointerdown', e => {
+  baixo = [e.clientX, e.clientY, e.button]; menuPeloToque = false; clearTimeout(toqueLongo);
+  if (e.pointerType === 'touch') toqueLongo = setTimeout(() => { if (baixo) { menuPeloToque = true; mostrarMenu3D(baixo[0], baixo[1]); } }, 550);
+});
+renderer.domElement.addEventListener('pointermove', e => { if (baixo && (e.clientX-baixo[0])**2 + (e.clientY-baixo[1])**2 > 36) clearTimeout(toqueLongo); });
+renderer.domElement.addEventListener('pointercancel', () => { clearTimeout(toqueLongo); baixo = null; });
 renderer.domElement.addEventListener('pointerup', e => {
-  if (!baixo) return; const dx = e.clientX-baixo[0], dy = e.clientY-baixo[1]; baixo = null;
+  clearTimeout(toqueLongo);
+  if (!baixo) return; const dx = e.clientX-baixo[0], dy = e.clientY-baixo[1], botao = baixo[2]; baixo = null;
   if (dx*dx + dy*dy > 36) return;
+  if (menuPeloToque) { menuPeloToque = false; return; }      // o toque longo abriu o menu: não seleciona
+  if (botao === 2) { mostrarMenu3D(e.clientX, e.clientY); return; }
   const r = renderer.domElement.getBoundingClientRect();
   mouse.set(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1);
   ray.setFromCamera(mouse, cam);
@@ -10550,7 +10583,7 @@ const alternar = (id, chave, depois) => $(id).addEventListener('click', () => {
 alternar('bPortas', 'portas', construirCotas);
 alternar('bGavetas', 'gavetas', construirCotas);
 alternar('bCotas', 'cotas', construirCotas);
-alternar('bMedir', 'medir', () => { limparMedida(); $('dica').textContent = estado.medir ? 'Medir: toque em dois pontos. Perto de um canto, o ponto gruda no canto.' : 'Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça'; });
+alternar('bMedir', 'medir', () => { limparMedida(); $('dica').textContent = estado.medir ? 'Medir: toque em dois pontos. Perto de um canto, o ponto gruda no canto.' : 'Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça · clique direito parado (ou toque longo): abrir portas e gavetas'; });
 alternar('bTampo', 'tampo', aplicarVisibilidade);
 alternar('bFix', 'fix', aplicarFix);
 alternar('bFundo', 'fundo', aplicarVisibilidade);

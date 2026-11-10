@@ -55,3 +55,6 @@
 /* janelinha do Exportar */
 .menu-exportar .menu-painel{background:var(--surface);border-radius:var(--raio);box-shadow:var(--sombra-fora),0 10px 30px rgb(0 0 0 / .18)}
 .menu-exportar[open]>summary{color:var(--accent);box-shadow:var(--sombra-dentro)}
+.menu-3d{background:var(--surface);border-radius:var(--raio-p);box-shadow:var(--sombra-fora),0 8px 24px rgb(0 0 0 / .18)}
+.menu-3d[hidden]{display:none}
+.palco.com-esquema .menu-3d{display:none}

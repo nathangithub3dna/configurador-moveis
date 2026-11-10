@@ -177,3 +177,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
   /* celular: a janelinha fica presa na tela, logo abaixo do botão (o topo é calculado pelo tela.js ao abrir) */
   .menu-exportar .menu-painel{position:fixed;left:16px;right:16px;width:auto;top:var(--exp-topo,120px);max-height:calc(100dvh - var(--exp-topo,120px) - 16px);overflow:auto}
 }
+
+/* menu do clique direito no 3D (abrir portas/gavetas) */
+.menu-3d{position:absolute;z-index:6;display:flex;flex-direction:column;gap:6px;padding:8px;min-width:170px}
+.menu-3d .btn{justify-content:flex-start}

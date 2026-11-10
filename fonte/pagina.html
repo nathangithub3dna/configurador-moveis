@@ -95,8 +95,6 @@
       </div>
       <span class="sep"></span>
       <div class="grupo">
-        <button class="btn" id="bPortas" aria-pressed="false" type="button">Abrir portas</button>
-        <button class="btn" id="bGavetas" aria-pressed="false" type="button">Abrir gavetas</button>
         <button class="btn" id="bFix" aria-pressed="false" type="button" title="Deixa o MDF transparente e mostra parafusos, cavilhas e pinos">Fixações</button>
       </div>
       <span class="sep"></span>
@@ -141,7 +139,12 @@
         <button class="btn" id="fDesenho" type="button" hidden>Ver desenho técnico</button>
         <div id="fAjuste"></div>
       </div>
-      <span class="dica" id="dica">Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça</span>
+      <!-- menu do clique direito no 3D (no celular: toque longo); js/tela.js mostra e posiciona -->
+      <div class="menu-3d" id="menu3d" role="menu" aria-label="Opções do 3D" hidden>
+        <button class="btn" id="bPortas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir portas</button>
+        <button class="btn" id="bGavetas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir gavetas</button>
+      </div>
+      <span class="dica" id="dica">Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça · clique direito parado (ou toque longo): abrir portas e gavetas</span>
     </div>
   </section>
 </main>
