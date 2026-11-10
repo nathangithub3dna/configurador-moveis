@@ -13,6 +13,7 @@ const ICONES_B = {
   'frente:basculante': '<rect x="4" y="11" width="26" height="22"/><path d="M17 9V2m-3 3 3-3 3 3"/>',
   'conteudo:vazio': RET_B,
   'conteudo:prateleiras': RET_B + '<line x1="4" y1="12" x2="30" y2="12"/><line x1="4" y1="20" x2="30" y2="20"/><line x1="4" y1="28" x2="30" y2="28"/>',
+  'conteudo:divisorias': RET_B + '<line x1="13" y1="3" x2="13" y2="37"/><line x1="21" y1="3" x2="21" y2="37"/>',
   'conteudo:vassoura': RET_B + '<line x1="4" y1="9" x2="30" y2="9"/><line x1="12" y1="12" x2="12" y2="34"/><path d="M9 34h6"/><line x1="22" y1="12" x2="22" y2="30"/>',
   'conteudo:vassoura+sapateira': RET_B + '<line x1="12" y1="5" x2="12" y2="22"/><line x1="4" y1="25" x2="30" y2="25"/><line x1="4" y1="31" x2="30" y2="31"/>',
   'conteudo:gavetas': RET_B + '<rect x="7" y="18" width="20" height="5"/><rect x="7" y="25" width="20" height="5"/><rect x="7" y="32" width="20" height="4"/>',

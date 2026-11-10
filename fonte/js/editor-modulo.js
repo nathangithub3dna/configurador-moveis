@@ -9,7 +9,7 @@ const FRENTES_EDITOR = [
   ['gaveta', 'Gaveta'], ['correr', 'Correr'], ['basculante', 'Abre p/ cima'],
 ];
 const CONTEUDOS_EDITOR = [
-  ['vazio', 'Vazio'], ['prateleiras', 'Prateleiras'], ['vassoura', 'Vassoura e aspirador'], ['vassoura+sapateira', 'Vassoura + sapateira'],
+  ['vazio', 'Vazio'], ['prateleiras', 'Prateleiras'], ['divisorias', 'Divisórias em pé'], ['vassoura', 'Vassoura e aspirador'], ['vassoura+sapateira', 'Vassoura + sapateira'],
   ['gavetas', 'Gavetas internas'], ['gavetas+botijao', 'Botijão + gavetas'],
 ];
 const ED = {
@@ -136,6 +136,7 @@ const ED = {
     if (t.includes('botijao')) return 'gavetas+botijao';
     if (t.includes('gavetas-internas')) return 'gavetas';
     if (t.includes('vassoura')) return (no.conteudo || []).some(c => c.sapateira) ? 'vassoura+sapateira' : 'vassoura';
+    if (t.includes('divisorias')) return 'divisorias';
     if (t.includes('prateleiras')) return 'prateleiras';
     return 'vazio';
   },
@@ -144,6 +145,7 @@ const ED = {
     const gav = { tipo: 'gavetas-internas', n: P.gavetas, altura: P.alturaGaveta, recuo: 45, puxador: m.puxadorGaveta };
     const acima = { tipo: 'prateleiras-acima', n: P.pratAcimaGavetas, minLivre: 250 };
     no.conteudo = tipo === 'prateleiras' ? [{ tipo: 'prateleiras', n: 3, min: 150 }]
+      : tipo === 'divisorias' ? [{ tipo: 'divisorias', n: 1 }]
       : tipo === 'vassoura' ? [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura }]
       : tipo === 'vassoura+sapateira' ? [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura, sapateira: { nivel: P.alturaNivelSapateira, max: P.niveisSapateira } }]
       : tipo === 'gavetas' ? [gav, acima]
@@ -159,6 +161,11 @@ const ED = {
     const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.sapateira);
     if (c) c.sapateira.max = Math.max(0, (c.sapateira.max || 0) + delta);
   },
+  // divisórias em pé dentro do vão: no mínimo 1 (sem divisória, escolha outro conteúdo)
+  divisorias(m, cam, delta) {
+    const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.tipo === 'divisorias');
+    if (c) c.n = Math.max(1, (c.n || 1) + delta);
+  },
   prateleiras(m, cam, delta) {
     const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.tipo === 'prateleiras');
     if (c) c.n = Math.max(0, c.n + delta);
@@ -166,7 +173,8 @@ const ED = {
   resumo(no) {
     const fr = (FRENTES_EDITOR.find(f => f[0] === no.frente?.tipo) || ['', 'Nada'])[1];
     const t = ED.tipoConteudo(no), pr = (no.conteudo || []).find(x => x.tipo === 'prateleiras');
-    const ct = t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (CONTEUDOS_EDITOR.find(c => c[0] === t) || ['', ''])[1].toLowerCase();
+    const dv = (no.conteudo || []).find(x => x.tipo === 'divisorias');
+    const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (CONTEUDOS_EDITOR.find(c => c[0] === t) || ['', ''])[1].toLowerCase();
     return fr + ' · ' + ct;
   },
   resumoDivisao: no => `Dividido ${no.dir === 'v' ? 'em pé' : 'deitado'} em ${no.partes.length}`,

@@ -813,6 +813,12 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <label class="ed-linha" data-se="correr">Ao abrir, libera o lado<select data-vao="abrirCorrer" title="Qual lado fica livre quando as portas de correr abrem no 3D"><option value="esq">Esquerdo (folha de trás corre para a direita)</option><option value="dir">Direito (folha da frente corre para a esquerda)</option></select></label>
     <div class="ed-sub">O que tem dentro?</div>
     <select class="ed-select" data-vao="conteudo" aria-label="Conteúdo do espaço"></select>
+    <div class="ed-contador" data-se="divisorias">
+      <span>Divisórias em pé</span>
+      <button type="button" class="btn" data-acao="div-menos" aria-label="Menos uma divisória">−</button>
+      <strong data-texto="nDiv"></strong>
+      <button type="button" class="btn" data-acao="div-mais" aria-label="Mais uma divisória">+</button>
+    </div>
     <div class="ed-contador" data-se="prateleiras">
       <span>Prateleiras</span>
       <button type="button" class="btn" data-acao="prat-menos" aria-label="Menos uma prateleira">−</button>
@@ -10233,7 +10239,7 @@ const FUNCOES_LIVRE = { 'painel':'Painel de parede', 'forro':'Forro', 'cortineir
 const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do próprio id quando existir
   ...Object.keys(FUNCOES_LIVRE).map(f => [new RegExp('^L\\d+-' + f + '$'), f]),
   [/^lateral-(esq|dir)$/, 'lateral'], [/^topo$/, 'topo'], [/^base$/, 'base'],
-  [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'],
+  [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'], [/^divisoria-int-\d+-\d+$/, 'divisoria-vertical'],
   [/^travessa-(frontal|traseira)$/, 'travessa'], [/^travessa-fixacao(-\d+)?$/, 'travessa-fixacao'],
   [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'], [/^ponto-\d+$/, 'ponto'], [/^peca-teste$/, 'teste'],
   [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-g?\d+$/, 'prateleira-fixa'],
@@ -11128,6 +11134,14 @@ function gerarModuloV3(m) {
           else base.forEach((b, i) => { const livre = b - (i ? base[i-1] + t : 0); if (livre < 50) A.push(`Vão ${V}: prateleira ${i+1} fica só ${fmt(livre)} mm acima da de baixo.`); });
           base.forEach(b => prateleira(g, V, ++kPrat, y + b, `Prateleira ${kPrat}`));
         }
+      }
+      if (ct.tipo === 'divisorias') {
+        // divisórias em pé dentro do vão (atrás da mesma porta): repartem a largura por igual, do piso ao teto do vão
+        const nD = Math.max(0, Math.round(ct.n) || 0), livre = (w - nD*t)/(nD + 1);
+        if (nD && livre < 100) E.push(`Vão ${V}: com ${nD} divisória${nD === 1 ? '' : 's'} em pé cada espaço fica ${fmt(livre)} mm (mínimo 100).`);
+        for (let k = 0; k < nD; k++) { const xa = x0 + livre*(k + 1) + t*k, hD = g.iy1 - y;
+          add({ id:`divisoria-int-${V}-${k + 1}`, nome:`Divisória interna ${k + 1} do vão ${V}`, nomeLista:'Divisória interna', cat:'caixa', a:hD, b:Dc, fita:[1,0], box:[xa, xa + t, y, g.iy1, zf, zFr],
+            des:{ w:Dc, h:hD, fita:['l'], frente:'l', vista:'Vista lateral (lado direito)' } }); }
       }
       if (ct.tipo === 'prateleiras-acima') {
         // tampo fixo logo acima da última gaveta (pedido do Nathan: a gaveta não fica aberta por cima), se sobrar espaço
@@ -12954,7 +12968,7 @@ const FRENTES_EDITOR = [
   ['gaveta', 'Gaveta'], ['correr', 'Correr'], ['basculante', 'Abre p/ cima'],
 ];
 const CONTEUDOS_EDITOR = [
-  ['vazio', 'Vazio'], ['prateleiras', 'Prateleiras'], ['vassoura', 'Vassoura e aspirador'], ['vassoura+sapateira', 'Vassoura + sapateira'],
+  ['vazio', 'Vazio'], ['prateleiras', 'Prateleiras'], ['divisorias', 'Divisórias em pé'], ['vassoura', 'Vassoura e aspirador'], ['vassoura+sapateira', 'Vassoura + sapateira'],
   ['gavetas', 'Gavetas internas'], ['gavetas+botijao', 'Botijão + gavetas'],
 ];
 const ED = {
@@ -13081,6 +13095,7 @@ const ED = {
     if (t.includes('botijao')) return 'gavetas+botijao';
     if (t.includes('gavetas-internas')) return 'gavetas';
     if (t.includes('vassoura')) return (no.conteudo || []).some(c => c.sapateira) ? 'vassoura+sapateira' : 'vassoura';
+    if (t.includes('divisorias')) return 'divisorias';
     if (t.includes('prateleiras')) return 'prateleiras';
     return 'vazio';
   },
@@ -13089,6 +13104,7 @@ const ED = {
     const gav = { tipo: 'gavetas-internas', n: P.gavetas, altura: P.alturaGaveta, recuo: 45, puxador: m.puxadorGaveta };
     const acima = { tipo: 'prateleiras-acima', n: P.pratAcimaGavetas, minLivre: 250 };
     no.conteudo = tipo === 'prateleiras' ? [{ tipo: 'prateleiras', n: 3, min: 150 }]
+      : tipo === 'divisorias' ? [{ tipo: 'divisorias', n: 1 }]
       : tipo === 'vassoura' ? [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura }]
       : tipo === 'vassoura+sapateira' ? [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura, sapateira: { nivel: P.alturaNivelSapateira, max: P.niveisSapateira } }]
       : tipo === 'gavetas' ? [gav, acima]
@@ -13104,6 +13120,11 @@ const ED = {
     const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.sapateira);
     if (c) c.sapateira.max = Math.max(0, (c.sapateira.max || 0) + delta);
   },
+  // divisórias em pé dentro do vão: no mínimo 1 (sem divisória, escolha outro conteúdo)
+  divisorias(m, cam, delta) {
+    const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.tipo === 'divisorias');
+    if (c) c.n = Math.max(1, (c.n || 1) + delta);
+  },
   prateleiras(m, cam, delta) {
     const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.tipo === 'prateleiras');
     if (c) c.n = Math.max(0, c.n + delta);
@@ -13111,7 +13132,8 @@ const ED = {
   resumo(no) {
     const fr = (FRENTES_EDITOR.find(f => f[0] === no.frente?.tipo) || ['', 'Nada'])[1];
     const t = ED.tipoConteudo(no), pr = (no.conteudo || []).find(x => x.tipo === 'prateleiras');
-    const ct = t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (CONTEUDOS_EDITOR.find(c => c[0] === t) || ['', ''])[1].toLowerCase();
+    const dv = (no.conteudo || []).find(x => x.tipo === 'divisorias');
+    const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (CONTEUDOS_EDITOR.find(c => c[0] === t) || ['', ''])[1].toLowerCase();
     return fr + ' · ' + ct;
   },
   resumoDivisao: no => `Dividido ${no.dir === 'v' ? 'em pé' : 'deitado'} em ${no.partes.length}`,
@@ -13168,6 +13190,7 @@ const ICONES_B = {
   'frente:basculante': '<rect x="4" y="11" width="26" height="22"/><path d="M17 9V2m-3 3 3-3 3 3"/>',
   'conteudo:vazio': RET_B,
   'conteudo:prateleiras': RET_B + '<line x1="4" y1="12" x2="30" y2="12"/><line x1="4" y1="20" x2="30" y2="20"/><line x1="4" y1="28" x2="30" y2="28"/>',
+  'conteudo:divisorias': RET_B + '<line x1="13" y1="3" x2="13" y2="37"/><line x1="21" y1="3" x2="21" y2="37"/>',
   'conteudo:vassoura': RET_B + '<line x1="4" y1="9" x2="30" y2="9"/><line x1="12" y1="12" x2="12" y2="34"/><path d="M9 34h6"/><line x1="22" y1="12" x2="22" y2="30"/>',
   'conteudo:vassoura+sapateira': RET_B + '<line x1="12" y1="5" x2="12" y2="22"/><line x1="4" y1="25" x2="30" y2="25"/><line x1="4" y1="31" x2="30" y2="31"/>',
   'conteudo:gavetas': RET_B + '<rect x="7" y="18" width="20" height="5"/><rect x="7" y="25" width="20" height="5"/><rect x="7" y="32" width="20" height="4"/>',
@@ -14228,6 +14251,7 @@ function montarEditorModulo() {
     rotLarg: 'Largura por dentro (mm ou auto)', rotAlt: 'Altura na frente (mm ou auto)',   // é assim que o núcleo lê cada uma (coluna: vão livre; faixa deitada: altura da frente)
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
     perfil: m.puxadorPorta?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
+    divisorias: tipoCt === 'divisorias', nDiv: (no.conteudo || []).find(c => c.tipo === 'divisorias')?.n ?? 0,
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
       const podeAnt = !!pa && pa.i > 0, podeProx = !!pa && pa.i < n - 1;
@@ -14314,6 +14338,8 @@ $('form').addEventListener('click', e => {
   if (a === 'selecionar') { estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema(); return; }
   mudarModulo(m => {
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
+    if (a === 'div-mais') ED.divisorias(m, cam, 1);
+    if (a === 'div-menos') ED.divisorias(m, cam, -1);
     if (a === 'prat-mais') ED.prateleiras(m, cam, 1);
     if (a === 'prat-menos') ED.prateleiras(m, cam, -1);
     if (a === 'gav-mais') ED.gavetas(m, cam, 1);

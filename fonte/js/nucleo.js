@@ -237,6 +237,14 @@ function gerarModuloV3(m) {
           base.forEach(b => prateleira(g, V, ++kPrat, y + b, `Prateleira ${kPrat}`));
         }
       }
+      if (ct.tipo === 'divisorias') {
+        // divisórias em pé dentro do vão (atrás da mesma porta): repartem a largura por igual, do piso ao teto do vão
+        const nD = Math.max(0, Math.round(ct.n) || 0), livre = (w - nD*t)/(nD + 1);
+        if (nD && livre < 100) E.push(`Vão ${V}: com ${nD} divisória${nD === 1 ? '' : 's'} em pé cada espaço fica ${fmt(livre)} mm (mínimo 100).`);
+        for (let k = 0; k < nD; k++) { const xa = x0 + livre*(k + 1) + t*k, hD = g.iy1 - y;
+          add({ id:`divisoria-int-${V}-${k + 1}`, nome:`Divisória interna ${k + 1} do vão ${V}`, nomeLista:'Divisória interna', cat:'caixa', a:hD, b:Dc, fita:[1,0], box:[xa, xa + t, y, g.iy1, zf, zFr],
+            des:{ w:Dc, h:hD, fita:['l'], frente:'l', vista:'Vista lateral (lado direito)' } }); }
+      }
       if (ct.tipo === 'prateleiras-acima') {
         // tampo fixo logo acima da última gaveta (pedido do Nathan: a gaveta não fica aberta por cima), se sobrar espaço
         if (g.iy1 - y > t + 100) {

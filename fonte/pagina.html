@@ -318,6 +318,12 @@
     <label class="ed-linha" data-se="correr">Ao abrir, libera o lado<select data-vao="abrirCorrer" title="Qual lado fica livre quando as portas de correr abrem no 3D"><option value="esq">Esquerdo (folha de trás corre para a direita)</option><option value="dir">Direito (folha da frente corre para a esquerda)</option></select></label>
     <div class="ed-sub">O que tem dentro?</div>
     <select class="ed-select" data-vao="conteudo" aria-label="Conteúdo do espaço"></select>
+    <div class="ed-contador" data-se="divisorias">
+      <span>Divisórias em pé</span>
+      <button type="button" class="btn" data-acao="div-menos" aria-label="Menos uma divisória">−</button>
+      <strong data-texto="nDiv"></strong>
+      <button type="button" class="btn" data-acao="div-mais" aria-label="Mais uma divisória">+</button>
+    </div>
     <div class="ed-contador" data-se="prateleiras">
       <span>Prateleiras</span>
       <button type="button" class="btn" data-acao="prat-menos" aria-label="Menos uma prateleira">−</button>

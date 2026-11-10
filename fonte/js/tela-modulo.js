@@ -49,6 +49,7 @@ function montarEditorModulo() {
     rotLarg: 'Largura por dentro (mm ou auto)', rotAlt: 'Altura na frente (mm ou auto)',   // é assim que o núcleo lê cada uma (coluna: vão livre; faixa deitada: altura da frente)
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
     perfil: m.puxadorPorta?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
+    divisorias: tipoCt === 'divisorias', nDiv: (no.conteudo || []).find(c => c.tipo === 'divisorias')?.n ?? 0,
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
       const podeAnt = !!pa && pa.i > 0, podeProx = !!pa && pa.i < n - 1;
@@ -135,6 +136,8 @@ $('form').addEventListener('click', e => {
   if (a === 'selecionar') { estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema(); return; }
   mudarModulo(m => {
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
+    if (a === 'div-mais') ED.divisorias(m, cam, 1);
+    if (a === 'div-menos') ED.divisorias(m, cam, -1);
     if (a === 'prat-mais') ED.prateleiras(m, cam, 1);
     if (a === 'prat-menos') ED.prateleiras(m, cam, -1);
     if (a === 'gav-mais') ED.gavetas(m, cam, 1);
