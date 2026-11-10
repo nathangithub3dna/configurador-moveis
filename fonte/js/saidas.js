@@ -206,7 +206,7 @@ function pdfDesenhar(doc, cmds, ox, oy) {
   }
   doc.setLineDashPattern([], 0);
 }
-function gerarPDF() {
+function gerarPDF(op = {}) {   // op.semDesenhos: só capa (listas) e plano de corte; os desenhos por peça saem nas folhas A3
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
   const nome = estado.projeto.nome || 'Projeto', rot = rotuloDocumento(estado.projeto), res = estado.res, lc = listaDeCorte(res.pecas), dess = listaDesenhos(res.pecas);
@@ -214,7 +214,7 @@ function gerarPDF() {
   // Capa: lista de corte e ferragens
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(20,24,28); T(nome, 14, 18);
   doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90,98,104);
-  T(`Lista de corte, plano de corte, compras e desenhos técnicos · ${new Date().toLocaleDateString('pt-BR')} · medidas em mm`, 14, 24);
+  T(`Lista de corte, plano de corte, compras${op.semDesenhos ? '' : ' e desenhos técnicos'} · ${new Date().toLocaleDateString('pt-BR')} · medidas em mm`, 14, 24);
   doc.setFont('helvetica','bold'); doc.setTextColor(...(rot.fabricar ? [30,107,58] : [176,0,32])); T(rot.longo, 14, 29); doc.setFont('helvetica','normal');
   let y = 34;
   const linha = (cols, xs, neg) => { doc.setFont('helvetica', neg?'bold':'normal'); cols.forEach((c,i) => T(c, xs[i], y, { align: i>0 && i<5 ? 'right' : 'left' })); y += 5; if (y > 195) { doc.addPage(); y = 18; } };
@@ -249,8 +249,8 @@ function gerarPDF() {
       if (w > 22 && h > 10) { doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(90,98,104); T(`${fmt(pp.w)} x ${fmt(pp.h)}`, x + w/2, yy + h/2 + 3.5, { align:'center' }); }
     });
   }));
-  // Uma página por peça
-  dess.forEach(it => {
+  // Uma página por peça (PDF antigo)
+  if (!op.semDesenhos) dess.forEach(it => {
     doc.addPage();
     const pc = it.pc;
     doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(20,24,28); T(it.titulo, 12, 15);

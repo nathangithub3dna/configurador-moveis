@@ -619,7 +619,13 @@ async function salvar(nome, dados) {
 const baixarPDF = () => { if (estado.res.erros.length || !window.jspdf) return; try { salvar(slug()+'-desenhos.pdf', gerarPDF()); } catch(e) { toast('Falha ao montar o PDF.'); } };
 $('btnIlogic').addEventListener('click', () => { if (estado.res.erros.length) return; salvar(slug()+'-inventor-ilogic.txt', gerarILogic()); });
 $('copIlogic').addEventListener('click', () => { if (!estado.res.erros.length) copiar(gerarILogic(), 'copiaIlogic'); });
-$('btnPdf').addEventListener('click', baixarPDF); $('btnPdf2').addEventListener('click', baixarPDF);
+// Desenhos (.pdf): as folhas A3 no padrão do FreeCAD (uma por peça), as mesmas do bloco Desenhos técnicos
+$('btnPdf').addEventListener('click', async () => {
+  if (estado.res.erros.length || !window.jspdf) return;
+  toast('Montando as folhas…');
+  try { salvar(slug() + '-folhas-A3.pdf', await folhasPDF(pecasComFolha(), extraFolha)); } catch (e) { toast('Falha ao montar as folhas.'); }
+});
+$('btnPdf2').addEventListener('click', baixarPDF);
 // o projeto como texto (.json): com erro, salva só o projeto para continuar depois (sem peças, que estão inconsistentes)
 function projetoJSON() {
   const dados = estado.res.erros.length ? { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), incompleto:true, erros:estado.res.erros,
@@ -641,11 +647,14 @@ $('btnZip').addEventListener('click', async () => {
     zip.file('ferragens.csv', csvFerr());
     zip.file('pedido-loja-de-corte.csv', csvLoja());
     zip.file('lista-de-compras.csv', csvCompras());
-    if (window.jspdf) zip.file('desenhos-tecnicos.pdf', gerarPDF());
+    if (window.jspdf) {
+      zip.file('desenhos-folhas-A3.pdf', await folhasPDF(pecasComFolha(), extraFolha));
+      zip.file('lista-e-plano-de-corte.pdf', gerarPDF({ semDesenhos:true }));
+    }
     zip.file('inventor-gerar-pecas.iLogicVb', gerarILogic());
     const rot = rotuloDocumento(estado.projeto);
     zip.file('SITUACAO.txt', `${estado.projeto.nome}\n${rot.longo}\n${rot.fabricar ? '' : '\nNÃO FABRICAR com estes arquivos: o projeto ainda não foi liberado para corte.\n'}`);
-    zip.file('LEIA-ME.txt', `${estado.projeto.nome}\n${rot.longo}\n\nmodelo.glb — abrir no Blender: File > Import > glTF 2.0. Unidade: metro.\nCada peça se chama categoria_material_id (ex.: frente_mdf-ru-branco_porta-esq).\nPortas e gavetas levam o pivô e o curso nas propriedades personalizadas (Custom Properties).\nprojeto.json — reabre no Configurador (botão Abrir projeto).\ndesenhos-tecnicos.pdf — lista de corte, ferragens e um desenho cotado por peça, para a marcenaria.\ninventor-gerar-pecas.iLogicVb — regra iLogic: cria as peças .ipt e a montagem .iam no Inventor.\nlista-de-corte.csv e ferragens.csv — abrem no Excel.\n`);
+    zip.file('LEIA-ME.txt', `${estado.projeto.nome}\n${rot.longo}\n\nmodelo.glb — abrir no Blender: File > Import > glTF 2.0. Unidade: metro.\nCada peça se chama categoria_material_id (ex.: frente_mdf-ru-branco_porta-esq).\nPortas e gavetas levam o pivô e o curso nas propriedades personalizadas (Custom Properties).\nprojeto.json — reabre no Configurador (botão Abrir projeto).\ndesenhos-folhas-A3.pdf — uma folha A3 cotada por peça (padrão FreeCAD), para a marcenaria.\nlista-e-plano-de-corte.pdf — lista de corte, compras e plano de corte.\ninventor-gerar-pecas.iLogicVb — regra iLogic: cria as peças .ipt e a montagem .iam no Inventor.\nlista-de-corte.csv e ferragens.csv — abrem no Excel.\n`);
     await salvar(slug() + '-' + rot.curto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '.zip', await zip.generateAsync({ type:'blob' }));
   } catch(e) { toast('Falha ao montar o pacote.'); }
   atualizarBotoesExport();

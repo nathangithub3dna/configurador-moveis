@@ -715,6 +715,15 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <strong data-texto="nomeModulo"></strong>
   </div>
   <fieldset class="ed-bloco">
+    <legend>Medidas do móvel</legend>
+    <div class="ed-grade2">
+      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-modulo="largura"></label>
+      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-modulo="altura"></label>
+      <label class="ed-campo">Profundidade<input type="number" inputmode="decimal" data-modulo="profundidade"></label>
+      <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
+    </div>
+  </fieldset>
+  <fieldset class="ed-bloco">
     <legend>Espaços</legend>
     <ul class="ed-arvore" data-lista="espacos"></ul>
   </fieldset>
@@ -763,15 +772,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <div class="ed-grade2">
       <button type="button" class="btn ed-remover" data-acao="juntar-ant" data-se="podeAnt" data-texto="rotAnt"></button>
       <button type="button" class="btn ed-remover" data-acao="juntar-prox" data-se="podeProx" data-texto="rotProx"></button>
-    </div>
-  </fieldset>
-  <fieldset class="ed-bloco">
-    <legend>Medidas do móvel</legend>
-    <div class="ed-grade2">
-      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-modulo="largura"></label>
-      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-modulo="altura"></label>
-      <label class="ed-campo">Profundidade<input type="number" inputmode="decimal" data-modulo="profundidade"></label>
-      <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
     </div>
   </fieldset>
   <details class="ed-mais">
@@ -12080,7 +12080,7 @@ function pdfDesenhar(doc, cmds, ox, oy) {
   }
   doc.setLineDashPattern([], 0);
 }
-function gerarPDF() {
+function gerarPDF(op = {}) {   // op.semDesenhos: só capa (listas) e plano de corte; os desenhos por peça saem nas folhas A3
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
   const nome = estado.projeto.nome || 'Projeto', rot = rotuloDocumento(estado.projeto), res = estado.res, lc = listaDeCorte(res.pecas), dess = listaDesenhos(res.pecas);
@@ -12088,7 +12088,7 @@ function gerarPDF() {
   // Capa: lista de corte e ferragens
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(20,24,28); T(nome, 14, 18);
   doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90,98,104);
-  T(`Lista de corte, plano de corte, compras e desenhos técnicos · ${new Date().toLocaleDateString('pt-BR')} · medidas em mm`, 14, 24);
+  T(`Lista de corte, plano de corte, compras${op.semDesenhos ? '' : ' e desenhos técnicos'} · ${new Date().toLocaleDateString('pt-BR')} · medidas em mm`, 14, 24);
   doc.setFont('helvetica','bold'); doc.setTextColor(...(rot.fabricar ? [30,107,58] : [176,0,32])); T(rot.longo, 14, 29); doc.setFont('helvetica','normal');
   let y = 34;
   const linha = (cols, xs, neg) => { doc.setFont('helvetica', neg?'bold':'normal'); cols.forEach((c,i) => T(c, xs[i], y, { align: i>0 && i<5 ? 'right' : 'left' })); y += 5; if (y > 195) { doc.addPage(); y = 18; } };
@@ -12123,8 +12123,8 @@ function gerarPDF() {
       if (w > 22 && h > 10) { doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(90,98,104); T(`${fmt(pp.w)} x ${fmt(pp.h)}`, x + w/2, yy + h/2 + 3.5, { align:'center' }); }
     });
   }));
-  // Uma página por peça
-  dess.forEach(it => {
+  // Uma página por peça (PDF antigo)
+  if (!op.semDesenhos) dess.forEach(it => {
     doc.addPage();
     const pc = it.pc;
     doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(20,24,28); T(it.titulo, 12, 15);
@@ -13537,7 +13537,13 @@ async function salvar(nome, dados) {
 const baixarPDF = () => { if (estado.res.erros.length || !window.jspdf) return; try { salvar(slug()+'-desenhos.pdf', gerarPDF()); } catch(e) { toast('Falha ao montar o PDF.'); } };
 $('btnIlogic').addEventListener('click', () => { if (estado.res.erros.length) return; salvar(slug()+'-inventor-ilogic.txt', gerarILogic()); });
 $('copIlogic').addEventListener('click', () => { if (!estado.res.erros.length) copiar(gerarILogic(), 'copiaIlogic'); });
-$('btnPdf').addEventListener('click', baixarPDF); $('btnPdf2').addEventListener('click', baixarPDF);
+// Desenhos (.pdf): as folhas A3 no padrão do FreeCAD (uma por peça), as mesmas do bloco Desenhos técnicos
+$('btnPdf').addEventListener('click', async () => {
+  if (estado.res.erros.length || !window.jspdf) return;
+  toast('Montando as folhas…');
+  try { salvar(slug() + '-folhas-A3.pdf', await folhasPDF(pecasComFolha(), extraFolha)); } catch (e) { toast('Falha ao montar as folhas.'); }
+});
+$('btnPdf2').addEventListener('click', baixarPDF);
 // o projeto como texto (.json): com erro, salva só o projeto para continuar depois (sem peças, que estão inconsistentes)
 function projetoJSON() {
   const dados = estado.res.erros.length ? { app:'Configurador de Móveis', versao:1, exportadoEm:new Date().toISOString(), incompleto:true, erros:estado.res.erros,
@@ -13559,11 +13565,14 @@ $('btnZip').addEventListener('click', async () => {
     zip.file('ferragens.csv', csvFerr());
     zip.file('pedido-loja-de-corte.csv', csvLoja());
     zip.file('lista-de-compras.csv', csvCompras());
-    if (window.jspdf) zip.file('desenhos-tecnicos.pdf', gerarPDF());
+    if (window.jspdf) {
+      zip.file('desenhos-folhas-A3.pdf', await folhasPDF(pecasComFolha(), extraFolha));
+      zip.file('lista-e-plano-de-corte.pdf', gerarPDF({ semDesenhos:true }));
+    }
     zip.file('inventor-gerar-pecas.iLogicVb', gerarILogic());
     const rot = rotuloDocumento(estado.projeto);
     zip.file('SITUACAO.txt', `${estado.projeto.nome}\n${rot.longo}\n${rot.fabricar ? '' : '\nNÃO FABRICAR com estes arquivos: o projeto ainda não foi liberado para corte.\n'}`);
-    zip.file('LEIA-ME.txt', `${estado.projeto.nome}\n${rot.longo}\n\nmodelo.glb — abrir no Blender: File > Import > glTF 2.0. Unidade: metro.\nCada peça se chama categoria_material_id (ex.: frente_mdf-ru-branco_porta-esq).\nPortas e gavetas levam o pivô e o curso nas propriedades personalizadas (Custom Properties).\nprojeto.json — reabre no Configurador (botão Abrir projeto).\ndesenhos-tecnicos.pdf — lista de corte, ferragens e um desenho cotado por peça, para a marcenaria.\ninventor-gerar-pecas.iLogicVb — regra iLogic: cria as peças .ipt e a montagem .iam no Inventor.\nlista-de-corte.csv e ferragens.csv — abrem no Excel.\n`);
+    zip.file('LEIA-ME.txt', `${estado.projeto.nome}\n${rot.longo}\n\nmodelo.glb — abrir no Blender: File > Import > glTF 2.0. Unidade: metro.\nCada peça se chama categoria_material_id (ex.: frente_mdf-ru-branco_porta-esq).\nPortas e gavetas levam o pivô e o curso nas propriedades personalizadas (Custom Properties).\nprojeto.json — reabre no Configurador (botão Abrir projeto).\ndesenhos-folhas-A3.pdf — uma folha A3 cotada por peça (padrão FreeCAD), para a marcenaria.\nlista-e-plano-de-corte.pdf — lista de corte, compras e plano de corte.\ninventor-gerar-pecas.iLogicVb — regra iLogic: cria as peças .ipt e a montagem .iam no Inventor.\nlista-de-corte.csv e ferragens.csv — abrem no Excel.\n`);
     await salvar(slug() + '-' + rot.curto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '.zip', await zip.generateAsync({ type:'blob' }));
   } catch(e) { toast('Falha ao montar o pacote.'); }
   atualizarBotoesExport();
