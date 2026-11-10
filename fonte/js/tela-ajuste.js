@@ -2,7 +2,7 @@
    PASSO 1c. AJUSTE POR PEÇA — tela. Em qualquer módulo (móvel livre ou módulo do ambiente):
    - na ficha da peça clicada no 3D: desligar a peça, mudar a medida dela ou voltar à regra;
    - no editor do módulo: lista das peças ajustadas (inclusive as desligadas, que somem do 3D).
-   Lógica em nucleo.js (aplicarAjustesPecas); estrutura em pagina.html (tplAjuste*); aparência em estilos/ajuste.css.
+   Lógica em nucleo/ajustes.js (aplicarAjustesPecas); estrutura em pagina.html (tplAjuste*); aparência em estilos/ajuste.css.
    ===================================================================== */
 const EIXOS_TELA = {
   x: { rot:'Largura',      fixos:[['ini','fica a esquerda'], ['fim','fica a direita'], ['centro','cresce dos dois lados']] },

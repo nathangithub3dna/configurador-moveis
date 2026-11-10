@@ -10896,15 +10896,6 @@ function calcularFixacoes(pecas) {
   return F;
 }
 
-/* =====================================================================
-   3e. NÚCLEO NOVO (sub-etapa 4a) — módulo + árvore de vãos + frentes → peças
-   Um gerador só para qualquer móvel de caixa. Ainda não é usado pela tela:
-   roda ao lado dos geradores antigos e é conferido pelos testes.
-   Módulo: { largura, altura, profundidade, construcao, ambiente, raiz }
-   Nó DIVIDIR: { tipo:'dividir', dir:'v'|'h', sep:'divisoria'|'nenhum', partes:[{ medida:'auto'|mm, no }] }
-   Nó VÃO:     { tipo:'vao', frente:{ tipo:'porta'|'2portas'|'gaveta'|'nenhuma', lado }, conteudo:[...] }
-   ===================================================================== */
-
 // MÉTODO DE CONSTRUÇÃO — níveis: padrão → método com nome → ajustes do projeto → ajustes do módulo
 const unirFundo = (a, b) => { const r = { ...a }; for (const [k, v] of Object.entries(b || {})) r[k] = (v && typeof v === 'object' && !Array.isArray(v) && typeof r[k] === 'object') ? unirFundo(r[k], v) : v; return r; };
 function resolverMetodo(m) {
@@ -10918,6 +10909,15 @@ function resolverMetodo(m) {
   c.origem = origem;
   return c;
 }
+/* =====================================================================
+   3e. NÚCLEO NOVO (sub-etapa 4a) — módulo + árvore de vãos + frentes → peças
+   Um gerador só para qualquer móvel de caixa. Ainda não é usado pela tela:
+   roda ao lado dos geradores antigos e é conferido pelos testes.
+   Módulo: { largura, altura, profundidade, construcao, ambiente, raiz }
+   Nó DIVIDIR: { tipo:'dividir', dir:'v'|'h', sep:'divisoria'|'nenhum', partes:[{ medida:'auto'|mm, no }] }
+   Nó VÃO:     { tipo:'vao', frente:{ tipo:'porta'|'2portas'|'gaveta'|'nenhuma', lado }, conteudo:[...] }
+   ===================================================================== */
+
 function gerarModuloV3(m) {
   const E = [], A = [], pecas = [];
   const c = resolverMetodo(m), amb = m.ambiente || {};
@@ -11471,7 +11471,6 @@ function gerarModuloV3(m) {
   limitarPortasQueBatem(pecas, A);
   return { pecas, erros:E, avisos:A, volumes, compras: comprasV3(pecas), vaos: regioes };
 }
-
 /* AJUSTE POR PEÇA (passo 1c) — em qualquer módulo: desligar uma peça ou mudar a medida dela.
    m.pecasAjuste = { '<id da peça>': { desligar:true } | { medidas:{ x|y|z: { valor, fixo:'ini'|'fim'|'centro' } } } }
    Eixos do módulo: x = largura (esquerda → direita), y = altura (chão → cima), z = profundidade (parede → frente).
@@ -11533,7 +11532,6 @@ function aplicarAjustesPecas(pecas, ajustes, E, A) {
     pc.obs = [pc.obs, 'Medida mudada à mão (ajuste da peça).'].filter(Boolean).join(' ');
   }
 }
-
 /* ACABAMENTO DAS PEÇAS (4e) — material por grupo, veio, fita por lado (C1/C2/L1/L2) e medida de corte.
    C = lados do comprimento (a fita neles diminui a largura de corte); L = lados da largura. */
 function acabamentoPecas(pecas, mats, loja = R.lojaPadrao) {
@@ -11550,8 +11548,6 @@ function acabamentoPecas(pecas, mats, loja = R.lojaPadrao) {
     q.medidaLoja = loja.descontaFita ? { comp: q.comp, larg: q.larg, tipo:'final' } : { ...q.corte, tipo:'corte' };
   }
 }
-
-/* COMPRAS DO NÚCLEO — conta as ferragens pelas referências da biblioteca e abre os kits nos componentes */
 // contorno visto de cima (x, z) de uma porta de giro aberta no ângulo `ang` (graus), girando em volta do eixo da dobradiça
 function contornoPortaAberta(pc, ang) {
   const [x0, x1, , , z0, z1] = pc.box, m = pc.mov, f = (m.lado === 'esq' ? -1 : 1) * ang * Math.PI / 180, c = Math.cos(f), s = Math.sin(f);
@@ -11579,7 +11575,7 @@ function limitarPortasQueBatem(pecas, A) {
     }
   }
 }
-
+/* COMPRAS DO NÚCLEO — conta as ferragens pelas referências da biblioteca e abre os kits nos componentes */
 function comprasV3(pecas) {
   const conta = new Map(), soma = (ref, q) => conta.set(ref, (conta.get(ref) || 0) + q);
   const refs = new Map(); pecas.filter(q => q.ref).forEach(q => refs.set(q.ref, (refs.get(q.ref) || 0) + (BIBLIOTECA[q.ref]?.metro && q.comp ? q.comp / 1000 : 1)));
@@ -11592,7 +11588,6 @@ function comprasV3(pecas) {
   return [...conta.entries()].map(([ref, qtd]) => { const it = BIBLIOTECA[ref] || {}; const emb = it.emb || 1;
     return { ref, nome: it.nome || ref, qtd, unid: it.unid || 'un', compra: Math.ceil(qtd / emb) }; }).sort((a, b) => a.nome.localeCompare(b.nome));
 }
-
 /* VOLUMES — embalagem simulada (versão simples): frentes num volume próprio, caixa em pilhas
    (a maior peça embaixo define a base; pilha nova acima do peso ou da altura), ferragens numa caixa. */
 const pesoPeca = q => q.comp * q.larg * q.esp * ((q.mat || '').startsWith('hdf') ? R.densidade.hdf : R.densidade.mdf) / 1e9;
@@ -11620,7 +11615,6 @@ function volumesDe(pecas, { montado, L, H, P, A }) {
   vol.forEach((v, i) => { v.num = i + 1; v.etiqueta = `Volume ${i + 1} de ${vol.length}`; v.peso = v.peso === null ? null : Math.round(v.peso * 10) / 10; });
   return vol;
 }
-
 // CONVERSORES: parâmetros dos tipos antigos → módulo do núcleo novo
 const PUXADOR_BARRA_GENERICO = proj => ({ ref:null, modelo:null, furacao:128, comp:R.puxadorComp, larg:12, proj, cor:undefined, altura:'topo-120' });
 function moduloDeGabinete(p) {
@@ -11665,7 +11659,6 @@ function moduloDeArmario(p) {
   };
 }
 const CONVERSORES_V3 = { gabinete:moduloDeGabinete, armario:moduloDeArmario };
-
 /* MÓVEL LIVRE (5a) — o móvel montado pela tela: módulo + árvore de vãos, gerado pelo núcleo novo.
    O resultado ganha ferragens, fixações e medidas no mesmo formato do gabinete e do armário,
    para as listas, o plano de corte, as compras, os desenhos e o 3D funcionarem igual. */
@@ -11689,7 +11682,6 @@ TIPOS.modulo = {
   padrao: JSON.parse(JSON.stringify({ ...moduloDeArmario(TIPOS.armario.padrao), metodo:'padrao-nathan', metodoAjustes:{}, entrega:'desmontado' })),
   gerar: p => resultadoModulo(gerarModuloV3(p), p),
 };
-
 /* =====================================================================
    5b. AMBIENTE — paredes, pontos (água, esgoto, gás, tomada), módulos
    posicionados nas paredes (inferior, aéreo, torre), cantos e tampo.
@@ -14768,7 +14760,7 @@ $('esquema').addEventListener('dblclick', e => {
    PASSO 1c. AJUSTE POR PEÇA — tela. Em qualquer módulo (móvel livre ou módulo do ambiente):
    - na ficha da peça clicada no 3D: desligar a peça, mudar a medida dela ou voltar à regra;
    - no editor do módulo: lista das peças ajustadas (inclusive as desligadas, que somem do 3D).
-   Lógica em nucleo.js (aplicarAjustesPecas); estrutura em pagina.html (tplAjuste*); aparência em estilos/ajuste.css.
+   Lógica em nucleo/ajustes.js (aplicarAjustesPecas); estrutura em pagina.html (tplAjuste*); aparência em estilos/ajuste.css.
    ===================================================================== */
 const EIXOS_TELA = {
   x: { rot:'Largura',      fixos:[['ini','fica a esquerda'], ['fim','fica a direita'], ['centro','cresce dos dois lados']] },
