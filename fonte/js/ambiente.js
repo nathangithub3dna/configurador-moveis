@@ -49,7 +49,7 @@ const AMB = {
   },
   // movimento (porta, gaveta) no mundo: na parede A só desloca; na B o módulo está girado 90° (frente para +X)
   movNoMundo(mod, mv) {
-    if (mod.parede === 0) return mv.tipo === 'porta' ? { ...mv, pivX: mv.pivX + mod.x } : { ...mv };
+    if (mod.parede === 0) return mv.tipo === 'porta' ? { ...mv, pivX: mv.pivX + mod.x } : mv.tipo === 'basculante' ? { ...mv, pivY: mv.pivY + mod.y } : { ...mv };
     if (mv.tipo === 'porta') return { ...mv, pivX: mv.pivZ, pivZ: mod.x + mod.modulo.largura - mv.pivX };
     if (mv.tipo === 'gaveta') return { ...mv, eixo:'x' };
     return null;                                          // correr e basculante na parede B: ainda sem movimento no 3D

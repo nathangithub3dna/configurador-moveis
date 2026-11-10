@@ -191,6 +191,7 @@ function construirCena(res) {
     if (pc.cat !== 'tampo') mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g, 25), matLinha));
     const wrapper = new THREE.Group(), mover = new THREE.Group();
     if (pc.mov?.tipo === 'porta') { mover.position.set(pc.mov.pivX, 0, pc.mov.pivZ); mesh.position.set(-pc.mov.pivX, 0, -pc.mov.pivZ); }
+    if (pc.mov?.tipo === 'basculante') { mover.position.set(0, pc.mov.pivY, pc.mov.pivZ); mesh.position.set(0, -pc.mov.pivY, -pc.mov.pivZ); }   // gira na borda de cima
     mover.add(mesh); wrapper.add(mover); raiz.add(wrapper);
     const cExp = centro(pc.expPai ? porId.get(pc.expPai) : pc);
     nos.set(pc.id, { pc, mesh, wrapper, mover, dirExp: cExp.sub(mid), ang:0, slide:0 });
@@ -838,6 +839,8 @@ function quadro() {
   for (const no of nos.values()) {
     const m = no.pc.mov;
     if (m?.tipo === 'porta') { const alvo = estado.portas ? m.angMax : 0; no.ang += (alvo - no.ang)*k; no.mover.rotation.y = (m.lado==='esq' ? -1 : 1) * no.ang*Math.PI/180; }
+    if (m?.tipo === 'basculante') { const alvo = estado.portas ? m.angMax : 0; no.ang += (alvo - no.ang)*k; no.mover.rotation.x = -no.ang*Math.PI/180; }   // sobe para fora
+    if (m?.tipo === 'correr') { const alvo = estado.portas ? m.curso * m.sentido : 0; no.slide += (alvo - no.slide)*k; no.mover.position.x = no.slide; }
     if (m?.tipo === 'gaveta') { const alvo = estado.gavetas ? m.curso : 0; no.slide += (alvo - no.slide)*k; if (m.eixo === 'x') no.mover.position.x = no.slide; else no.mover.position.z = no.slide; }
     no.wrapper.position.copy(no.dirExp).multiplyScalar(expAtual*0.9);
   }
