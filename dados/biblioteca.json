@@ -495,6 +495,71 @@
       "cursoUtil": 91
     }
   },
+  "pistao-gas-inverso-60": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 60 N, força inversa (abre para baixo)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 60,
+      "cursoUtil": 91
+    },
+    "obs": "Encontrado à venda em 100 N (Zamar); as outras forças são [Suposição] — conferir na loja. Curso útil igual ao do normal [Suposição]."
+  },
+  "pistao-gas-inverso-80": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 80 N, força inversa (abre para baixo)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 80,
+      "cursoUtil": 91
+    },
+    "obs": "Encontrado à venda em 100 N (Zamar); as outras forças são [Suposição] — conferir na loja. Curso útil igual ao do normal [Suposição]."
+  },
+  "pistao-gas-inverso-100": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 100 N, força inversa (abre para baixo)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 100,
+      "cursoUtil": 91
+    },
+    "obs": "Encontrado à venda em 100 N (Zamar); as outras forças são [Suposição] — conferir na loja. Curso útil igual ao do normal [Suposição]."
+  },
+  "pistao-gas-inverso-120": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 120 N, força inversa (abre para baixo)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 120,
+      "cursoUtil": 91
+    },
+    "obs": "Encontrado à venda em 100 N (Zamar); as outras forças são [Suposição] — conferir na loja. Curso útil igual ao do normal [Suposição]."
+  },
+  "pistao-gas-inverso-140": {
+    "grupo": "Ferragens",
+    "nome": "Pistão a gás 140 N, força inversa (abre para baixo)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "dados": {
+      "forca": 140,
+      "cursoUtil": 91
+    },
+    "obs": "Encontrado à venda em 100 N (Zamar); as outras forças são [Suposição] — conferir na loja. Curso útil igual ao do normal [Suposição]."
+  },
   "minifix-15": {
     "grupo": "Ferragens",
     "nome": "Minifix 15 mm (tambor + pino 34)",

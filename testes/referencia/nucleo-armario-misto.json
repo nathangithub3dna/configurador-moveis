@@ -228,6 +228,23 @@
    ],
    "semFuncao": []
   },
+  "basculanteBaixo": {
+   "erros": [],
+   "pistoes": [
+    "pistao-gas-inverso-60",
+    "pistao-gas-inverso-60"
+   ],
+   "semFuncao": [],
+   "sentido": "baixo",
+   "dobradicasEmbaixo": true,
+   "puxadorEmCima": true
+  },
+  "divisoriasLargura": {
+   "erros": [],
+   "primeira": 300,
+   "espacos23": 0,
+   "erroQuandoNaoCabe": true
+  },
   "portasAuto": [
    [
     597,

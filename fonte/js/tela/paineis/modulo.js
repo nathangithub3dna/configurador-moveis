@@ -87,6 +87,17 @@ function montarEditorModulo() {
     if (md && md.nPartes > 1) { inp.value = md.parte.medida; inp.dataset.cam = md.cam; inp.title = md.cam === sel.cam ? '' : `Muda a ${rotulo} da parte de fora que contém este vão.`; }
     else { inp.value = ''; inp.disabled = true; inp.placeholder = `= ${rotulo} do móvel`; inp.title = `Este vão ocupa a ${rotulo} toda: mude a ${rotulo} do móvel em Medidas.`; }
   }
+  // divisórias em pé: um campo por espaço; o automático aparece como sugestão (largura calculada agora)
+  const div = (no.conteudo || []).find(c => c.tipo === 'divisorias');
+  if (div && reg) {
+    const xs = (rLocal?.pecas || []).filter(p => p.id.startsWith('divisoria-int-') && p.box[0] >= reg.x0 - 1 && p.box[1] <= reg.x1 + 1 && p.box[2] >= reg.y0 - 1 && p.box[3] <= reg.y1 + 1).map(p => [p.box[0], p.box[1]]).sort((a, b) => a[0] - b[0]);
+    const bordas = [reg.x0, ...xs.flat(), reg.x1], sugestao = k => bordas.length === 2*(div.n + 1) ? Math.round(bordas[2*k + 1] - bordas[2*k]) : null;
+    ed.querySelector('[data-lista="largDiv"]').replaceChildren(...Array.from({ length:div.n + 1 }, (_, k) => {
+      const inp = el('input', { type:'number', inputmode:'decimal', placeholder: sugestao(k) ? `auto (${sugestao(k)})` : 'auto' });
+      inp.dataset.vao = 'largDiv'; inp.dataset.k = k; const vv = div.larguras?.[k]; if (vv) inp.value = vv;
+      return el('label', { class:'ed-campo' }, `Espaço ${k+1}`, inp);
+    }));
+  }
   // um campo por prateleira; o automático aparece como sugestão (posição calculada agora)
   if (prat) {
     const pecasVao = (rLocal?.pecas || []).filter(p => p.papel === 'prateleira' && reg && p.box[0] >= reg.x0 - 1 && p.box[1] <= reg.x1 + 1 && p.box[2] >= reg.y0 - 1 && p.box[3] <= reg.y1 + 1).sort((a, b) => a.box[2] - b.box[2]);
@@ -178,6 +189,7 @@ $('form').addEventListener('change', e => {
     if (kv === 'sistema') no.frente.sistema = v;
     if (kv === 'abrirCorrer') { if (v === 'dir') no.frente.abrir = 'dir'; else delete no.frente.abrir; }
     if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
+    if (kv === 'largDiv') { const c = (no.conteudo || []).find(x => x.tipo === 'divisorias'); if (c) { c.larguras = [...(c.larguras || [])]; c.larguras[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'prat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { c.alturas = [...(c.alturas || [])]; c.alturas[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'altGav') { const c = (no.conteudo || []).find(x => x.tipo === 'gavetas-internas'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'altBot') { const c = (no.conteudo || []).find(x => x.tipo === 'botijao'); if (c && Number(v) > 0) c.altura = Number(v); }

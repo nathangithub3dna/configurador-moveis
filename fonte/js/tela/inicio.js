@@ -14,7 +14,7 @@ function quadro() {
   for (const no of nos.values()) {
     const m = no.pc.mov;
     if (m?.tipo === 'porta') { const alvo = estado.portas ? m.angMax : 0; no.ang += (alvo - no.ang)*k; no.mover.rotation.y = (m.lado==='esq' ? -1 : 1) * no.ang*Math.PI/180; }
-    if (m?.tipo === 'basculante') { const alvo = estado.portas ? m.angMax : 0; no.ang += (alvo - no.ang)*k; no.mover.rotation.x = -no.ang*Math.PI/180; }   // sobe para fora
+    if (m?.tipo === 'basculante') { const alvo = estado.portas ? m.angMax : 0; no.ang += (alvo - no.ang)*k; no.mover.rotation.x = (m.sentido === 'baixo' ? 1 : -1)*no.ang*Math.PI/180; }   // sobe para fora (ou tomba para fora, se abre para baixo)
     if (m?.tipo === 'correr') { const alvo = estado.portas ? m.curso * m.sentido : 0; no.slide += (alvo - no.slide)*k; no.mover.position.x = no.slide; }
     if (m?.tipo === 'gaveta') { const alvo = estado.gavetas ? m.curso : 0; no.slide += (alvo - no.slide)*k; if (m.eixo === 'x') no.mover.position.x = no.slide; else no.mover.position.z = no.slide; }
     no.wrapper.position.copy(no.dirExp).multiplyScalar(expAtual*0.9);

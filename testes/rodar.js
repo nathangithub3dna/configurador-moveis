@@ -186,12 +186,21 @@ function diferencas(a, b, caminho = '') {
       const gr = vaoCom({ tipo:'correr', sistema:'correr-rometal-dominus', n:2 }, { largura:1800, altura:2400, profundidade:600, metodo:'fundo-hdf' });
       const grLeve = vaoCom({ tipo:'correr', sistema:'correr-rometal-ro27', n:2 }, { largura:1800, altura:2400, profundidade:600, metodo:'fundo-hdf' });
       const bas = vaoCom({ tipo:'basculante' }, { largura:800, altura:450, profundidade:350 });
+      const basB = vaoCom({ tipo:'basculante-baixo' }, { largura:800, altura:450, profundidade:350 }), ptB = basB.pecas.find(p => p.papel === 'porta-basculante'), meioB = ptB ? (ptB.box[2] + ptB.box[3])/2 : 0;
       const pAuto = vaoCom({ tipo:'portas', n:'auto' }, { largura:1200 });
+      // divisórias em pé com largura digitada: 1º espaço 300 mm, o resto automático; e com uma largura que não cabe (erro)
+      const divL = c.gerarModuloV3({ ...m, largura:1000, raiz:{ tipo:'vao', frente:{ tipo:'nenhuma' }, conteudo:[{ tipo:'divisorias', n:2, larguras:[300, null, null] }] } });
+      const divB = divL.pecas.filter(p => p.id.startsWith('divisoria-int-')).map(p => p.box).sort((a, b) => a[0] - b[0]), divX = divB.map(b => b[0]), vaoX0 = divL.vaos[0]?.x0;
+      const divErro = c.gerarModuloV3({ ...m, largura:1000, raiz:{ tipo:'vao', frente:{ tipo:'nenhuma' }, conteudo:[{ tipo:'divisorias', n:1, larguras:[950] }] } });
       const pLado = vaoCom({ tipo:'porta', lado:'auto' }, { largura:500, construcao:{ paredeEsq:true } });
       const frentes = {
         correrDominus: { erros: gr.erros, portas: gr.pecas.filter(p => p.papel === 'porta-correr').map(p => [r(p.comp), r(p.larg)]), desempenadores: gr.pecas.filter(p => p.papel === 'desempenador').length, trilhos: gr.pecas.filter(p => p.papel === 'trilho-correr').length, semFuncao: gr.pecas.filter(p => !p.papel).map(p => p.id) },
         correrRO27: { erroPeso: grLeve.erros.some(e => e.includes('kg passa do máximo')) },
         basculante: { erros: bas.erros, pistoes: bas.pecas.filter(p => p.papel === 'pistao').map(p => p.ref), semFuncao: bas.pecas.filter(p => !p.papel).map(p => p.id) },
+        basculanteBaixo: { erros: basB.erros, pistoes: basB.pecas.filter(p => p.papel === 'pistao').map(p => p.ref), semFuncao: basB.pecas.filter(p => !p.papel).map(p => p.id), sentido: ptB?.mov?.sentido,
+          dobradicasEmbaixo: basB.pecas.filter(p => p.papel === 'dobradica').every(p => (p.box[2] + p.box[3])/2 < meioB) && basB.pecas.some(p => p.papel === 'dobradica'),
+          puxadorEmCima: basB.pecas.filter(p => p.id.endsWith('-puxador')).every(p => (p.box[2] + p.box[3])/2 > meioB) },
+        divisoriasLargura: { erros: divL.erros, primeira: r(divX[0] - vaoX0), espacos23: divB.length === 2 ? r(divL.vaos[0].x1 - divB[1][1]) - r(divB[1][0] - divB[0][1]) : null, erroQuandoNaoCabe: divErro.erros.some(e => e.includes('larguras digitadas')) },
         portasAuto: pAuto.pecas.filter(p => p.papel === 'porta').map(p => [r(p.larg), p.mov.lado]),
         ladoAuto: pLado.pecas.find(p => p.papel === 'porta')?.mov.lado,
       };
@@ -249,6 +258,9 @@ function diferencas(a, b, caminho = '') {
     const fr4c = atual.frentes;
     const frOk = !fr4c.correrDominus.erros.length && fr4c.correrDominus.portas.length === 2 && fr4c.correrDominus.desempenadores === 4 && fr4c.correrDominus.trilhos === 2 && !fr4c.correrDominus.semFuncao.length
       && fr4c.correrRO27.erroPeso && !fr4c.basculante.erros.length && fr4c.basculante.pistoes.length === 2 && fr4c.basculante.pistoes.every(x => /^pistao-gas-\d+$/.test(x)) && !fr4c.basculante.semFuncao.length
+      && fr4c.basculanteBaixo && !fr4c.basculanteBaixo.erros.length && fr4c.basculanteBaixo.pistoes.length === 2 && fr4c.basculanteBaixo.pistoes.every(x => /^pistao-gas-inverso-\d+$/.test(x))
+      && !fr4c.basculanteBaixo.semFuncao.length && fr4c.basculanteBaixo.sentido === 'baixo' && fr4c.basculanteBaixo.dobradicasEmbaixo && fr4c.basculanteBaixo.puxadorEmCima
+      && fr4c.divisoriasLargura && !fr4c.divisoriasLargura.erros.length && fr4c.divisoriasLargura.primeira === 300 && Math.abs(fr4c.divisoriasLargura.espacos23) <= 1 && fr4c.divisoriasLargura.erroQuandoNaoCabe
       && fr4c.portasAuto.length === 2 && fr4c.portasAuto[0][1] === 'esq' && fr4c.portasAuto[1][1] === 'dir' && fr4c.ladoAuto === 'dir';
     if (!frOk) { falhas++; console.log('FRENTES (4c) ERRADO', JSON.stringify(fr4c)); } else console.log('FRENTES (4c) OK  ' + JSON.stringify(fr4c));
     const tr = atual.transporte;
