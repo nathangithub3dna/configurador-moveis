@@ -303,8 +303,10 @@ function gerarModuloV3(m) {
       const bordaC = !perfilC ? null : fr.perfil === 'cima' || fr.perfil === 'baixo' ? fr.perfil : (i === 0 ? 'esq' : 'dir');
       let fx0 = xa0, fx1 = xa0 + w, fy0 = Y0 + (emb ? d.descAltura.embutido/2 : 0), fy1 = fy0 + h;
       if (bordaC === 'cima') fy1 -= redC; else if (bordaC === 'baixo') fy0 += redC; else if (bordaC === 'esq') fx0 += redC; else if (bordaC === 'dir') fx1 -= redC;
-      // abrir: as folhas do trilho de trás (pares) correm para trás da vizinha da frente; as da frente ficam paradas
-      const movC = { tipo:'correr', eixo:'x', curso: w - tr, sentido: frenteTr ? 0 : (i === n - 1 ? -1 : 1) };
+      // abrir: libera o lado esquerdo (padrão) — as folhas de trás (pares) correm para a direita, para trás da vizinha;
+      // libera o direito (fr.abrir 'dir') — as folhas da frente (ímpares) correm para a esquerda, na frente da vizinha
+      const dirC = fr.abrir === 'dir', movC = { tipo:'correr', eixo:'x', curso: w - tr,
+        sentido: dirC ? (frenteTr ? -1 : 0) : (frenteTr ? 0 : (i === n - 1 ? -1 : 1)) };
       add({ id, nome:`Porta de correr ${k}`, nomeLista:'Porta de correr', cat:'frente', a:fy1 - fy0, b:fx1 - fx0, fita:[2,2], box:[fx0, fx1, fy0, fy1, zz0, zz1],
         mov:movC, obs:`${sis.nome}. Peso ${fmt(peso)} kg. Trilho da ${frenteTr ? 'frente' : 'trás'}.`,
         des:{ w:fx1 - fx0, h:fy1 - fy0, fita:['t','b','l','r'], vista:'Vista pela face interna' } });

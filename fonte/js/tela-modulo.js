@@ -23,7 +23,7 @@ function montarEditorModulo() {
   const espacos = ED.espacos(m.raiz), vaos = espacos.filter(e => !e.divisao);
   if (!vaos.some(v => v.cam === estado.vaoSel)) estado.vaoSel = vaos[0]?.cam ?? '';
   const sel = vaos.find(v => v.cam === estado.vaoSel), no = sel.no, info = ED.parte(m, sel.cam);
-  const rLocal = noAmbiente ? resultadoLocal() : estado.res;
+  const rLocal = noAmbiente ? resultadoLocal() : (resultadoLocal() || estado.res);   // calculado agora: o editor é montado antes do atualizar() geral
   const reg = (rLocal?.vaos || []).find(r => r.caminho === sel.cam);
 
   // medidas e construção do módulo
@@ -46,7 +46,7 @@ function montarEditorModulo() {
   preencherModelo(ed, {
     titulo: 'Vão ' + sel.num,
     medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
-    temMedida: !!info, rotMedida: info?.divisao.dir === 'v' ? 'Largura (mm ou auto)' : 'Altura (mm ou auto)',
+    rotLarg: 'Largura por dentro (mm ou auto)', rotAlt: 'Altura na frente (mm ou auto)',   // é assim que o núcleo lê cada uma (coluna: vão livre; faixa deitada: altura da frente)
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
     perfil: m.puxadorPorta?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
@@ -59,7 +59,7 @@ function montarEditorModulo() {
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
   // espaços: mini desenho de frente (pedido do Nathan, 09/11) — um botão por vão na posição real; os textos (resumo) vão no preencherModelo acima
-  const rNovo = noAmbiente ? rLocal : resultadoLocal(), rDes = rNovo?.dims ? rNovo : estado.valido,   // calculado agora: o editor é montado antes do atualizar()
+  const rNovo = rLocal, rDes = rNovo?.dims ? rNovo : estado.valido,   // calculado agora: o editor é montado antes do atualizar()
         mini = ed.querySelector('[data-lista="miniVaos"]');
   const L = rDes?.dims?.L, H = rDes?.dims?.H, regs = rDes?.vaos || [];
   const desenha = !!(L && H) && vaos.every(v => regs.some(x => x.caminho === v.cam));
@@ -75,7 +75,12 @@ function montarEditorModulo() {
     Object.assign(d.style, { left: p.box[0] / L * 100 + '%', top: (H - p.box[3]) / H * 100 + '%', width: Math.max(0.6, (p.box[1] - p.box[0]) / L * 100) + '%', height: Math.max(0.6, (p.box[3] - p.box[2]) / H * 100) + '%' }); return d; }) : [];
   mini.replaceChildren(...vaos.map(botao), ...marcas);
 
-  const inpMed = ed.querySelector('[data-vao="medida"]'); if (info) inpMed.value = info.parte.medida;
+  // largura e altura do vão: cada campo mexe na divisão que manda naquela medida; sem divisão nessa direção, é a do móvel (só leitura)
+  for (const [k, dir, rotulo] of [['larg', 'v', 'largura'], ['alt', 'h', 'altura']]) {
+    const inp = ed.querySelector(`[data-vao="${k}"]`), md = ED.medidaNaDirecao(m, sel.cam, dir);
+    if (md && md.nPartes > 1) { inp.value = md.parte.medida; inp.dataset.cam = md.cam; inp.title = md.cam === sel.cam ? '' : `Muda a ${rotulo} da parte de fora que contém este vão.`; }
+    else { inp.value = ''; inp.disabled = true; inp.placeholder = `= ${rotulo} do móvel`; inp.title = `Este vão ocupa a ${rotulo} toda: mude a ${rotulo} do móvel em Medidas.`; }
+  }
   // um campo por prateleira; o automático aparece como sugestão (posição calculada agora)
   if (prat) {
     const pecasVao = (rLocal?.pecas || []).filter(p => p.papel === 'prateleira' && reg && p.box[0] >= reg.x0 - 1 && p.box[1] <= reg.x1 + 1 && p.box[2] >= reg.y0 - 1 && p.box[3] <= reg.y1 + 1).sort((a, b) => a.box[2] - b.box[2]);
@@ -94,6 +99,7 @@ function montarEditorModulo() {
   const selLado = ed.querySelector('[data-vao="lado"]'); selLado.value = no.frente?.lado || 'auto';
   const regN = (rNovo?.vaos || []).find(r => r.caminho === sel.cam), portaVao = regN && (rNovo?.pecas || []).find(p => p.mov?.tipo === 'porta' && p.cat === 'frente' && p.box[0] >= regN.fx0 - 1 && p.box[1] <= regN.fx1 + 1 && p.box[2] >= regN.fy0 - 1 && p.box[3] <= regN.fy1 + 1);
   if (portaVao) selLado.options[0].textContent = `Automático (à ${portaVao.mov.lado === 'esq' ? 'direita' : 'esquerda'})`;
+  ed.querySelector('[data-vao="abrirCorrer"]').value = no.frente?.abrir === 'dir' ? 'dir' : 'esq';
   ed.querySelector('[data-vao="perfil"]').value = no.frente?.perfil || 'auto';
   ed.querySelector('[data-vao="sistema"]').value = no.frente?.sistema || 'correr-rometal-dominus';
   const selCt = ed.querySelector('[data-vao="conteudo"]');
@@ -152,10 +158,11 @@ $('form').addEventListener('change', e => {
   });
   if (kv) mudarModulo(m => {
     const no = ED.no(m.raiz, cam);
-    if (kv === 'medida') ED.definirMedida(m, cam, v);
+    if (kv === 'larg' || kv === 'alt') ED.definirMedida(m, e.target.dataset.cam, v);
     if (kv === 'lado') no.frente.lado = v;
     if (kv === 'perfil') { if (v === 'auto') delete no.frente.perfil; else no.frente.perfil = v; }
     if (kv === 'sistema') no.frente.sistema = v;
+    if (kv === 'abrirCorrer') { if (v === 'dir') no.frente.abrir = 'dir'; else delete no.frente.abrir; }
     if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
     if (kv === 'prat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { c.alturas = [...(c.alturas || [])]; c.alturas[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'altGav') { const c = (no.conteudo || []).find(x => x.tipo === 'gavetas-internas'); if (c && Number(v) > 0) c.altura = Number(v); }

@@ -64,6 +64,14 @@ const ED = {
     if (div.partes.length === 1) ED.trocar(m, p.cam, div.partes[0].no);
     return true;
   },
+  // parte que manda na largura ('v') ou na altura ('h') deste vão: a divisão mais próxima nessa direção, subindo a árvore
+  // (num vão deitado dentro de uma coluna, a largura é a da coluna). null = segue a medida do móvel
+  medidaNaDirecao(m, cam, dir) {
+    for (let c = cam; c; ) { const p = ED.pai(c), div = ED.no(m.raiz, p.cam);
+      if (div.dir === dir) return { cam: c, parte: div.partes[p.i], nPartes: div.partes.length };
+      c = p.cam; }
+    return null;
+  },
   definirMedida(m, cam, texto) {
     const info = ED.parte(m, cam); if (!info) return;
     const v = Number(String(texto).replace(',', '.'));
