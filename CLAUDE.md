@@ -2,6 +2,7 @@
 
 - O Nathan não é programador e só fala português. **Toda resposta em português, inclusive o texto final depois das ferramentas — nunca em inglês.** Explique mudanças pelo comportamento, não linha a linha.
 - Documentação completa no projeto "MÓVEIS PLANEJADOS" do Claude (claude/*.md). Leia `claude/arquitetura.md` e `claude/plano-reestruturacao.md` antes de mudar a estrutura.
+- **Plano a seguir: `claude/plano-mestre.md` no projeto** (aprovado pelo Nathan em 10/11/2026: 70 itens por área, blocos em ordem). Pedido novo entra na lista com número; item feito é marcado lá. Onde cada função mora no código, custo e contratos (registro de conteúdos/frentes/elementos/saídas): `claude/plano-execucao.md`. Se a conversa sair do plano por muitos pedidos soltos, avisar e mostrar onde o plano parou.
 - Onde a última conversa parou: `docs/PASSAGEM_CONVERSA.md` (cópia em `claude/passagem-conversa.md` no projeto). Ler no começo de cada conversa.
 - Reestruturação em etapas (arquitetura.md): uma etapa por vez, o Nathan aprova antes da próxima.
 - **Antes de qualquer commit: `npm run testar` precisa dar IGUAL em todos os casos.** Se algo mudou de propósito, explique ao Nathan o que mudou e só então rode `npm run atualizar-referencia`.
