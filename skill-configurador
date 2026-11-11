@@ -1,0 +1,38 @@
+Configurador de Móveis — roteiro de entrada
+
+Esta skill só diz como começar. As regras do projeto ficam no CLAUDE.md do repositório e prevalecem sobre esta skill. Não copiar regras do CLAUDE.md para cá.
+
+Responder sempre em português, inclusive o texto final. Perguntas sempre em múltipla escolha.
+
+1. Ligar o repositório
+Repositório privado nathangithub3dna/configurador-moveis, ligado com add_repo e acesso "push".
+Clonar em /home/claude/configurador-moveis e registrar a pasta com register_repo_root.
+Não procurar no PC do Nathan: o trabalho e os testes rodam na nuvem do Claude.
+2. Ler antes de qualquer coisa
+CLAUDE.md, com as regras, a estrutura da fonte e o que nunca fazer.
+docs/PASSAGEM_CONVERSA.md, que diz onde a última conversa parou e qual é o próximo passo.
+claude/plano-mestre.md (o que fazer e em que ordem) e claude/plano-execucao.md (onde cada função mora no código e quanto custa), no projeto MÓVEIS PLANEJADOS. Pedido novo do Nathan: citar o número do item ou acrescentar na lista; avisar se a conversa estiver saindo do plano.
+Só se for mudar a estrutura: claude/arquitetura.md e claude/plano-reestruturacao.md.
+3. Antes de mexer no código
+Conferir se o pedido já sai com funções que o programa tem (dividir deitado/em pé, prateleiras, alturas, juntar, gavetas). Se sair, ensinar o Nathan a fazer no app: é mais rápido e não gasta teste.
+Os móveis do Nathan ficam salvos no aparelho dele. Para consultar um projeto real, ler a cópia na pasta "Projetos de móveis" do Google Drive (botão Salvar no Drive) ou pedir o .json.
+Conferir em qual tipo ele está (Móvel livre ou formulário do Armário/Gabinete): as opções são diferentes em cada um.
+4. Preparar os testes
+node_modules não fica no repositório. Instalar com npm install, que traz as devDependencies, entre elas qrcode-generator e svg2pdf.js.
+Playwright e Chromium já vêm instalados na nuvem. Não reinstalar.
+npm run testar monta o configurador.html e o configurador-offline.html e roda todos os testes (leva de 2 a 4 minutos).
+Durante ajustes pequenos: npm run montar e uma conferência rápida no navegador da nuvem; publicar para o Nathan ver. Teste completo uma vez antes de gravar no GitHub.
+Ler o resultado do teste pelo código de saída: gravar a saída num arquivo e conferir $? e a última linha. Nunca encadear npm run testar | grep ... && git commit, porque o grep esconde a falha e o commit passa mesmo com o teste quebrado.
+Se um botão da tela mudar de nome ou de data-acao, procurar o mesmo seletor em testes/rodar.js.
+5. Ao terminar uma etapa
+npm run testar precisa terminar com "Todos os casos iguais à referência". Se uma mudança for de propósito, explicar ao Nathan antes de rodar npm run atualizar-referencia.
+Fazer o commit e o push no GitHub.
+Publicar o configurador.html no artifact indicado no CLAUDE.md (sem passar capabilities, para manter downloads + Google Drive).
+Copiar o configurador.html para codigo/configurador-moveis.html no projeto.
+Enviar o configurador-offline.html ao Nathan.
+Se o Nathan tiver edições não salvas, pedir que ele salve (Drive ou .json) antes de publicar.
+Uma etapa por conversa. O Nathan aprova antes da próxima.
+Marcar o item como feito em claude/plano-mestre.md (✅ data, commit, versão do artifact).
+6. Ao fechar a conversa
+
+Usar /iniciar-nova-conversa. A passagem vai em docs/PASSAGEM_CONVERSA.md, com cópia em claude/passagem-conversa.md no projeto.
