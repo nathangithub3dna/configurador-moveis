@@ -31,6 +31,7 @@ module.exports = { id:'editor', descricao:"Editor do móvel livre", async execut
     const inicio = await foto();
     await passo('#esquema button[data-cam=".1"]');                   // clica no vão 2 do desenho
     await passo('[data-acao="dividir-h"]');                          // divide deitado
+    if (await page.evaluate(() => window.__configurador.estado.vaoSel) !== '.1.0') throw Error('Dividir perdeu o vão selecionado');
     await passo('#esquema button[data-cam=".1.0"]');                 // parte de baixo
     await passo('[data-acao="frente"][data-valor="gaveta"]');        // vira gaveta
     const depois = await foto();

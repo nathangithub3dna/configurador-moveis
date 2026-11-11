@@ -52,7 +52,9 @@ const AMB = {
     if (mod.parede === 0) return mv.tipo === 'porta' ? { ...mv, pivX: mv.pivX + mod.x } : mv.tipo === 'basculante' ? { ...mv, pivY: mv.pivY + mod.y } : { ...mv };
     if (mv.tipo === 'porta') return { ...mv, pivX: mv.pivZ, pivZ: mod.x + mod.modulo.largura - mv.pivX };
     if (mv.tipo === 'gaveta') return { ...mv, eixo:'x' };
-    return null;                                          // correr e basculante na parede B: ainda sem movimento no 3D
+    if (mv.tipo === 'correr') return { ...mv, eixo:'z', sentido:-mv.sentido };
+    if (mv.tipo === 'basculante') return { ...mv, eixo:'z', pivX:mv.pivZ, pivY:mv.pivY + mod.y, pivZ:mod.x + mod.modulo.largura };
+    return { ...mv };
   },
   // posição no mundo de uma caixa local [x0,x1,y0,y1,z0,z1] do módulo
   noMundo(amb, mod, b) {

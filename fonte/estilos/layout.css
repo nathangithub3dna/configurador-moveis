@@ -187,3 +187,16 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .miniatura{display:flex;align-items:center;justify-content:center;width:28px;height:28px}
 .previa-peca{position:fixed;z-index:40;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 12px;max-width:220px;pointer-events:none;text-align:center;font-size:12.5px}
 .previa-peca .num{font-size:11.5px}
+
+/* Em telas estreitas, cada grupo do cabeçalho ocupa a largura disponível. */
+@media (max-width:900px){
+  .topo-linha{min-width:0;width:100%}
+  .topo-projeto{flex-basis:100%;width:100%}
+  .topo-projeto #nomeProjeto{width:100%;max-width:none;flex-basis:100%}
+  .topo-estado{margin-left:0;min-width:0;max-width:100%}
+  .topo-estado .situacao,.topo-estado .status{white-space:normal;overflow-wrap:anywhere;max-width:100%}
+  .topo .acoes{width:100%;min-width:0}
+  .topo .etapas{flex-basis:100%;min-width:0;justify-content:flex-start}
+  .topo .marca{white-space:normal}
+  .topo .marca small{display:block;margin-left:0}
+}

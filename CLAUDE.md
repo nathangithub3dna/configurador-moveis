@@ -9,7 +9,7 @@
 - Editar só `fonte/` e `dados/*.json`; `configurador.html` é **gerado** por `npm run montar` (o `testar` já monta). A fonte é separada por assunto (pedido do Nathan: não misturar código com visual):
   - `fonte/estilos/tema.css` — cores, fontes e sombras (mudar o visual = só aqui); `fonte/estilos/layout.css` — posições e tamanhos.
   - `fonte/pagina.html` — estrutura da tela; inclui as outras partes com `/*@inclui:caminho*/`.
-  - `fonte/js/` — lógica: `regras`, `tipos`, `geradores`, `nucleo`, `ambiente`, `editor-modulo`, `saidas` (listas, plano, desenhos, Inventor), `saidas-loja` (códigos, CorteCloud, etiquetas), `folha-peca` (folha A3), `orcamento`, `revisao` (estudo/aprovado/liberado, o que mudou); tela: `tela` (3D, eventos, salvar), `tela-modulo`, `tela-ambiente`, `tela-loja`, `tela-orcamento`, `tela-revisao`.
+  - `fonte/js/` — lógica: `regras`, `tipos`, `formularios`, `nucleo`, `ambiente`, `editor-modulo`, `saidas` (listas, plano, desenhos, Inventor), `saidas-loja` (códigos, CorteCloud, etiquetas), `folha-peca` (folha A3), `orcamento`, `revisao` (estudo/aprovado/liberado, o que mudou); tela: `tela` (3D, eventos, salvar), `tela-modulo`, `tela-ambiente`, `tela-loja`, `tela-orcamento`, `tela-revisao`.
 - Salvar: dentro do Claude usa o recurso de downloads; fora dele, baixa pelo navegador. O projeto (.json) salva mesmo com erros.
 - `configurador-offline.html` (gerado por `ferramentas/offline.js`, junto com o montar): mesmo programa com as bibliotecas embutidas (de node_modules), abre sem internet e sem o Claude. O teste abre o arquivo com a rede bloqueada.
   - Estrutura dos painéis novos em `<template>` no `pagina.html`; o JS só preenche (`data-texto`, `data-se`, `data-acao`).
@@ -19,3 +19,10 @@
 - Não tocar no Visualizador 3D Granfinale (GSA).
 - O Nathan não quer ficar preso a um PC: nada instalado nos computadores dele; testes rodam na nuvem do Claude.
 - Toda peça nova precisa ter uma função na tabela `PAPEIS` (fonte/js/regras.js); orientação no Inventor vem de `ORIENTACAO` por função. O teste falha com "SEM FUNÇÃO" se faltar.
+
+## Estrutura atual (Fase 0)
+
+- Fonte em fonte/, telas em fonte/telas, núcleo com registro em fonte/js/nucleo, adaptadores dos formulários em fonte/js/formularios. Não existe mais geradores.js.
+- Tela dividida em fonte/js/tela/3d, paineis e salvar; estilos continuam separados da lógica.
+- Testes por área em testes/casos; filtros e instruções em testes/README.md. Conferência parcial nunca substitui npm run testar completo antes de commit.
+- Mudanças planejadas na infraestrutura e documentação podem editar testes/, ferramentas/ e docs/; os HTML continuam gerados.

@@ -1,5 +1,24 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Pedido 73 — fonte escolhida (11/11/2026)
+
+Nathan escolheu a opção 2 dos três protótipos: Manrope nas letras e nos números. Aplicada nas variáveis do tema e embutida em fonte/fontes/manrope.css, com licença SIL OFL preservada, para funcionar também sem internet. Números de medidas usam alinhamento tabular. HTML normal e offline regenerados.
+
+A skill configurador-moveis agora está disponível em C:/Users/NATHAN.OLIVEIRA/.codex/skills/configurador-moveis/SKILL.md; foi lida. Seu roteiro é da nuvem do Claude, mas esta sessão já tem autorização para trabalhar na cópia local/offline. Não publicar. As dez mudanças autorizadas continuam pendentes conforme o registro abaixo; não declarar o lote concluído.
+
+
+## Lote autorizado por Nathan — 11/11/2026
+
+Nathan autorizou as próximas dez mudanças listadas na conversa. Não pedir autorização novamente para esse escopo; seguir a ordem do plano. Este registro não declara o lote inteiro concluído.
+
+- 0.8: corrigido o caminho de seleção ao dividir, cabeçalho responsivo e movimento de correr/basculantes da parede B (incluindo abertura para baixo). Não muda peças, listas nem compras.
+- 0.9: arquitetura, CLAUDE.md e AGENTS.md atualizados para os caminhos atuais. Skill externa do Claude não está no repositório; foi solicitado a Nathan onde encontrá-la. Etapa ainda não concluída.
+- Item 29 parcialmente implementado: modelo de puxador por vão, com opção de herdar o padrão do móvel. A escolha fica no nó do vão e é copiada ao dividir, preservada no JSON e afeta apenas suas frentes/conteúdos. Restam as opções mais amplas do plano: aplicar a todos, altura e sem puxador/fecho toque.
+- Testes de regressão em testes/casos/interface.js: cabeçalho em 320/375/768 px, correr e basculantes na parede B, escolha independente de puxador e retorno ao padrão. editor.js verifica a seleção logo após dividir.
+- Próximos após fechar 0.9 e 29: item 19 (prateleiras/dupla divisória), 13 (cabideiro/maleiro/calceiro), 30 (gavetas), 25 (recobrimentos), 14 (modelos), 7 (pontos), 17 (limites). Não iniciados. Aprovação da 1c-i continua registrada como pendência de conferência do Nathan, não como teste de software.
+- Não publicar; Nathan publica pelo Claude. Nunca atualizar referências sem perguntar.
+
+
 ## Fase 0.7 — concluída em 11/11/2026
 
 - Testes separados em dez áreas em testes/casos/. Comando completo preservado; filtros como npm run testar -- editor ou gabinete conferem só a área escolhida e avisam que a conferência é parcial. --listar mostra as opções. Guarda-roupa ainda não possui casos próprios.
@@ -158,3 +177,5 @@
   - `claude/plano-reestruturacao.md`, `claude/proximas-alteracoes-tela.md` e `claude/biblioteca.md` atualizados;
   - `codigo/configurador-moveis.html` (v62).
 - **Artifact:** v49 → v62.
+
+Validação do pedido 73 e das alterações locais anteriores: npm run testar terminou com Todos os casos iguais à referência., saída 0 (log .ferramentas-codex/testar-manrope.log). Fonte Manrope carregada com rede bloqueada, zero pedidos externos; interface conferida em 320/375/768 px. Referências intactas.
