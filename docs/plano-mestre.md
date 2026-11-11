@@ -75,6 +75,7 @@ tampo em cascata até o chão (Mozaik).
 Vários ambientes no mesmo projeto; copiar e espelhar ambiente (Mozaik) [Provável: hoje é um ambiente por projeto].
 Levantamento completo da obra (auditoria, passo 5).
 B. Módulos e conteúdos
+71. ✅ Feito 11/11/2026 — separar as escolhas do editor: Vassoura e aspirador, Sapateira e Botijão. Retirados os botões Vassoura + sapateira e Botijão + gavetas; projetos antigos conservam seus conjuntos. Pedido adicional do Nathan, antecipado durante a Fase 0; o próximo passo da Fase 0 continua sendo 0.7.
 ★ Guarda-roupa: cabideiro (tubo + suportes), maleiro, calceiro, cabide basculante (Promob, DinaBox). Sem isso não sai guarda-roupa.
 ★ Modelos prontos por ambiente e "salvar o meu como modelo" (todos; DinaBox salva na nuvem por categoria). É o passo 3 do plano.
 Canto em L com dobradiça 165°; torre de canto 45° (Promob, DinaBox).

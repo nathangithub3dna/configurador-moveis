@@ -6,7 +6,7 @@
    ===================================================================== */
 // listas do painel do vão: vêm das escolhas registradas (nucleo/registro.js, frentes/*.js, conteudos/*.js)
 const FRENTES_EDITOR = escolhasDe('frente').map(e => [e.id, e.rotulo]);
-const CONTEUDOS_EDITOR = escolhasDe('conteudo').map(e => [e.id, e.rotulo]);
+const CONTEUDOS_EDITOR = escolhasDe('conteudo').filter(e => !e.legado).map(e => [e.id, e.rotulo]);
 const ED = {
   indices: cam => cam.split('.').filter(Boolean).map(Number),
   no(raiz, cam) { return ED.indices(cam).reduce((n, i) => n.partes[i].no, raiz); },
@@ -140,8 +140,8 @@ const ED = {
   },
   // níveis da sapateira: 0 = quantos couberem; menos que 0 não existe
   niveisSapateira(m, cam, delta) {
-    const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.sapateira);
-    if (c) c.sapateira.max = Math.max(0, (c.sapateira.max || 0) + delta);
+    const c = sapateiraDoVao(ED.no(m.raiz, cam));
+    if (c) c.max = Math.max(0, (c.max || 0) + delta);
   },
   // divisórias em pé dentro do vão: no mínimo 1 (sem divisória, escolha outro conteúdo)
   divisorias(m, cam, delta) {
@@ -156,7 +156,7 @@ const ED = {
     const fr = (FRENTES_EDITOR.find(f => f[0] === no.frente?.tipo) || ['', 'Nada'])[1];
     const t = ED.tipoConteudo(no), pr = (no.conteudo || []).find(x => x.tipo === 'prateleiras');
     const dv = (no.conteudo || []).find(x => x.tipo === 'divisorias');
-    const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (CONTEUDOS_EDITOR.find(c => c[0] === t) || ['', ''])[1].toLowerCase();
+    const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (ESCOLHAS.conteudo[t]?.rotulo || '').toLowerCase();
     return fr + ' · ' + ct;
   },
   resumoDivisao: no => `Dividido ${no.dir === 'v' ? 'em pé' : 'deitado'} em ${no.partes.length}`,

@@ -58,9 +58,9 @@ function montarEditorModulo() {
       const cobre = { esq: v && podeAnt, dir: v && podeProx, baixo: !v && !!pa && podeAnt, cima: !v && !!pa && podeProx };
       const geo = Object.fromEntries(['esq', 'dir', 'baixo', 'cima'].map(l => ['geo' + l[0].toUpperCase() + l.slice(1), !cobre[l] && temG(l)]));
       return { podeAnt, podeProx, podeJuntar: (!!pa && n > 1) || Object.values(geo).some(Boolean), rotAnt: v ? '← Esquerda' : '↓ De baixo', rotProx: v ? 'Direita →' : '↑ De cima', ...geo }; })(),
-    gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'gavetas+botijao',
+    gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'botijao' || tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
-    sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),
+    sapateira: !!sapateiraDoVao(no), sapateiraSozinha: tipoCt === 'sapateira', sapateiraComVassoura: tipoCt === 'vassoura+sapateira', conjuntoAntigo: !!ESCOLHAS.conteudo[tipoCt]?.legado, nSap: (() => { const s = sapateiraDoVao(no); return s?.max ? String(s.max) : 'máx'; })(),
     resumoMovel: espacos[0]?.divisao ? ED.resumoDivisao(espacos[0].no) : 'um vão só', resumoVao: `Vão ${sel.num}: ${ED.resumo(no)}`,
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
@@ -110,7 +110,7 @@ function montarEditorModulo() {
   const gavNo = (no.conteudo || []).find(c => c.tipo === 'gavetas-internas'), botNo = (no.conteudo || []).find(c => c.tipo === 'botijao');
   if (gavNo) ed.querySelector('[data-vao="altGav"]').value = gavNo.altura;
   if (botNo) ed.querySelector('[data-vao="altBot"]').value = botNo.altura;
-  const sapNo = (no.conteudo || []).find(c => c.sapateira); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.sapateira.nivel;
+  const sapNo = sapateiraDoVao(no); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.nivel;
   // campo "Puxador": o valor guardado continua sendo o lado da dobradiça (puxador à esquerda = dobradiça à direita);
   // no automático, o texto diz para que lado o puxador ficou
   const selLado = ed.querySelector('[data-vao="lado"]'); selLado.value = no.frente?.lado || 'auto';
@@ -120,7 +120,9 @@ function montarEditorModulo() {
   ed.querySelector('[data-vao="perfil"]').value = no.frente?.perfil || 'auto';
   ed.querySelector('[data-vao="sistema"]').value = no.frente?.sistema || 'correr-rometal-dominus';
   const selCt = ed.querySelector('[data-vao="conteudo"]');
-  selCt.replaceChildren(...CONTEUDOS_EDITOR.map(([v, r]) => el('option', { value:v }, r))); selCt.value = tipoCt;
+  selCt.replaceChildren(...CONTEUDOS_EDITOR.map(([v, r]) => el('option', { value:v }, r)));
+  if (ESCOLHAS.conteudo[tipoCt]?.legado) { const o = el('option', { value:tipoCt }, ESCOLHAS.conteudo[tipoCt].rotulo); o.hidden = true; selCt.append(o); }
+  selCt.value = tipoCt;
   ed.querySelector('[data-lista="frentes"]').replaceChildren(...FRENTES_EDITOR.map(([v, r]) => {
     const b = modeloDe('tplOpcao').querySelector('button'); b.textContent = r; b.dataset.valor = v;
     b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
@@ -193,7 +195,7 @@ $('form').addEventListener('change', e => {
     if (kv === 'prat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { c.alturas = [...(c.alturas || [])]; c.alturas[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'altGav') { const c = (no.conteudo || []).find(x => x.tipo === 'gavetas-internas'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'altBot') { const c = (no.conteudo || []).find(x => x.tipo === 'botijao'); if (c && Number(v) > 0) c.altura = Number(v); }
-    if (kv === 'nivelSap') { const c = (no.conteudo || []).find(x => x.sapateira); if (c && Number(v) > 0) c.sapateira.nivel = Number(v); }
+    if (kv === 'nivelSap') { const c = sapateiraDoVao(no); if (c && Number(v) > 0) c.nivel = Number(v); }
   });
 });
 

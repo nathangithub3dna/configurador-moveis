@@ -16,6 +16,11 @@ registrarConteudo({ id:'botijao', gerar(ctx, ct, est) {
   est.y = y;
 } });
 
-registrarEscolha({ grupo:'conteudo', id:'gavetas+botijao', rotulo:'Botijão + gavetas', ordem:60, prioridade:10, icone:'<rect x="4" y="3" width="26" height="34"/><rect x="7" y="6" width="20" height="5"/><rect x="11" y="18" width="12" height="17" rx="5"/>',
-  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'botijao'),
+registrarEscolha({ grupo:'conteudo', id:'gavetas+botijao', legado:true, rotulo:'Botijão + gavetas', ordem:60, prioridade:10, icone:'<rect x="4" y="3" width="26" height="34"/><rect x="7" y="6" width="20" height="5"/><rect x="11" y="18" width="12" height="17" rx="5"/>',
+  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'botijao') && (no.conteudo || []).some(c => c.tipo === 'gavetas-internas'),
   aplicar(no, m) { no.conteudo = [{ tipo: 'botijao', altura: TIPOS.armario.padrao.alturaBotijao }, ...gavetasEAcima(m)]; } });
+
+registrarEscolha({ grupo:'conteudo', id:'botijao', rotulo:'Botijão', ordem:60, prioridade:11,
+  icone:'<rect x="4" y="3" width="26" height="34"/><rect x="10" y="14" width="14" height="20" rx="5"/><path d="M14 14v-4h6v4M4 7h26"/>',
+  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'botijao'),
+  aplicar(no) { no.conteudo = [{ tipo:'botijao', altura:TIPOS.armario.padrao.alturaBotijao }]; } });

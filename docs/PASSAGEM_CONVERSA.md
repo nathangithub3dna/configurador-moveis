@@ -1,5 +1,14 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Pedido 71 — conteúdos separados no editor (11/11/2026)
+
+- Nathan pediu e confirmou três opções separadas: **Vassoura e aspirador**, **Sapateira** e **Botijão**, retirando os botões dos conjuntos. Aplicado ao editor do Móvel livre e ao módulo aberto dentro do Ambiente.
+- Sapateira independente ocupa o vão sem reservar 1,2 m para vassouras; altura dos níveis e quantidade são ajustáveis, com máximo automático. Botijão usa seu conteúdo existente, com tampo e verificações de ventilação, sem acrescentar gavetas.
+- Projetos antigos não são convertidos nem perdem conteúdo: os conjuntos continuam reconhecidos, com campos de edição e aviso de que uma nova escolha substitui o conjunto. Eles não aparecem como botões para novas escolhas. Os formulários legados e os modelos existentes conservam os resultados anteriores.
+- Conteúdo novo registrado em `nucleo/conteudos/sapateira.js`; o núcleo não ganhou ramificação por tipo. Novas peças usam o papel de prateleira já existente.
+- `npm run testar`: **Todos os casos iguais à referência.** Nenhuma referência atualizada. HTML normal e offline regenerados. Log: `.ferramentas-codex/testar-separados.log`.
+- **Onde parou:** pedido 71 implementado na branch `codex/conteudos-separados`, baseada no 0.6 (PR #2). **Próximo passo do plano: 0.7**, não iniciado. Não publicar; Nathan publica pelo Claude.
+
 ## Fase 0.6 — concluída em 11/11/2026
 
 - Gabinete e Armário de formulário agora convertem os parâmetros em módulo e geram todas as peças por gerarModuloV3. fonte/js/geradores.js foi removido.

@@ -26,6 +26,6 @@ registrarConteudo({ id:'vassoura', gerar(ctx, ct, est) {
 registrarEscolha({ grupo:'conteudo', id:'vassoura', rotulo:'Vassoura e aspirador', ordem:30, prioridade:31, icone:'<rect x="4" y="3" width="26" height="34"/><line x1="4" y1="9" x2="30" y2="9"/><line x1="12" y1="12" x2="12" y2="34"/><path d="M9 34h6"/><line x1="22" y1="12" x2="22" y2="30"/>',
   reconhece: no => (no.conteudo || []).some(c => c.tipo === 'vassoura'),
   aplicar(no) { const P = TIPOS.armario.padrao; no.conteudo = [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura }]; } });
-registrarEscolha({ grupo:'conteudo', id:'vassoura+sapateira', rotulo:'Vassoura + sapateira', ordem:40, prioridade:30, icone:'<rect x="4" y="3" width="26" height="34"/><line x1="12" y1="5" x2="12" y2="22"/><line x1="4" y1="25" x2="30" y2="25"/><line x1="4" y1="31" x2="30" y2="31"/>',
+registrarEscolha({ grupo:'conteudo', id:'vassoura+sapateira', legado:true, rotulo:'Vassoura + sapateira', ordem:40, prioridade:30, icone:'<rect x="4" y="3" width="26" height="34"/><line x1="12" y1="5" x2="12" y2="22"/><line x1="4" y1="25" x2="30" y2="25"/><line x1="4" y1="31" x2="30" y2="31"/>',
   reconhece: no => (no.conteudo || []).some(c => c.tipo === 'vassoura') && (no.conteudo || []).some(c => c.sapateira),
   aplicar(no) { const P = TIPOS.armario.padrao; no.conteudo = [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura, sapateira: { nivel: P.alturaNivelSapateira, max: P.niveisSapateira } }]; } });

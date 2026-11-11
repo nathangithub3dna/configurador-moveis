@@ -26,7 +26,7 @@ function comDesenhoB(botao, chave) { if (!ICONES_B[chave] || botao.querySelector
 function selectEmBotoesB(sel, campo, rotulos = {}) {
   if (!sel) return;
   const caixa = el('div', { class:'ed-grade-b', role:'group', 'aria-label': sel.getAttribute('aria-label') || sel.closest('label')?.firstChild?.textContent?.trim() || campo });
-  [...sel.options].forEach(o => {
+  [...sel.options].filter(o => !o.hidden).forEach(o => {
     const b = el('button', { type:'button', class:'btn ed-op ed-op-b', 'aria-pressed': String(o.value === sel.value) });
     b.innerHTML = svgB(campo + ':' + o.value); b.append(el('span', { text: rotulos[o.value] || o.textContent }));
     b.addEventListener('click', () => { if (sel.value === o.value) return; sel.value = o.value; sel.dispatchEvent(new Event('change', { bubbles:true })); });
@@ -57,6 +57,6 @@ function aplicarPainelB(ed) {
   selectEmBotoesB(ed.querySelector('[data-vao="lado"]'), 'lado', { dir:'À esquerda', esq:'À direita' });
   selectEmBotoesB(ed.querySelector('[data-vao="perfil"]'), 'perfil', { lateral:'Na lateral' });
   selectEmBotoesB(ed.querySelector('[data-vao="abrirCorrer"]'), 'abrirCorrer', { esq:'Libera a esquerda', dir:'Libera a direita' });
-  selectEmBotoesB(ed.querySelector('[data-vao="conteudo"]'), 'conteudo', { 'vassoura+sapateira':'Vassoura + sapateira', 'gavetas+botijao':'Botijão + gavetas' });
+  selectEmBotoesB(ed.querySelector('[data-vao="conteudo"]'), 'conteudo');
   ed.querySelectorAll('[data-modulo="largura"],[data-modulo="altura"],[data-modulo="profundidade"],[data-modulo="beiral"]').forEach(i => numeroComPassosB(i));
 }
