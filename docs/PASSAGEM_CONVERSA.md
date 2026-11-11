@@ -1,5 +1,9 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Item 29 — altura do puxador (11/11/2026)
+
+Campo opcional para altura do centro do puxador, desde a base do módulo, nas portas de giro do vão ou da fachada. Vazio herda o padrão. Reaproveita os limites e a furação existentes; outras portas e puxadores internos não mudam. Perfil de borda e outras frentes não exibem nem aplicam esse ajuste. Aplicar modelo a todos continua preservando as alturas individuais. Formato 4, conversor de identidade preserva projetos anteriores. Teste direcionado passou: isolamento, retorno ao padrão, conjunto e reabertura. Validação completa: npm run testar terminou com Todos os casos iguais à referência., saída 0 (.ferramentas-codex/altura-completo.log). Referências intactas. Próximo: sem puxador/fecho toque (item 29 ainda parcial). Não publicar; PR continua pendente de autorização.
+
 ## Item 29 — aplicar puxador a todos (11/11/2026)
 
 Próxima etapa autorizada por Nathan: botão abaixo do modelo de puxador repete a escolha em todos os vãos do módulo aberto, incluindo a fachada ativa. A opção de usar o padrão remove as escolhas individuais. Posições, alturas, frentes e conteúdos permanecem como estavam; outros módulos do Ambiente não são alterados. Usa o salvamento e Desfazer existentes. Item 29 continua parcial: faltam altura e sem puxador/fecho toque. 0.9 continua pendente de atualizar o roteiro externo para o fluxo atual. Não publicar nem abrir PR enquanto a confirmação anterior estiver pendente.

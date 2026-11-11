@@ -234,3 +234,5 @@ regiaoInternaModulo e somenteGeometriaVaos em nucleo/arvore.js compartilham o pe
 ## Item 29 — aplicar escolha do puxador a todos
 
 ED.aplicarPuxadorATodos copia a escolha do vão selecionado (ou da fachada que o cobre) para todas as folhas e a fachada ativa do módulo. Sem escolha explícita, apaga apenas o override. O botão no template passa pelo mudarModulo, preservando salvamento e Desfazer. Teste interface verifica peças geradas, preservação dos demais parâmetros, retorno ao padrão, fachada e reabertura. Altura e sem puxador/fecho toque continuam pendentes.
+
+✅ Item 29 — altura por vão/conjunto implementada em 11/11/2026, para portas de giro sem perfil de borda. Campo vazio restaura o padrão; posição limitada à porta. Formato 4 preserva dados antigos. Restam sem puxador/fecho toque; publicação não realizada.

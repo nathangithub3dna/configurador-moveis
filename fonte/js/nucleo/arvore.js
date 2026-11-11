@@ -62,6 +62,7 @@ function vaoDaArvore(ctx, no, g) {
   const moduloOriginal = ctx.m, fachadaAnterior = ctx.fachadaAtiva;
   ctx.fachadaAtiva = vaoSobFachada(ctx.m,no);
   if (no.puxador && PUXADORES[no.puxador]) { const px = PUXADORES[no.puxador]; ctx.m = { ...ctx.m, puxadorPorta:{ ...px, altura:ctx.m.puxadorPorta?.altura ?? 1050 }, puxadorGaveta:{ ...px } }; }
+  if (['porta','2portas','portas'].includes(fr.tipo) && ctx.m.puxadorPorta?.modelo !== 'perfil' && Number.isFinite(no.alturaPuxador) && no.alturaPuxador > 0) ctx.m = { ...ctx.m, puxadorPorta:{ ...ctx.m.puxadorPorta, altura:no.alturaPuxador } };
   try {
   // FRENTE e CONTEÚDO (de baixo para cima) vêm do registro: nucleo/frentes/*.js e nucleo/conteudos/*.js
   if (ctx.fachadaAtiva && fr.tipo === 'gaveta') ctx.E.push('Vão '+V+': a frente de gaveta ocupa o espaço das portas inteiras. Escolha gavetas internas ou volte ao fechamento por vão.');

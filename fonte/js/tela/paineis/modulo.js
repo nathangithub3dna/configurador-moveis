@@ -48,6 +48,7 @@ function montarEditorModulo() {
   const selPuxador = ed.querySelector('[data-vao="puxador"]');
   selPuxador.replaceChildren(el('option', {value:''}, 'Usar o padrão do móvel'), ...Object.entries(PUXADORES).map(([k,p]) => el('option', {value:k}, p.rot)));
   selPuxador.value = fechamento.puxador || '';
+  ed.querySelector('[data-vao="alturaPuxador"]').value = fechamento.alturaPuxador ?? '';
   // vão escolhido
   const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
   preencherModelo(ed, {
@@ -57,6 +58,7 @@ function montarEditorModulo() {
     titulo: 'Vão ' + sel.num,
     medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
     rotLarg: 'Largura por dentro (mm ou auto)', rotAlt: 'Altura na frente (mm ou auto)',   // é assim que o núcleo lê cada uma (coluna: vão livre; faixa deitada: altura da frente)
+    alturaPuxador: ['porta','2portas','portas'].includes(fechamento.frente?.tipo) && (PUXADORES[fechamento.puxador] || m.puxadorPorta)?.modelo !== 'perfil',
     porta: fechamento.frente?.tipo === 'porta', correr: fechamento.frente?.tipo === 'correr',
     perfil: (PUXADORES[fechamento.puxador] || m.puxadorPorta)?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(fechamento.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
     divisorias: tipoCt === 'divisorias', nDiv: (no.conteudo || []).find(c => c.tipo === 'divisorias')?.n ?? 0,
@@ -209,6 +211,7 @@ $('form').addEventListener('change', e => {
     const no = ED.no(m.raiz, cam), fechamento = vaoSobFachada(m,no) ? m.fachada : no;
     if (kv === 'larg' || kv === 'alt') ED.definirMedida(m, e.target.dataset.cam, v);
     if (kv === 'puxador') { if (v) fechamento.puxador = v; else delete fechamento.puxador; }
+    if (kv === 'alturaPuxador') { if (!v.trim()) delete fechamento.alturaPuxador; else if (Number.isFinite(Number(v)) && Number(v)>0) fechamento.alturaPuxador=Number(v); else toast('Informe uma altura maior que zero ou deixe vazio para usar o padrão.'); }
     if (kv === 'lado') fechamento.frente.lado = v;
     if (kv === 'perfil') { if (v === 'auto') delete fechamento.frente.perfil; else fechamento.frente.perfil = v; }
     if (kv === 'sistema') fechamento.frente.sistema = v;

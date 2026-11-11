@@ -212,3 +212,5 @@ Pesquisa de 06/11: claude/pesquisa-base-parametrica.md
 78. ✅ 11/11/2026 — Seletor usa geometria da árvore sem depender do cálculo completo das peças; preserva desenho e dimensões diante de falha de geração.
 
 Item 29 — avanço em 11/11/2026: aplicar o modelo de puxador escolhido a todos os vãos do módulo, incluindo as portas do conjunto. Posições preservadas; padrão do móvel pode ser restaurado em todos. Item ainda parcial: altura e sem puxador/fecho toque pendentes. Publicação não realizada.
+
+✅ Item 29 — altura por vão/conjunto implementada em 11/11/2026, para portas de giro sem perfil de borda. Campo vazio restaura o padrão; posição limitada à porta. Formato 4 preserva dados antigos. Restam sem puxador/fecho toque; publicação não realizada.

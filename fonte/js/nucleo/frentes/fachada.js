@@ -26,6 +26,7 @@ function gerarFachada(ctx) {
   const original=ctx.m;
   try {
     if (PUXADORES[no.puxador]) ctx.m={...original,puxadorPorta:{...PUXADORES[no.puxador],altura:original.puxadorPorta?.altura ?? 1050}};
+    if (['porta','2portas','portas'].includes(fr.tipo) && ctx.m.puxadorPorta?.modelo !== 'perfil' && Number.isFinite(no.alturaPuxador) && no.alturaPuxador > 0) ctx.m={...ctx.m,puxadorPorta:{...ctx.m.puxadorPorta,altura:no.alturaPuxador}};
     const inicio=ctx.pecas.length;
     registro.gerar(ctx,g,fr,0);
     ctx.portasFachada=ctx.pecas.slice(inicio).filter(p=>p.cat==='frente' && p.mov?.tipo==='porta');

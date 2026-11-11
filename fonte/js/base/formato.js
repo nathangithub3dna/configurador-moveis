@@ -10,7 +10,8 @@
    ===================================================================== */
 // Formato 3: fachada pode cobrir só vãos marcados. Conversores preservam os dados anteriores.
 // O marcador impede que versões antigas ignorem a fachada e gerem outras portas.
-const FORMATO = { versao: 3, conversores: { 1: p => p, 2: p => p } };
+// Formato 4: altura do puxador por vão ou fachada, mantendo o padrão anterior quando ausente.
+const FORMATO = { versao: 4, conversores: { 1: p => p, 2: p => p, 3: p => p } };
 function converterFormato(d) {
   const de = Number.isInteger(d?.versao) && d.versao >= 1 ? d.versao : 1;
   if (de > FORMATO.versao) return { erro: 'mais-novo', de };

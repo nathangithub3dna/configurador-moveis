@@ -856,6 +856,10 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <div class="ed-sub" data-texto="tituloFrentes">O que fecha este espaço?</div>
     <div class="ed-grade3" data-lista="frentes"></div>
     <label class="ed-linha"><span data-texto="rotPuxador">Modelo do puxador neste vão</span><select data-vao="puxador"></select></label>
+    <div data-se="alturaPuxador">
+      <label class="ed-linha">Altura do centro do puxador (mm)<input type="number" min="1" step="any" data-vao="alturaPuxador" placeholder="Padrão do móvel"></label>
+      <p class="ed-nota">Medida desde a base do móvel. Vazio usa o padrão. O puxador fica limitado ao espaço disponível na porta.</p>
+    </div>
     <button type="button" class="btn" data-acao="puxador-todos">Aplicar este puxador a todos os vãos</button>
     <p class="ed-nota">Repete a escolha nas frentes deste móvel, incluindo as portas do conjunto. Mantém as posições. Gavetas internas conservam o puxador próprio.</p>
     <label class="ed-linha" data-se="porta">Posição do puxador<select data-vao="lado" title="A dobradiça fica sempre do lado oposto ao puxador"><option value="auto">Automático</option><option value="dir">À esquerda</option><option value="esq">À direita</option></select></label>
@@ -7820,6 +7824,7 @@ function gerarFachada(ctx) {
   const original=ctx.m;
   try {
     if (PUXADORES[no.puxador]) ctx.m={...original,puxadorPorta:{...PUXADORES[no.puxador],altura:original.puxadorPorta?.altura ?? 1050}};
+    if (['porta','2portas','portas'].includes(fr.tipo) && ctx.m.puxadorPorta?.modelo !== 'perfil' && Number.isFinite(no.alturaPuxador) && no.alturaPuxador > 0) ctx.m={...ctx.m,puxadorPorta:{...ctx.m.puxadorPorta,altura:no.alturaPuxador}};
     const inicio=ctx.pecas.length;
     registro.gerar(ctx,g,fr,0);
     ctx.portasFachada=ctx.pecas.slice(inicio).filter(p=>p.cat==='frente' && p.mov?.tipo==='porta');
@@ -8264,6 +8269,7 @@ function vaoDaArvore(ctx, no, g) {
   const moduloOriginal = ctx.m, fachadaAnterior = ctx.fachadaAtiva;
   ctx.fachadaAtiva = vaoSobFachada(ctx.m,no);
   if (no.puxador && PUXADORES[no.puxador]) { const px = PUXADORES[no.puxador]; ctx.m = { ...ctx.m, puxadorPorta:{ ...px, altura:ctx.m.puxadorPorta?.altura ?? 1050 }, puxadorGaveta:{ ...px } }; }
+  if (['porta','2portas','portas'].includes(fr.tipo) && ctx.m.puxadorPorta?.modelo !== 'perfil' && Number.isFinite(no.alturaPuxador) && no.alturaPuxador > 0) ctx.m = { ...ctx.m, puxadorPorta:{ ...ctx.m.puxadorPorta, altura:no.alturaPuxador } };
   try {
   // FRENTE e CONTEÚDO (de baixo para cima) vêm do registro: nucleo/frentes/*.js e nucleo/conteudos/*.js
   if (ctx.fachadaAtiva && fr.tipo === 'gaveta') ctx.E.push('Vão '+V+': a frente de gaveta ocupa o espaço das portas inteiras. Escolha gavetas internas ou volte ao fechamento por vão.');
@@ -10695,7 +10701,8 @@ function aplicarPainelB(ed) {
    ===================================================================== */
 // Formato 3: fachada pode cobrir só vãos marcados. Conversores preservam os dados anteriores.
 // O marcador impede que versões antigas ignorem a fachada e gerem outras portas.
-const FORMATO = { versao: 3, conversores: { 1: p => p, 2: p => p } };
+// Formato 4: altura do puxador por vão ou fachada, mantendo o padrão anterior quando ausente.
+const FORMATO = { versao: 4, conversores: { 1: p => p, 2: p => p, 3: p => p } };
 function converterFormato(d) {
   const de = Number.isInteger(d?.versao) && d.versao >= 1 ? d.versao : 1;
   if (de > FORMATO.versao) return { erro: 'mais-novo', de };
@@ -11832,6 +11839,7 @@ function montarEditorModulo() {
   const selPuxador = ed.querySelector('[data-vao="puxador"]');
   selPuxador.replaceChildren(el('option', {value:''}, 'Usar o padrão do móvel'), ...Object.entries(PUXADORES).map(([k,p]) => el('option', {value:k}, p.rot)));
   selPuxador.value = fechamento.puxador || '';
+  ed.querySelector('[data-vao="alturaPuxador"]').value = fechamento.alturaPuxador ?? '';
   // vão escolhido
   const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
   preencherModelo(ed, {
@@ -11841,6 +11849,7 @@ function montarEditorModulo() {
     titulo: 'Vão ' + sel.num,
     medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
     rotLarg: 'Largura por dentro (mm ou auto)', rotAlt: 'Altura na frente (mm ou auto)',   // é assim que o núcleo lê cada uma (coluna: vão livre; faixa deitada: altura da frente)
+    alturaPuxador: ['porta','2portas','portas'].includes(fechamento.frente?.tipo) && (PUXADORES[fechamento.puxador] || m.puxadorPorta)?.modelo !== 'perfil',
     porta: fechamento.frente?.tipo === 'porta', correr: fechamento.frente?.tipo === 'correr',
     perfil: (PUXADORES[fechamento.puxador] || m.puxadorPorta)?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(fechamento.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
     divisorias: tipoCt === 'divisorias', nDiv: (no.conteudo || []).find(c => c.tipo === 'divisorias')?.n ?? 0,
@@ -11993,6 +12002,7 @@ $('form').addEventListener('change', e => {
     const no = ED.no(m.raiz, cam), fechamento = vaoSobFachada(m,no) ? m.fachada : no;
     if (kv === 'larg' || kv === 'alt') ED.definirMedida(m, e.target.dataset.cam, v);
     if (kv === 'puxador') { if (v) fechamento.puxador = v; else delete fechamento.puxador; }
+    if (kv === 'alturaPuxador') { if (!v.trim()) delete fechamento.alturaPuxador; else if (Number.isFinite(Number(v)) && Number(v)>0) fechamento.alturaPuxador=Number(v); else toast('Informe uma altura maior que zero ou deixe vazio para usar o padrão.'); }
     if (kv === 'lado') fechamento.frente.lado = v;
     if (kv === 'perfil') { if (v === 'auto') delete fechamento.frente.perfil; else fechamento.frente.perfil = v; }
     if (kv === 'sistema') fechamento.frente.sistema = v;

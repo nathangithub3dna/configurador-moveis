@@ -37,6 +37,12 @@ module.exports={id:'interface',descricao:'Cabeçalho móvel, animações e puxad
  await page.selectOption('#form [data-vao="puxador"]','');
  assert.equal(await page.evaluate(()=>window.__configurador.ED.no(window.__configurador.estado.projeto.parametros.raiz,'.0').puxador),undefined);
  console.log('Puxador por vão e retorno ao padrão OK');
+ const centros=()=>page.evaluate(()=>window.__configurador.estado.res.pecas.filter(p=>p.papel==='puxador'&&p.mov?.tipo==='porta').map(p=>({id:p.id,y:(p.box[2]+p.box[3])/2})));
+ const inicial=await centros();
+ await page.fill('[data-vao="alturaPuxador"]','1200');await page.locator('[data-vao="alturaPuxador"]').blur();
+ const alturas=await centros();assert.equal(alturas[0].y,1200);assert.deepEqual(alturas.slice(1),inicial.slice(1));
+ await page.fill('[data-vao="alturaPuxador"]','');await page.locator('[data-vao="alturaPuxador"]').blur();assert.deepEqual(await centros(),inicial);
+
 
  await page.selectOption('#form [data-vao="puxador"]','1');
  const antesTodos = await page.evaluate(()=>structuredClone(window.__configurador.estado.projeto.parametros));
@@ -56,10 +62,14 @@ module.exports={id:'interface',descricao:'Cabeçalho móvel, animações e puxad
  await page.selectOption('#form [data-modulo="modoFrentes"]','independente');
  await page.selectOption('#form [data-vao="puxador"]','1');
  await page.click('#form [data-acao="puxador-todos"]');
+ await page.fill('[data-vao="alturaPuxador"]','1250');await page.locator('[data-vao="alturaPuxador"]').blur();
+ assert.ok((await centros()).every(p=>p.y===1250));
  const conjunto=await page.evaluate(()=>{const c=window.__configurador,m=c.estado.projeto.parametros;return {fachada:m.fachada,escolhas:c.ED.espacos(m.raiz).filter(v=>!v.divisao).map(v=>v.no.puxador)};});
  assert.equal(conjunto.fachada.puxador,'1');assert.ok(conjunto.escolhas.every(v=>v==='1'));
  await page.reload();await page.waitForFunction(()=>window.__configurador?.estado?.res);
  assert.deepEqual(await page.evaluate(()=>{const c=window.__configurador,m=c.estado.projeto.parametros;return {fachada:m.fachada,escolhas:c.ED.espacos(m.raiz).filter(v=>!v.divisao).map(v=>v.no.puxador)};}),conjunto);
+ assert.ok((await centros()).every(p=>p.y===1250));
+ console.log('Altura por vão e conjunto: isolamento, padrão e reabertura OK');
  console.log('Aplicar puxador a todos: peças, padrão, conjunto, desfazer e reabertura OK');
 
  await page.close();return 0;
