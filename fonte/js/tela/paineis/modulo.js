@@ -24,7 +24,10 @@ function montarEditorModulo() {
   if (!vaos.some(v => v.cam === estado.vaoSel)) estado.vaoSel = vaos[0]?.cam ?? '';
   const sel = vaos.find(v => v.cam === estado.vaoSel), no = sel.no, info = ED.parte(m, sel.cam);
   const coberto = vaoSobFachada(m,no), fechamento = coberto ? m.fachada : no;
-  const rLocal = noAmbiente ? resultadoLocal() : (resultadoLocal() || estado.res);   // calculado agora: o editor é montado antes do atualizar() geral
+  // A seleção e suas medidas precisam funcionar mesmo se uma peça impedir o cálculo completo.
+  const geometria = gerarModuloV3(m, {somenteVaos:true});
+  const completo = resultadoLocal();
+  const rLocal = { ...geometria, ...(completo || {}), vaos:geometria.vaos, dims:geometria.dims };
   const reg = (rLocal?.vaos || []).find(r => r.caminho === sel.cam);
 
   // medidas e construção do módulo

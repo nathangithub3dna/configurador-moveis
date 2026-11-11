@@ -226,3 +226,7 @@ m.fachada.escopo = selecionados usa no.fecharEmConjunto nas folhas; ausência do
 ## Pedido 77 — organização do painel
 
 Reorganizado fonte/telas/editor.html: miniatura → resumo/medidas do vão → juntar → dividir; fechamento e conteúdo reunidos no fieldset Portas e interior. Mesmos campos e eventos.
+
+## Correção 78 — geometria independente para o seletor
+
+regiaoInternaModulo e somenteGeometriaVaos em nucleo/arvore.js compartilham o percurso existente. gerarModuloV3 aceita somenteVaos para retornar antes de gerar peças. montarEditorModulo usa essa geometria para a seleção e medidas. Erros de geração não ficam ocultos; cálculo completo continua responsável por listas e fabricação. Teste fachada cobre falha, divisões atuais e recuperação.

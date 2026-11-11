@@ -1,5 +1,16 @@
 /* ÁRVORE DE VÃOS — percorre DIVIDIR (em pé / deitado, com ou sem divisória) até cada VÃO; o vão pede a frente e os conteúdos ao registro. */
 
+// Geometria do seletor: independe de portas, conteúdos, compras e acabamento.
+function regiaoInternaModulo({xa,xb,yBase,H,t}) {
+  return { ix0:xa+t, ix1:xb-t, iy0:yBase+t, iy1:H-t, fx0:xa, fx1:xb, fy0:yBase, fy1:H, b:{ esq:'externa', dir:'externa', baixo:'externa', cima:'externa' } };
+}
+function somenteGeometriaVaos(ctx) {
+  const leitura = { ...ctx, E:[], cont:{...ctx.cont}, colunas:[], juntasFundo:[], regioes:[], add:()=>{} };
+  leitura.vao = () => { leitura.cont.vao++; };
+  leitura.percorrer = (...args) => percorrerArvore(leitura,...args);
+  leitura.percorrer(ctx.m.raiz,ctx.regiao0,0);
+  return {vaos:leitura.regioes, erros:leitura.E, pecas:[], dims:{L:ctx.L,H:ctx.H0,P:ctx.P}};
+}
 function percorrerArvore(ctx, no, g, nivel, cam = '') {
   const { Dc, E, add, colunas, cont, juntasFundo, regioes, t, vao, zFr, zf, percorrer } = ctx;
   if (no.tipo === 'dividir' && no.dir === 'v') {

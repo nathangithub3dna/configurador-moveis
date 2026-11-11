@@ -208,3 +208,5 @@ Pesquisa de 06/11: claude/pesquisa-base-parametrica.md
 76. ✅ 11/11/2026 — Conjunto de portas limitado aos vãos marcados (caso 2+4+5), preservando interior e frentes dos demais espaços; seleção deve formar retângulo completo.
 
 77. ✅ 11/11/2026 — Dimensões do vão logo abaixo do esquema; Portas e interior junto das escolhas de fechamento.
+
+78. ✅ 11/11/2026 — Seletor usa geometria da árvore sem depender do cálculo completo das peças; preserva desenho e dimensões diante de falha de geração.

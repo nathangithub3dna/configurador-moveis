@@ -92,5 +92,20 @@ module.exports={id:'fachada',descricao:'Portas inteiras, interiores preservados 
  const dividido=await page.evaluate(()=>{const c=window.__configurador;return {portas:c.estado.res.pecas.filter(p=>p.papel==='porta').length,marcados:c.ED.espacos(c.estado.projeto.parametros.raiz).filter(v=>!v.divisao&&v.no.fecharEmConjunto).length,erros:c.estado.res.erros};});
  assert.equal(dividido.portas,7);assert.equal(dividido.marcados,4);assert.ok(!dividido.erros.some(e=>e.includes('retângulo')));
  console.log('Conjunto 2+4+5 OK: duas portas sobre a sapateira; outras quatro portas e interior preservados; seleção inválida bloqueada, JSON igual, frente externa editável e divisão preserva conjunto.');
+ const seletor=await page.evaluate(()=>{
+  const c=window.__configurador,m=structuredClone(c.estado.projeto.parametros),antes=c.gerarModuloV3(m),geo=c.gerarModuloV3(m,{somenteVaos:true});
+  const geometriaIgual=JSON.stringify(geo.vaos)===JSON.stringify(antes.vaos);
+  c.ED.dividir(m,'.0.0.0','h');
+  const puxador=m.puxadorPorta;m.puxadorPorta=null;
+  c.abrirProjetoTexto(JSON.stringify({versao:3,tipo:'modulo',nome:'Seletor com cálculo pendente',parametros:m}));
+  const mini=document.querySelector('[data-lista="miniVaos"]'),botoes=[...mini.querySelectorAll('button')];
+  const esperado=c.ED.espacos(m.raiz).filter(v=>!v.divisao).length;
+  const r={geometriaIgual,desenho:!mini.classList.contains('mini-lista'),quantidade:botoes.length,esperado,posicionados:botoes.every(b=>b.style.top&&b.style.left&&b.style.width&&b.style.height),erroVisivel:c.estado.res.erros.length>0};
+  m.puxadorPorta=puxador;c.abrirProjetoTexto(JSON.stringify({versao:3,tipo:'modulo',nome:'Recuperado',parametros:m}));
+  r.recuperado=!document.querySelector('[data-lista="miniVaos"]').classList.contains('mini-lista');
+  return r;
+ });
+ assert.equal(seletor.geometriaIgual,true);assert.equal(seletor.desenho,true);assert.equal(seletor.quantidade,seletor.esperado);assert.equal(seletor.posicionados,true);assert.equal(seletor.erroVisivel,true);assert.equal(seletor.recuperado,true);
+ console.log('Seletor mantém desenho e divisões atuais mesmo com cálculo de peças pendente.');
  await page.close();return 0;
 }};

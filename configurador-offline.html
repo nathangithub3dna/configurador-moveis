@@ -10958,6 +10958,17 @@ function fazerCaixa(ctx) {
 }
 /* ÁRVORE DE VÃOS — percorre DIVIDIR (em pé / deitado, com ou sem divisória) até cada VÃO; o vão pede a frente e os conteúdos ao registro. */
 
+// Geometria do seletor: independe de portas, conteúdos, compras e acabamento.
+function regiaoInternaModulo({xa,xb,yBase,H,t}) {
+  return { ix0:xa+t, ix1:xb-t, iy0:yBase+t, iy1:H-t, fx0:xa, fx1:xb, fy0:yBase, fy1:H, b:{ esq:'externa', dir:'externa', baixo:'externa', cima:'externa' } };
+}
+function somenteGeometriaVaos(ctx) {
+  const leitura = { ...ctx, E:[], cont:{...ctx.cont}, colunas:[], juntasFundo:[], regioes:[], add:()=>{} };
+  leitura.vao = () => { leitura.cont.vao++; };
+  leitura.percorrer = (...args) => percorrerArvore(leitura,...args);
+  leitura.percorrer(ctx.m.raiz,ctx.regiao0,0);
+  return {vaos:leitura.regioes, erros:leitura.E, pecas:[], dims:{L:ctx.L,H:ctx.H0,P:ctx.P}};
+}
 function percorrerArvore(ctx, no, g, nivel, cam = '') {
   const { Dc, E, add, colunas, cont, juntasFundo, regioes, t, vao, zFr, zf, percorrer } = ctx;
   if (no.tipo === 'dividir' && no.dir === 'v') {
@@ -11289,13 +11300,15 @@ function gerarModuloV3(m, contrato = {}) {
   const ctx = { contrato, m, c, amb, entre, t, tf, L, H0, P, HB, H, montado, limT, Tpeca, eE, eD, xa, xb, W, Wi, rod, RD, yBase, yApoio,
     yLat0, yLat1, rasgo, zFundo, zfC, zFr, DcC, zf, Dc, E, A, pecas, add, ferr, cont };
 
+  ctx.regiao0 = regiaoInternaModulo(ctx);
+  if (contrato.somenteVaos) return somenteGeometriaVaos(ctx);
   // CAIXA — nucleo/caixa.js
   ctx.fundoPendente = fazerCaixa(ctx);
 
   // ÁRVORE DE VÃOS
   const colunas = [], juntasFundo = [];                                            // vãos de 1º nível na horizontal (travessas de fixação)
   const ventilacao = [];
-  const regiao0 = { ix0:xa+t, ix1:xb-t, iy0:yBase+t, iy1:H-t, fx0:xa, fx1:xb, fy0:yBase, fy1:H, b:{ esq:'externa', dir:'externa', baixo:'externa', cima:'externa' } };
+  const regiao0 = ctx.regiao0;
   const folga = tipo => tipo === 'externa' ? R.borda : R.entre/2;
   const dp = Dc - R.recuoPrat - R.folgaFundoPrat;
 
@@ -14544,7 +14557,10 @@ function montarEditorModulo() {
   if (!vaos.some(v => v.cam === estado.vaoSel)) estado.vaoSel = vaos[0]?.cam ?? '';
   const sel = vaos.find(v => v.cam === estado.vaoSel), no = sel.no, info = ED.parte(m, sel.cam);
   const coberto = vaoSobFachada(m,no), fechamento = coberto ? m.fachada : no;
-  const rLocal = noAmbiente ? resultadoLocal() : (resultadoLocal() || estado.res);   // calculado agora: o editor é montado antes do atualizar() geral
+  // A seleção e suas medidas precisam funcionar mesmo se uma peça impedir o cálculo completo.
+  const geometria = gerarModuloV3(m, {somenteVaos:true});
+  const completo = resultadoLocal();
+  const rLocal = { ...geometria, ...(completo || {}), vaos:geometria.vaos, dims:geometria.dims };
   const reg = (rLocal?.vaos || []).find(r => r.caminho === sel.cam);
 
   // medidas e construção do módulo

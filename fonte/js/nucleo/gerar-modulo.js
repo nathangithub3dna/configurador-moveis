@@ -39,13 +39,15 @@ function gerarModuloV3(m, contrato = {}) {
   const ctx = { contrato, m, c, amb, entre, t, tf, L, H0, P, HB, H, montado, limT, Tpeca, eE, eD, xa, xb, W, Wi, rod, RD, yBase, yApoio,
     yLat0, yLat1, rasgo, zFundo, zfC, zFr, DcC, zf, Dc, E, A, pecas, add, ferr, cont };
 
+  ctx.regiao0 = regiaoInternaModulo(ctx);
+  if (contrato.somenteVaos) return somenteGeometriaVaos(ctx);
   // CAIXA — nucleo/caixa.js
   ctx.fundoPendente = fazerCaixa(ctx);
 
   // ÁRVORE DE VÃOS
   const colunas = [], juntasFundo = [];                                            // vãos de 1º nível na horizontal (travessas de fixação)
   const ventilacao = [];
-  const regiao0 = { ix0:xa+t, ix1:xb-t, iy0:yBase+t, iy1:H-t, fx0:xa, fx1:xb, fy0:yBase, fy1:H, b:{ esq:'externa', dir:'externa', baixo:'externa', cima:'externa' } };
+  const regiao0 = ctx.regiao0;
   const folga = tipo => tipo === 'externa' ? R.borda : R.entre/2;
   const dp = Dc - R.recuoPrat - R.folgaFundoPrat;
 
