@@ -1,13 +1,13 @@
 Plano de reestruturação — decisões (06/11/2026, atualizado 10/11/2026)
 
-10/11/2026: o plano a seguir agora é claude/plano-mestre.md. É a revisão completa contra o mercado, aprovada pelo Nathan.
+10/11/2026: o plano a seguir agora é docs/plano-mestre.md. É a revisão completa contra o mercado, aprovada pelo Nathan.
 
 As decisões abaixo continuam valendo como contexto.
 A "Ordem A", as tarefas médias e a fila da tela foram absorvidas no plano mestre: levantamento da obra = item 12; manual de montagem = item 51; folha A4 = item 47; puxador = item 29.
 
 Complementa:
 
-claude/arquitetura.md (especificação técnica);
+docs/arquitetura.md (especificação técnica);
 claude/pesquisa-base-parametrica.md (pesquisa profunda, função por função);
 claude/teste-freecad.md.
 
@@ -25,7 +25,7 @@ Decisões do Nathan (questionários de 06/11/2026)
 9	Publicação	Cada etapa pronta substitui o configurador publicado (risco aceito; voltar versão pelo GitHub)
 10	Ferramentas no PC	Decisão posterior: nada instalado nos PCs para o configurador; testes rodam na nuvem do Claude
 —	Etapas 1–3	Começam assim que o GitHub estiver liberado; etapas 4–5 só após a especificação final da base aprovada
-11	Plano a seguir (10/11)	claude/plano-mestre.md — 70 itens por área, blocos em ordem (guarda-roupa → cozinha real → frentes → acabamentos → documentos → obra/montagem → comercial → loja); render fica no Blender, fora do plano
+11	Plano a seguir (10/11)	docs/plano-mestre.md — 70 itens por área, blocos em ordem (guarda-roupa → cozinha real → frentes → acabamentos → documentos → obra/montagem → comercial → loja); render fica no Blender, fora do plano
 Escopo da base (confirmado)
 Ambiente completo desde o início: vários módulos, cantos, aéreos, tampo contínuo.
 Todos os ambientes: cozinha, guarda-roupa/closet, banheiro, lavanderia, painel/home, escritório, comercial.
@@ -50,11 +50,11 @@ Antes: Nathan só projetava. Agora: Nathan compra tudo e entrega; terceiriza a i
 
 Estado das etapas (10/11/2026)
 Prontas:
-etapas 1–3, 4a–4e, 5a, 5b e 5c (ver claude/arquitetura.md);
+etapas 1–3, 4a–4e, 5a, 5b e 5c (ver docs/arquitetura.md);
 Ordem A, passos 1–4: salvar fora do Claude + orçamento; estudo/aprovado/liberado; versão offline; conferência de fabricação;
 peça livre (1a, 1b) e ajuste por peça (1c-i, aguarda aprovação);
 pedidos de tela de 09–10/11 (ver claude/proximas-alteracoes-tela.md).
-Daqui em diante: claude/plano-mestre.md.
+Daqui em diante: docs/plano-mestre.md.
 Decisão do Nathan (08/11): não esperar a peça de teste nem as respostas das lojas; melhorar bastante o app antes de ir para a prática.
 Robô de briefing do cliente (F13 — plano mestre, item 62)
 

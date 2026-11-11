@@ -152,7 +152,7 @@ Mude o preço de uma dobradiça: só a lista de compras muda.
 Rode "publicar": sai um único .html, e o artifact funciona igual a hoje, inclusive sem internet.
 Prompt de implementação (etapas 1–3)
 Projeto: Configurador de Móveis do Nathan (repositório GitHub privado nathangithub3dna/configurador-moveis).
-Leia antes: claude/arquitetura.md, claude/plano-reestruturacao.md, claude/regras-marcenaria.md,
+Leia antes: docs/arquitetura.md, docs/plano-reestruturacao.md, claude/regras-marcenaria.md,
 claude/tipos-de-movel.md, claude/biblioteca.md e o código atual codigo/configurador-moveis.html.
 
 Objetivo das etapas 1–3: organizar o configurador atual sem mudar nenhum resultado.

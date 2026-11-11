@@ -58,7 +58,7 @@ function diferencas(a, b, caminho = '') {
     const fs = require('fs'), path = require('path');
     const base = process.env.PLAYWRIGHT_BROWSERS_PATH || '/opt/pw-browsers';
     const achados = (fs.existsSync(base) ? fs.readdirSync(base) : []).filter(n => /^chromium-\d+$/.test(n)).sort().reverse()
-      .flatMap(n => ['chrome-linux64/chrome', 'chrome-linux/chrome'].map(s => path.join(base, n, s))).filter(p => fs.existsSync(p));
+      .flatMap(n => ['chrome-linux64/chrome', 'chrome-linux/chrome', 'chrome-win64/chrome.exe', 'chrome-win/chrome.exe'].map(s => path.join(base, n, s))).filter(p => fs.existsSync(p));
     if (!achados.length) throw e;
     console.log('Navegador da versão esperada ausente; usando ' + achados[0]);
     b = await chromium.launch({ ...opcoes, executablePath: achados[0] });

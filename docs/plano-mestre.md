@@ -1,6 +1,6 @@
 PLANO MESTRE — Configurador de Móveis (10/11/2026)
 
-Este é o plano que o Nathan aprovou para seguir daqui em diante. Onde cada item mora no código, quanto custa e a Fase 0 (preparar o código): claude/plano-execucao.md. Ele vem da revisão completa do programa contra os programas de mercado.
+Este é o plano que o Nathan aprovou para seguir daqui em diante. Onde cada item mora no código, quanto custa e a Fase 0 (preparar o código): docs/plano-execucao.md. Ele vem da revisão completa do programa contra os programas de mercado.
 
 Substitui a conferência de 08/11 (lacunas-especificacao.md, apagada).
 A ordem dos blocos substitui a "Ordem A" e a fila da tela.
