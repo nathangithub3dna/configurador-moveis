@@ -1,5 +1,14 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Item 29 — aplicar puxador a todos (11/11/2026)
+
+Próxima etapa autorizada por Nathan: botão abaixo do modelo de puxador repete a escolha em todos os vãos do módulo aberto, incluindo a fachada ativa. A opção de usar o padrão remove as escolhas individuais. Posições, alturas, frentes e conteúdos permanecem como estavam; outros módulos do Ambiente não são alterados. Usa o salvamento e Desfazer existentes. Item 29 continua parcial: faltam altura e sem puxador/fecho toque. 0.9 continua pendente de atualizar o roteiro externo para o fluxo atual. Não publicar nem abrir PR enquanto a confirmação anterior estiver pendente.
+
+Diagnóstico anterior com JSON privado: uma largura fixa consumia o espaço do vão vizinho, impedindo a miniatura. Foi entregue uma cópia corrigida fora do repositório; nenhum projeto de cliente foi incluído no Git. A correção 78 protege contra falhas de peças, mas não torna válidas medidas incompatíveis.
+
+Validação concluída: npm run testar terminou com Todos os casos iguais à referência., código 0 (log local .ferramentas-codex/testar-puxador-todos-final.log). Testes cobrem aplicação nas portas, retorno ao padrão, preservação dos parâmetros, Desfazer, fachada e reabertura. Referências intactas. Botão conferido visualmente no offline.
+
+
 ## Correção 78 — seletor não virar lista por erro de peças (11/11/2026)
 
 Nathan mostrou a miniatura substituída por botões numerados. O editor dependia do resultado completo das peças para posicionar os vãos, descartando o desenho quando esse cálculo falhava. Agora usa somente a geometria da árvore, compartilhando a mesma região inicial e percurso do núcleo; erros nas peças continuam aparecendo, mas não retiram o seletor espacial. Mantida a organização do pedido 77. Teste com divisões novas e puxador inválido verifica desenho, posições, contagem e recuperação, além da igualdade da geometria com a geração normal. Validação completa: npm run testar terminou com Todos os casos iguais à referência., código 0 (.ferramentas-codex/testar-mini-espacial.log). O mesmo teste falha no desenho contra a versão anterior de HEAD; miniatura e ordem dos campos conferidas visualmente. Não houve acesso ao JSON real do Nathan; o teste usa projeto sintético de sete vãos.

@@ -163,6 +163,7 @@ $('form').addEventListener('click', e => {
   if (a.startsWith('ajuste-')) return;                                  // tela/paineis/ajuste.js cuida
   if (a === 'selecionar') { estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema(); return; }
   mudarModulo(m => {
+    if (a === 'puxador-todos') ED.aplicarPuxadorATodos(m, cam);
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
     if (a === 'div-mais') ED.divisorias(m, cam, 1);
     if (a === 'div-menos') ED.divisorias(m, cam, -1);

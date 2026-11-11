@@ -210,3 +210,5 @@ Pesquisa de 06/11: claude/pesquisa-base-parametrica.md
 77. ✅ 11/11/2026 — Dimensões do vão logo abaixo do esquema; Portas e interior junto das escolhas de fechamento.
 
 78. ✅ 11/11/2026 — Seletor usa geometria da árvore sem depender do cálculo completo das peças; preserva desenho e dimensões diante de falha de geração.
+
+Item 29 — avanço em 11/11/2026: aplicar o modelo de puxador escolhido a todos os vãos do módulo, incluindo as portas do conjunto. Posições preservadas; padrão do móvel pode ser restaurado em todos. Item ainda parcial: altura e sem puxador/fecho toque pendentes. Publicação não realizada.

@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 module.exports={id:'interface',descricao:'Cabeçalho móvel, animações e puxador por vão',async executar({ctx,raiz,pagina,nm}){
  const page=await ctx.newPage();
  page.on('pageerror', e=>console.error('ERRO NA INTERFACE: '+e.message));
- await page.addInitScript(()=>{localStorage.clear();});
+ await page.addInitScript(()=>{if(!sessionStorage.getItem('interface-iniciada')){localStorage.clear();sessionStorage.setItem('interface-iniciada','1');}});
     await page.route('**/*', route => {
       const u = route.request().url();
       if (u.startsWith('http://teste/')) return route.fulfill({ body: pagina, contentType: 'text/html' });
@@ -37,6 +37,30 @@ module.exports={id:'interface',descricao:'Cabeçalho móvel, animações e puxad
  await page.selectOption('#form [data-vao="puxador"]','');
  assert.equal(await page.evaluate(()=>window.__configurador.ED.no(window.__configurador.estado.projeto.parametros.raiz,'.0').puxador),undefined);
  console.log('Puxador por vão e retorno ao padrão OK');
+
+ await page.selectOption('#form [data-vao="puxador"]','1');
+ const antesTodos = await page.evaluate(()=>structuredClone(window.__configurador.estado.projeto.parametros));
+ await page.waitForTimeout(850); // separa a ação do agrupamento de digitação do Desfazer
+ await page.click('#form [data-acao="puxador-todos"]');
+ const todos = await page.evaluate(()=>{const c=window.__configurador;return {m:c.estado.projeto.parametros,refs:c.estado.res.pecas.filter(p=>p.papel==='puxador'&&p.mov?.tipo==='porta').map(p=>p.ref)};});
+ assert.ok(todos.refs.length>=2);assert.ok(todos.refs.every(ref=>ref===pux.primeiro));
+ const esperadoTodos=structuredClone(antesTodos);
+ const preencher=n=>{if(n.tipo==='vao')n.puxador='1';else n.partes.forEach(p=>preencher(p.no));};preencher(esperadoTodos.raiz);
+ assert.deepEqual(todos.m,esperadoTodos,'Só a escolha do puxador deve mudar');
+ await page.click('#btnDesfazer');
+ assert.deepEqual(await page.evaluate(()=>window.__configurador.estado.projeto.parametros),antesTodos);
+ await page.selectOption('#form [data-vao="puxador"]','');
+ await page.click('#form [data-acao="puxador-todos"]');
+ assert.ok(await page.evaluate(()=>{const c=window.__configurador;return c.ED.espacos(c.estado.projeto.parametros.raiz).filter(v=>!v.divisao).every(v=>v.no.puxador===undefined);}));
+ // A escolha do conjunto também se propaga, sem mudar o fechamento nem a geometria.
+ await page.selectOption('#form [data-modulo="modoFrentes"]','independente');
+ await page.selectOption('#form [data-vao="puxador"]','1');
+ await page.click('#form [data-acao="puxador-todos"]');
+ const conjunto=await page.evaluate(()=>{const c=window.__configurador,m=c.estado.projeto.parametros;return {fachada:m.fachada,escolhas:c.ED.espacos(m.raiz).filter(v=>!v.divisao).map(v=>v.no.puxador)};});
+ assert.equal(conjunto.fachada.puxador,'1');assert.ok(conjunto.escolhas.every(v=>v==='1'));
+ await page.reload();await page.waitForFunction(()=>window.__configurador?.estado?.res);
+ assert.deepEqual(await page.evaluate(()=>{const c=window.__configurador,m=c.estado.projeto.parametros;return {fachada:m.fachada,escolhas:c.ED.espacos(m.raiz).filter(v=>!v.divisao).map(v=>v.no.puxador)};}),conjunto);
+ console.log('Aplicar puxador a todos: peças, padrão, conjunto, desfazer e reabertura OK');
 
  await page.close();return 0;
 }};

@@ -30,6 +30,13 @@ const ED = {
     ir(raiz, '', 0); return out;
   },
   vaoNovo: () => ({ tipo: 'vao', frente: { tipo: 'porta', lado: 'auto' }, conteudo: [] }),
+  aplicarPuxadorATodos(m, cam) {
+    const no = ED.no(m.raiz, cam), origem = vaoSobFachada(m, no) ? m.fachada : no;
+    const escolha = origem.puxador;
+    const destinos = ED.espacos(m.raiz).filter(v => !v.divisao).map(v => v.no);
+    if (m.fachada) destinos.push(m.fachada);
+    destinos.forEach(n => { if (escolha) n.puxador = escolha; else delete n.puxador; });
+  },
   // dividir: na mesma direção da divisão de fora, só ganha mais uma parte; senão vira uma divisão nova
   dividir(m, cam, dir) {
     const no = ED.no(m.raiz, cam), info = ED.parte(m, cam);

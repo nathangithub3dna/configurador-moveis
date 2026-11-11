@@ -230,3 +230,7 @@ Reorganizado fonte/telas/editor.html: miniatura → resumo/medidas do vão → j
 ## Correção 78 — geometria independente para o seletor
 
 regiaoInternaModulo e somenteGeometriaVaos em nucleo/arvore.js compartilham o percurso existente. gerarModuloV3 aceita somenteVaos para retornar antes de gerar peças. montarEditorModulo usa essa geometria para a seleção e medidas. Erros de geração não ficam ocultos; cálculo completo continua responsável por listas e fabricação. Teste fachada cobre falha, divisões atuais e recuperação.
+
+## Item 29 — aplicar escolha do puxador a todos
+
+ED.aplicarPuxadorATodos copia a escolha do vão selecionado (ou da fachada que o cobre) para todas as folhas e a fachada ativa do módulo. Sem escolha explícita, apaga apenas o override. O botão no template passa pelo mudarModulo, preservando salvamento e Desfazer. Teste interface verifica peças geradas, preservação dos demais parâmetros, retorno ao padrão, fachada e reabertura. Altura e sem puxador/fecho toque continuam pendentes.
