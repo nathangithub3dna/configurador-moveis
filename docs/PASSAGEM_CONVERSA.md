@@ -1,5 +1,17 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Fase 0.6 — concluída em 11/11/2026
+
+- Gabinete e Armário de formulário agora convertem os parâmetros em módulo e geram todas as peças por gerarModuloV3. fonte/js/geradores.js foi removido.
+- fonte/js/formularios/ conserva validações, mensagens, identificação/ordem, instruções de montagem, medidas da tela e listas de compras. Não gera geometria. Sapateira e cálculo de fixações foram movidos sem alteração para seus assuntos no núcleo.
+- Contrato opcional do núcleo conserva fundo inteiro, dobradiças por altura, furação em medidas inválidas e tratamento anterior do puxador de perfil nos formulários. O Móvel livre e o Ambiente continuam com suas regras atuais. A ventilação do formulário mantém a regra do primeiro botijão no último vão.
+- **Validação:** npm run testar, com npm portátil e Chromium 151 no Windows: **“Todos os casos iguais à referência.”**, saída 0. Inclui referências dos dez formulários, editor, ambiente, desenhos/PDF, exportações, versão sem internet e reabertura de projetos guardados.
+- Conferência adicional local comparou os resultados completos dos geradores antigos com os adaptadores: casos de referência, limites individuais, entradas inválidas e 180 combinações de parâmetros, incluindo os seis puxadores. Nenhuma diferença além de arredondamento numérico menor que 1e-8. Os scripts de auditoria ficam em .ferramentas-codex/; não são parte do aplicativo.
+- Testes existentes, referências, dados e dependências intactos. HTML normal e offline regenerados pelos comandos de montagem. Log final: .ferramentas-codex/testar-06-final.log.
+- **Onde parou:** 0.6 implementado e conferido na branch codex/fase-0-6, baseada em c58936f. O PR desta etapa depende do PR #1 (organização dos documentos e conferência do 0.5), que ainda estava aberto durante o trabalho.
+- **Próximo:** 0.7 — separar testes por área e acrescentar execução rápida por área; a suíte completa continua obrigatória antes de gravar. Etapa 0.7 não iniciada.
+- **Não publicar; o Nathan publica pelo Claude.** O diagnóstico anterior e a solução estão em docs/diagnostico-fase-0-6.md.
+
 ## Conferência no Codex — 11/11/2026
 
 - Base consultada: `main` em `d00bb96` (documentos enviados pelo Nathan recebidos). O passo **0.5 já está implementado** no commit `b22df6b`, posterior ao `06f39bc` informado no pedido. Não foi refeito nem houve mudança no comportamento do programa nesta conferência.

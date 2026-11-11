@@ -34,7 +34,15 @@ function fazerFuracao(ctx) {
     if (c.topo === 'travessas' && !entre) [lz1-25, lz1-75, lz0+75, lz0+25].forEach(z => furo(z, H-t/2, 4, 0, 'montagem'));
     pecas.filter(q => q.papel === 'travessa-fixacao' && encosta(q)).forEach(tr => { const yc = (tr.box[2]+tr.box[3])/2; [yc-25, yc+25].forEach(y => furo(zf+t/2, y, 4, 0, 'montagem')); });
     const pf = c.prateleira.furacao, vistos = new Set();
-    const pino = (z, y) => { if (y < ly0 + t + 10 || y > ly1 - t - 10) return; const k = Math.round(z) + ':' + Math.round(y*10); if (vistos.has(k)) return; vistos.add(k); furo(z, y, 5, 10, 'pino'); };
+    const pino = (z, y) => {
+      // Formulários também desenham a furação fora do limite quando há erro
+      // nas medidas; o editor livre mantém o recorte e evita furos repetidos.
+      if (ctx.contrato.limitarInterior !== false) {
+        if (y < ly0 + t + 10 || y > ly1 - t - 10) return;
+        const k = Math.round(z) + ':' + Math.round(y*10); if (vistos.has(k)) return; vistos.add(k);
+      }
+      furo(z, y, 5, 10, 'pino');
+    };
     pecas.filter(q => q.papel === 'prateleira' && Math.abs((lado === 'esq' ? q.box[0] - R.folgaPrat : q.box[1] + R.folgaPrat) - xIn) < 0.6).forEach(s => [s.box[5]-40, s.box[4]+40].forEach(z => {
       const y0 = s.box[2] - 5;
       if (pf === '4-furos') pino(z, y0);

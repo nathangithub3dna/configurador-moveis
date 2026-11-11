@@ -1,10 +1,10 @@
 // CONVERSORES: parâmetros dos tipos antigos → módulo do núcleo novo
 const PUXADOR_BARRA_GENERICO = proj => ({ ref:null, modelo:null, furacao:128, comp:R.puxadorComp, larg:12, proj, cor:undefined, altura:'topo-120' });
-function moduloDeGabinete(p) {
+function moduloDeGabinete(p, alturasValidadas = null) {
   const n = k => Number(p[k]);
   const nG = Math.max(0, Math.round(n('gavetas'))), nS = Math.max(0, Math.round(n('prateleiras'))), nP = Number(p.portas);
   const lst = String(p.alturasGavetas).split(/[;,\s]+/).filter(Boolean).map(s => Number(s.replace(',','.')));
-  const alts = nG ? (lst.length === 1 ? Array(nG).fill(lst[0]) : lst) : [];
+  const alts = alturasValidadas ?? (nG ? (lst.length === 1 ? Array(nG).fill(lst[0]) : lst) : []);
   const somaG = alts.reduce((s,v) => s+v, 0), temSup = (n('altura') - n('pes')) - somaG > 0.5;
   const frentePortas = nP === 2 ? { tipo:'2portas' } : nP === 1 ? { tipo:'porta', lado:(p.paredeEsq && !p.paredeDir) ? 'dir' : 'esq' } : { tipo:'nenhuma' };
   const vaoPortas = { tipo:'vao', frente:frentePortas, conteudo: nS ? [{ tipo:'prateleiras', n:nS, min:100 }] : [] };

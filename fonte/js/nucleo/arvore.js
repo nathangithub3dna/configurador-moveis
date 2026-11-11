@@ -32,7 +32,7 @@ function percorrerArvore(ctx, no, g, nivel, cam = '') {
     no.partes.forEach((p, i) => {
       const h = p.medida === 'auto' ? hAuto : p.medida, y0 = y, y1 = y + h; y = y1;
       const temSep = no.sep === 'divisoria' && i < n-1;
-      const iy0 = i === 0 ? g.iy0 : Math.max(y0, g.iy0), iy1 = temSep ? y1 - t : (i === n-1 ? g.iy1 : Math.min(y1, g.iy1));
+      const iy0 = i === 0 ? g.iy0 : ctx.contrato.limitarInterior === false ? y0 : Math.max(y0, g.iy0), iy1 = temSep ? y1 - t : (i === n-1 ? g.iy1 : Math.min(y1, g.iy1));
       const sub = { ...g, iy0, iy1, fy0:y0, fy1:y1, b:{ ...g.b, baixo: i === 0 ? g.b.baixo : 'interna', cima: i === n-1 ? g.b.cima : 'interna' } };
       percorrer(p.no, sub, nivel + 1, cam + '.' + i);
       if (temSep) {
