@@ -1,0 +1,75 @@
+Regras de marcenaria usadas pelo configurador
+
+Valores em mm. Estão no objeto R do código; mudar lá muda todos os móveis. Itens de compra estão em claude/biblioteca.md; o que cada tipo de móvel gera está em claude/tipos-de-movel.md.
+
+Folgas e frentes
+Frentes sobrepostas (cobrem a caixa).
+Folga nas bordas externas das frentes: 1,5. Entre duas frentes: 3.
+Largura máxima de porta: 600 (acima disso, erro: usar mais portas/vãos).
+Com 1 porta e parede de um lado, a dobradiça vai no lado oposto à parede.
+Armário com vãos: porta de cada vão vai do centro da divisória até o centro da próxima (ou borda externa da lateral), menos as folgas. Dobradiças alternam esquerda/direita por vão.
+Dobradiças (decidido em 05/11/2026: Blum CLIP top BLUMOTION)
+Modelo: Blum CLIP top BLUMOTION 110°, reta (sobreposição total), amortecedor no caneco — código 71B3550. Calço reto CLIP 0 mm (confirmar código na loja, ex.: 173L6100).
+Caneco Ø35 × 13 de profundidade, centro a 22 da borda (= 4,5 mm de borda; Blum aceita 3 a 6). Furação dos parafusos do caneco: padrão 45 mm.
+Alternativas avaliadas: Hettich Sensys 8645i; FGV Click com amortecedor (mais barata).
+Lojas em Ponta Grossa a consultar (estoque não confirmado): GMAD Madcompen (42) 3220-6600; Di Casa Acessórios (42) 99934-2558; MK Soluções (42) 3227-3815.
+Quantidade por altura da porta: 2 até 900, 3 até 1600, 4 acima.
+Primeira e última a 100 das pontas, demais distribuídas.
+Calço na lateral: 2 pré-furos Ø3 a 37 da frente, 32 entre eles. [Suposição: confirmar com o calço comprado]
+Uma divisória de 18 pode receber dobradiças dos dois lados (portas vizinhas).
+Puxadores
+Porta: centro do puxador a 35 da borda livre, altura configurável (padrão 1050 no armário), limitada para o puxador caber na porta.
+A saliência do puxador entra no cálculo do ângulo de abertura (colisão com parede).
+Furação: 2 furos Ø5 passantes na distância do modelo (64, 96, 128 ou 320).
+Gavetas (corrediça telescópica 45 mm com amortecedor)
+Desconto de 26 mm na largura da caixa da gaveta (13 por lado). Comprimento = maior padrão (250…550, passo 50) que caiba em (fundo da caixa − 10).
+Altura da caixa da gaveta = altura da gaveta − 70, arredondado para baixo a 10 (gaveta interna do armário: − 40). Mínimo 60.
+Caixa a 12 acima do piso. Fundo 6 mm parafusado por baixo.
+Pré-furos da corrediça na lateral: Ø3 a 37 da frente e 37 do fim. [Suposição]
+Altura mínima da gaveta: 100. Sobra mínima para portas acima das gavetas: 200.
+Gaveta interna (atrás da porta): frente recuada 45 da frente da caixa; espaçador de 18 no lado da dobradiça para a corrediça passar do braço da dobradiça; puxador da gaveta pode sair no máximo 37 (45 − 8 de folga), senão é erro.
+Caixa
+Laterais na altura total; base, divisória e travessas entre as laterais.
+Gabinete: travessas superiores (frontal e traseira) com 100 de largura, apoiam o tampo. Travessa de fixação vertical atrás, 100, com 3 furos Ø6 para parafuso 5,0 × 60 + bucha S8.
+Armário: laterais até o chão, rodapé recuado 40 (padrão 100 de altura) + rodapé traseiro; divisórias verticais entre base e topo; travessa de fixação de 80 por vão com 2 parafusos de parede.
+Fundo 6 mm parafusado atrás, recorte para canos feito na obra.
+Furos de montagem nas laterais: Ø4 passante, a 50 das bordas (base e divisória: frente, meio, trás; travessas: 25 e 75).
+Profundidade da caixa = profundidade total − espessura da frente − espessura do fundo.
+Fundo de 6 não segura parafuso: suporte ou gancho preso atrás leva régua de reforço de 18 × 100 atrás.
+Beiral (armário)
+Borda em volta do topo para apoiar coisas em cima: frontal na largura total, alinhada à frente da caixa; laterais sobre as laterais da caixa; aberta atrás (parede).
+Altura padrão 80, incluída na altura total. Fita no topo e nas pontas aparentes.
+Fixação: frontal parafusado por baixo pelo topo; laterais com cavilhas Ø8 × 30 + cola no topo das laterais e no beiral frontal (parafuso no topo do MDF não segura). Os furos das cavilhas ainda não aparecem nos desenhos.
+Botijão de gás (armário)
+P13 ≈ Ø360 × 480. Compartimento com altura livre mínima 520 (padrão 600), vão ≥ 390, caixa ≥ 370 de fundo.
+Ventilação permanente: rasgos 15 × 150 passantes na lateral externa, um grupo embaixo (25 acima da base) e outro no alto do compartimento, passo 35, centralizados no fundo da caixa. O GLP é mais pesado que o ar: a abertura de baixo é a essencial. Essa lateral não pode encostar em parede nem em outro móvel.
+[Provável] Normas de instalação de gás e regras de condomínio podem restringir botijão dentro de móvel fechado — o cliente deve confirmar com o instalador.
+Prateleiras
+Largura = vão interno − 2 (1 de folga por lado). Fundo = caixa − 20 (recuo frontal) − 6.
+Apoio em 4 pinos Ø5 × 10, 5 abaixo da prateleira, a 40 da frente e de trás.
+Vão mínimo entre prateleiras: 100 (gabinete) / 150 (armário).
+Se a prateleira cruza a faixa do esgoto (centro ± 75), ganha recorte traseiro central (padrão 300 × 150).
+Prateleira fixa (tampo do compartimento do botijão) é parafusada, na profundidade toda da caixa.
+Parede e enchimento
+Lado com parede recebe enchimento de 25: frontal 25 × altura no plano das portas + sarrafo 60 parafusado na lateral.
+A abertura da porta é calculada girando porta e puxador e testando colisão com parede/enchimento. Sem enchimento, a porta junto à parede abre ~86° (puxador bate); com 25, abre 90°.
+Fita de borda
+Notação: C = lados do comprimento, L = lados da largura (comprimento é sempre a maior medida). No pedido para a loja: C1/C2/L1/L2.
+Frentes: 4 lados. Laterais, base, topo, divisória, travessa frontal, prateleira: 1 lado (frente). Peças da gaveta: borda de cima. Enchimento: borda aparente. Beiral: topo e pontas aparentes.
+Fita 22 mm para MDF até 19 mm; 35 mm acima. Perda de 10%. Compra em rolo de 20 m.
+Plano de corte
+Chapa 2750 × 1850, refilo de 10 mm em cada borda, 4 mm de serra entre peças. [Suposição: confirmar com a loja]
+Cortes em faixas (guilhotina), maior largura primeiro; peças podem girar (MDF liso, sem veio). Peça que não cabe na chapa vira erro.
+Peças numeradas (Nº) iguais na lista de corte, no plano e no pedido para a loja.
+Fixações (calculadas automaticamente — vale para qualquer tipo)
+
+O configurador acha onde duas peças se encostam e decide a fixação:
+
+Face de uma peça contra o topo de outra: parafuso 4,0 × 50 atravessando a primeira, a 50 das pontas, no máximo a cada 250.
+Fundo (6 mm) contra peças: parafuso 3,5 × 14 a cada ~150, a 40 das pontas.
+Topo com topo (beiral): cavilha Ø8 × 30 + cola, a cada ≤ 300.
+Frente da gaveta: 4 parafusos 3,5 × 25 pela frente interna (nada aparece na frente).
+Espaçador das corrediças: parafuso 4,0 × 30 a cada ≤ 300.
+Parede: 5,0 × 60 + bucha nos furos das travessas. Pinos: 4 por prateleira solta.
+Botão "Fixações" no 3D: MDF transparente e cada tipo em uma cor. A quantidade na lista de compras do armário sai dessa contagem + 20%, arredondada a 10. Dobradiças, corrediças e suportes somam 4/12/2 parafusos 3,5 × 14 cada (estimado). O gabinete ainda usa a estimativa antiga (só a visualização usa o cálculo novo).
+Limitações: duas peças que encostam pelos dois lados de uma divisória recebem parafusos na mesma linha (na obra, desencontrar). Não verificado canto a canto.
