@@ -56,5 +56,41 @@ module.exports={id:'fachada',descricao:'Portas inteiras, interiores preservados 
  assert.ok(outros.conflito.some(e=>e.includes('frente de gaveta')));
  assert.ok(outros.desconhecida.some(e=>e.includes('fechamento válido')));
  console.log('Fachada OK: 3 portas viram 2 inteiras, interior igual, dividir, restaurar, JSON, espaçadores e conflitos.');
+ // Reprodução de sete vãos: 2, 4 e 5 no conjunto; 1, 3, 6 e 7 independentes.
+ const antesGrupo=await page.evaluate(()=>{
+  const c=window.__configurador,m=structuredClone(c.TIPOS.modulo.padrao);
+  const folha=()=>({tipo:'vao',frente:{tipo:'porta'},conteudo:[{tipo:'prateleiras',n:2}]});
+  const dividir=(dir,partes)=>({tipo:'dividir',dir,sep:'divisoria',partes:partes.map(([medida,no])=>({medida,no}))});
+  m.largura=1800;m.altura=2100;
+  m.raiz=dividir('v',[[1300,dividir('h',[[600,dividir('v',[[400,folha()],['auto',{tipo:'vao',frente:{tipo:'porta'},conteudo:[{tipo:'sapateira',nivel:180,max:0}]}]])],['auto',dividir('v',[[400,folha()],['auto',folha()],['auto',folha()]])]])],['auto',dividir('h',[[600,folha()],['auto',folha()]])]]);
+  const antes=c.gerarModuloV3(m);m.fachada={frente:{tipo:'2portas'}};
+  c.abrirProjetoTexto(JSON.stringify({versao:3,tipo:'modulo',nome:'Sete vãos',parametros:m}));
+  return antes;
+ });
+ await page.selectOption('[data-modulo="escopoFrentes"]','selecionados');
+ for(const cam of ['.0.0.1','.0.1.1','.0.1.2'])await page.check('[data-fachada-vao="'+cam+'"]');
+ await page.click('[data-acao="selecionar"][data-cam=".0.0.1"]');
+ const grupo=await page.evaluate(()=>({r:window.__configurador.estado.res,m:window.__configurador.estado.projeto.parametros}));
+ assert.deepEqual(grupo.r.erros,[]);
+ const pg=grupo.r.pecas.filter(p=>p.papel==='porta');assert.equal(pg.length,6);
+ assert.deepEqual(internas(grupo.r.pecas),internas(antesGrupo.pecas));
+ const regs=grupo.r.vaos,alvos=regs.filter(r=>[2,4,5].includes(r.num));
+ const lim={x0:Math.min(...alvos.map(r=>r.fx0)),x1:Math.max(...alvos.map(r=>r.fx1)),y0:Math.min(...alvos.map(r=>r.fy0)),y1:Math.max(...alvos.map(r=>r.fy1))};
+ const conj=pg.filter(p=>p.box[0]>=lim.x0&&p.box[1]<=lim.x1&&p.box[3]-p.box[2]>1900);assert.equal(conj.length,2);
+ const boxes=pcs=>pcs.filter(p=>p.papel==='porta').map(p=>p.box);
+ for(const r of regs.filter(r=>![2,4,5].includes(r.num))){const dentro=b=>b[0]>=r.fx0&&b[1]<=r.fx1&&b[2]>=r.fy0&&b[3]<=r.fy1;assert.deepEqual(boxes(grupo.r.pecas).filter(dentro),boxes(antesGrupo.pecas).filter(dentro));}
+ assert.equal(await page.locator('[data-lista="fachada"] [data-valor="2portas"][aria-pressed="true"]').count(),1);
+ await page.uncheck('[data-fachada-vao=".0.1.2"]');
+ assert.ok(await page.evaluate(()=>window.__configurador.estado.res.erros.some(e=>e.includes('retângulo completo'))));
+ await page.check('[data-fachada-vao=".0.1.2"]');
+ const salvo=await page.evaluate(()=>{const c=window.__configurador,antes=JSON.stringify(c.estado.res.pecas);c.abrirProjetoTexto(JSON.stringify({...c.estado.projeto,versao:3}));return antes===JSON.stringify(c.estado.res.pecas);});assert.equal(salvo,true);
+ await page.click('[data-acao="selecionar"][data-cam=".0.0.0"]');
+ await page.click('[data-acao="frente"][data-valor="2portas"]');
+ assert.equal(await page.evaluate(()=>window.__configurador.estado.res.pecas.filter(p=>p.papel==='porta').length),7);
+ await page.click('[data-acao="selecionar"][data-cam=".0.1.1"]');
+ await page.click('[data-acao="dividir-h"]');
+ const dividido=await page.evaluate(()=>{const c=window.__configurador;return {portas:c.estado.res.pecas.filter(p=>p.papel==='porta').length,marcados:c.ED.espacos(c.estado.projeto.parametros.raiz).filter(v=>!v.divisao&&v.no.fecharEmConjunto).length,erros:c.estado.res.erros};});
+ assert.equal(dividido.portas,7);assert.equal(dividido.marcados,4);assert.ok(!dividido.erros.some(e=>e.includes('retângulo')));
+ console.log('Conjunto 2+4+5 OK: duas portas sobre a sapateira; outras quatro portas e interior preservados; seleção inválida bloqueada, JSON igual, frente externa editável e divisão preserva conjunto.');
  await page.close();return 0;
 }};

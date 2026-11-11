@@ -47,7 +47,7 @@ module.exports = { id:'formato', descricao:"Formato do projeto e cópia na nuvem
       return r;
     });
     await page.evaluate(() => { try { localStorage.clear(); } catch (e) {} });
-    const okF = tf.formato === 2 && tf.localComVersao === 2 && tf.antigo && tf.maisNovoRecusado && tf.abriuConvertido && tf.nuvemNova && tf.originalGuardado
+    const okF = tf.formato === 3 && tf.localComVersao === 3 && tf.antigo && tf.maisNovoRecusado && tf.abriuConvertido && tf.nuvemNova && tf.originalGuardado
       && tf.copiasDoTeste === 2 && tf.originalIntacto && tf.localNoFormatoNovo && tf.formato3Recusado && !errosF.length;
     if (!okF) { falhas++; console.log('FORMATO DO PROJETO ERRADO  ' + JSON.stringify({ ...tf, erros: errosF })); } else console.log('FORMATO DO PROJETO OK  ' + JSON.stringify(tf));
     await page.close();

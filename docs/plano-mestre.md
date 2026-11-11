@@ -204,3 +204,5 @@ Pesquisa de 06/11: claude/pesquisa-base-parametrica.md
 74. ✅ 11/11/2026 — Fechamento do módulo independente do interior: duas portas inteiras podem cobrir a sapateira e as divisões superiores. Modo por vão preservado e reversível; escopo atual é o módulo inteiro. Pesquisa e limites em docs/portas-interior.md.
 
 75. ✅ 11/11/2026 — Corrigida abertura do offline com medidas de peças ajustadas: painel preparado antes de recuperar o projeto; regressão na área reabrir.
+
+76. ✅ 11/11/2026 — Conjunto de portas limitado aos vãos marcados (caso 2+4+5), preservando interior e frentes dos demais espaços; seleção deve formar retângulo completo.

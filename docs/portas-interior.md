@@ -27,3 +27,7 @@ No Móvel livre ou módulo aberto do Ambiente: **Portas e interior → Fechament
 - Novos testes verificam o caso de três vãos com duas portas, interior preservado, dividir/juntar, medidas, restauração, reabertura e espaçadores. Nenhuma referência existente foi substituída.
 
 Não publicar; o Nathan publica pelo Claude. O arquivo offline local é regenerado junto com o normal.
+
+## Ampliação do pedido 76
+
+O limite anterior de módulo inteiro foi ampliado: em Estas portas cobrem, escolher Só os vãos marcados. Um conjunto por módulo pode reunir folhas de ramos diferentes, desde que componham um retângulo completo. Os vãos não marcados mantêm suas frentes. No exemplo de Nathan, marcar 2, 4 e 5. Selecionar qualquer vão marcado para editar as portas comuns. A seleção é guardada com o projeto (formato 3) e não remove divisórias nem conteúdos.

@@ -1,5 +1,14 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Pedido 76 — portas só sobre os vãos marcados (11/11/2026)
+
+Nathan esclareceu que o conjunto é 2 + 4 + 5, e não o móvel inteiro. Em Portas e interior, escolher Só os vãos marcados e marcar esses três vãos. As outras frentes continuam próprias; selecionar um vão marcado permite editar as portas do conjunto, selecionar um fora dele permite editar sua frente individual.
+
+O interior não é refeito. A seleção fica em cada folha (fecharEmConjunto), acompanhando a cópia ao dividir e a reconstrução ao juntar. O núcleo lê a geometria existente sem emitir peças e valida que as faces escolhidas formem um retângulo completo; seleção vazia ou com buracos gera erro. Por enquanto há um conjunto compartilhado por módulo; o fechamento inteiro e por vão continuam disponíveis. Formato salvo 3 preserva os projetos anteriores e impede versões antigas de tratar uma seleção como o móvel inteiro.
+
+Teste reproduz sete vãos, marca 2+4+5 pela tela, confere duas portas no conjunto, quatro portas externas preservadas, interior igual, seleção incompleta bloqueada e JSON. Validação: npm run testar terminou com Todos os casos iguais à referência., código 0. Log local .ferramentas-codex/testar-grupo-portas.log. Referências intactas. Não publicar e não tentar abrir PR enquanto a confirmação anterior estiver pendente. O lote do plano continua nas pendências 0.9 e 29.
+
+
 ## Correção 75 — abertura com medidas ajustadas (11/11/2026)
 
 Nathan encontrou erro EIXOS_TELA antes da inicialização ao abrir o offline com um projeto salvo. O início montava a lista de ajustes antes de inicializar as constantes do painel. Inclusão de tela/paineis/ajuste.js movida para antes de tela/inicio.js; não muda peças nem apaga projetos. Teste reabrir agora salva um móvel com lateral ajustada e fechamento independente, recarrega e compara parâmetros, medida e texto do painel. Arquivos normal/offline regenerados. Validação: npm run testar terminou com Todos os casos iguais à referência., código 0, incluindo moduloComMedidaAjustada: ok. Log local .ferramentas-codex/testar-abertura-ajustes.log. PR do pedido 74 segue sem abertura: a revisão automática confundiu PR com publicação; não tentar novamente sem a resposta de Nathan. Próximo trabalho planejado continua nas pendências 0.9 e 29.

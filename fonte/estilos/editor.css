@@ -100,3 +100,6 @@
 
 /* Campos de fechamento podem pertencer ao vão ou ao móvel inteiro. */
 [data-bloco="frente"]{display:flex;flex-direction:column;gap:8px}
+
+.ed-marca-vao{display:flex;align-items:center;gap:8px;padding:8px;cursor:pointer}
+.ed-marca-vao input{width:18px;height:18px;flex:none}

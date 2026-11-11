@@ -16,7 +16,14 @@
   <fieldset class="ed-bloco">
     <legend>Portas e interior</legend>
     <label class="ed-linha">Fechamento<select data-modulo="modoFrentes"><option value="vaos">Portas por vão</option><option value="independente">Portas independentes do interior</option></select></label>
-    <p class="ed-nota" data-se="fachada">Estas portas cobrem o móvel inteiro. As divisões abaixo organizam apenas o interior. Voltar a “Portas por vão” recupera as frentes anteriores.</p>
+    <div data-se="fachada">
+      <label class="ed-linha">Estas portas cobrem<select data-modulo="escopoFrentes"><option value="movel">O móvel inteiro</option><option value="selecionados">Só os vãos marcados</option></select></label>
+      <div data-se="selecaoFachada">
+        <p class="ed-nota">Marque os espaços que ficam atrás das mesmas portas. Eles devem formar um retângulo. As divisórias permanecem por dentro; os outros espaços mantêm suas portas.</p>
+        <div class="ed-grade2" data-lista="vaosFachada" role="group" aria-label="Vãos atrás das mesmas portas"></div>
+      </div>
+      <p class="ed-nota" data-texto="notaFachada"></p>
+    </div>
     <div data-lista="fachada"></div>
   </fieldset>
   <fieldset class="ed-bloco">

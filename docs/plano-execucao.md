@@ -218,3 +218,7 @@ Formato 2 em base/formato.js: conversor do formato 1 preserva os dados; versões
 
 fonte/pagina.html inclui o painel ajuste antes de inicio para inicializar EIXOS_TELA e PAPEIS_COM_FUROS_PROPRIOS antes do primeiro carregarProjeto. Regressão em testes/casos/reabrir.js verifica parâmetros salvos, altura ajustada e rótulo do painel após recarregar.
 `testes/rodar.js` permite até 90 segundos na navegação inicial do Chromium (30 segundos eram insuficientes neste aparelho); critérios e comparações de funcionamento permanecem iguais.
+
+## Pedido 76 — portas por conjunto de vãos
+
+m.fachada.escopo = selecionados usa no.fecharEmConjunto nas folhas; ausência do escopo mantém fechamento inteiro. regiaoDaFachada reaproveita percorrerArvore em leitura, sem peças, com contadores isolados. Valida área retangular e calcula bordas; vaoSobFachada decide quais frentes suprimir. Lados das dobradiças consultam apenas as portas da fachada. Editor permite editar a frente própria nos vãos não marcados. Formato 3 com conversores de identidade para manter dados anteriores. Teste fachada reproduz 7 vãos com conjunto 2+4+5.

@@ -17,7 +17,7 @@ function fazerGavetasInternas(ctx, ct, g, yAc, lado, V) {
   if (!Lc) E.push(`Vão ${V}: não cabe corrediça para gaveta interna.`);
   const recEsq = lado === 'esq' || lado === 'ambos', recDir = lado === 'dir' || lado === 'ambos' || !lado;
   const xr0 = recEsq ? x0 + esp : x0, xr1 = recDir ? x1 - esp : x1;
-  if (ctx.m.fachada?.frente?.tipo === 'correr') E.push('Vão '+V+': confira o acesso das gavetas atrás das portas de correr; use fechamento por vão para liberar a fabricação.');
+  if (ctx.fachadaAtiva && ctx.m.fachada?.frente?.tipo === 'correr') E.push('Vão '+V+': confira o acesso das gavetas atrás das portas de correr; use fechamento por vão para liberar a fabricação.');
   const ytop = yAc + nG*gH;
   if (PxG.proj > recG - 8) E.push(`O puxador das gavetas sai ${PxG.proj} mm e bate na porta (máximo ${recG-8}).`);
   if (ytop > g.iy1 - 50) E.push(`Vão ${V}: as ${nG} gavetas de ${fmt(gH)} mm não cabem.`);

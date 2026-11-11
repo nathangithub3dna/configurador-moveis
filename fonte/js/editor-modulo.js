@@ -123,8 +123,8 @@ const ED = {
     info.parte.medida = String(texto).trim() === '' || /auto/i.test(texto) || !(v > 0) ? 'auto' : v;
   },
   definirFrente(m, cam, tipo) {
-    const no = m.fachada || ED.no(m.raiz, cam), e = ESCOLHAS.frente[tipo];
-    if (m.fachada && !FRENTES[tipo]?.fachada) return;
+    const folha = ED.no(m.raiz, cam), coberto = vaoSobFachada(m,folha), no = coberto ? m.fachada : folha, e = ESCOLHAS.frente[tipo];
+    if (coberto && !FRENTES[tipo]?.fachada) return;
     if (e) e.aplicar(no, m); else no.frente = { tipo };
   },
   // a escolha de conteúdo que um vão já montado mostra: a primeira (por prioridade) que o reconhece
