@@ -1,5 +1,10 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Pedido 77 — ordem dos campos (11/11/2026)
+
+Dimensões do vão movidas para logo abaixo do esquema de seleção (antes de juntar/dividir). Portas e interior reunido ao bloco de escolha de frentes e conteúdos, em todos os modos de fechamento. Apenas reorganização do template; valores, seletores e ações preservados. HTML normal/offline regenerados. Validação: npm run testar terminou com Todos os casos iguais à referência., código 0. Log local .ferramentas-codex/testar-ordem-painel.log. Referências intactas.
+
+
 ## Pedido 76 — portas só sobre os vãos marcados (11/11/2026)
 
 Nathan esclareceu que o conjunto é 2 + 4 + 5, e não o móvel inteiro. Em Portas e interior, escolher Só os vãos marcados e marcar esses três vãos. As outras frentes continuam próprias; selecionar um vão marcado permite editar as portas do conjunto, selecionar um fora dele permite editar sua frente individual.

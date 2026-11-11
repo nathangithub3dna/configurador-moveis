@@ -815,25 +815,16 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
     </div>
   </fieldset>
-  <fieldset class="ed-bloco">
-    <legend>Portas e interior</legend>
-    <label class="ed-linha">Fechamento<select data-modulo="modoFrentes"><option value="vaos">Portas por vão</option><option value="independente">Portas independentes do interior</option></select></label>
-    <div data-se="fachada">
-      <label class="ed-linha">Estas portas cobrem<select data-modulo="escopoFrentes"><option value="movel">O móvel inteiro</option><option value="selecionados">Só os vãos marcados</option></select></label>
-      <div data-se="selecaoFachada">
-        <p class="ed-nota">Marque os espaços que ficam atrás das mesmas portas. Eles devem formar um retângulo. As divisórias permanecem por dentro; os outros espaços mantêm suas portas.</p>
-        <div class="ed-grade2" data-lista="vaosFachada" role="group" aria-label="Vãos atrás das mesmas portas"></div>
-      </div>
-      <p class="ed-nota" data-texto="notaFachada"></p>
-    </div>
-    <div data-lista="fachada"></div>
-  </fieldset>
-  <fieldset class="ed-bloco">
+ <fieldset class="ed-bloco">
     <legend>Espaços internos</legend>
     <span class="ed-nota"><strong>Móvel inteiro</strong> · <span data-texto="resumoMovel"></span></span>
     <!-- mini desenho de frente: um botão por vão, na posição real (tela/paineis/modulo.js) -->
     <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
     <span class="ed-nota" data-texto="resumoVao"></span>
+    <div class="ed-sub" data-texto="titulo"></div>
+    <span class="ed-nota" data-texto="medida"></span>
+    <label class="ed-linha"><span data-texto="rotLarg"></span><input type="text" data-vao="larg" placeholder="auto"></label>
+    <label class="ed-linha"><span data-texto="rotAlt"></span><input type="text" data-vao="alt" placeholder="auto"></label>
     <div class="ed-sub" data-se="podeJuntar">Juntar com o vizinho</div>
     <div class="ed-grade2">
       <button type="button" class="btn ed-remover" data-acao="juntar-ant" data-se="podeAnt" data-texto="rotAnt"></button>
@@ -850,10 +841,17 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     </div>
   </fieldset>
   <fieldset class="ed-bloco ed-vao">
-    <legend data-texto="titulo"></legend>
-    <span class="ed-nota" data-texto="medida"></span>
-    <label class="ed-linha"><span data-texto="rotLarg"></span><input type="text" data-vao="larg" placeholder="auto"></label>
-    <label class="ed-linha"><span data-texto="rotAlt"></span><input type="text" data-vao="alt" placeholder="auto"></label>
+    <legend>Portas e interior</legend>
+    <label class="ed-linha">Fechamento<select data-modulo="modoFrentes"><option value="vaos">Portas por vão</option><option value="independente">Portas independentes do interior</option></select></label>
+    <div data-se="fachada">
+      <label class="ed-linha">Estas portas cobrem<select data-modulo="escopoFrentes"><option value="movel">O móvel inteiro</option><option value="selecionados">Só os vãos marcados</option></select></label>
+      <div data-se="selecaoFachada">
+        <p class="ed-nota">Marque os espaços que ficam atrás das mesmas portas. Eles devem formar um retângulo. As divisórias permanecem por dentro; os outros espaços mantêm suas portas.</p>
+        <div class="ed-grade2" data-lista="vaosFachada" role="group" aria-label="Vãos atrás das mesmas portas"></div>
+      </div>
+      <p class="ed-nota" data-texto="notaFachada"></p>
+    </div>
+    <div data-lista="fachada"></div>
     <div data-bloco="frente">
     <div class="ed-sub" data-texto="tituloFrentes">O que fecha este espaço?</div>
     <div class="ed-grade3" data-lista="frentes"></div>

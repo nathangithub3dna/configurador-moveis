@@ -222,3 +222,7 @@ fonte/pagina.html inclui o painel ajuste antes de inicio para inicializar EIXOS_
 ## Pedido 76 — portas por conjunto de vãos
 
 m.fachada.escopo = selecionados usa no.fecharEmConjunto nas folhas; ausência do escopo mantém fechamento inteiro. regiaoDaFachada reaproveita percorrerArvore em leitura, sem peças, com contadores isolados. Valida área retangular e calcula bordas; vaoSobFachada decide quais frentes suprimir. Lados das dobradiças consultam apenas as portas da fachada. Editor permite editar a frente própria nos vãos não marcados. Formato 3 com conversores de identidade para manter dados anteriores. Teste fachada reproduz 7 vãos com conjunto 2+4+5.
+
+## Pedido 77 — organização do painel
+
+Reorganizado fonte/telas/editor.html: miniatura → resumo/medidas do vão → juntar → dividir; fechamento e conteúdo reunidos no fieldset Portas e interior. Mesmos campos e eventos.
