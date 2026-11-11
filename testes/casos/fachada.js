@@ -1,0 +1,60 @@
+// Portas do módulo independentes das divisões internas; sem alterar referências.
+const assert=require('node:assert/strict');
+module.exports={id:'fachada',descricao:'Portas inteiras, interiores preservados e reabertura',async executar({ctx,pagina,nm}){
+ const page=await ctx.newPage();
+ await page.addInitScript(()=>localStorage.clear());
+ await page.route('**/*',r=>{
+  const u=r.request().url(),m=u.match(/three@0\.160\.0\/(.*)$/);
+  if(u.startsWith('http://teste/'))return r.fulfill({body:pagina,contentType:'text/html'});
+  if(m)return r.fulfill({path:nm('three/'+m[1]),contentType:'application/javascript'});
+  for(const [id,p] of Object.entries({jspdf:'jspdf/dist/jspdf.umd.min.js',jszip:'jszip/dist/jszip.min.js','qrcode-generator':'qrcode-generator/qrcode.js',svg2pdf:'svg2pdf.js/dist/svg2pdf.umd.min.js'}))if(u.includes(id))return r.fulfill({path:nm(p),contentType:'application/javascript'});
+  return r.abort();
+ });
+ await page.goto('http://teste/',{waitUntil:'commit'});
+ await page.waitForFunction(()=>window.__configurador?.estado?.res);
+ const base=await page.evaluate(()=>{
+  const c=window.__configurador,m=structuredClone(c.TIPOS.modulo.padrao);
+  const vao=()=>({tipo:'vao',frente:{tipo:'porta'},conteudo:[{tipo:'prateleiras',n:3}]});
+  m.largura=900;m.altura=2100;m.profundidade=550;
+  m.raiz={tipo:'dividir',dir:'h',sep:'divisoria',partes:[{medida:600,no:{tipo:'vao',frente:{tipo:'porta'},conteudo:[{tipo:'sapateira',nivel:180,max:0}]}},{medida:'auto',no:{tipo:'dividir',dir:'v',sep:'divisoria',partes:[{medida:'auto',no:vao()},{medida:'auto',no:vao()}]}}]};
+  c.abrirProjetoTexto(JSON.stringify({versao:1,tipo:'modulo',nome:'Portas e sapateira',parametros:m}));
+  return {raiz:JSON.stringify(m.raiz),pecas:c.estado.res.pecas,erros:c.estado.res.erros};
+ });
+ assert.equal(base.pecas.filter(p=>p.papel==='porta').length,3);
+ await page.selectOption('#form [data-modulo="modoFrentes"]','independente');
+ const novo=await page.evaluate(()=>({m:window.__configurador.estado.projeto.parametros,r:window.__configurador.estado.res}));
+ assert.equal(JSON.stringify(novo.m.raiz),base.raiz);
+ const portas=novo.r.pecas.filter(p=>p.papel==='porta');
+ assert.equal(portas.length,2);assert.ok(portas.every(p=>p.box[3]-p.box[2]>1900));
+ assert.deepEqual(novo.r.erros,[]);
+ const internas=pcs=>pcs.filter(p=>p.papel==='prateleira'||p.id.startsWith('divisoria')).map(p=>({id:p.id,box:p.box}));
+ assert.deepEqual(internas(novo.r.pecas),internas(base.pecas));
+ assert.equal(new Set(novo.r.pecas.map(p=>p.id)).size,novo.r.pecas.length);
+ assert.ok(novo.r.pecas.filter(p=>p.lista).every(p=>p.papel));
+ assert.equal(await page.locator('[data-lista="fachada"] [data-acao="frente"][data-valor="2portas"][aria-pressed="true"]').count(),1);
+ await page.click('#form [data-acao="selecionar"][data-cam=".1.0"]');
+ await page.click('#form [data-acao="dividir-h"]');
+ assert.equal(await page.evaluate(()=>window.__configurador.estado.res.pecas.filter(p=>p.papel==='porta').length),2);
+ await page.selectOption('#form [data-modulo="modoFrentes"]','vaos');
+ assert.equal(await page.evaluate(()=>window.__configurador.estado.res.pecas.filter(p=>p.papel==='porta').length),4);
+ await page.selectOption('#form [data-modulo="modoFrentes"]','independente');
+ const round=await page.evaluate(()=>{const c=window.__configurador,s=JSON.stringify(c.estado.projeto),antes=c.estado.res.pecas;const abriu=c.abrirProjetoTexto(s);return {abriu,antes,depois:c.estado.res.pecas};});
+ assert.equal(round.abriu,true);assert.deepEqual(round.depois,round.antes);
+ const outros=await page.evaluate(()=>{
+  const c=window.__configurador,m=structuredClone(c.estado.projeto.parametros);
+  const alturas=[1900,2200].map(h=>{m.altura=h;return c.gerarModuloV3(m).pecas.filter(p=>p.papel==='porta').map(p=>p.box[3]-p.box[2]);});
+  const frenteAntes=JSON.stringify(m.fachada);c.ED.juntar(m,'.1.0.0',1);
+  const juntou=JSON.stringify(m.fachada)===frenteAntes;
+  m.raiz={tipo:'vao',frente:{tipo:'nenhuma'},conteudo:[]};c.ED.definirConteudo(m,'','gavetas');
+  const gav=c.gerarModuloV3(m);
+  m.raiz.frente={tipo:'gaveta'};const conflito=c.gerarModuloV3(m).erros;
+  m.fachada.frente.tipo='inexistente';const desconhecida=c.gerarModuloV3(m).erros;
+  return {alturas,juntou,espacadores:gav.pecas.filter(p=>p.id.startsWith('espacador-')),conflito,desconhecida};
+ });
+ assert.equal(outros.juntou,true);assert.equal(outros.alturas[1][0]-outros.alturas[0][0],300);
+ assert.equal(outros.espacadores.length,2);assert.ok(outros.espacadores.every(p=>p.papel==='espacador'));
+ assert.ok(outros.conflito.some(e=>e.includes('frente de gaveta')));
+ assert.ok(outros.desconhecida.some(e=>e.includes('fechamento válido')));
+ console.log('Fachada OK: 3 portas viram 2 inteiras, interior igual, dividir, restaurar, JSON, espaçadores e conflitos.');
+ await page.close();return 0;
+}};

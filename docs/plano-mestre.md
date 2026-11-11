@@ -200,3 +200,5 @@ Comparativo de 12 programas (2026)
 Pesquisa de 06/11: claude/pesquisa-base-parametrica.md
 
 73. ✅ 11/11/2026 — Manrope nos textos e números (opção 2 escolhida por Nathan), embutida para funcionar offline; dígitos alinhados nas medidas.
+
+74. ✅ 11/11/2026 — Fechamento do módulo independente do interior: duas portas inteiras podem cobrir a sapateira e as divisões superiores. Modo por vão preservado e reversível; escopo atual é o módulo inteiro. Pesquisa e limites em docs/portas-interior.md.

@@ -1,5 +1,5 @@
 // FRENTE: correr — portas de correr (sistema da biblioteca; a função mora no gerador por enquanto)
-registrarFrente({ id:'correr', gerar(ctx, g, fr, V) { ctx.portasCorrer(g, fr, V); } });
+registrarFrente({ id:'correr', fachada:true, gerar(ctx, g, fr, V) { ctx.portasCorrer(g, fr, V); } });
 
 // PORTA DE CORRER — sistema da biblioteca: desconto de altura, transpasse, peso máximo, desempenador
 function fazerPortasCorrer(ctx, g, fr, V) {

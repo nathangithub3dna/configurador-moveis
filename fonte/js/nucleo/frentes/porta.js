@@ -1,6 +1,6 @@
 // FRENTE: porta — uma porta de giro; lado automático: dobradiça longe da parede e longe da dobradiça da vizinha da esquerda
 // devolve o lado da dobradiça (as gavetas internas usam para o puxador não bater)
-registrarFrente({ id:'porta', gerar(ctx, g, fr) {
+registrarFrente({ id:'porta', fachada:true, gerar(ctx, g, fr) {
   const { m, c, folga, eixos, mesmoEixo, porta } = ctx;
   const x0 = g.fx0 + folga(g.b.esq), x1 = g.fx1 - folga(g.b.dir);
   // lado automático: dobradiça longe da parede (a porta abre sem bater nela)

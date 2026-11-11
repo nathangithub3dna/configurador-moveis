@@ -207,3 +207,9 @@ Regras: npm run testar igual em todos os casos a cada passo; nenhuma referência
 Não tocar: Visualizador Granfinale; formato do pecas.json/GLB do Blender; capabilities do artifact.
 Aceite: app igual ao v62 para o Nathan; arquivo publicado do mesmo tamanho ±10%; o teste rápido por área
 funciona; arquitetura.md e CLAUDE.md descrevem a estrutura nova.
+
+## Pedido 74 — concluído em 11/11/2026
+
+Fechamento opcional do módulo em parametros.fachada; sem ele, comportamento anterior. frentes/fachada.js aplica o registro à região externa antes de percorrer a árvore. Frentes compatíveis declaram fachada:true. A árvore gera somente interiores quando há fachada. A tela reaproveita as escolhas do registro em Portas e interior e guarda a escolha ao alternar (fachadaGuardada). Gavetas internas consideram ambos os lados de dobradiça. Casos dedicados em testes/casos/fachada.js; referência anterior permanece intacta. Decisão e escopo em portas-interior.md.
+
+Formato 2 em base/formato.js: conversor do formato 1 preserva os dados; versões antigas recusam novos arquivos em vez de ignorar a fachada. Testes de formato mantêm a conferência de original preservado na nuvem.

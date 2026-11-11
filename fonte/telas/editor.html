@@ -14,7 +14,13 @@
     </div>
   </fieldset>
   <fieldset class="ed-bloco">
-    <legend>Espaços</legend>
+    <legend>Portas e interior</legend>
+    <label class="ed-linha">Fechamento<select data-modulo="modoFrentes"><option value="vaos">Portas por vão</option><option value="independente">Portas independentes do interior</option></select></label>
+    <p class="ed-nota" data-se="fachada">Estas portas cobrem o móvel inteiro. As divisões abaixo organizam apenas o interior. Voltar a “Portas por vão” recupera as frentes anteriores.</p>
+    <div data-lista="fachada"></div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Espaços internos</legend>
     <span class="ed-nota"><strong>Móvel inteiro</strong> · <span data-texto="resumoMovel"></span></span>
     <!-- mini desenho de frente: um botão por vão, na posição real (tela/paineis/modulo.js) -->
     <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
@@ -39,13 +45,15 @@
     <span class="ed-nota" data-texto="medida"></span>
     <label class="ed-linha"><span data-texto="rotLarg"></span><input type="text" data-vao="larg" placeholder="auto"></label>
     <label class="ed-linha"><span data-texto="rotAlt"></span><input type="text" data-vao="alt" placeholder="auto"></label>
-    <div class="ed-sub">O que fecha este espaço?</div>
+    <div data-bloco="frente">
+    <div class="ed-sub" data-texto="tituloFrentes">O que fecha este espaço?</div>
     <div class="ed-grade3" data-lista="frentes"></div>
-    <label class="ed-linha">Modelo do puxador neste vão<select data-vao="puxador"></select></label>
+    <label class="ed-linha"><span data-texto="rotPuxador">Modelo do puxador neste vão</span><select data-vao="puxador"></select></label>
     <label class="ed-linha" data-se="porta">Posição do puxador<select data-vao="lado" title="A dobradiça fica sempre do lado oposto ao puxador"><option value="auto">Automático</option><option value="dir">À esquerda</option><option value="esq">À direita</option></select></label>
     <label class="ed-linha" data-se="perfil">Perfil na borda<select data-vao="perfil" title="Onde vai o perfil G nesta porta; na lateral, fica do lado do puxador"><option value="auto">Automático</option><option value="cima">Em cima</option><option value="baixo">Embaixo</option><option value="lateral">Na lateral (lado do puxador)</option></select></label>
     <label class="ed-linha" data-se="correr">Sistema<select data-vao="sistema"><option value="correr-rometal-dominus">Rometal Dominus (até 80 kg)</option><option value="correr-rometal-ro27">Rometal RO-27 (até 20 kg)</option></select></label>
     <label class="ed-linha" data-se="correr">Ao abrir, libera o lado<select data-vao="abrirCorrer" title="Qual lado fica livre quando as portas de correr abrem no 3D"><option value="esq">Esquerdo (folha de trás corre para a direita)</option><option value="dir">Direito (folha da frente corre para a esquerda)</option></select></label>
+    </div>
     <div class="ed-sub">O que tem dentro?</div>
     <select class="ed-select" data-vao="conteudo" aria-label="Conteúdo do espaço"></select>
     <div class="ed-contador" data-se="divisorias">

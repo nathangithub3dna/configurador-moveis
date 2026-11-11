@@ -15,11 +15,13 @@ function fazerGavetasInternas(ctx, ct, g, yAc, lado, V) {
   if (!nG) return yAc;
   const Lc = [...R.corredicas].reverse().find(cc => cc <= Dc - recG - t - 10);
   if (!Lc) E.push(`Vão ${V}: não cabe corrediça para gaveta interna.`);
-  const xr0 = lado === 'esq' ? x0 + esp : x0, xr1 = lado === 'esq' ? x1 : x1 - esp;
+  const recEsq = lado === 'esq' || lado === 'ambos', recDir = lado === 'dir' || lado === 'ambos' || !lado;
+  const xr0 = recEsq ? x0 + esp : x0, xr1 = recDir ? x1 - esp : x1;
+  if (ctx.m.fachada?.frente?.tipo === 'correr') E.push('Vão '+V+': confira o acesso das gavetas atrás das portas de correr; use fechamento por vão para liberar a fabricação.');
   const ytop = yAc + nG*gH;
   if (PxG.proj > recG - 8) E.push(`O puxador das gavetas sai ${PxG.proj} mm e bate na porta (máximo ${recG-8}).`);
   if (ytop > g.iy1 - 50) E.push(`Vão ${V}: as ${nG} gavetas de ${fmt(gH)} mm não cabem.`);
-  add({ id:`espacador-${V}`, nome:'Espaçador das corrediças', nomeLista:'Espaçador das corrediças', cat:'caixa', a:nG*gH, b:zFr-recG-zf, box:[lado === 'esq' ? x0 : x1-esp, lado === 'esq' ? x0+esp : x1, yAc, ytop, zf, zFr-recG], des:{ w:zFr-recG-zf, h:nG*gH, vista:'Vista lateral' } });
+  for (const sd of [...(recEsq ? ['esq'] : []), ...(recDir ? ['dir'] : [])]) add({ id:`espacador-${V}${lado === 'ambos' && sd === 'dir' ? '-dir' : ''}`, nome:'Espaçador das corrediças', nomeLista:'Espaçador das corrediças', cat:'caixa', a:nG*gH, b:zFr-recG-zf, box:[sd === 'esq' ? x0 : x1-esp, sd === 'esq' ? x0+esp : x1, yAc, ytop, zf, zFr-recG], des:{ w:zFr-recG-zf, h:nG*gH, vista:'Vista lateral' } });
   if (Lc) for (let k = 0; k < nG; k++) {
     const i = cont.gaveta++, kk = i + 1, zy0 = yAc + k*gH, zy1 = zy0 + gH, mov = { tipo:'gaveta', idx:i, curso:Lc*0.9 };
     const pfI = PxG.modelo === 'perfil' && ctx.contrato.perfilDeBorda !== false;

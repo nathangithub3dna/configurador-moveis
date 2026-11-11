@@ -1,4 +1,4 @@
-const areas = ['referencia', 'nucleo', 'editor', 'ambiente', 'livres', 'livres-tela', 'ajustes', 'offline', 'reabrir', 'formato', 'interface'];
+const areas = ['referencia', 'nucleo', 'editor', 'ambiente', 'livres', 'livres-tela', 'ajustes', 'offline', 'reabrir', 'formato', 'interface', 'fachada'];
 function selecionar(args) {
   const atualizar = args.includes('--atualizar');
   const listar = args.includes('--listar') || args.includes('--ajuda');

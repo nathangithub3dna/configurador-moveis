@@ -23,11 +23,12 @@ function montarEditorModulo() {
   const espacos = ED.espacos(m.raiz), vaos = espacos.filter(e => !e.divisao);
   if (!vaos.some(v => v.cam === estado.vaoSel)) estado.vaoSel = vaos[0]?.cam ?? '';
   const sel = vaos.find(v => v.cam === estado.vaoSel), no = sel.no, info = ED.parte(m, sel.cam);
+  const fechamento = m.fachada || no;
   const rLocal = noAmbiente ? resultadoLocal() : (resultadoLocal() || estado.res);   // calculado agora: o editor é montado antes do atualizar() geral
   const reg = (rLocal?.vaos || []).find(r => r.caminho === sel.cam);
 
   // medidas e construção do módulo
-  const valor = { largura:m.largura, altura:m.altura, profundidade:m.profundidade, beiral:m.construcao?.beiral ?? 0,
+  const valor = { modoFrentes:m.fachada ? 'independente' : 'vaos', largura:m.largura, altura:m.altura, profundidade:m.profundidade, beiral:m.construcao?.beiral ?? 0,
     metodo:m.metodo, entrega:m.entrega || 'desmontado', puxador:Object.keys(PUXADORES).find(k => PUXADORES[k].ref === m.puxadorPorta?.ref) || '1',
     materialFrentes:m.materiais?.frentes || 'mdf-ru-branco' };
   const opcoes = {
@@ -43,15 +44,16 @@ function montarEditorModulo() {
 
   const selPuxador = ed.querySelector('[data-vao="puxador"]');
   selPuxador.replaceChildren(el('option', {value:''}, 'Usar o padrão do móvel'), ...Object.entries(PUXADORES).map(([k,p]) => el('option', {value:k}, p.rot)));
-  selPuxador.value = no.puxador || '';
+  selPuxador.value = fechamento.puxador || '';
   // vão escolhido
   const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
   preencherModelo(ed, {
+    fachada:!!m.fachada, tituloFrentes:m.fachada ? 'O que fecha o móvel inteiro?' : 'O que fecha este espaço?', rotPuxador:m.fachada ? 'Puxador das portas inteiras' : 'Modelo do puxador neste vão',
     titulo: 'Vão ' + sel.num,
     medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
     rotLarg: 'Largura por dentro (mm ou auto)', rotAlt: 'Altura na frente (mm ou auto)',   // é assim que o núcleo lê cada uma (coluna: vão livre; faixa deitada: altura da frente)
-    porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
-    perfil: (PUXADORES[no.puxador] || m.puxadorPorta)?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
+    porta: fechamento.frente?.tipo === 'porta', correr: fechamento.frente?.tipo === 'correr',
+    perfil: (PUXADORES[fechamento.puxador] || m.puxadorPorta)?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(fechamento.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
     divisorias: tipoCt === 'divisorias', nDiv: (no.conteudo || []).find(c => c.tipo === 'divisorias')?.n ?? 0,
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
@@ -64,7 +66,7 @@ function montarEditorModulo() {
     gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'botijao' || tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
     sapateira: !!sapateiraDoVao(no), sapateiraSozinha: tipoCt === 'sapateira', sapateiraComVassoura: tipoCt === 'vassoura+sapateira', conjuntoAntigo: !!ESCOLHAS.conteudo[tipoCt]?.legado, nSap: (() => { const s = sapateiraDoVao(no); return s?.max ? String(s.max) : 'máx'; })(),
-    resumoMovel: espacos[0]?.divisao ? ED.resumoDivisao(espacos[0].no) : 'um vão só', resumoVao: `Vão ${sel.num}: ${ED.resumo(no)}`,
+    resumoMovel: espacos[0]?.divisao ? ED.resumoDivisao(espacos[0].no) : 'um vão só', resumoVao: `Vão ${sel.num}: ${ED.resumo(no, !!m.fachada)}`,
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
   // espaços: mini desenho de frente (pedido do Nathan, 09/11) — um botão por vão na posição real; os textos (resumo) vão no preencherModelo acima
@@ -73,7 +75,7 @@ function montarEditorModulo() {
   const L = rDes?.dims?.L, H = rDes?.dims?.H, regs = rDes?.vaos || [];
   const desenha = !!(L && H) && vaos.every(v => regs.some(x => x.caminho === v.cam));
   const botao = v => { const r = regs.find(x => x.caminho === v.cam);
-    const b = el('button', { type:'button', class:'mini-vao', 'data-acao':'selecionar', 'data-cam':v.cam, title:`Vão ${v.num} · ${ED.resumo(v.no)}`, 'aria-label':`Vão ${v.num}: ${ED.resumo(v.no)}` }, String(v.num));
+    const b = el('button', { type:'button', class:'mini-vao', 'data-acao':'selecionar', 'data-cam':v.cam, title:`Vão ${v.num} · ${ED.resumo(v.no, !!m.fachada)}`, 'aria-label':`Vão ${v.num}: ${ED.resumo(v.no, !!m.fachada)}` }, String(v.num));
     if (v.cam === estado.vaoSel) b.setAttribute('aria-current', 'true');
     if (r && desenha) Object.assign(b.style, { left: r.x0 / L * 100 + '%', top: (H - r.y1) / H * 100 + '%', width: (r.x1 - r.x0) / L * 100 + '%', height: (r.y1 - r.y0) / H * 100 + '%' });
     return b; };
@@ -116,20 +118,21 @@ function montarEditorModulo() {
   const sapNo = sapateiraDoVao(no); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.nivel;
   // campo "Puxador": o valor guardado continua sendo o lado da dobradiça (puxador à esquerda = dobradiça à direita);
   // no automático, o texto diz para que lado o puxador ficou
-  const selLado = ed.querySelector('[data-vao="lado"]'); selLado.value = no.frente?.lado || 'auto';
+  const selLado = ed.querySelector('[data-vao="lado"]'); selLado.value = fechamento.frente?.lado || 'auto';
   const regN = (rNovo?.vaos || []).find(r => r.caminho === sel.cam), portaVao = regN && (rNovo?.pecas || []).find(p => p.mov?.tipo === 'porta' && p.cat === 'frente' && p.box[0] >= regN.fx0 - 1 && p.box[1] <= regN.fx1 + 1 && p.box[2] >= regN.fy0 - 1 && p.box[3] <= regN.fy1 + 1);
   if (portaVao) selLado.options[0].textContent = `Automático (à ${portaVao.mov.lado === 'esq' ? 'direita' : 'esquerda'})`;
-  ed.querySelector('[data-vao="abrirCorrer"]').value = no.frente?.abrir === 'dir' ? 'dir' : 'esq';
-  ed.querySelector('[data-vao="perfil"]').value = no.frente?.perfil || 'auto';
-  ed.querySelector('[data-vao="sistema"]').value = no.frente?.sistema || 'correr-rometal-dominus';
+  ed.querySelector('[data-vao="abrirCorrer"]').value = fechamento.frente?.abrir === 'dir' ? 'dir' : 'esq';
+  ed.querySelector('[data-vao="perfil"]').value = fechamento.frente?.perfil || 'auto';
+  ed.querySelector('[data-vao="sistema"]').value = fechamento.frente?.sistema || 'correr-rometal-dominus';
   const selCt = ed.querySelector('[data-vao="conteudo"]');
   selCt.replaceChildren(...CONTEUDOS_EDITOR.map(([v, r]) => el('option', { value:v }, r)));
   if (ESCOLHAS.conteudo[tipoCt]?.legado) { const o = el('option', { value:tipoCt }, ESCOLHAS.conteudo[tipoCt].rotulo); o.hidden = true; selCt.append(o); }
   selCt.value = tipoCt;
-  ed.querySelector('[data-lista="frentes"]').replaceChildren(...FRENTES_EDITOR.map(([v, r]) => {
+  ed.querySelector('[data-lista="frentes"]').replaceChildren(...FRENTES_EDITOR.filter(([id]) => !m.fachada || FRENTES[id]?.fachada).map(([v, r]) => {
     const b = modeloDe('tplOpcao').querySelector('button'); b.textContent = r; b.dataset.valor = v;
-    b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
+    b.setAttribute('aria-pressed', String(fechamento.frente?.tipo === v)); return b;
   }));
+  if (m.fachada) ed.querySelector('[data-lista="fachada"]').append(ed.querySelector('[data-bloco="frente"]'));
   aplicarPainelB(ed);                                                   // visual B: botões com desenho e − / + (tela/paineis/painel-b.js)
   preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela/paineis/ajuste.js)
   // "Construção e peças ajustadas" fica recolhido; abre sozinho se há peça ajustada e lembra se você abriu
@@ -180,6 +183,7 @@ $('form').addEventListener('change', e => {
   const k = e.target.dataset.modulo, kv = e.target.dataset.vao, v = e.target.value, cam = estado.vaoSel;
   if (k) mudarModulo(m => {
     if (['largura', 'altura', 'profundidade'].includes(k)) m[k] = Number(v);
+    if (k === 'modoFrentes') { if (v === 'independente') { m.fachada = m.fachadaGuardada || { frente:{tipo:'2portas'} }; delete m.fachadaGuardada; } else { m.fachadaGuardada = m.fachada; delete m.fachada; } }
     if (k === 'beiral') m.construcao = { ...m.construcao, beiral: Number(v) || 0 };
     if (k === 'metodo') { m.metodo = v; m.metodoAjustes = {}; }
     if (k === 'entrega') m.entrega = v;
@@ -187,13 +191,13 @@ $('form').addEventListener('change', e => {
     if (k === 'materialFrentes') m.materiais = { ...m.materiais, frentes: v };
   });
   if (kv) mudarModulo(m => {
-    const no = ED.no(m.raiz, cam);
+    const no = ED.no(m.raiz, cam), fechamento = m.fachada || no;
     if (kv === 'larg' || kv === 'alt') ED.definirMedida(m, e.target.dataset.cam, v);
-    if (kv === 'puxador') { if (v) no.puxador = v; else delete no.puxador; }
-    if (kv === 'lado') no.frente.lado = v;
-    if (kv === 'perfil') { if (v === 'auto') delete no.frente.perfil; else no.frente.perfil = v; }
-    if (kv === 'sistema') no.frente.sistema = v;
-    if (kv === 'abrirCorrer') { if (v === 'dir') no.frente.abrir = 'dir'; else delete no.frente.abrir; }
+    if (kv === 'puxador') { if (v) fechamento.puxador = v; else delete fechamento.puxador; }
+    if (kv === 'lado') fechamento.frente.lado = v;
+    if (kv === 'perfil') { if (v === 'auto') delete fechamento.frente.perfil; else fechamento.frente.perfil = v; }
+    if (kv === 'sistema') fechamento.frente.sistema = v;
+    if (kv === 'abrirCorrer') { if (v === 'dir') fechamento.frente.abrir = 'dir'; else delete fechamento.frente.abrir; }
     if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
     if (kv === 'largDiv') { const c = (no.conteudo || []).find(x => x.tipo === 'divisorias'); if (c) { c.larguras = [...(c.larguras || [])]; c.larguras[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'prat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { c.alturas = [...(c.alturas || [])]; c.alturas[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }

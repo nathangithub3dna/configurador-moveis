@@ -6,7 +6,7 @@ const { resumo, diferencas } = require('../apoio/comparacao');
 module.exports = { id:'formato', descricao:"Formato do projeto e cópia na nuvem", async executar({ ctx, pagina, nm, raiz, atualizar, tipoFormulario }) {
   let falhas = 0;
   // formato do projeto (0.2): número do formato, recusa de projeto mais novo e conversão que guarda o original na nuvem.
-  // Hoje o formato é 1 e não há conversor; o teste finge um formato 2 (largura vira 777) para exercitar o caminho.
+  // Formato 2 preserva o projeto antigo; uma conversão sintética exercita a cópia na nuvem.
   {
     const page = await ctx.newPage(), errosF = [], arq = 'file://' + path.join(raiz, 'configurador-offline.html');
     page.on('pageerror', e => errosF.push(e.message));
@@ -24,7 +24,7 @@ module.exports = { id:'formato', descricao:"Formato do projeto e cópia na nuvem
       const c = window.__configurador, e = c.estado, store = window.__nuvemFake, espera = ms => new Promise(r => setTimeout(r, ms)), aviso = () => document.getElementById('toast').textContent;
       const r = { formato: c.FORMATO.versao, localComVersao: JSON.parse(localStorage.getItem('configurador-moveis:v2') || '{}').versao };
       // .json antigo (sem número): abre como sempre
-      r.antigo = c.abrirProjetoTexto(JSON.stringify({ tipo: 'gabinete', nome: 'Antigo', parametros: {} })) && e.projeto.nome === 'Antigo' && aviso() === 'Projeto aberto.';
+      r.antigo = c.abrirProjetoTexto(JSON.stringify({ tipo: 'gabinete', nome: 'Antigo', parametros: { largura: 900 } })) && e.projeto.nome === 'Antigo' && e.projeto.parametros.largura === 900 && !e.projeto.parametros.fachada && /formato novo/.test(aviso());
       // projeto de versão mais nova: recusado, nada muda
       const antes = JSON.stringify(e.projeto);
       r.maisNovoRecusado = c.abrirProjetoTexto(JSON.stringify({ versao: 99, tipo: 'armario', nome: 'Futuro', parametros: {} })) === false && JSON.stringify(e.projeto) === antes && /versão mais nova/.test(aviso());
@@ -47,7 +47,7 @@ module.exports = { id:'formato', descricao:"Formato do projeto e cópia na nuvem
       return r;
     });
     await page.evaluate(() => { try { localStorage.clear(); } catch (e) {} });
-    const okF = tf.formato === 1 && tf.localComVersao === 1 && tf.antigo && tf.maisNovoRecusado && tf.abriuConvertido && tf.nuvemNova && tf.originalGuardado
+    const okF = tf.formato === 2 && tf.localComVersao === 2 && tf.antigo && tf.maisNovoRecusado && tf.abriuConvertido && tf.nuvemNova && tf.originalGuardado
       && tf.copiasDoTeste === 2 && tf.originalIntacto && tf.localNoFormatoNovo && tf.formato3Recusado && !errosF.length;
     if (!okF) { falhas++; console.log('FORMATO DO PROJETO ERRADO  ' + JSON.stringify({ ...tf, erros: errosF })); } else console.log('FORMATO DO PROJETO OK  ' + JSON.stringify(tf));
     await page.close();

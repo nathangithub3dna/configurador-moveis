@@ -52,7 +52,8 @@ function vaoDaArvore(ctx, no, g) {
   if (no.puxador && PUXADORES[no.puxador]) { const px = PUXADORES[no.puxador]; ctx.m = { ...ctx.m, puxadorPorta:{ ...px, altura:ctx.m.puxadorPorta?.altura ?? 1050 }, puxadorGaveta:{ ...px } }; }
   try {
   // FRENTE e CONTEÚDO (de baixo para cima) vêm do registro: nucleo/frentes/*.js e nucleo/conteudos/*.js
-  const ladoFrente = FRENTES[fr.tipo] ? FRENTES[fr.tipo].gerar(ctx, g, fr, V) || null : null;
+  if (ctx.m.fachada && fr.tipo === 'gaveta') ctx.E.push('Vão '+V+': a frente de gaveta ocupa o espaço das portas inteiras. Escolha gavetas internas ou volte ao fechamento por vão.');
+  const ladoFrente = ctx.m.fachada ? ladoSobFachada(ctx,g) : FRENTES[fr.tipo] ? FRENTES[fr.tipo].gerar(ctx, g, fr, V) || null : null;
   const est = { g, V, y:g.iy0, kPrat:0, ladoFrente, x0:g.ix0, x1:g.ix1, w:g.ix1 - g.ix0, xm:(g.ix0 + g.ix1)/2 };
   for (const ct of (no.conteudo || [])) CONTEUDOS[ct.tipo]?.gerar(ctx, ct, est);
   } finally { ctx.m = moduloOriginal; }

@@ -123,7 +123,8 @@ const ED = {
     info.parte.medida = String(texto).trim() === '' || /auto/i.test(texto) || !(v > 0) ? 'auto' : v;
   },
   definirFrente(m, cam, tipo) {
-    const no = ED.no(m.raiz, cam), e = ESCOLHAS.frente[tipo];
+    const no = m.fachada || ED.no(m.raiz, cam), e = ESCOLHAS.frente[tipo];
+    if (m.fachada && !FRENTES[tipo]?.fachada) return;
     if (e) e.aplicar(no, m); else no.frente = { tipo };
   },
   // a escolha de conteúdo que um vão já montado mostra: a primeira (por prioridade) que o reconhece
@@ -153,12 +154,12 @@ const ED = {
     const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.tipo === 'prateleiras');
     if (c) c.n = Math.max(0, c.n + delta);
   },
-  resumo(no) {
+  resumo(no, soInterior = false) {
     const fr = (FRENTES_EDITOR.find(f => f[0] === no.frente?.tipo) || ['', 'Nada'])[1];
     const t = ED.tipoConteudo(no), pr = (no.conteudo || []).find(x => x.tipo === 'prateleiras');
     const dv = (no.conteudo || []).find(x => x.tipo === 'divisorias');
     const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (ESCOLHAS.conteudo[t]?.rotulo || '').toLowerCase();
-    return fr + ' · ' + ct;
+    return soInterior ? ct : fr + ' · ' + ct;
   },
   resumoDivisao: no => `Dividido ${no.dir === 'v' ? 'em pé' : 'deitado'} em ${no.partes.length}`,
 };

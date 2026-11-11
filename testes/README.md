@@ -17,3 +17,5 @@ Cada arquivo em casos/ exporta id, descricao e executar. Cadastre novas áreas n
 `node --test testes/selecao.test.js` confere a seleção de áreas sem abrir navegador.
 
 As referências existentes não foram alteradas. Referência ausente agora provoca falha, em vez de ser criada durante uma conferência comum. Atualizá-las exige autorização de Nathan e o comando específico já existente; filtros de atualização são recusados.
+
+Área fachada: portas inteiras sobre divisões/sapateira, retorno às frentes por vão, divisão/junção, medidas, JSON e gavetas internas. Incluída na conferência completa.

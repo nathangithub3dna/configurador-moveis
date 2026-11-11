@@ -97,3 +97,6 @@
 .ed-passo{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;gap:6px;align-items:center}
 .ed-passo .btn{justify-content:center;padding:7px 0;font-size:15px}
 .ed-passo input{text-align:center!important}
+
+/* Campos de fechamento podem pertencer ao vão ou ao móvel inteiro. */
+[data-bloco="frente"]{display:flex;flex-direction:column;gap:8px}

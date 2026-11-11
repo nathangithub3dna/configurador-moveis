@@ -417,6 +417,9 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .ed-passo{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;gap:6px;align-items:center}
 .ed-passo .btn{justify-content:center;padding:7px 0;font-size:15px}
 .ed-passo input{text-align:center!important}
+
+/* Campos de fechamento podem pertencer ao vão ou ao móvel inteiro. */
+[data-bloco="frente"]{display:flex;flex-direction:column;gap:8px}
 /* AMBIENTE (5b) — aparência do painel do ambiente e da planta vista de cima.
    Estrutura em pagina.html (tplAmbiente, tplParede, tplModuloAmb, tplPonto); lógica em js/ambiente.js. */
 .amb-lista{display:flex;flex-direction:column;gap:10px}
@@ -811,7 +814,13 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     </div>
   </fieldset>
   <fieldset class="ed-bloco">
-    <legend>Espaços</legend>
+    <legend>Portas e interior</legend>
+    <label class="ed-linha">Fechamento<select data-modulo="modoFrentes"><option value="vaos">Portas por vão</option><option value="independente">Portas independentes do interior</option></select></label>
+    <p class="ed-nota" data-se="fachada">Estas portas cobrem o móvel inteiro. As divisões abaixo organizam apenas o interior. Voltar a “Portas por vão” recupera as frentes anteriores.</p>
+    <div data-lista="fachada"></div>
+  </fieldset>
+  <fieldset class="ed-bloco">
+    <legend>Espaços internos</legend>
     <span class="ed-nota"><strong>Móvel inteiro</strong> · <span data-texto="resumoMovel"></span></span>
     <!-- mini desenho de frente: um botão por vão, na posição real (tela/paineis/modulo.js) -->
     <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
@@ -836,13 +845,15 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <span class="ed-nota" data-texto="medida"></span>
     <label class="ed-linha"><span data-texto="rotLarg"></span><input type="text" data-vao="larg" placeholder="auto"></label>
     <label class="ed-linha"><span data-texto="rotAlt"></span><input type="text" data-vao="alt" placeholder="auto"></label>
-    <div class="ed-sub">O que fecha este espaço?</div>
+    <div data-bloco="frente">
+    <div class="ed-sub" data-texto="tituloFrentes">O que fecha este espaço?</div>
     <div class="ed-grade3" data-lista="frentes"></div>
-    <label class="ed-linha">Modelo do puxador neste vão<select data-vao="puxador"></select></label>
+    <label class="ed-linha"><span data-texto="rotPuxador">Modelo do puxador neste vão</span><select data-vao="puxador"></select></label>
     <label class="ed-linha" data-se="porta">Posição do puxador<select data-vao="lado" title="A dobradiça fica sempre do lado oposto ao puxador"><option value="auto">Automático</option><option value="dir">À esquerda</option><option value="esq">À direita</option></select></label>
     <label class="ed-linha" data-se="perfil">Perfil na borda<select data-vao="perfil" title="Onde vai o perfil G nesta porta; na lateral, fica do lado do puxador"><option value="auto">Automático</option><option value="cima">Em cima</option><option value="baixo">Embaixo</option><option value="lateral">Na lateral (lado do puxador)</option></select></label>
     <label class="ed-linha" data-se="correr">Sistema<select data-vao="sistema"><option value="correr-rometal-dominus">Rometal Dominus (até 80 kg)</option><option value="correr-rometal-ro27">Rometal RO-27 (até 20 kg)</option></select></label>
     <label class="ed-linha" data-se="correr">Ao abrir, libera o lado<select data-vao="abrirCorrer" title="Qual lado fica livre quando as portas de correr abrem no 3D"><option value="esq">Esquerdo (folha de trás corre para a direita)</option><option value="dir">Direito (folha da frente corre para a esquerda)</option></select></label>
+    </div>
     <div class="ed-sub">O que tem dentro?</div>
     <select class="ed-select" data-vao="conteudo" aria-label="Conteúdo do espaço"></select>
     <div class="ed-contador" data-se="divisorias">
@@ -10269,7 +10280,7 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'], [/^ponto-\d+$/, 'ponto'], [/^peca-teste$/, 'teste'],
   [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-g?\d+$/, 'prateleira-fixa'],
   [/^reforco-/, 'reforco'], [/^beiral-frontal$/, 'beiral-frontal'], [/^beiral-(esq|dir)$/, 'beiral-lateral'],
-  [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+$/, 'espacador'],
+  [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+(-dir)?$/, 'espacador'],
   [/^porta-(esq|dir|\d+)$/, 'porta'], [/^porta-correr-\d+$/, 'porta-correr'], [/^porta-basculante-\d+$/, 'porta-basculante'],
   [/-kit-correr$/, 'kit-correr'], [/-desempenador-\d+$/, 'desempenador'], [/^trilho-(superior|inferior)-\d+$/, 'trilho-correr'], [/-pistao-\d+$/, 'pistao'], [/^gaveta-\d+-frente$/, 'frente-gaveta'],
   [/^gaveta-\d+-frente-interna$/, 'frente-interna-gaveta'], [/^gaveta-\d+-traseira$/, 'traseira-gaveta'],
@@ -10297,7 +10308,6 @@ const CATS = { caixa:'Caixa', enchimento:'Enchimento', frente:'Frentes', gaveta:
 
 const fmt = v => { const r = Math.round(v*10)/10; return Number.isInteger(r) ? String(r) : r.toFixed(1).replace('.', ','); };
 const fitaTxt = f => { const s = []; if (f[0]) s.push(f[0]+'C'); if (f[1]) s.push(f[1]+'L'); return s.length ? s.join(' ') : '—'; };
-
 /* =====================================================================
    2. TIPOS DE MÓVEL — cada tipo tem campos, valores padrão e um gerador.
    Para um novo tipo (aéreo, armário, nicho), acrescente uma entrada aqui.
@@ -10429,7 +10439,7 @@ registrarEscolha({ grupo:'frente', id:'nenhuma', rotulo:'Nada', ordem:0, icone:'
 registrarEscolha({ grupo:'conteudo', id:'vazio', rotulo:'Vazio', ordem:0, prioridade:999, icone:'<rect x="4" y="3" width="26" height="34"/>',
   reconhece: () => true, aplicar(no) { no.conteudo = []; } });
 // FRENTE: 2portas — duas portas de giro que se encontram no meio do vão
-registrarFrente({ id:'2portas', gerar(ctx, g, fr) {
+registrarFrente({ id:'2portas', fachada:true, gerar(ctx, g, fr) {
   const { m, folga, porta } = ctx;
   const meio = (g.fx0 + g.fx1)/2;
   porta(g, 'esq', g.fx0 + folga(g.b.esq), meio - R.entre/2, g.fx0, m.puxadorPorta, fr.perfil);
@@ -10440,12 +10450,12 @@ registrarEscolha({ grupo:'frente', id:'2portas', rotulo:'2 portas', ordem:20, ic
   aplicar(no) { no.frente = { tipo:'2portas' }; } });
 // FRENTE: basculante-baixo — porta que abre para baixo (tampa que tomba para a frente, como em escrivaninha ou bar):
 // dobradiças na borda de baixo, pistão a gás inverso pelo peso, puxador em cima. A função é a da basculante (basculante.js).
-registrarFrente({ id:'basculante-baixo', gerar(ctx, g, fr) { fazerBasculante(ctx, g, fr, 'baixo'); } });
+registrarFrente({ id:'basculante-baixo', fachada:true, gerar(ctx, g, fr) { fazerBasculante(ctx, g, fr, 'baixo'); } });
 
 registrarEscolha({ grupo:'frente', id:'basculante-baixo', rotulo:'Abre p/ baixo', ordem:60, icone:'<rect x="4" y="7" width="26" height="22"/><path d="M17 31v7m-3-3 3 3 3-3"/>',
   aplicar(no) { no.frente = { tipo:'basculante-baixo' }; } });
 // FRENTE: basculante — porta que abre para cima com pistão a gás (a função mora neste mesmo arquivo)
-registrarFrente({ id:'basculante', gerar(ctx, g, fr) { ctx.basculante(g, fr); } });
+registrarFrente({ id:'basculante', fachada:true, gerar(ctx, g, fr) { ctx.basculante(g, fr); } });
 
 // BASCULANTE — porta que abre para cima (dobradiças em cima, pistão normal) ou para baixo (sentido 'baixo':
 // dobradiças embaixo, pistão a gás inverso, puxador em cima); pistão pela força da regra Soprano/Completa
@@ -10481,7 +10491,7 @@ function fazerBasculante(ctx, g, fr, sentido = 'cima') {
 registrarEscolha({ grupo:'frente', id:'basculante', rotulo:'Abre p/ cima', ordem:50, icone:'<rect x="4" y="11" width="26" height="22"/><path d="M17 9V2m-3 3 3-3 3 3"/>',
   aplicar(no) { no.frente = { tipo:'basculante' }; } });
 // FRENTE: correr — portas de correr (sistema da biblioteca; a função mora no gerador por enquanto)
-registrarFrente({ id:'correr', gerar(ctx, g, fr, V) { ctx.portasCorrer(g, fr, V); } });
+registrarFrente({ id:'correr', fachada:true, gerar(ctx, g, fr, V) { ctx.portasCorrer(g, fr, V); } });
 
 // PORTA DE CORRER — sistema da biblioteca: desconto de altura, transpasse, peso máximo, desempenador
 function fazerPortasCorrer(ctx, g, fr, V) {
@@ -10530,6 +10540,24 @@ function fazerPortasCorrer(ctx, g, fr, V) {
 
 registrarEscolha({ grupo:'frente', id:'correr', rotulo:'Correr', ordem:40, icone:'<rect x="4" y="3" width="15" height="34"/><rect x="15" y="5" width="15" height="32"/><path d="M8 20h6m-2-2 2 2-2 2"/>',
   aplicar(no) { no.frente = { tipo:'correr', sistema: 'correr-rometal-dominus', n: 'auto' }; } });
+// FECHAMENTO INDEPENDENTE — frente do módulo inteiro, separada da árvore interna.
+// Só frentes com apoio nas bordas externas declaram fachada:true no registro.
+function gerarFachada(ctx) {
+  const no=ctx.m.fachada; if (!no) return;
+  const fr=no.frente, registro=FRENTES[fr?.tipo];
+  if (!registro?.fachada) { ctx.E.push('Escolha um fechamento válido para o móvel inteiro.'); return; }
+  const original=ctx.m;
+  try {
+    if (PUXADORES[no.puxador]) ctx.m={...original,puxadorPorta:{...PUXADORES[no.puxador],altura:original.puxadorPorta?.altura ?? 1050}};
+    registro.gerar(ctx,ctx.regiao0,fr,0);
+  } finally {ctx.m=original;}
+}
+function ladoSobFachada(ctx,g) {
+  const portas=ctx.pecas.filter(p=>p.cat==='frente' && p.mov?.tipo==='porta');
+  const esq=portas.some(p=>p.mov.lado==='esq' && p.mov.pivX>=g.ix0-ctx.t-1 && p.mov.pivX<=g.ix1+1);
+  const dir=portas.some(p=>p.mov.lado==='dir' && p.mov.pivX<=g.ix1+ctx.t+1 && p.mov.pivX>=g.ix0-1);
+  return esq && dir ? 'ambos' : esq ? 'esq' : dir ? 'dir' : 'nenhum';
+}
 // FRENTE: gaveta — gaveta externa ocupando o vão (a função mora neste mesmo arquivo)
 registrarFrente({ id:'gaveta', gerar(ctx, g) { ctx.gavetaExterna(g); } });
 
@@ -10606,7 +10634,7 @@ function fazerPorta(ctx, g, lado, x0, x1, pivX, puxador, borda = 'auto') {
 }
 // FRENTE: porta — uma porta de giro; lado automático: dobradiça longe da parede e longe da dobradiça da vizinha da esquerda
 // devolve o lado da dobradiça (as gavetas internas usam para o puxador não bater)
-registrarFrente({ id:'porta', gerar(ctx, g, fr) {
+registrarFrente({ id:'porta', fachada:true, gerar(ctx, g, fr) {
   const { m, c, folga, eixos, mesmoEixo, porta } = ctx;
   const x0 = g.fx0 + folga(g.b.esq), x1 = g.fx1 - folga(g.b.dir);
   // lado automático: dobradiça longe da parede (a porta abre sem bater nela)
@@ -10699,11 +10727,13 @@ function fazerGavetasInternas(ctx, ct, g, yAc, lado, V) {
   if (!nG) return yAc;
   const Lc = [...R.corredicas].reverse().find(cc => cc <= Dc - recG - t - 10);
   if (!Lc) E.push(`Vão ${V}: não cabe corrediça para gaveta interna.`);
-  const xr0 = lado === 'esq' ? x0 + esp : x0, xr1 = lado === 'esq' ? x1 : x1 - esp;
+  const recEsq = lado === 'esq' || lado === 'ambos', recDir = lado === 'dir' || lado === 'ambos' || !lado;
+  const xr0 = recEsq ? x0 + esp : x0, xr1 = recDir ? x1 - esp : x1;
+  if (ctx.m.fachada?.frente?.tipo === 'correr') E.push('Vão '+V+': confira o acesso das gavetas atrás das portas de correr; use fechamento por vão para liberar a fabricação.');
   const ytop = yAc + nG*gH;
   if (PxG.proj > recG - 8) E.push(`O puxador das gavetas sai ${PxG.proj} mm e bate na porta (máximo ${recG-8}).`);
   if (ytop > g.iy1 - 50) E.push(`Vão ${V}: as ${nG} gavetas de ${fmt(gH)} mm não cabem.`);
-  add({ id:`espacador-${V}`, nome:'Espaçador das corrediças', nomeLista:'Espaçador das corrediças', cat:'caixa', a:nG*gH, b:zFr-recG-zf, box:[lado === 'esq' ? x0 : x1-esp, lado === 'esq' ? x0+esp : x1, yAc, ytop, zf, zFr-recG], des:{ w:zFr-recG-zf, h:nG*gH, vista:'Vista lateral' } });
+  for (const sd of [...(recEsq ? ['esq'] : []), ...(recDir ? ['dir'] : [])]) add({ id:`espacador-${V}${lado === 'ambos' && sd === 'dir' ? '-dir' : ''}`, nome:'Espaçador das corrediças', nomeLista:'Espaçador das corrediças', cat:'caixa', a:nG*gH, b:zFr-recG-zf, box:[sd === 'esq' ? x0 : x1-esp, sd === 'esq' ? x0+esp : x1, yAc, ytop, zf, zFr-recG], des:{ w:zFr-recG-zf, h:nG*gH, vista:'Vista lateral' } });
   if (Lc) for (let k = 0; k < nG; k++) {
     const i = cont.gaveta++, kk = i + 1, zy0 = yAc + k*gH, zy1 = zy0 + gH, mov = { tipo:'gaveta', idx:i, curso:Lc*0.9 };
     const pfI = PxG.modelo === 'perfil' && ctx.contrato.perfilDeBorda !== false;
@@ -10951,7 +10981,8 @@ function vaoDaArvore(ctx, no, g) {
   if (no.puxador && PUXADORES[no.puxador]) { const px = PUXADORES[no.puxador]; ctx.m = { ...ctx.m, puxadorPorta:{ ...px, altura:ctx.m.puxadorPorta?.altura ?? 1050 }, puxadorGaveta:{ ...px } }; }
   try {
   // FRENTE e CONTEÚDO (de baixo para cima) vêm do registro: nucleo/frentes/*.js e nucleo/conteudos/*.js
-  const ladoFrente = FRENTES[fr.tipo] ? FRENTES[fr.tipo].gerar(ctx, g, fr, V) || null : null;
+  if (ctx.m.fachada && fr.tipo === 'gaveta') ctx.E.push('Vão '+V+': a frente de gaveta ocupa o espaço das portas inteiras. Escolha gavetas internas ou volte ao fechamento por vão.');
+  const ladoFrente = ctx.m.fachada ? ladoSobFachada(ctx,g) : FRENTES[fr.tipo] ? FRENTES[fr.tipo].gerar(ctx, g, fr, V) || null : null;
   const est = { g, V, y:g.iy0, kPrat:0, ladoFrente, x0:g.ix0, x1:g.ix1, w:g.ix1 - g.ix0, xm:(g.ix0 + g.ix1)/2 };
   for (const ct of (no.conteudo || [])) CONTEUDOS[ct.tipo]?.gerar(ctx, ct, est);
   } finally { ctx.m = moduloOriginal; }
@@ -11255,6 +11286,7 @@ function gerarModuloV3(m, contrato = {}) {
   // o que as frentes e os conteúdos registrados enxergam do módulo
   Object.assign(ctx, { folga, eixos, mesmoEixo, regiao0, ventilacao, colunas, juntasFundo, regioes, dp, percorrer, vao,
     porta, prateleira, portasCorrer, basculante, gavetaExterna, gavetasInternas });
+  gerarFachada(ctx);
   percorrer(m.raiz, regiao0, 0);
 
   fazerFundoSobreposto(ctx);        // nucleo/fundo.js
@@ -13218,7 +13250,8 @@ const ED = {
     info.parte.medida = String(texto).trim() === '' || /auto/i.test(texto) || !(v > 0) ? 'auto' : v;
   },
   definirFrente(m, cam, tipo) {
-    const no = ED.no(m.raiz, cam), e = ESCOLHAS.frente[tipo];
+    const no = m.fachada || ED.no(m.raiz, cam), e = ESCOLHAS.frente[tipo];
+    if (m.fachada && !FRENTES[tipo]?.fachada) return;
     if (e) e.aplicar(no, m); else no.frente = { tipo };
   },
   // a escolha de conteúdo que um vão já montado mostra: a primeira (por prioridade) que o reconhece
@@ -13248,12 +13281,12 @@ const ED = {
     const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.tipo === 'prateleiras');
     if (c) c.n = Math.max(0, c.n + delta);
   },
-  resumo(no) {
+  resumo(no, soInterior = false) {
     const fr = (FRENTES_EDITOR.find(f => f[0] === no.frente?.tipo) || ['', 'Nada'])[1];
     const t = ED.tipoConteudo(no), pr = (no.conteudo || []).find(x => x.tipo === 'prateleiras');
     const dv = (no.conteudo || []).find(x => x.tipo === 'divisorias');
     const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (ESCOLHAS.conteudo[t]?.rotulo || '').toLowerCase();
-    return fr + ' · ' + ct;
+    return soInterior ? ct : fr + ' · ' + ct;
   },
   resumoDivisao: no => `Dividido ${no.dir === 'v' ? 'em pé' : 'deitado'} em ${no.partes.length}`,
 };
@@ -13366,7 +13399,9 @@ function aplicarPainelB(ed) {
      de uma conversão guarda o original à parte (tela/salvar/nuvem.js, salvarNuvem); Drive e .json sempre criam arquivo novo.
    - Projeto de formato mais novo que este programa: não abre (abriria pela metade e perderia o que não entende).
    ===================================================================== */
-const FORMATO = { versao: 1, conversores: {} };
+// Formato 2: fechamento independente (fachada). Projetos antigos mantêm o modo por vão.
+// O marcador impede que versões antigas ignorem a fachada e gerem outras portas.
+const FORMATO = { versao: 2, conversores: { 1: p => p } };
 function converterFormato(d) {
   const de = Number.isInteger(d?.versao) && d.versao >= 1 ? d.versao : 1;
   if (de > FORMATO.versao) return { erro: 'mais-novo', de };
@@ -14388,11 +14423,12 @@ function montarEditorModulo() {
   const espacos = ED.espacos(m.raiz), vaos = espacos.filter(e => !e.divisao);
   if (!vaos.some(v => v.cam === estado.vaoSel)) estado.vaoSel = vaos[0]?.cam ?? '';
   const sel = vaos.find(v => v.cam === estado.vaoSel), no = sel.no, info = ED.parte(m, sel.cam);
+  const fechamento = m.fachada || no;
   const rLocal = noAmbiente ? resultadoLocal() : (resultadoLocal() || estado.res);   // calculado agora: o editor é montado antes do atualizar() geral
   const reg = (rLocal?.vaos || []).find(r => r.caminho === sel.cam);
 
   // medidas e construção do módulo
-  const valor = { largura:m.largura, altura:m.altura, profundidade:m.profundidade, beiral:m.construcao?.beiral ?? 0,
+  const valor = { modoFrentes:m.fachada ? 'independente' : 'vaos', largura:m.largura, altura:m.altura, profundidade:m.profundidade, beiral:m.construcao?.beiral ?? 0,
     metodo:m.metodo, entrega:m.entrega || 'desmontado', puxador:Object.keys(PUXADORES).find(k => PUXADORES[k].ref === m.puxadorPorta?.ref) || '1',
     materialFrentes:m.materiais?.frentes || 'mdf-ru-branco' };
   const opcoes = {
@@ -14408,15 +14444,16 @@ function montarEditorModulo() {
 
   const selPuxador = ed.querySelector('[data-vao="puxador"]');
   selPuxador.replaceChildren(el('option', {value:''}, 'Usar o padrão do móvel'), ...Object.entries(PUXADORES).map(([k,p]) => el('option', {value:k}, p.rot)));
-  selPuxador.value = no.puxador || '';
+  selPuxador.value = fechamento.puxador || '';
   // vão escolhido
   const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
   preencherModelo(ed, {
+    fachada:!!m.fachada, tituloFrentes:m.fachada ? 'O que fecha o móvel inteiro?' : 'O que fecha este espaço?', rotPuxador:m.fachada ? 'Puxador das portas inteiras' : 'Modelo do puxador neste vão',
     titulo: 'Vão ' + sel.num,
     medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
     rotLarg: 'Largura por dentro (mm ou auto)', rotAlt: 'Altura na frente (mm ou auto)',   // é assim que o núcleo lê cada uma (coluna: vão livre; faixa deitada: altura da frente)
-    porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
-    perfil: (PUXADORES[no.puxador] || m.puxadorPorta)?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
+    porta: fechamento.frente?.tipo === 'porta', correr: fechamento.frente?.tipo === 'correr',
+    perfil: (PUXADORES[fechamento.puxador] || m.puxadorPorta)?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(fechamento.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
     divisorias: tipoCt === 'divisorias', nDiv: (no.conteudo || []).find(c => c.tipo === 'divisorias')?.n ?? 0,
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
@@ -14429,7 +14466,7 @@ function montarEditorModulo() {
     gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'botijao' || tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
     sapateira: !!sapateiraDoVao(no), sapateiraSozinha: tipoCt === 'sapateira', sapateiraComVassoura: tipoCt === 'vassoura+sapateira', conjuntoAntigo: !!ESCOLHAS.conteudo[tipoCt]?.legado, nSap: (() => { const s = sapateiraDoVao(no); return s?.max ? String(s.max) : 'máx'; })(),
-    resumoMovel: espacos[0]?.divisao ? ED.resumoDivisao(espacos[0].no) : 'um vão só', resumoVao: `Vão ${sel.num}: ${ED.resumo(no)}`,
+    resumoMovel: espacos[0]?.divisao ? ED.resumoDivisao(espacos[0].no) : 'um vão só', resumoVao: `Vão ${sel.num}: ${ED.resumo(no, !!m.fachada)}`,
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
   // espaços: mini desenho de frente (pedido do Nathan, 09/11) — um botão por vão na posição real; os textos (resumo) vão no preencherModelo acima
@@ -14438,7 +14475,7 @@ function montarEditorModulo() {
   const L = rDes?.dims?.L, H = rDes?.dims?.H, regs = rDes?.vaos || [];
   const desenha = !!(L && H) && vaos.every(v => regs.some(x => x.caminho === v.cam));
   const botao = v => { const r = regs.find(x => x.caminho === v.cam);
-    const b = el('button', { type:'button', class:'mini-vao', 'data-acao':'selecionar', 'data-cam':v.cam, title:`Vão ${v.num} · ${ED.resumo(v.no)}`, 'aria-label':`Vão ${v.num}: ${ED.resumo(v.no)}` }, String(v.num));
+    const b = el('button', { type:'button', class:'mini-vao', 'data-acao':'selecionar', 'data-cam':v.cam, title:`Vão ${v.num} · ${ED.resumo(v.no, !!m.fachada)}`, 'aria-label':`Vão ${v.num}: ${ED.resumo(v.no, !!m.fachada)}` }, String(v.num));
     if (v.cam === estado.vaoSel) b.setAttribute('aria-current', 'true');
     if (r && desenha) Object.assign(b.style, { left: r.x0 / L * 100 + '%', top: (H - r.y1) / H * 100 + '%', width: (r.x1 - r.x0) / L * 100 + '%', height: (r.y1 - r.y0) / H * 100 + '%' });
     return b; };
@@ -14481,20 +14518,21 @@ function montarEditorModulo() {
   const sapNo = sapateiraDoVao(no); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.nivel;
   // campo "Puxador": o valor guardado continua sendo o lado da dobradiça (puxador à esquerda = dobradiça à direita);
   // no automático, o texto diz para que lado o puxador ficou
-  const selLado = ed.querySelector('[data-vao="lado"]'); selLado.value = no.frente?.lado || 'auto';
+  const selLado = ed.querySelector('[data-vao="lado"]'); selLado.value = fechamento.frente?.lado || 'auto';
   const regN = (rNovo?.vaos || []).find(r => r.caminho === sel.cam), portaVao = regN && (rNovo?.pecas || []).find(p => p.mov?.tipo === 'porta' && p.cat === 'frente' && p.box[0] >= regN.fx0 - 1 && p.box[1] <= regN.fx1 + 1 && p.box[2] >= regN.fy0 - 1 && p.box[3] <= regN.fy1 + 1);
   if (portaVao) selLado.options[0].textContent = `Automático (à ${portaVao.mov.lado === 'esq' ? 'direita' : 'esquerda'})`;
-  ed.querySelector('[data-vao="abrirCorrer"]').value = no.frente?.abrir === 'dir' ? 'dir' : 'esq';
-  ed.querySelector('[data-vao="perfil"]').value = no.frente?.perfil || 'auto';
-  ed.querySelector('[data-vao="sistema"]').value = no.frente?.sistema || 'correr-rometal-dominus';
+  ed.querySelector('[data-vao="abrirCorrer"]').value = fechamento.frente?.abrir === 'dir' ? 'dir' : 'esq';
+  ed.querySelector('[data-vao="perfil"]').value = fechamento.frente?.perfil || 'auto';
+  ed.querySelector('[data-vao="sistema"]').value = fechamento.frente?.sistema || 'correr-rometal-dominus';
   const selCt = ed.querySelector('[data-vao="conteudo"]');
   selCt.replaceChildren(...CONTEUDOS_EDITOR.map(([v, r]) => el('option', { value:v }, r)));
   if (ESCOLHAS.conteudo[tipoCt]?.legado) { const o = el('option', { value:tipoCt }, ESCOLHAS.conteudo[tipoCt].rotulo); o.hidden = true; selCt.append(o); }
   selCt.value = tipoCt;
-  ed.querySelector('[data-lista="frentes"]').replaceChildren(...FRENTES_EDITOR.map(([v, r]) => {
+  ed.querySelector('[data-lista="frentes"]').replaceChildren(...FRENTES_EDITOR.filter(([id]) => !m.fachada || FRENTES[id]?.fachada).map(([v, r]) => {
     const b = modeloDe('tplOpcao').querySelector('button'); b.textContent = r; b.dataset.valor = v;
-    b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
+    b.setAttribute('aria-pressed', String(fechamento.frente?.tipo === v)); return b;
   }));
+  if (m.fachada) ed.querySelector('[data-lista="fachada"]').append(ed.querySelector('[data-bloco="frente"]'));
   aplicarPainelB(ed);                                                   // visual B: botões com desenho e − / + (tela/paineis/painel-b.js)
   preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela/paineis/ajuste.js)
   // "Construção e peças ajustadas" fica recolhido; abre sozinho se há peça ajustada e lembra se você abriu
@@ -14545,6 +14583,7 @@ $('form').addEventListener('change', e => {
   const k = e.target.dataset.modulo, kv = e.target.dataset.vao, v = e.target.value, cam = estado.vaoSel;
   if (k) mudarModulo(m => {
     if (['largura', 'altura', 'profundidade'].includes(k)) m[k] = Number(v);
+    if (k === 'modoFrentes') { if (v === 'independente') { m.fachada = m.fachadaGuardada || { frente:{tipo:'2portas'} }; delete m.fachadaGuardada; } else { m.fachadaGuardada = m.fachada; delete m.fachada; } }
     if (k === 'beiral') m.construcao = { ...m.construcao, beiral: Number(v) || 0 };
     if (k === 'metodo') { m.metodo = v; m.metodoAjustes = {}; }
     if (k === 'entrega') m.entrega = v;
@@ -14552,13 +14591,13 @@ $('form').addEventListener('change', e => {
     if (k === 'materialFrentes') m.materiais = { ...m.materiais, frentes: v };
   });
   if (kv) mudarModulo(m => {
-    const no = ED.no(m.raiz, cam);
+    const no = ED.no(m.raiz, cam), fechamento = m.fachada || no;
     if (kv === 'larg' || kv === 'alt') ED.definirMedida(m, e.target.dataset.cam, v);
-    if (kv === 'puxador') { if (v) no.puxador = v; else delete no.puxador; }
-    if (kv === 'lado') no.frente.lado = v;
-    if (kv === 'perfil') { if (v === 'auto') delete no.frente.perfil; else no.frente.perfil = v; }
-    if (kv === 'sistema') no.frente.sistema = v;
-    if (kv === 'abrirCorrer') { if (v === 'dir') no.frente.abrir = 'dir'; else delete no.frente.abrir; }
+    if (kv === 'puxador') { if (v) fechamento.puxador = v; else delete fechamento.puxador; }
+    if (kv === 'lado') fechamento.frente.lado = v;
+    if (kv === 'perfil') { if (v === 'auto') delete fechamento.frente.perfil; else fechamento.frente.perfil = v; }
+    if (kv === 'sistema') fechamento.frente.sistema = v;
+    if (kv === 'abrirCorrer') { if (v === 'dir') fechamento.frente.abrir = 'dir'; else delete fechamento.frente.abrir; }
     if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
     if (kv === 'largDiv') { const c = (no.conteudo || []).find(x => x.tipo === 'divisorias'); if (c) { c.larguras = [...(c.larguras || [])]; c.larguras[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'prat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { c.alturas = [...(c.alturas || [])]; c.alturas[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }

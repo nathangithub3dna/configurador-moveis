@@ -66,6 +66,7 @@ function gerarModuloV3(m, contrato = {}) {
   // o que as frentes e os conteúdos registrados enxergam do módulo
   Object.assign(ctx, { folga, eixos, mesmoEixo, regiao0, ventilacao, colunas, juntasFundo, regioes, dp, percorrer, vao,
     porta, prateleira, portasCorrer, basculante, gavetaExterna, gavetasInternas });
+  gerarFachada(ctx);
   percorrer(m.raiz, regiao0, 0);
 
   fazerFundoSobreposto(ctx);        // nucleo/fundo.js

@@ -40,7 +40,7 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'], [/^ponto-\d+$/, 'ponto'], [/^peca-teste$/, 'teste'],
   [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-g?\d+$/, 'prateleira-fixa'],
   [/^reforco-/, 'reforco'], [/^beiral-frontal$/, 'beiral-frontal'], [/^beiral-(esq|dir)$/, 'beiral-lateral'],
-  [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+$/, 'espacador'],
+  [/^enchimento-(esq|dir)$/, 'enchimento'], [/^sarrafo-(esq|dir)$/, 'sarrafo'], [/^espacador-\d+(-dir)?$/, 'espacador'],
   [/^porta-(esq|dir|\d+)$/, 'porta'], [/^porta-correr-\d+$/, 'porta-correr'], [/^porta-basculante-\d+$/, 'porta-basculante'],
   [/-kit-correr$/, 'kit-correr'], [/-desempenador-\d+$/, 'desempenador'], [/^trilho-(superior|inferior)-\d+$/, 'trilho-correr'], [/-pistao-\d+$/, 'pistao'], [/^gaveta-\d+-frente$/, 'frente-gaveta'],
   [/^gaveta-\d+-frente-interna$/, 'frente-interna-gaveta'], [/^gaveta-\d+-traseira$/, 'traseira-gaveta'],
@@ -68,4 +68,3 @@ const CATS = { caixa:'Caixa', enchimento:'Enchimento', frente:'Frentes', gaveta:
 
 const fmt = v => { const r = Math.round(v*10)/10; return Number.isInteger(r) ? String(r) : r.toFixed(1).replace('.', ','); };
 const fitaTxt = f => { const s = []; if (f[0]) s.push(f[0]+'C'); if (f[1]) s.push(f[1]+'L'); return s.length ? s.join(' ') : '—'; };
-

@@ -8,7 +8,9 @@
      de uma conversão guarda o original à parte (tela/salvar/nuvem.js, salvarNuvem); Drive e .json sempre criam arquivo novo.
    - Projeto de formato mais novo que este programa: não abre (abriria pela metade e perderia o que não entende).
    ===================================================================== */
-const FORMATO = { versao: 1, conversores: {} };
+// Formato 2: fechamento independente (fachada). Projetos antigos mantêm o modo por vão.
+// O marcador impede que versões antigas ignorem a fachada e gerem outras portas.
+const FORMATO = { versao: 2, conversores: { 1: p => p } };
 function converterFormato(d) {
   const de = Number.isInteger(d?.versao) && d.versao >= 1 ? d.versao : 1;
   if (de > FORMATO.versao) return { erro: 'mais-novo', de };

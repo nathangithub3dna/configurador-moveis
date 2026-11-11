@@ -1,5 +1,16 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Pedido 74 — portas independentes do interior (11/11/2026)
+
+Nathan pediu duas portas inteiras cobrindo também a sapateira inferior, mantendo os dois espaços superiores. Pediu pesquisar outros programas antes de decidir. Pesquisa e decisão em docs/portas-interior.md.
+
+- Implementado no Móvel livre e no editor do módulo do Ambiente: Portas e interior → Fechamento → Portas independentes do interior. Começa com 2 portas. A frente do módulo fica separada da árvore interna; dividir/juntar não corta as portas. Voltar a Portas por vão recupera as frentes guardadas nos vãos.
+- Esta etapa cobre o módulo inteiro, não grupos arbitrários de vãos. Registros de frente declaram suporte ao fechamento inteiro. Gavetas externas antigas geram erro orientando escolher gavetas internas; correr com gavetas internas exige resolver o acesso antes de fabricar. Espaçadores seguem os lados com dobradiças, inclusive ambos no vão largo.
+- HTML normal e offline gerados. Projeto aberto do Nathan não foi modificado automaticamente. Referências não foram atualizadas; publicação continua com Nathan.
+- Testes novos: reprodução da sapateira, preservação do interior, divisão e junção, redimensionamento, retorno ao modo anterior, JSON, identificação de peças e conflitos. Validação final: npm run testar terminou com **Todos os casos iguais à referência.**, código 0. Log local .ferramentas-codex/testar-fachada-final.log. Formato do projeto atualizado para 2 com preservação dos dados antigos e recusa pelos programas anteriores.
+- Onde parou: pedido 74 implementado na branch codex/portas-interior-independentes, baseada no PR #5. Próximo: retomar as pendências 0.9 e item 29 do lote abaixo. O lote das dez mudanças não está concluído.
+
+
 ## Pedido 73 — fonte escolhida (11/11/2026)
 
 Nathan escolheu a opção 2 dos três protótipos: Manrope nas letras e nos números. Aplicada nas variáveis do tema e embutida em fonte/fontes/manrope.css, com licença SIL OFL preservada, para funcionar também sem internet. Números de medidas usam alinhamento tabular. HTML normal e offline regenerados.

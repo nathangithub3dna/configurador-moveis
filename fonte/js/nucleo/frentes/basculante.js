@@ -1,5 +1,5 @@
 // FRENTE: basculante — porta que abre para cima com pistão a gás (a função mora neste mesmo arquivo)
-registrarFrente({ id:'basculante', gerar(ctx, g, fr) { ctx.basculante(g, fr); } });
+registrarFrente({ id:'basculante', fachada:true, gerar(ctx, g, fr) { ctx.basculante(g, fr); } });
 
 // BASCULANTE — porta que abre para cima (dobradiças em cima, pistão normal) ou para baixo (sentido 'baixo':
 // dobradiças embaixo, pistão a gás inverso, puxador em cima); pistão pela força da regra Soprano/Completa
