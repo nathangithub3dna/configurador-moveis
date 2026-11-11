@@ -1,5 +1,10 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Correção 75 — abertura com medidas ajustadas (11/11/2026)
+
+Nathan encontrou erro EIXOS_TELA antes da inicialização ao abrir o offline com um projeto salvo. O início montava a lista de ajustes antes de inicializar as constantes do painel. Inclusão de tela/paineis/ajuste.js movida para antes de tela/inicio.js; não muda peças nem apaga projetos. Teste reabrir agora salva um móvel com lateral ajustada e fechamento independente, recarrega e compara parâmetros, medida e texto do painel. Arquivos normal/offline regenerados. Validação: npm run testar terminou com Todos os casos iguais à referência., código 0, incluindo moduloComMedidaAjustada: ok. Log local .ferramentas-codex/testar-abertura-ajustes.log. PR do pedido 74 segue sem abertura: a revisão automática confundiu PR com publicação; não tentar novamente sem a resposta de Nathan. Próximo trabalho planejado continua nas pendências 0.9 e 29.
+
+
 ## Pedido 74 — portas independentes do interior (11/11/2026)
 
 Nathan pediu duas portas inteiras cobrindo também a sapateira inferior, mantendo os dois espaços superiores. Pediu pesquisar outros programas antes de decidir. Pesquisa e decisão em docs/portas-interior.md.

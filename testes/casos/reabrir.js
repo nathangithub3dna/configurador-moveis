@@ -21,6 +21,25 @@ module.exports = { id:'reabrir', descricao:"Reabrir projetos salvos no aparelho"
       const voltou = abriu ? await page.evaluate(() => window.__configurador.estado.projeto.tipo) : null;
       res[tipo] = abriu && voltou === tipo && errosRe.length === antes ? 'ok' : { abriu, voltou, erros: errosRe.slice(antes) };
     }
+    // Um ajuste de medida salvo usa EIXOS_TELA já durante a primeira montagem do editor.
+    await page.selectOption('#tipoMovel', 'modulo');
+    const ajustado = await page.evaluate(() => {
+      const c = window.__configurador, m = c.estado.projeto.parametros;
+      m.pecasAjuste = { 'lateral-esq': { nome:'Lateral esquerda', medidas:{ y:{ valor:2200, fixo:'fim' } } } };
+      m.fachada = { frente:{tipo:'2portas'} }; m.largura = 900;
+      c.atualizar();
+      return JSON.stringify(m);
+    });
+    const antesAjustado = errosRe.length;
+    await page.reload();
+    let abriuAjustado = true;
+    try { await page.waitForFunction(() => window.__configurador?.estado?.res, null, { timeout:20000 }); } catch (e) { abriuAjustado = false; }
+    const depoisAjustado = abriuAjustado ? await page.evaluate(() => ({
+      parametros:JSON.stringify(window.__configurador.estado.projeto.parametros),
+      texto:document.querySelector('[data-lista="ajustes"]')?.textContent,
+      altura:window.__configurador.estado.res.pecas.find(p=>p.id==='lateral-esq')?.box.slice(2,4),
+    })) : null;
+    res.moduloComMedidaAjustada = abriuAjustado && errosRe.length === antesAjustado && depoisAjustado.parametros === ajustado && /2200/.test(depoisAjustado.texto) && depoisAjustado.altura[1]-depoisAjustado.altura[0]===2200 ? 'ok' : { abriuAjustado, depoisAjustado, erros:errosRe.slice(antesAjustado) };
     await page.evaluate(() => { try { localStorage.clear(); } catch (e) {} });
     const okRe = tipos.length > 1 && Object.values(res).every(v => v === 'ok');
     if (!okRe) { falhas++; console.log('REABRIR COM PROJETO GUARDADO ERRADO  ' + JSON.stringify(res)); } else console.log('REABRIR COM PROJETO GUARDADO OK  ' + JSON.stringify(res));

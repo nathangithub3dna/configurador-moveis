@@ -21,6 +21,9 @@ async function main() {
     for (const id of escolha.selecionadas) {
       console.log('Área: ' + id);
       const ctx = await b.newContext({ viewport: { width: 1400, height: 900 } });
+      // O primeiro carregamento do Chromium com 3D pode passar de 30 s no Windows.
+      // Só amplia a espera de navegação; as verificações de funcionamento continuam iguais.
+      ctx.setDefaultNavigationTimeout(90000);
       try { falhas += await require('./casos/' + id).executar({ ctx, pagina, nm, raiz, ...escolha }); }
       finally { await ctx.close(); }
     }

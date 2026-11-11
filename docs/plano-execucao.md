@@ -213,3 +213,8 @@ funciona; arquitetura.md e CLAUDE.md descrevem a estrutura nova.
 Fechamento opcional do módulo em parametros.fachada; sem ele, comportamento anterior. frentes/fachada.js aplica o registro à região externa antes de percorrer a árvore. Frentes compatíveis declaram fachada:true. A árvore gera somente interiores quando há fachada. A tela reaproveita as escolhas do registro em Portas e interior e guarda a escolha ao alternar (fachadaGuardada). Gavetas internas consideram ambos os lados de dobradiça. Casos dedicados em testes/casos/fachada.js; referência anterior permanece intacta. Decisão e escopo em portas-interior.md.
 
 Formato 2 em base/formato.js: conversor do formato 1 preserva os dados; versões antigas recusam novos arquivos em vez de ignorar a fachada. Testes de formato mantêm a conferência de original preservado na nuvem.
+
+## Correção 75 — abertura com ajustes
+
+fonte/pagina.html inclui o painel ajuste antes de inicio para inicializar EIXOS_TELA e PAPEIS_COM_FUROS_PROPRIOS antes do primeiro carregarProjeto. Regressão em testes/casos/reabrir.js verifica parâmetros salvos, altura ajustada e rótulo do painel após recarregar.
+`testes/rodar.js` permite até 90 segundos na navegação inicial do Chromium (30 segundos eram insuficientes neste aparelho); critérios e comparações de funcionamento permanecem iguais.
