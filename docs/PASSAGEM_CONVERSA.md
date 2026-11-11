@@ -1,5 +1,21 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Fase 0.7 — concluída em 11/11/2026
+
+- Testes separados em dez áreas em testes/casos/. Comando completo preservado; filtros como npm run testar -- editor ou gabinete conferem só a área escolhida e avisam que a conferência é parcial. --listar mostra as opções. Guarda-roupa ainda não possui casos próprios.
+- Mesmas entradas e verificações; cada área abre um contexto independente. Ambiente mantém juntos os cenários encadeados. Referência ausente causa falha, sem criar padrão automaticamente. Nenhuma referência alterada.
+- Validação: npm run testar terminou com **Todos os casos iguais à referência.**, saída 0; filtro gabinete passou com quatro casos; cinco testes da seleção passaram. Logs locais: .ferramentas-codex/testar-07.log e testar-07-filtro.log.
+- Inclui o pedido 72 pendente: Espaços → Juntar com o vizinho → Dividir em mais espaços → campos do vão. HTML normal e offline regenerados e conferidos na suíte completa.
+- **Onde parou:** 0.7 concluído na branch codex/fase-0-7, baseada em codex/conteudos-separados (PR #3).
+- **Próximo:** 0.8 — barra superior no celular, manter o vão escolhido ao dividir e animação das frentes de correr/basculante na parede B. Não iniciado. Não publicar; Nathan publica pelo Claude.
+
+
+## Pedido 72 — juntar perto dos espaços (11/11/2026)
+
+- A ordem solicitada por Nathan é: Espaços → Juntar com o vizinho → Dividir em mais espaços → campos do vão. Mesmas ações e critérios para mostrar os vizinhos; apenas os blocos do template mudaram de posição.
+- Validação: `npm run testar` terminou com **Todos os casos iguais à referência.**, saída 0, incluindo juntar espaços pela tela. Referências intactas. Log local: `.ferramentas-codex/testar-juntar.log`. Esta alteração está no arquivo local; ainda não foi acrescentada ao PR #3.
+- Ajuste posterior: dividir foi movido para abaixo de juntar; montagem normal/offline e ordem do template conferidas. A suíte completa acima refere-se à mudança anterior de juntar. Próximo passo da Fase 0 continua sendo 0.7; não iniciado. Publicação continua com Nathan pelo Claude.
+
 ## Pedido 71 — conteúdos separados no editor (11/11/2026)
 
 - Nathan pediu e confirmou três opções separadas: **Vassoura e aspirador**, **Sapateira** e **Botijão**, retirando os botões dos conjuntos. Aplicado ao editor do Móvel livre e ao módulo aberto dentro do Ambiente.

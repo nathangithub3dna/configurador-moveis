@@ -798,6 +798,20 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <!-- mini desenho de frente: um botão por vão, na posição real (tela/paineis/modulo.js) -->
     <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
     <span class="ed-nota" data-texto="resumoVao"></span>
+    <div class="ed-sub" data-se="podeJuntar">Juntar com o vizinho</div>
+    <div class="ed-grade2">
+      <button type="button" class="btn ed-remover" data-acao="juntar-ant" data-se="podeAnt" data-texto="rotAnt"></button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-prox" data-se="podeProx" data-texto="rotProx"></button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="esq" data-se="geoEsq">← Esquerda</button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="dir" data-se="geoDir">Direita →</button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="baixo" data-se="geoBaixo">↓ De baixo</button>
+      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="cima" data-se="geoCima">↑ De cima</button>
+    </div>
+    <div class="ed-sub">Dividir em mais espaços</div>
+    <div class="ed-grade2">
+      <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
+      <button type="button" class="btn" data-acao="dividir-h">▤ Deitado</button>
+    </div>
   </fieldset>
   <fieldset class="ed-bloco ed-vao">
     <legend data-texto="titulo"></legend>
@@ -850,20 +864,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     <span class="ed-nota" data-se="conjuntoAntigo">Este vão mantém o conjunto já salvo. Escolher uma opção acima substitui o conteúdo deste vão.</span>
     <span class="ed-nota" data-se="sapateiraSozinha">Níveis para sapatos, de baixo para cima. "máx" = quantos couberem no vão; ajuste a altura e a quantidade de níveis.</span>
     <span class="ed-nota" data-se="sapateiraComVassoura">Sapateira embaixo, níveis de 220 mm; vassouras em pé sobre ela, com pelo menos 1,2 m livres até o teto do vão. "máx" = quantos couberem.</span>
-    <div class="ed-sub">Dividir em mais espaços</div>
-    <div class="ed-grade2">
-      <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
-      <button type="button" class="btn" data-acao="dividir-h">▤ Deitado</button>
-    </div>
-    <div class="ed-sub" data-se="podeJuntar">Juntar com o vizinho</div>
-    <div class="ed-grade2">
-      <button type="button" class="btn ed-remover" data-acao="juntar-ant" data-se="podeAnt" data-texto="rotAnt"></button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-prox" data-se="podeProx" data-texto="rotProx"></button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="esq" data-se="geoEsq">← Esquerda</button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="dir" data-se="geoDir">Direita →</button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="baixo" data-se="geoBaixo">↓ De baixo</button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="cima" data-se="geoCima">↑ De cima</button>
-    </div>
+
   </fieldset>
   <details class="ed-mais">
     <summary>Construção e peças ajustadas</summary>
