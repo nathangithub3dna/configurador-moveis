@@ -1,3 +1,19 @@
+# Estrutura atual — 11/11/2026
+
+O configurador é montado a partir de fonte/pagina.html, templates em fonte/telas, estilos em fonte/estilos e lógica em fonte/js. Os arquivos configurador.html e configurador-offline.html são gerados; nunca editar à mão.
+
+- nucleo/gerar-modulo.js coordena a geração; caixa, árvore, conteúdos, frentes, fundo, acabamento e ferragens ficam em arquivos próprios.
+- nucleo/registro.js registra conteúdos e frentes. Cada novo conteúdo ou frente declara também suas escolhas para o editor.
+- formularios/ converte Gabinete e Armário para o núcleo e preserva seus contratos antigos. geradores.js foi removido.
+- tela/3d, tela/paineis e tela/salvar concentram os respectivos comportamentos. editor-modulo.js altera a árvore sem conhecer a tela.
+- dados/ guarda materiais, puxadores, biblioteca e métodos. As saídas continuam consumindo a lista única de peças com papéis explícitos.
+- testes/casos separa dez áreas. npm run testar é obrigatório antes de commit; filtros são apenas conferências parciais. Referências não podem ser atualizadas sem autorização de Nathan.
+- Não publicar; Nathan publica pelo Claude. O arquivo offline é gerado localmente com as bibliotecas embutidas.
+
+A especificação abaixo é histórica; os caminhos atuais acima prevalecem. A skill externa do Claude ainda precisa ser localizada para atualização.
+
+---
+
 Arquitetura do configurador — especificação (06/11/2026, revisada)
 
 Revisão de 06/11/2026 (depois do questionário e da pesquisa profunda):

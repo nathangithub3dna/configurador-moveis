@@ -101,7 +101,7 @@ tamburato (Promob).
 Painel fixo e frente falsa; fecho toque em porta e gaveta.
 Veio contínuo entre frentes vizinhas.
 Ajuste de dobradiça por porta: quantidade, posição, recuo (DinaBox).
-Puxador por vão: modelo + posição juntos, "usar em todos os vãos", altura (em cima/meio/embaixo), "abre para baixo", "sem puxador (fecho toque)". Já combinado em 10/11.
+Puxador por vão: **em andamento (11/11): escolha de modelo por vão e herança do móvel implementadas.** Restante: modelo + posição juntos, "usar em todos os vãos", altura (em cima/meio/embaixo), "abre para baixo", "sem puxador (fecho toque)". Já combinado em 10/11.
 Corrediça oculta (undermount) e gaveta metálica tipo Tandembox (Mozaik, Promob).
 Junção confirmat; mão-francesa, cantoneira, suporte invisível na biblioteca.
 D. Construção
@@ -198,3 +198,5 @@ Cabinet Vision (Hexagon)
 Gabster (Portal Software)
 Comparativo de 12 programas (2026)
 Pesquisa de 06/11: claude/pesquisa-base-parametrica.md
+
+73. ✅ 11/11/2026 — Manrope nos textos e números (opção 2 escolhida por Nathan), embutida para funcionar offline; dígitos alinhados nas medidas.

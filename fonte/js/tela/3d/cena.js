@@ -128,7 +128,7 @@ function construirCena(res) {
     if (pc.cat !== 'tampo') mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g, 25), matLinha));
     const wrapper = new THREE.Group(), mover = new THREE.Group();
     if (pc.mov?.tipo === 'porta') { mover.position.set(pc.mov.pivX, 0, pc.mov.pivZ); mesh.position.set(-pc.mov.pivX, 0, -pc.mov.pivZ); }
-    if (pc.mov?.tipo === 'basculante') { mover.position.set(0, pc.mov.pivY, pc.mov.pivZ); mesh.position.set(0, -pc.mov.pivY, -pc.mov.pivZ); }   // gira na borda do eixo (em cima; embaixo se abre para baixo)
+    if (pc.mov?.tipo === 'basculante') { mover.position.set(pc.mov.pivX || 0, pc.mov.pivY, pc.mov.pivZ); mesh.position.copy(mover.position).multiplyScalar(-1); }   // gira na borda do eixo (em cima; embaixo se abre para baixo)
     mover.add(mesh); wrapper.add(mover); raiz.add(wrapper);
     const cExp = centro(pc.expPai ? porId.get(pc.expPai) : pc);
     nos.set(pc.id, { pc, mesh, wrapper, mover, dirExp: cExp.sub(mid), ang:0, slide:0 });

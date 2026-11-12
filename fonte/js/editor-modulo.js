@@ -33,8 +33,9 @@ const ED = {
   // dividir: na mesma direção da divisão de fora, só ganha mais uma parte; senão vira uma divisão nova
   dividir(m, cam, dir) {
     const no = ED.no(m.raiz, cam), info = ED.parte(m, cam);
-    if (info && info.divisao.dir === dir) { info.divisao.partes.splice(ED.pai(cam).i + 1, 0, { medida: 'auto', no: ED.copiaVao(no) }); return; }
+    if (info && info.divisao.dir === dir) { info.divisao.partes.splice(ED.pai(cam).i + 1, 0, { medida: 'auto', no: ED.copiaVao(no) }); return cam; }
     ED.trocar(m, cam, { tipo: 'dividir', dir, sep: 'divisoria', partes: [{ medida: 'auto', no }, { medida: 'auto', no: ED.copiaVao(no) }] });
+    return cam + '.0';
   },
   // a parte nova de uma divisão nasce igual ao vão dividido (frente e conteúdo), para não perder o que já foi escolhido
   copiaVao(no) { return no?.tipo === 'vao' ? JSON.parse(JSON.stringify(no)) : ED.vaoNovo(); },

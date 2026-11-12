@@ -81,13 +81,13 @@ Fase 0 primeiro, depois o puxador por vão, a 1c-i e o bloco 1;
 0.5 ✅ implementado em 10/11/2026 (b22df6b; teste completo igual no Codex em 11/11/2026 com Chromium 151)	Editor do vão montado pelo registro (campos de cada conteúdo e frente vêm do arquivo dele); templates em fonte/telas/	tela/paineis/vao.js, telas/*.html	M
 0.6	✅ Feito 11/11/2026 — formulários do Gabinete e do Armário montam pelo núcleo; geradores.js removido. Adaptadores em formularios/ conservam listas, nomes, ordem e validações; contrato do núcleo preserva fundo, dobradiças, furação e puxadores. npm run testar: Todos os casos iguais à referência. Referências intactas. Sem publicação.	formularios/*.js, nucleo/*, tipos.js; geradores.js removido	M
 0.7	✅ Feito 11/11/2026 — testes separados em dez áreas, filtros por área e formulário, --listar; conferência parcial identificada. Teste completo obrigatório passou: Todos os casos iguais à referência. Referências intactas.	testes/**	P
-0.8	Defeitos conhecidos: barra de cima do celular; vão escolhido volta ao Vão 1 ao dividir; correr e basculante da parede B sem animação	tela/**	P
-0.9	Atualizar arquitetura.md, CLAUDE.md e a skill com a estrutura nova; cabeçalho curto em cada arquivo dizendo o que ele faz	docs	P
+0.8 ✅ Implementado em 11/11/2026 — seleção preservada, cabeçalho responsivo e movimento da parede B.	Defeitos conhecidos: barra de cima do celular; vão escolhido volta ao Vão 1 ao dividir; correr e basculante da parede B sem animação	tela/**	P
+0.9 EM ANDAMENTO — arquitetura e instruções atualizadas; falta localizar a skill externa.	Atualizar arquitetura.md, CLAUDE.md e a skill com a estrutura nova; cabeçalho curto em cada arquivo dizendo o que ele faz	docs	P
 
 Pendências curtas antes do bloco 1 (podem ir junto com a Fase 0):
 
 aprovação da 1c-i;
-item 29 (puxador por vão: frentes/puxador.js + painel do vão), custo M.
+item 29 EM ANDAMENTO — escolha do modelo por vão implementada; faltam aplicar a todos, altura e sem puxador/fecho toque (puxador por vão: frentes/puxador.js + painel do vão), custo M.
 Blocos (ordem aprovada; dentro de cada bloco, do mais barato ao mais caro)
 Bloco 1 — Guarda-roupa (≈ 3 conversas)
 Item	Onde	Custo

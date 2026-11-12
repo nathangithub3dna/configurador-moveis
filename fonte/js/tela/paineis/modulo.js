@@ -41,6 +41,9 @@ function montarEditorModulo() {
     e.value = valor[k];
   });
 
+  const selPuxador = ed.querySelector('[data-vao="puxador"]');
+  selPuxador.replaceChildren(el('option', {value:''}, 'Usar o padrão do móvel'), ...Object.entries(PUXADORES).map(([k,p]) => el('option', {value:k}, p.rot)));
+  selPuxador.value = no.puxador || '';
   // vão escolhido
   const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
   preencherModelo(ed, {
@@ -48,7 +51,7 @@ function montarEditorModulo() {
     medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
     rotLarg: 'Largura por dentro (mm ou auto)', rotAlt: 'Altura na frente (mm ou auto)',   // é assim que o núcleo lê cada uma (coluna: vão livre; faixa deitada: altura da frente)
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
-    perfil: m.puxadorPorta?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
+    perfil: (PUXADORES[no.puxador] || m.puxadorPorta)?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
     divisorias: tipoCt === 'divisorias', nDiv: (no.conteudo || []).find(c => c.tipo === 'divisorias')?.n ?? 0,
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
@@ -157,8 +160,8 @@ $('form').addEventListener('click', e => {
     if (a === 'gav-menos') ED.gavetas(m, cam, -1);
     if (a === 'sap-mais') ED.niveisSapateira(m, cam, 1);
     if (a === 'sap-menos') ED.niveisSapateira(m, cam, -1);
-    if (a === 'dividir-v') ED.dividir(m, cam, 'v');
-    if (a === 'dividir-h') ED.dividir(m, cam, 'h');
+    if (a === 'dividir-v') estado.vaoSel = ED.dividir(m, cam, 'v');
+    if (a === 'dividir-h') estado.vaoSel = ED.dividir(m, cam, 'h');
     if (a === 'remover' && ED.remover(m, cam)) estado.vaoSel = null;
     if (a === 'juntar-geo') {
       const regs = resultadoLocal()?.vaos || [], t = m.construcao?.espMDF ?? 18, b2 = ED.vizinhoGeo(regs, cam, b.dataset.lado, t);
@@ -186,6 +189,7 @@ $('form').addEventListener('change', e => {
   if (kv) mudarModulo(m => {
     const no = ED.no(m.raiz, cam);
     if (kv === 'larg' || kv === 'alt') ED.definirMedida(m, e.target.dataset.cam, v);
+    if (kv === 'puxador') { if (v) no.puxador = v; else delete no.puxador; }
     if (kv === 'lado') no.frente.lado = v;
     if (kv === 'perfil') { if (v === 'auto') delete no.frente.perfil; else no.frente.perfil = v; }
     if (kv === 'sistema') no.frente.sistema = v;

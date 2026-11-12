@@ -11,8 +11,8 @@
   --v-bg:#e9edf2; --v-linha:#28323a; --v-caixa:#e6e9ec; --v-frente:#fbfbf9; --v-gaveta:#cfd7de; --v-fundo:#b7c0c7;
   --v-enchimento:#d6dccf; --v-ferragem:#6f7a82; --v-tampo:#f2f3f4; --v-parede:#c9cfd3; --v-grade:#b8c0c5; --v-esgoto:#d0503a; --v-referencia:#9fb3c8; --v-livre:#dccbb2;
   --fita:#c4650f;
-  --f-sans:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --f-sans:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   /* neomorfismo escuro: mesma ideia do claro, com sombras escuras e brilho discreto */
@@ -32,3 +32,6 @@
   --v-enchimento:#7a8775; --v-ferragem:#c1c8cd; --v-tampo:#b9c0c5; --v-parede:#2b333a; --v-grade:#36414a; --v-esgoto:#e0664f; --v-referencia:#5f7387; --v-livre:#8c7c64;
   --fita:#f0a050;
   color-scheme:dark}
+
+/* Mesma fonte nos textos e medidas; dígitos alinhados nas comparações. */
+input[type="number"],.mono,.num{font-variant-numeric:tabular-nums}

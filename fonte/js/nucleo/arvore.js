@@ -48,8 +48,12 @@ function percorrerArvore(ctx, no, g, nivel, cam = '') {
 function vaoDaArvore(ctx, no, g) {
   const { cont } = ctx;
   const V = ++cont.vao, fr = no.frente || { tipo:'nenhuma' };
+  const moduloOriginal = ctx.m;
+  if (no.puxador && PUXADORES[no.puxador]) { const px = PUXADORES[no.puxador]; ctx.m = { ...ctx.m, puxadorPorta:{ ...px, altura:ctx.m.puxadorPorta?.altura ?? 1050 }, puxadorGaveta:{ ...px } }; }
+  try {
   // FRENTE e CONTEÚDO (de baixo para cima) vêm do registro: nucleo/frentes/*.js e nucleo/conteudos/*.js
   const ladoFrente = FRENTES[fr.tipo] ? FRENTES[fr.tipo].gerar(ctx, g, fr, V) || null : null;
   const est = { g, V, y:g.iy0, kPrat:0, ladoFrente, x0:g.ix0, x1:g.ix1, w:g.ix1 - g.ix0, xm:(g.ix0 + g.ix1)/2 };
   for (const ct of (no.conteudo || [])) CONTEUDOS[ct.tipo]?.gerar(ctx, ct, est);
+  } finally { ctx.m = moduloOriginal; }
 }
