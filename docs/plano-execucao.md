@@ -1,6 +1,6 @@
 Plano de execução e arquitetura — plano mestre (10/11/2026)
 
-Complementa claude/plano-mestre.md. Aquele diz o que falta, com 70 itens numerados. Este diz onde cada função mora no código, quanto custa e em que ordem fazer.
+Complementa docs/plano-mestre.md. Aquele diz o que falta, com 70 itens numerados. Este diz onde cada função mora no código, quanto custa e em que ordem fazer.
 
 Conclusão
 
@@ -78,7 +78,7 @@ Fase 0 primeiro, depois o puxador por vão, a 1c-i e o bloco 1;
 0.2	Versão do formato do projeto + conversor passo a passo (não existe hoje [Provável]). Projetos da nuvem, do Drive e .json antigos continuam abrindo; o original nunca é sobrescrito. Base para U, vários ambientes etc.	base/formato.js, tela/salvar/*	M
 0.3	Separar o núcleo: roteiro + caixa + árvore + frentes + conteúdos + ferragens + fundo + ajustes + validações, com registro. Saída igual	nucleo/**	G
 0.4	Separar a tela: 3D, seleção/cotas, menus, listas, salvar (local/json/nuvem/Drive), exportar. Comportamento igual	tela/**	G
-0.5	Editor do vão montado pelo registro (campos de cada conteúdo e frente vêm do arquivo dele); templates em fonte/telas/	tela/paineis/vao.js, telas/*.html	M
+0.5 ✅ implementado em 10/11/2026 (b22df6b; teste completo igual no Codex em 11/11/2026 com Chromium 151)	Editor do vão montado pelo registro (campos de cada conteúdo e frente vêm do arquivo dele); templates em fonte/telas/	tela/paineis/vao.js, telas/*.html	M
 0.6	Aposentar os geradores antigos (Gabinete e Armário de formulário): o formulário vira um atalho que monta o módulo do núcleo. Os testes de referência já provam que dão igual. Sem isso, cada conteúdo novo teria de ser feito duas vezes.	geradores.js → sai; tipos.js vira modelos	M
 0.7	Testes separados por área + teste rápido (npm run testar -- guarda-roupa roda só os casos daquela área); teste completo continua obrigatório antes de gravar	testes/**	P
 0.8	Defeitos conhecidos: barra de cima do celular; vão escolhido volta ao Vão 1 ao dividir; correr e basculante da parede B sem animação	tela/**	P
@@ -197,8 +197,8 @@ Exportar o pacote do Blender e o PDF: mesmas páginas de antes.
 No celular: a barra de cima cabe na tela; dividir um vão mantém o vão escolhido.
 Escolher o tipo "Armário com vãos" no formulário: abre o mesmo armário de antes, agora pelo núcleo.
 Prompt de implementação (Fase 0)
-Projeto: Configurador de Móveis (nathangithub3dna/configurador-moveis). Ler CLAUDE.md, claude/plano-mestre.md
-e claude/plano-execucao.md. Fazer a Fase 0, um passo por vez (0.1 → 0.9), sem mudar comportamento.
+Projeto: Configurador de Móveis (nathangithub3dna/configurador-moveis). Ler CLAUDE.md, docs/plano-mestre.md
+e docs/plano-execucao.md. Fazer a Fase 0, um passo por vez (0.1 → 0.9), sem mudar comportamento.
 Objetivo: separar nucleo.js, tela.js, geradores.js e testes/rodar.js em arquivos pequenos com registro
 (conteúdos, frentes, elementos do ambiente, saídas), conforme a estrutura alvo e os contratos do plano.
 Regras: npm run testar igual em todos os casos a cada passo; nenhuma referência atualizada na Fase 0

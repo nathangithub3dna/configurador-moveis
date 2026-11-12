@@ -1,5 +1,18 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Conferência no Codex — 11/11/2026
+
+- Base consultada: `main` em `d00bb96` (documentos enviados pelo Nathan recebidos). O passo **0.5 já está implementado** no commit `b22df6b`, posterior ao `06f39bc` informado no pedido. Não foi refeito nem houve mudança no comportamento do programa nesta conferência.
+- Conferido no código: escolhas, rótulos e ordem do editor vêm do registro; cada frente/conteúdo declara sua aplicação; reconhecimento do conteúdo e desenhos do painel B consultam esse registro; modelos da tela ficam em `fonte/telas/`.
+- Criado `AGENTS.md` a partir de `CLAUDE.md`, com referências em `docs/` e a instrução: **não publicar; o Nathan publica pelo Claude**.
+- Os planos enviados pelo Nathan foram lidos e organizados: `planomestre.md` → `docs/plano-mestre.md`, `planoexecucao.md` → `docs/plano-execucao.md`, `arquitetura.md` → `docs/arquitetura.md`, `planoreestruturacao.md` → `docs/plano-reestruturacao.md`. O 0.5 foi marcado como implementado no commit existente `b22df6b`, com teste completo igual no Codex em 11/11/2026.
+- **Validação:** `npm run testar` terminou com **“Todos os casos iguais à referência.”**, código de saída 0, em 11/11/2026, usando Chromium 151.0.7922.34 no Windows. Nenhuma referência ou dependência do projeto foi alterada. Ferramentas portáteis foram preparadas em `.ferramentas-codex/` após autorização do Nathan; essa pasta está ignorada pelo Git.
+- **Compatibilidade dos testes:** a primeira execução, com Chromium 130.0.6723.31, falhou no caso PEÇAS LIVRES PELA TELA (1b), com erros de `replaceChildren` durante a troca de foco. A mesma suíte passou integralmente com Chromium 151, sem mudar o aplicativo ou as verificações. O mecanismo de busca de navegador alternativo em `testes/rodar.js` passou a reconhecer também `chrome-win64/chrome.exe` e `chrome-win/chrome.exe`; os caminhos Linux continuam disponíveis. A falha no navegador antigo não foi corrigida no aplicativo.
+- **Como repetir neste ambiente (PowerShell):** definir `$env:PLAYWRIGHT_BROWSERS_PATH = Join-Path $PWD '.ferramentas-codex/navegadores-atuais'` e executar `node .ferramentas-codex/package/bin/npm-cli.js run testar` (o comando npm portátil). Log local: `.ferramentas-codex/testar-atual.log`.
+- **Onde parou:** 0.5 conferido, documentos organizados e teste completo aprovado; alterações preparadas para revisão em PR. Nenhuma publicação ou mudança de comportamento do configurador.
+- **Próximo passo do plano:** 0.6 — formulários do Gabinete e do Armário montados pelo núcleo, retirando o gerador antigo somente se os testes continuarem iguais. Não iniciado nesta solicitação. Revisar o PR desta conferência antes de continuar. **Não publicar; o Nathan publica pelo Claude.**
+
+
 ## Onde paramos
 - **Plano mestre aprovado:** `claude/plano-mestre.md` no projeto. É a revisão completa do programa contra o mercado (Mozaik, Promob, DinaBox, Polyboard, Cabinet Vision…), com 70 itens por área e blocos em ordem.
   - O Nathan: "isso é o que vamos seguir de agora em diante, esse documento é muito importante".
