@@ -848,7 +848,9 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       <button type="button" class="btn" data-acao="sap-mais" aria-label="Mais um nível">+</button>
     </div>
     <label class="ed-linha" data-se="sapateira">Altura de cada nível (mm)<input type="number" inputmode="decimal" data-vao="nivelSap"></label>
-    <span class="ed-nota" data-se="sapateira">Sapateira embaixo, níveis de 220 mm; vassouras em pé sobre ela, com pelo menos 1,2 m livres até o teto do vão. "máx" = quantos couberem.</span>
+    <span class="ed-nota" data-se="conjuntoAntigo">Este vão mantém o conjunto já salvo. Escolher uma opção acima substitui o conteúdo deste vão.</span>
+    <span class="ed-nota" data-se="sapateiraSozinha">Níveis para sapatos, de baixo para cima. "máx" = quantos couberem no vão; ajuste a altura e a quantidade de níveis.</span>
+    <span class="ed-nota" data-se="sapateiraComVassoura">Sapateira embaixo, níveis de 220 mm; vassouras em pé sobre ela, com pelo menos 1,2 m livres até o teto do vão. "máx" = quantos couberem.</span>
     <div class="ed-sub">Dividir em mais espaços</div>
     <div class="ed-grade2">
       <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
@@ -10626,9 +10628,14 @@ registrarConteudo({ id:'botijao', gerar(ctx, ct, est) {
   est.y = y;
 } });
 
-registrarEscolha({ grupo:'conteudo', id:'gavetas+botijao', rotulo:'Botijão + gavetas', ordem:60, prioridade:10, icone:'<rect x="4" y="3" width="26" height="34"/><rect x="7" y="6" width="20" height="5"/><rect x="11" y="18" width="12" height="17" rx="5"/>',
-  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'botijao'),
+registrarEscolha({ grupo:'conteudo', id:'gavetas+botijao', legado:true, rotulo:'Botijão + gavetas', ordem:60, prioridade:10, icone:'<rect x="4" y="3" width="26" height="34"/><rect x="7" y="6" width="20" height="5"/><rect x="11" y="18" width="12" height="17" rx="5"/>',
+  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'botijao') && (no.conteudo || []).some(c => c.tipo === 'gavetas-internas'),
   aplicar(no, m) { no.conteudo = [{ tipo: 'botijao', altura: TIPOS.armario.padrao.alturaBotijao }, ...gavetasEAcima(m)]; } });
+
+registrarEscolha({ grupo:'conteudo', id:'botijao', rotulo:'Botijão', ordem:60, prioridade:11,
+  icone:'<rect x="4" y="3" width="26" height="34"/><rect x="10" y="14" width="14" height="20" rx="5"/><path d="M14 14v-4h6v4M4 7h26"/>',
+  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'botijao'),
+  aplicar(no) { no.conteudo = [{ tipo:'botijao', altura:TIPOS.armario.padrao.alturaBotijao }]; } });
 // CONTEÚDO DO VÃO: divisorias — divisórias em pé dentro do vão; largura de cada espaço digitada ou repartida por igual
 // ctx = medidas e funções do módulo (nucleo/gerar-modulo.js); est = o vão e o que já foi ocupado de baixo para cima
 registrarConteudo({ id:'divisorias', gerar(ctx, ct, est) {
@@ -10789,6 +10796,25 @@ const avisoSapateira = (V, sap) => [
   `Vão ${V}: sapateira embaixo com ${sap.n} níve${sap.n > 1 ? 'is' : 'l'} de ${fmt(sap.h)} mm; vassouras em cima, com ${fmt(sap.livre)} mm livres.`,
   ...(sap.pedido > sap.cabe ? [`Vão ${V}: pediu ${Math.round(sap.pedido)} níveis na sapateira, mas com as vassouras em cima (${fmt(sap.livreVassoura)} mm) só cabem ${sap.cabe}.`] : []) ];
 
+// Sapateira independente: usa o vão inteiro, sem reservar espaço para vassouras.
+registrarConteudo({ id:'sapateira', gerar(ctx, ct, est) {
+  const { g, V } = est, nivel = Number(ct.nivel), max = Number(ct.max) || 0;
+  if (!(nivel > 0) || !Number.isFinite(nivel)) { ctx.E.push(`Vão ${V}: informe uma altura positiva para os níveis da sapateira.`); return; }
+  const sap = sapateiraEmbaixo(est.y, g.iy1, ctx.t, nivel, max, 0);
+  if (!sap.n) ctx.E.push(`Vão ${V}: não cabe um nível de ${fmt(nivel)} mm na sapateira.`);
+  if (max > sap.cabe) ctx.A.push(`Vão ${V}: pediu ${Math.round(max)} níveis na sapateira, mas só cabem ${sap.cabe}.`);
+  sap.ys.forEach(y => ctx.prateleira(g, V, ++est.kPrat, y, `Prateleira ${est.kPrat} da sapateira`));
+  est.y = sap.piso;
+} });
+registrarEscolha({ grupo:'conteudo', id:'sapateira', rotulo:'Sapateira', ordem:40, prioridade:29,
+  icone:'<rect x="4" y="3" width="26" height="34"/><path d="M4 12h26M4 23h26M4 34h26M9 9h7l-2-3M19 20h7l-2-3M9 31h7l-2-3"/>',
+  reconhece: no => (no.conteudo || []).some(c => c.tipo === 'sapateira'),
+  aplicar(no) { no.conteudo = [{ tipo:'sapateira', nivel:TIPOS.armario.padrao.alturaNivelSapateira, max:0 }]; } });
+
+// Permite editar a sapateira independente e os conjuntos de projetos antigos.
+function sapateiraDoVao(no) {
+  return (no.conteudo || []).find(c => c.tipo === 'sapateira') || (no.conteudo || []).find(c => c.sapateira)?.sapateira;
+}
 // CONTEÚDO DO VÃO: vassoura — vão de vassouras: prateleira alta (ou sapateira embaixo), suportes, gancho e réguas de reforço
 // ctx = medidas e funções do módulo (nucleo/gerar-modulo.js); est = o vão e o que já foi ocupado de baixo para cima
 registrarConteudo({ id:'vassoura', gerar(ctx, ct, est) {
@@ -10817,7 +10843,7 @@ registrarConteudo({ id:'vassoura', gerar(ctx, ct, est) {
 registrarEscolha({ grupo:'conteudo', id:'vassoura', rotulo:'Vassoura e aspirador', ordem:30, prioridade:31, icone:'<rect x="4" y="3" width="26" height="34"/><line x1="4" y1="9" x2="30" y2="9"/><line x1="12" y1="12" x2="12" y2="34"/><path d="M9 34h6"/><line x1="22" y1="12" x2="22" y2="30"/>',
   reconhece: no => (no.conteudo || []).some(c => c.tipo === 'vassoura'),
   aplicar(no) { const P = TIPOS.armario.padrao; no.conteudo = [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura }]; } });
-registrarEscolha({ grupo:'conteudo', id:'vassoura+sapateira', rotulo:'Vassoura + sapateira', ordem:40, prioridade:30, icone:'<rect x="4" y="3" width="26" height="34"/><line x1="12" y1="5" x2="12" y2="22"/><line x1="4" y1="25" x2="30" y2="25"/><line x1="4" y1="31" x2="30" y2="31"/>',
+registrarEscolha({ grupo:'conteudo', id:'vassoura+sapateira', legado:true, rotulo:'Vassoura + sapateira', ordem:40, prioridade:30, icone:'<rect x="4" y="3" width="26" height="34"/><line x1="12" y1="5" x2="12" y2="22"/><line x1="4" y1="25" x2="30" y2="25"/><line x1="4" y1="31" x2="30" y2="31"/>',
   reconhece: no => (no.conteudo || []).some(c => c.tipo === 'vassoura') && (no.conteudo || []).some(c => c.sapateira),
   aplicar(no) { const P = TIPOS.armario.padrao; no.conteudo = [{ tipo: 'vassoura', alturaPrat: P.alturaPratVassoura, sapateira: { nivel: P.alturaNivelSapateira, max: P.niveisSapateira } }]; } });
 /* CAIXA DO MÓDULO — laterais, base, topo (inteiro ou travessas), rodapé, beiral e fundo em rasgo.
@@ -13050,7 +13076,7 @@ function pecaDeTeste() {
    ===================================================================== */
 // listas do painel do vão: vêm das escolhas registradas (nucleo/registro.js, frentes/*.js, conteudos/*.js)
 const FRENTES_EDITOR = escolhasDe('frente').map(e => [e.id, e.rotulo]);
-const CONTEUDOS_EDITOR = escolhasDe('conteudo').map(e => [e.id, e.rotulo]);
+const CONTEUDOS_EDITOR = escolhasDe('conteudo').filter(e => !e.legado).map(e => [e.id, e.rotulo]);
 const ED = {
   indices: cam => cam.split('.').filter(Boolean).map(Number),
   no(raiz, cam) { return ED.indices(cam).reduce((n, i) => n.partes[i].no, raiz); },
@@ -13184,8 +13210,8 @@ const ED = {
   },
   // níveis da sapateira: 0 = quantos couberem; menos que 0 não existe
   niveisSapateira(m, cam, delta) {
-    const c = (ED.no(m.raiz, cam).conteudo || []).find(x => x.sapateira);
-    if (c) c.sapateira.max = Math.max(0, (c.sapateira.max || 0) + delta);
+    const c = sapateiraDoVao(ED.no(m.raiz, cam));
+    if (c) c.max = Math.max(0, (c.max || 0) + delta);
   },
   // divisórias em pé dentro do vão: no mínimo 1 (sem divisória, escolha outro conteúdo)
   divisorias(m, cam, delta) {
@@ -13200,7 +13226,7 @@ const ED = {
     const fr = (FRENTES_EDITOR.find(f => f[0] === no.frente?.tipo) || ['', 'Nada'])[1];
     const t = ED.tipoConteudo(no), pr = (no.conteudo || []).find(x => x.tipo === 'prateleiras');
     const dv = (no.conteudo || []).find(x => x.tipo === 'divisorias');
-    const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (CONTEUDOS_EDITOR.find(c => c[0] === t) || ['', ''])[1].toLowerCase();
+    const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (ESCOLHAS.conteudo[t]?.rotulo || '').toLowerCase();
     return fr + ' · ' + ct;
   },
   resumoDivisao: no => `Dividido ${no.dir === 'v' ? 'em pé' : 'deitado'} em ${no.partes.length}`,
@@ -13270,7 +13296,7 @@ function comDesenhoB(botao, chave) { if (!ICONES_B[chave] || botao.querySelector
 function selectEmBotoesB(sel, campo, rotulos = {}) {
   if (!sel) return;
   const caixa = el('div', { class:'ed-grade-b', role:'group', 'aria-label': sel.getAttribute('aria-label') || sel.closest('label')?.firstChild?.textContent?.trim() || campo });
-  [...sel.options].forEach(o => {
+  [...sel.options].filter(o => !o.hidden).forEach(o => {
     const b = el('button', { type:'button', class:'btn ed-op ed-op-b', 'aria-pressed': String(o.value === sel.value) });
     b.innerHTML = svgB(campo + ':' + o.value); b.append(el('span', { text: rotulos[o.value] || o.textContent }));
     b.addEventListener('click', () => { if (sel.value === o.value) return; sel.value = o.value; sel.dispatchEvent(new Event('change', { bubbles:true })); });
@@ -13301,7 +13327,7 @@ function aplicarPainelB(ed) {
   selectEmBotoesB(ed.querySelector('[data-vao="lado"]'), 'lado', { dir:'À esquerda', esq:'À direita' });
   selectEmBotoesB(ed.querySelector('[data-vao="perfil"]'), 'perfil', { lateral:'Na lateral' });
   selectEmBotoesB(ed.querySelector('[data-vao="abrirCorrer"]'), 'abrirCorrer', { esq:'Libera a esquerda', dir:'Libera a direita' });
-  selectEmBotoesB(ed.querySelector('[data-vao="conteudo"]'), 'conteudo', { 'vassoura+sapateira':'Vassoura + sapateira', 'gavetas+botijao':'Botijão + gavetas' });
+  selectEmBotoesB(ed.querySelector('[data-vao="conteudo"]'), 'conteudo');
   ed.querySelectorAll('[data-modulo="largura"],[data-modulo="altura"],[data-modulo="profundidade"],[data-modulo="beiral"]').forEach(i => numeroComPassosB(i));
 }
 /* =====================================================================
@@ -14371,9 +14397,9 @@ function montarEditorModulo() {
       const cobre = { esq: v && podeAnt, dir: v && podeProx, baixo: !v && !!pa && podeAnt, cima: !v && !!pa && podeProx };
       const geo = Object.fromEntries(['esq', 'dir', 'baixo', 'cima'].map(l => ['geo' + l[0].toUpperCase() + l.slice(1), !cobre[l] && temG(l)]));
       return { podeAnt, podeProx, podeJuntar: (!!pa && n > 1) || Object.values(geo).some(Boolean), rotAnt: v ? '← Esquerda' : '↓ De baixo', rotProx: v ? 'Direita →' : '↑ De cima', ...geo }; })(),
-    gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'gavetas+botijao',
+    gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'botijao' || tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
-    sapateira: tipoCt === 'vassoura+sapateira', nSap: (() => { const s = (no.conteudo || []).find(c => c.sapateira)?.sapateira; return s?.max ? String(s.max) : 'máx'; })(),
+    sapateira: !!sapateiraDoVao(no), sapateiraSozinha: tipoCt === 'sapateira', sapateiraComVassoura: tipoCt === 'vassoura+sapateira', conjuntoAntigo: !!ESCOLHAS.conteudo[tipoCt]?.legado, nSap: (() => { const s = sapateiraDoVao(no); return s?.max ? String(s.max) : 'máx'; })(),
     resumoMovel: espacos[0]?.divisao ? ED.resumoDivisao(espacos[0].no) : 'um vão só', resumoVao: `Vão ${sel.num}: ${ED.resumo(no)}`,
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
   });
@@ -14423,7 +14449,7 @@ function montarEditorModulo() {
   const gavNo = (no.conteudo || []).find(c => c.tipo === 'gavetas-internas'), botNo = (no.conteudo || []).find(c => c.tipo === 'botijao');
   if (gavNo) ed.querySelector('[data-vao="altGav"]').value = gavNo.altura;
   if (botNo) ed.querySelector('[data-vao="altBot"]').value = botNo.altura;
-  const sapNo = (no.conteudo || []).find(c => c.sapateira); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.sapateira.nivel;
+  const sapNo = sapateiraDoVao(no); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.nivel;
   // campo "Puxador": o valor guardado continua sendo o lado da dobradiça (puxador à esquerda = dobradiça à direita);
   // no automático, o texto diz para que lado o puxador ficou
   const selLado = ed.querySelector('[data-vao="lado"]'); selLado.value = no.frente?.lado || 'auto';
@@ -14433,7 +14459,9 @@ function montarEditorModulo() {
   ed.querySelector('[data-vao="perfil"]').value = no.frente?.perfil || 'auto';
   ed.querySelector('[data-vao="sistema"]').value = no.frente?.sistema || 'correr-rometal-dominus';
   const selCt = ed.querySelector('[data-vao="conteudo"]');
-  selCt.replaceChildren(...CONTEUDOS_EDITOR.map(([v, r]) => el('option', { value:v }, r))); selCt.value = tipoCt;
+  selCt.replaceChildren(...CONTEUDOS_EDITOR.map(([v, r]) => el('option', { value:v }, r)));
+  if (ESCOLHAS.conteudo[tipoCt]?.legado) { const o = el('option', { value:tipoCt }, ESCOLHAS.conteudo[tipoCt].rotulo); o.hidden = true; selCt.append(o); }
+  selCt.value = tipoCt;
   ed.querySelector('[data-lista="frentes"]').replaceChildren(...FRENTES_EDITOR.map(([v, r]) => {
     const b = modeloDe('tplOpcao').querySelector('button'); b.textContent = r; b.dataset.valor = v;
     b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
@@ -14506,7 +14534,7 @@ $('form').addEventListener('change', e => {
     if (kv === 'prat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { c.alturas = [...(c.alturas || [])]; c.alturas[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'altGav') { const c = (no.conteudo || []).find(x => x.tipo === 'gavetas-internas'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'altBot') { const c = (no.conteudo || []).find(x => x.tipo === 'botijao'); if (c && Number(v) > 0) c.altura = Number(v); }
-    if (kv === 'nivelSap') { const c = (no.conteudo || []).find(x => x.sapateira); if (c && Number(v) > 0) c.sapateira.nivel = Number(v); }
+    if (kv === 'nivelSap') { const c = sapateiraDoVao(no); if (c && Number(v) > 0) c.nivel = Number(v); }
   });
 });
 
