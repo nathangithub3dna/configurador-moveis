@@ -11,7 +11,7 @@ registrarConteudo({ id:'botijao', gerar(ctx, ct, est) {
     add({ id:`botijao-${V}`, nome:'Botijão P13 (referência)', cat:'referencia', mat:'mdf-branco', lista:false, forma:{ tipo:'cil', eixo:'y' }, box:[xm-180, xm+180, y, y+480, zf+(Dc-360)/2, zf+(Dc+360)/2] });
     const yf = y + hB;
     add({ id:`prateleira-fixa-${V}`, nome:'Tampo do compartimento do botijão', nomeLista:'Prateleira fixa', cat:'caixa', a:w, b:Dc, fita:[1,0], box:[x0, x1, yf, yf+t, zf, zFr], des:{ w, h:Dc, fita:['b'], frente:'b', vista:'Vista de cima' } });
-    if (Math.abs(x1 - regiao0.ix1) < 0.5) ventilacao.push({ lado:'dir', y0:y, hB }); else A.push('O botijão não encosta na lateral externa: a ventilação não alcança o compartimento.');
+    if (ct.ventilar !== false && Math.abs(x1 - regiao0.ix1) < 0.5) ventilacao.push({ lado:'dir', y0:y, hB }); else A.push('O botijão não encosta na lateral externa: a ventilação não alcança o compartimento.');
     y = yf + t;
   est.y = y;
 } });

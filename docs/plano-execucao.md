@@ -79,7 +79,7 @@ Fase 0 primeiro, depois o puxador por vão, a 1c-i e o bloco 1;
 0.3	Separar o núcleo: roteiro + caixa + árvore + frentes + conteúdos + ferragens + fundo + ajustes + validações, com registro. Saída igual	nucleo/**	G
 0.4	Separar a tela: 3D, seleção/cotas, menus, listas, salvar (local/json/nuvem/Drive), exportar. Comportamento igual	tela/**	G
 0.5 ✅ implementado em 10/11/2026 (b22df6b; teste completo igual no Codex em 11/11/2026 com Chromium 151)	Editor do vão montado pelo registro (campos de cada conteúdo e frente vêm do arquivo dele); templates em fonte/telas/	tela/paineis/vao.js, telas/*.html	M
-0.6	Aposentar os geradores antigos (Gabinete e Armário de formulário): o formulário vira um atalho que monta o módulo do núcleo. Os testes de referência já provam que dão igual. Sem isso, cada conteúdo novo teria de ser feito duas vezes.	geradores.js → sai; tipos.js vira modelos	M
+0.6	✅ Feito 11/11/2026 — formulários do Gabinete e do Armário montam pelo núcleo; geradores.js removido. Adaptadores em formularios/ conservam listas, nomes, ordem e validações; contrato do núcleo preserva fundo, dobradiças, furação e puxadores. npm run testar: Todos os casos iguais à referência. Referências intactas. Sem publicação.	formularios/*.js, nucleo/*, tipos.js; geradores.js removido	M
 0.7	Testes separados por área + teste rápido (npm run testar -- guarda-roupa roda só os casos daquela área); teste completo continua obrigatório antes de gravar	testes/**	P
 0.8	Defeitos conhecidos: barra de cima do celular; vão escolhido volta ao Vão 1 ao dividir; correr e basculante da parede B sem animação	tela/**	P
 0.9	Atualizar arquitetura.md, CLAUDE.md e a skill com a estrutura nova; cabeçalho curto em cada arquivo dizendo o que ele faz	docs	P

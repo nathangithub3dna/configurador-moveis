@@ -4,6 +4,10 @@
 function fazerFundoSobreposto(ctx) {
   const { A, E, H, Tpeca, W, add, c, ferr, fundoPendente, juntasFundo, tf, xa, xb, yBase } = ctx;
   // FUNDO SOBREPOSTO — peças limitadas pelo transporte; usa a chapa de mercado que dá menos chapas; emenda sobre divisória ou, sem divisória, com perfil H plástico
+  if (fundoPendente && ctx.contrato.fundoInteiro) {
+    add({ id:'fundo', nome:'Fundo do móvel', nomeLista:'Fundo do móvel', cat:'fundo', mat:'mdf-branco', esp:tf, a:H-yBase, b:W, box:[xa,xb,yBase,H,0,tf], des:{ w:W, h:H-yBase, vista:'Vista de trás' } });
+    return;
+  }
   if (fundoPendente) {
     const matF = c.fundo.material || 'mdf-branco', espF = matF.startsWith('hdf') ? 3 : tf, hF = H - yBase;
     const PH = BIBLIOTECA['perfil-h-emenda-fundo-3'], alma = matF.startsWith('hdf') && PH ? PH.dados.alma : 0;

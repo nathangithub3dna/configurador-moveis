@@ -37,7 +37,7 @@ const TIPOS = {
         { id:'enchimento', rot:'Enchimento de 25 mm no lado da parede', tipo:'sim' },
         { id:'esgoto', rot:'Altura do esgoto (centro)', unid:'mm', ajuda:'Faixa de ±75 mm. Prateleira que cruzar ganha recorte.' } ]},
     ],
-    gerar: gerarGabinete,
+    gerar: gabinetePeloNucleo,
   },
   armario: {
     nomePadrao: 'Armário da área de serviço',
@@ -75,7 +75,7 @@ const TIPOS = {
         { id:'paredeEsq', rot:'Parede à esquerda', tipo:'sim' },
         { id:'paredeDir', rot:'Parede à direita', tipo:'sim' } ]},
     ],
-    gerar: gerarArmario,
+    gerar: armarioPeloNucleo,
   },
 };
 
@@ -94,4 +94,3 @@ function limiteAbertura({ temParede, eW, u0, u1, uPx, proj, t, P }) {
   }
   return { ang: R.angMaxDobradica, motivo: '' };
 }
-

@@ -22,7 +22,7 @@ function fazerGavetasInternas(ctx, ct, g, yAc, lado, V) {
   add({ id:`espacador-${V}`, nome:'Espaçador das corrediças', nomeLista:'Espaçador das corrediças', cat:'caixa', a:nG*gH, b:zFr-recG-zf, box:[lado === 'esq' ? x0 : x1-esp, lado === 'esq' ? x0+esp : x1, yAc, ytop, zf, zFr-recG], des:{ w:zFr-recG-zf, h:nG*gH, vista:'Vista lateral' } });
   if (Lc) for (let k = 0; k < nG; k++) {
     const i = cont.gaveta++, kk = i + 1, zy0 = yAc + k*gH, zy1 = zy0 + gH, mov = { tipo:'gaveta', idx:i, curso:Lc*0.9 };
-    const pfI = PxG.modelo === 'perfil';
+    const pfI = PxG.modelo === 'perfil' && ctx.contrato.perfilDeBorda !== false;
     const fx0 = xr0 + 3, fx1 = xr1 - 3, fy0 = zy0 + 1.5, fy1 = zy1 - 1.5 - (pfI ? PxG.reducao : 0), zF1 = zFr - recG, zF0 = zF1 - t, wf = fx1 - fx0, xmf = (fx0+fx1)/2, ymf = (fy0+fy1)/2;
     const frente = add({ id:`gaveta-${kk}-frente`, nome:`Frente da gaveta ${kk}`, nomeLista:'Frente da gaveta interna', cat:'frente', a:wf, b:fy1-fy0, fita:[2,2], box:[fx0,fx1,fy0,fy1,zF0,zF1], mov,
       des:{ w:wf, h:fy1-fy0, fita:['t','b','l','r'], vista:'Vista pela face interna', furos: pfI ? [] : [-1,1].map(sn => ({ x:wf/2+sn*PxG.furacao/2, y:ymf-fy0, d:5, prof:0, tipo:'puxador' })) } });

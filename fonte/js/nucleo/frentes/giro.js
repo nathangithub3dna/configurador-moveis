@@ -2,7 +2,7 @@
 
 function fazerPorta(ctx, g, lado, x0, x1, pivX, puxador, borda = 'auto') {
   const { E, A, c, t, P, eE, eD, add, ferr, cont, folga, eixos } = ctx;
-  const k = ++cont.porta, id = `porta-${k}`, perfil = puxador?.modelo === 'perfil';
+  const k = ++cont.porta, id = `porta-${k}`, perfil = puxador?.modelo === 'perfil' && ctx.contrato.perfilDeBorda !== false;
   let y0 = g.fy0 + folga(g.b.baixo), y1 = g.fy1 - folga(g.b.cima);
   // perfil de borda (cava): a porta fica mais curta e o perfil ocupa a sobra, em cima, embaixo ou na lateral do lado do puxador (oposta à dobradiça).
   // Automático: embaixo no aéreo (puxador no quarto de baixo da porta), em cima nos outros
@@ -13,7 +13,7 @@ function fazerPorta(ctx, g, lado, x0, x1, pivX, puxador, borda = 'auto') {
   const hp = y1 - y0, dw = x1 - x0;
   eixos.push({ k, V:cont.vao, lado, pivX, y0, y1 });
   if (dw > R.portaMaxLarg) E.push(`Vão ${cont.vao}: porta com ${fmt(dw)} mm de largura (máximo ${R.portaMaxLarg}). Use 2 portas, porta de correr ou divida o vão.`);
-  const dr = dobradicasRegra(hp, dw, t), nd = dr.n;
+  const dr = ctx.contrato.dobradicas ? { n:ctx.contrato.dobradicas(hp, dw, t) } : dobradicasRegra(hp, dw, t), nd = dr.n;
   if (dr.acimaTabela) A.push(`Porta ${k}: ${fmt(dr.peso)} kg passa da tabela de dobradiças (32 kg) — conferir com o fabricante.`);
   const pos = Array.from({length:nd}, (_,j) => R.dobradicaBorda + j*(hp-2*R.dobradicaBorda)/(nd-1));
   const px = puxador, proj = px.proj;

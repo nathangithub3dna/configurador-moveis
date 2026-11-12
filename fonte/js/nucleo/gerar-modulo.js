@@ -1,13 +1,15 @@
 /* =====================================================================
-   3e. NÚCLEO NOVO (sub-etapa 4a) — módulo + árvore de vãos + frentes → peças
-   Um gerador só para qualquer móvel de caixa. Ainda não é usado pela tela:
-   roda ao lado dos geradores antigos e é conferido pelos testes.
+   NÚCLEO — módulo + árvore de vãos + frentes → peças
+   Um gerador só para qualquer móvel de caixa, usado pelo editor livre e
+   pelos formulários. O contrato opcional preserva as regras dos formulários:
+   dobradiças por altura, fundo inteiro e desenho mesmo com medidas inválidas.
+   finalizar:false entrega as peças para suas listas, sem acabamento/volumes.
    Módulo: { largura, altura, profundidade, construcao, ambiente, raiz }
    Nó DIVIDIR: { tipo:'dividir', dir:'v'|'h', sep:'divisoria'|'nenhum', partes:[{ medida:'auto'|mm, no }] }
    Nó VÃO:     { tipo:'vao', frente:{ tipo:'porta'|'2portas'|'gaveta'|'nenhuma', lado }, conteudo:[...] }
    ===================================================================== */
 
-function gerarModuloV3(m) {
+function gerarModuloV3(m, contrato = {}) {
   const E = [], A = [], pecas = [];
   const c = resolverMetodo(m), amb = m.ambiente || {};
   const entre = c.lateral === 'entre';                                 // topo e base passantes, laterais entre eles
@@ -28,12 +30,13 @@ function gerarModuloV3(m) {
     const pc = Object.assign({ lista:true, mov:null, obs:'', esp:t, mat:'mdf-ru-branco', fita:[0,0] }, o);
     if (o.a !== undefined) { let a=o.a, b=o.b, fa=(o.fita||[0,0])[0], fb=(o.fita||[0,0])[1]; if (b > a) { [a,b]=[b,a]; [fa,fb]=[fb,fa]; } pc.comp=a; pc.larg=b; pc.fita=[fa,fb]; }
     Object.assign(pc, papelDe(pc.id));
+    if (contrato.finalizar === false) pc.vaoFormulario = cont.vao;
     pecas.push(pc); return pc;
   };
   const ferr = o => add(Object.assign({ cat:'ferragem', mat:'cromado', lista:false }, o));
   const cont = { porta:0, gaveta:0, vao:0, divV:0, divH:0, trav:0 };
   // o que as partes do módulo (caixa, árvore, frentes, conteúdos, fundo, furação…) enxergam; o resto entra depois da árvore
-  const ctx = { m, c, amb, entre, t, tf, L, H0, P, HB, H, montado, limT, Tpeca, eE, eD, xa, xb, W, Wi, rod, RD, yBase, yApoio,
+  const ctx = { contrato, m, c, amb, entre, t, tf, L, H0, P, HB, H, montado, limT, Tpeca, eE, eD, xa, xb, W, Wi, rod, RD, yBase, yApoio,
     yLat0, yLat1, rasgo, zFundo, zfC, zFr, DcC, zf, Dc, E, A, pecas, add, ferr, cont };
 
   // CAIXA — nucleo/caixa.js
@@ -73,6 +76,8 @@ function gerarModuloV3(m) {
   aplicarAjustesPecas(pecas, m.pecasAjuste, E, A);
 
   fazerFuracao(ctx);                // nucleo/ferragens/furacao-laterais.js
+
+  if (contrato.finalizar === false) return { pecas, erros:E, avisos:A, vaos:regioes };
 
   avisarTransporte(ctx);            // nucleo/validacoes.js
   acabamentoPecas(pecas, m.materiais || {});
