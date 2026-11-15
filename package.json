@@ -5,6 +5,7 @@
   "description": "Configurador de móveis planejados do Nathan",
   "scripts": {
     "montar": "node ferramentas/montar.js && node ferramentas/offline.js",
+    "pagina-publicar": "node ferramentas/montar.js && node ferramentas/offline.js && node ferramentas/publicar.js",
     "testar": "node ferramentas/montar.js && node ferramentas/offline.js && node testes/rodar.js",
     "atualizar-referencia": "node ferramentas/montar.js && node ferramentas/offline.js && node testes/rodar.js --atualizar"
   },

@@ -3,3 +3,4 @@ testes/saida/
 projetos/
 *.log
 .ferramentas-codex/
+.publicar/

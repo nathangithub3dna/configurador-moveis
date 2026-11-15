@@ -14,7 +14,7 @@
 - `configurador-offline.html` (gerado por `ferramentas/offline.js`, junto com o montar): mesmo programa com as bibliotecas embutidas (de node_modules), abre sem internet e sem o Claude. O teste abre o arquivo com a rede bloqueada.
   - Estrutura dos painéis novos em `<template>` no `pagina.html`; o JS só preenche (`data-texto`, `data-se`, `data-acao`).
 - Visual escolhido para a tela (5a): neomorfismo **só na interface**; o móvel (desenho e 3D) fica nas cores reais do material.
-- `configurador.html` é o arquivo publicado no artifact https://claude.ai/artifact/HsqccQZfs2utTfs3jVHp1Q (publicar sempre a partir dele).
+- O programa é publicado no artifact https://claude.ai/artifact/HsqccQZfs2utTfs3jVHp1Q. Para publicar: `npm run pagina-publicar` e publicar o arquivo `.publicar/index.html` (é o `configurador.html` dentro do esqueleto de página que o artifact exige; publicar só o `configurador.html` é recusado ou sai sem viewport). Sem passar capabilities, para manter nuvem, downloads e Google Drive.
 - Nunca colocar projetos de clientes no repositório (vão para o Google Drive).
 - Não tocar no Visualizador 3D Granfinale (GSA).
 - O Nathan não quer ficar preso a um PC: nada instalado nos computadores dele; testes rodam na nuvem do Claude.

@@ -1,5 +1,13 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Volta ao Claude — 15/11/2026 (publicado)
+
+- **Publicado no link do Claude: versão 63** (id 1794751160-5c61), a partir do commit 6436345. Leva tudo desde a v62: Fase 0 (0.1 a 0.8), "Abre p/ baixo", largura dos espaços das divisórias, pedidos 71 (Sapateira e Botijão separados), 72 (Juntar/Dividir logo abaixo dos Espaços), 73 (fonte Manrope) e o modelo de puxador por vão. Nuvem, downloads e Drive preservados. Formato do projeto continua 1.
+- **Conferido no Claude antes de publicar:** código do Codex lido (8fc094b → 01c3e3e); teste completo na nuvem **igual em todos os casos**. O teste `testes/casos/interface.js` falhava só aqui por esperar 1,2 s fixo pela animação (sem placa de vídeo os quadros demoram); passou a esperar a porta chegar (até 15 s). Programa não mudou.
+- **Como publicar daqui em diante:** `npm run pagina-publicar` gera `.publicar/index.html` (página completa); publicar esse arquivo. Ver CLAUDE.md.
+- **Sem verificar na tela real:** a versão 63 aberta pelo Nathan (PC e celular); fonte Manrope dentro do artifact; animações da parede B.
+- **Próximo:** fechar o 0.9 (skill do Claude: proposta de atualização feita em 15/11, aguardando o Nathan salvar) e o **item 29** (falta: "usar em todos os vãos", altura do puxador em cima/meio/embaixo, "sem puxador / fecho toque"). Depois itens 19, 13, 30, 25, 14 (bloco 1). Aprovação da 1c-i continua pendente.
+
 ## Pedido 73 — fonte escolhida (11/11/2026)
 
 Nathan escolheu a opção 2 dos três protótipos: Manrope nas letras e nos números. Aplicada nas variáveis do tema e embutida em fonte/fontes/manrope.css, com licença SIL OFL preservada, para funcionar também sem internet. Números de medidas usam alinhamento tabular. HTML normal e offline regenerados.
