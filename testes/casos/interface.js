@@ -22,7 +22,9 @@ module.exports={id:'interface',descricao:'Cabeçalho móvel, animações e puxad
  for(const tipo of ['correr','basculante','basculante-baixo']){
  const closed=await page.evaluate(tipo=>{const c=window.__configurador,e=c.estado;const m=structuredClone(c.TIPOS.modulo.padrao);m.raiz={tipo:'vao',frente:{tipo},conteudo:[]};m.largura=900;m.altura=700;m.profundidade=500;e.projeto={tipo:'ambiente',nome:'Teste',parametros:structuredClone(c.TIPOS.ambiente.padrao)};e.projeto.parametros.modulos=[{nome:'Teste B',linha:'aereo',parede:1,x:900,y:1300,modulo:m}];e.portas=false;c.atualizar();return e.res.pecas.filter(p=>p.cat==='frente').map(p=>({id:p.id,m:p.mov}));},tipo);
  assert.ok(closed.length);assert.ok(closed.every(p=>p.m?.eixo==='z'));
- await page.evaluate(()=>window.__configurador.estado.portas=true);await page.waitForTimeout(1200);
+ await page.evaluate(()=>window.__configurador.estado.portas=true);
+ // espera a animação chegar ao fim (até 15 s): em máquina sem placa de vídeo os quadros demoram mais que um tempo fixo
+ await page.waitForFunction(ps=>ps.every(p=>{const n=window.__configurador.nosAtual().get(p.id);return p.m.tipo==='correr'?Math.abs(n.mover.position.z-p.m.curso*p.m.sentido)<1:Math.abs(n.mover.rotation.z)>0.5;}),closed,{timeout:15000}).catch(()=>{});
  const moved=await page.evaluate(ids=>ids.map(id=>{const n=window.__configurador.nosAtual().get(id);return {z:n.mover.position.z,r:n.mover.rotation.z};}),closed.map(p=>p.id));
  moved.forEach((n,i)=>{const m=closed[i].m;if(tipo==='correr') assert.ok(Math.abs(n.z-m.curso*m.sentido)<1);else assert.ok(Math.sign(n.r)===(m.sentido==='baixo'?-1:1));});
  console.log('Movimento parede B OK: '+tipo);
