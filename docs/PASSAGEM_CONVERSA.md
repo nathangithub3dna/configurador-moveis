@@ -8,6 +8,12 @@
 - **Sem verificar na tela real:** a versão 63 aberta pelo Nathan (PC e celular); fonte Manrope dentro do artifact; animações da parede B.
 - **Próximo:** fechar o 0.9 (skill do Claude: proposta de atualização feita em 15/11, aguardando o Nathan salvar) e o **item 29** (falta: "usar em todos os vãos", altura do puxador em cima/meio/embaixo, "sem puxador / fecho toque"). Depois itens 19, 13, 30, 25, 14 (bloco 1). Aprovação da 1c-i continua pendente.
 
+## Nota de custo (15/11/2026 11:04)
+
+- Nathan avisou que uma única mensagem gastou ~40% da sessão. Causa provável: conversa longa (cada resposta reenvia todo o histórico + prompt grande) e leitura de diffs/saídas de teste inteiras. [Suposição: sem medição de uso registrada.]
+- **Para a próxima conversa:** um passo do plano por conversa; não ler o repositório inteiro; ler diffs só do que mudou; rodar testes com saída resumida (`npm run testar 2>&1 | tail -5`) e abrir o log só se falhar.
+- Nada de código mudou depois do commit 1368b73. v63 publicada. Próximo: item 29 (três opções do puxador); skill do 0.9 ainda aguarda o Nathan salvar o cartão.
+
 ## Pedido 73 — fonte escolhida (11/11/2026)
 
 Nathan escolheu a opção 2 dos três protótipos: Manrope nas letras e nos números. Aplicada nas variáveis do tema e embutida em fonte/fontes/manrope.css, com licença SIL OFL preservada, para funcionar também sem internet. Números de medidas usam alinhamento tabular. HTML normal e offline regenerados.
