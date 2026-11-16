@@ -13503,6 +13503,14 @@ function desfazer() {
 const $ = id => document.getElementById(id);
 const el = (tag, attrs={}, ...filhos) => { const e = document.createElement(tag); for (const [k,v] of Object.entries(attrs)) { if (k==='class') e.className=v; else if (k==='text') e.textContent=v; else if (k.startsWith('on')) e.addEventListener(k.slice(2),v); else if (v!==false && v!=null) e.setAttribute(k, v===true?'':v); } filhos.flat().forEach(f => f!=null && e.append(f)); return e; };
 let toastT; const toast = msg => { const t=$('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 2600); };
+// AJUSTE POR PEÇA — nomes dos eixos e papéis que não mudam de medida. Carregado antes de abrir o projeto salvo:
+// o editor do módulo lista os ajustes já na abertura (com o arquivo depois, o celular travava ao abrir — v65).
+const EIXOS_TELA = {
+  x: { rot:'Largura',      fixos:[['ini','fica a esquerda'], ['fim','fica a direita'], ['centro','cresce dos dois lados']] },
+  y: { rot:'Altura',       fixos:[['ini','fica embaixo'],     ['fim','fica em cima'],    ['centro','cresce dos dois lados']] },
+  z: { rot:'Profundidade', fixos:[['ini','fica atrás'],       ['fim','fica na frente'],  ['centro','cresce dos dois lados']] },
+};
+const PAPEIS_COM_FUROS_PROPRIOS = ['travessa-fixacao'];   // furos nascem com a peça: mudar a medida deixaria a furação errada
 // TELA — formulário gerado a partir do tipo de móvel (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Formulário gerado a partir do tipo ---------- */
 function montarFormulario() {
@@ -14983,12 +14991,7 @@ $('esquema').addEventListener('dblclick', e => {
    - no editor do módulo: lista das peças ajustadas (inclusive as desligadas, que somem do 3D).
    Lógica em nucleo/ajustes.js (aplicarAjustesPecas); estrutura em pagina.html (tplAjuste*); aparência em estilos/ajuste.css.
    ===================================================================== */
-const EIXOS_TELA = {
-  x: { rot:'Largura',      fixos:[['ini','fica a esquerda'], ['fim','fica a direita'], ['centro','cresce dos dois lados']] },
-  y: { rot:'Altura',       fixos:[['ini','fica embaixo'],     ['fim','fica em cima'],    ['centro','cresce dos dois lados']] },
-  z: { rot:'Profundidade', fixos:[['ini','fica atrás'],       ['fim','fica na frente'],  ['centro','cresce dos dois lados']] },
-};
-const PAPEIS_COM_FUROS_PROPRIOS = ['travessa-fixacao'];   // furos nascem com a peça: mudar a medida deixaria a furação errada
+// EIXOS_TELA e PAPEIS_COM_FUROS_PROPRIOS ficam em tela/ajuste-nomes.js: precisam existir antes de abrir o projeto salvo
 
 // de quem é a peça: o módulo (dados), o id dentro dele e, no ambiente, o módulo posicionado
 function donoDaPeca(pc) {

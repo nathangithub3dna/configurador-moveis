@@ -4,12 +4,7 @@
    - no editor do módulo: lista das peças ajustadas (inclusive as desligadas, que somem do 3D).
    Lógica em nucleo/ajustes.js (aplicarAjustesPecas); estrutura em pagina.html (tplAjuste*); aparência em estilos/ajuste.css.
    ===================================================================== */
-const EIXOS_TELA = {
-  x: { rot:'Largura',      fixos:[['ini','fica a esquerda'], ['fim','fica a direita'], ['centro','cresce dos dois lados']] },
-  y: { rot:'Altura',       fixos:[['ini','fica embaixo'],     ['fim','fica em cima'],    ['centro','cresce dos dois lados']] },
-  z: { rot:'Profundidade', fixos:[['ini','fica atrás'],       ['fim','fica na frente'],  ['centro','cresce dos dois lados']] },
-};
-const PAPEIS_COM_FUROS_PROPRIOS = ['travessa-fixacao'];   // furos nascem com a peça: mudar a medida deixaria a furação errada
+// EIXOS_TELA e PAPEIS_COM_FUROS_PROPRIOS ficam em tela/ajuste-nomes.js: precisam existir antes de abrir o projeto salvo
 
 // de quem é a peça: o módulo (dados), o id dentro dele e, no ambiente, o módulo posicionado
 function donoDaPeca(pc) {

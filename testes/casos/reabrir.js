@@ -21,6 +21,14 @@ module.exports = { id:'reabrir', descricao:"Reabrir projetos salvos no aparelho"
       const voltou = abriu ? await page.evaluate(() => window.__configurador.estado.projeto.tipo) : null;
       res[tipo] = abriu && voltou === tipo && errosRe.length === antes ? 'ok' : { abriu, voltou, erros: errosRe.slice(antes) };
     }
+    // móvel livre com peça ajustada (1c-i): o celular do Nathan travou ao abrir (EIXOS_TELA antes de existir, v65)
+    await page.selectOption('#tipoMovel', 'modulo'); await page.waitForTimeout(400);
+    await page.evaluate(() => { const c = window.__configurador, id = c.estado.res.pecas.find(p => p.lista)?.id;
+      c.estado.projeto.parametros.pecasAjuste = { [id]: { nome:'Peça de teste', medidas:{ x:{ valor:300, fixo:'ini' } } } }; c.atualizar(); });
+    { const antes = errosRe.length; await page.reload();
+      let abriu = true; try { await page.waitForFunction(() => window.__configurador?.estado?.res, null, { timeout: 20000 }); } catch (e) { abriu = false; }
+      const temAjuste = abriu ? await page.evaluate(() => Object.keys(window.__configurador.estado.projeto.parametros.pecasAjuste || {}).length) : 0;
+      res['modulo com ajuste'] = abriu && temAjuste === 1 && errosRe.length === antes ? 'ok' : { abriu, temAjuste, erros: errosRe.slice(antes) }; }
     await page.evaluate(() => { try { localStorage.clear(); } catch (e) {} });
     const okRe = tipos.length > 1 && Object.values(res).every(v => v === 'ok');
     if (!okRe) { falhas++; console.log('REABRIR COM PROJETO GUARDADO ERRADO  ' + JSON.stringify(res)); } else console.log('REABRIR COM PROJETO GUARDADO OK  ' + JSON.stringify(res));
