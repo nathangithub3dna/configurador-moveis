@@ -1,205 +1,50 @@
-# Passagem — Configurador de Móveis — 10/11/2026 13:05
-
-## Item 29 concluído — 15/11/2026 (noite)
-
-- **Feito:** no painel do vão, "Modelo do puxador neste vão" ganhou **Sem puxador · fecho toque**; campo novo **Altura do puxador** (Automática / Em cima / No meio / Embaixo, só em porta de giro com puxador de furo); botão **Usar este puxador em todos os vãos** (copia modelo e altura; com "padrão do móvel" devolve todos ao padrão).
-- **Fecho toque:** frente sem furo de puxador; 1 "Fecho toque" por porta/gaveta/basculante na lista de compras (`fecho-toque` na biblioteca, genérico [Suposição]); aviso por vão: dobradiça sem amortecedor (porta) ou corrediça com abertura por toque (gaveta). Porta de correr não abre por toque: fica a concha, com aviso. A dobradiça do kit **não** é trocada sozinha (falta uma dobradiça sem amortecedor real na biblioteca).
-- **Código:** `nucleo/ferragens/fecho-toque.js` (novo), `nucleo/arvore.js` (aplica o puxador do vão), `frentes/giro.js`, `gaveta.js`, `basculante.js`, `editor-modulo.js` (`ED.puxadorEmTodos`), `tela/paineis/modulo.js`, `telas/editor.html`, `dados/biblioteca.json`. Campos novos no vão: `puxador:'toque'` e `puxadorAltura`; formato continua 1 (campos opcionais).
-- **Publicado: versão 64** (id 1794792847-770f), commit 4c16590. Cópia em `codigo/configurador-moveis.html` no projeto.
-- **Teste:** completo igual à referência (nenhuma referência mudou); `testes/casos/interface.js` confere altura, fecho em porta/gaveta/basculante, aviso e "usar em todos".
-- **Sem verificar na tela real:** celular do Nathan; aparência do fecho no 3D.
-- **Próximo:** 0.9 (skill aguardando o Nathan salvar o cartão) e aprovação da 1c-i; depois item 19 (bloco 1).
-
-## Volta ao Claude — 15/11/2026 (publicado)
-
-- **Publicado no link do Claude: versão 63** (id 1794751160-5c61), a partir do commit 6436345. Leva tudo desde a v62: Fase 0 (0.1 a 0.8), "Abre p/ baixo", largura dos espaços das divisórias, pedidos 71 (Sapateira e Botijão separados), 72 (Juntar/Dividir logo abaixo dos Espaços), 73 (fonte Manrope) e o modelo de puxador por vão. Nuvem, downloads e Drive preservados. Formato do projeto continua 1.
-- **Conferido no Claude antes de publicar:** código do Codex lido (8fc094b → 01c3e3e); teste completo na nuvem **igual em todos os casos**. O teste `testes/casos/interface.js` falhava só aqui por esperar 1,2 s fixo pela animação (sem placa de vídeo os quadros demoram); passou a esperar a porta chegar (até 15 s). Programa não mudou.
-- **Como publicar daqui em diante:** `npm run pagina-publicar` gera `.publicar/index.html` (página completa); publicar esse arquivo. Ver CLAUDE.md.
-- **Sem verificar na tela real:** a versão 63 aberta pelo Nathan (PC e celular); fonte Manrope dentro do artifact; animações da parede B.
-- **Próximo:** fechar o 0.9 (skill do Claude: proposta de atualização feita em 15/11, aguardando o Nathan salvar) e o **item 29** (falta: "usar em todos os vãos", altura do puxador em cima/meio/embaixo, "sem puxador / fecho toque"). Depois itens 19, 13, 30, 25, 14 (bloco 1). Aprovação da 1c-i continua pendente.
-
-## Nota de custo (15/11/2026 11:04)
-
-- Nathan avisou que uma única mensagem gastou ~40% da sessão. Causa provável: conversa longa (cada resposta reenvia todo o histórico + prompt grande) e leitura de diffs/saídas de teste inteiras. [Suposição: sem medição de uso registrada.]
-- **Para a próxima conversa:** um passo do plano por conversa; não ler o repositório inteiro; ler diffs só do que mudou; rodar testes com saída resumida (`npm run testar 2>&1 | tail -5`) e abrir o log só se falhar.
-- Nada de código mudou depois do commit 1368b73. v63 publicada. Próximo: item 29 (três opções do puxador); skill do 0.9 ainda aguarda o Nathan salvar o cartão.
-
-## Pedido 73 — fonte escolhida (11/11/2026)
-
-Nathan escolheu a opção 2 dos três protótipos: Manrope nas letras e nos números. Aplicada nas variáveis do tema e embutida em fonte/fontes/manrope.css, com licença SIL OFL preservada, para funcionar também sem internet. Números de medidas usam alinhamento tabular. HTML normal e offline regenerados.
-
-A skill configurador-moveis agora está disponível em C:/Users/NATHAN.OLIVEIRA/.codex/skills/configurador-moveis/SKILL.md; foi lida. Seu roteiro é da nuvem do Claude, mas esta sessão já tem autorização para trabalhar na cópia local/offline. Não publicar. As dez mudanças autorizadas continuam pendentes conforme o registro abaixo; não declarar o lote concluído.
-
-
-## Lote autorizado por Nathan — 11/11/2026
-
-Nathan autorizou as próximas dez mudanças listadas na conversa. Não pedir autorização novamente para esse escopo; seguir a ordem do plano. Este registro não declara o lote inteiro concluído.
-
-- 0.8: corrigido o caminho de seleção ao dividir, cabeçalho responsivo e movimento de correr/basculantes da parede B (incluindo abertura para baixo). Não muda peças, listas nem compras.
-- 0.9: arquitetura, CLAUDE.md e AGENTS.md atualizados para os caminhos atuais. Skill externa do Claude não está no repositório; foi solicitado a Nathan onde encontrá-la. Etapa ainda não concluída.
-- Item 29 parcialmente implementado: modelo de puxador por vão, com opção de herdar o padrão do móvel. A escolha fica no nó do vão e é copiada ao dividir, preservada no JSON e afeta apenas suas frentes/conteúdos. Restam as opções mais amplas do plano: aplicar a todos, altura e sem puxador/fecho toque.
-- Testes de regressão em testes/casos/interface.js: cabeçalho em 320/375/768 px, correr e basculantes na parede B, escolha independente de puxador e retorno ao padrão. editor.js verifica a seleção logo após dividir.
-- Próximos após fechar 0.9 e 29: item 19 (prateleiras/dupla divisória), 13 (cabideiro/maleiro/calceiro), 30 (gavetas), 25 (recobrimentos), 14 (modelos), 7 (pontos), 17 (limites). Não iniciados. Aprovação da 1c-i continua registrada como pendência de conferência do Nathan, não como teste de software.
-- Não publicar; Nathan publica pelo Claude. Nunca atualizar referências sem perguntar.
-
-
-## Fase 0.7 — concluída em 11/11/2026
-
-- Testes separados em dez áreas em testes/casos/. Comando completo preservado; filtros como npm run testar -- editor ou gabinete conferem só a área escolhida e avisam que a conferência é parcial. --listar mostra as opções. Guarda-roupa ainda não possui casos próprios.
-- Mesmas entradas e verificações; cada área abre um contexto independente. Ambiente mantém juntos os cenários encadeados. Referência ausente causa falha, sem criar padrão automaticamente. Nenhuma referência alterada.
-- Validação: npm run testar terminou com **Todos os casos iguais à referência.**, saída 0; filtro gabinete passou com quatro casos; cinco testes da seleção passaram. Logs locais: .ferramentas-codex/testar-07.log e testar-07-filtro.log.
-- Inclui o pedido 72 pendente: Espaços → Juntar com o vizinho → Dividir em mais espaços → campos do vão. HTML normal e offline regenerados e conferidos na suíte completa.
-- **Onde parou:** 0.7 concluído na branch codex/fase-0-7, baseada em codex/conteudos-separados (PR #3).
-- **Próximo:** 0.8 — barra superior no celular, manter o vão escolhido ao dividir e animação das frentes de correr/basculante na parede B. Não iniciado. Não publicar; Nathan publica pelo Claude.
-
-
-## Pedido 72 — juntar perto dos espaços (11/11/2026)
-
-- A ordem solicitada por Nathan é: Espaços → Juntar com o vizinho → Dividir em mais espaços → campos do vão. Mesmas ações e critérios para mostrar os vizinhos; apenas os blocos do template mudaram de posição.
-- Validação: `npm run testar` terminou com **Todos os casos iguais à referência.**, saída 0, incluindo juntar espaços pela tela. Referências intactas. Log local: `.ferramentas-codex/testar-juntar.log`. Esta alteração está no arquivo local; ainda não foi acrescentada ao PR #3.
-- Ajuste posterior: dividir foi movido para abaixo de juntar; montagem normal/offline e ordem do template conferidas. A suíte completa acima refere-se à mudança anterior de juntar. Próximo passo da Fase 0 continua sendo 0.7; não iniciado. Publicação continua com Nathan pelo Claude.
-
-## Pedido 71 — conteúdos separados no editor (11/11/2026)
-
-- Nathan pediu e confirmou três opções separadas: **Vassoura e aspirador**, **Sapateira** e **Botijão**, retirando os botões dos conjuntos. Aplicado ao editor do Móvel livre e ao módulo aberto dentro do Ambiente.
-- Sapateira independente ocupa o vão sem reservar 1,2 m para vassouras; altura dos níveis e quantidade são ajustáveis, com máximo automático. Botijão usa seu conteúdo existente, com tampo e verificações de ventilação, sem acrescentar gavetas.
-- Projetos antigos não são convertidos nem perdem conteúdo: os conjuntos continuam reconhecidos, com campos de edição e aviso de que uma nova escolha substitui o conjunto. Eles não aparecem como botões para novas escolhas. Os formulários legados e os modelos existentes conservam os resultados anteriores.
-- Conteúdo novo registrado em `nucleo/conteudos/sapateira.js`; o núcleo não ganhou ramificação por tipo. Novas peças usam o papel de prateleira já existente.
-- `npm run testar`: **Todos os casos iguais à referência.** Nenhuma referência atualizada. HTML normal e offline regenerados. Log: `.ferramentas-codex/testar-separados.log`.
-- **Onde parou:** pedido 71 implementado na branch `codex/conteudos-separados`, baseada no 0.6 (PR #2). **Próximo passo do plano: 0.7**, não iniciado. Não publicar; Nathan publica pelo Claude.
-
-## Fase 0.6 — concluída em 11/11/2026
-
-- Gabinete e Armário de formulário agora convertem os parâmetros em módulo e geram todas as peças por gerarModuloV3. fonte/js/geradores.js foi removido.
-- fonte/js/formularios/ conserva validações, mensagens, identificação/ordem, instruções de montagem, medidas da tela e listas de compras. Não gera geometria. Sapateira e cálculo de fixações foram movidos sem alteração para seus assuntos no núcleo.
-- Contrato opcional do núcleo conserva fundo inteiro, dobradiças por altura, furação em medidas inválidas e tratamento anterior do puxador de perfil nos formulários. O Móvel livre e o Ambiente continuam com suas regras atuais. A ventilação do formulário mantém a regra do primeiro botijão no último vão.
-- **Validação:** npm run testar, com npm portátil e Chromium 151 no Windows: **“Todos os casos iguais à referência.”**, saída 0. Inclui referências dos dez formulários, editor, ambiente, desenhos/PDF, exportações, versão sem internet e reabertura de projetos guardados.
-- Conferência adicional local comparou os resultados completos dos geradores antigos com os adaptadores: casos de referência, limites individuais, entradas inválidas e 180 combinações de parâmetros, incluindo os seis puxadores. Nenhuma diferença além de arredondamento numérico menor que 1e-8. Os scripts de auditoria ficam em .ferramentas-codex/; não são parte do aplicativo.
-- Testes existentes, referências, dados e dependências intactos. HTML normal e offline regenerados pelos comandos de montagem. Log final: .ferramentas-codex/testar-06-final.log.
-- **Onde parou:** 0.6 implementado e conferido na branch codex/fase-0-6, baseada em c58936f. O PR desta etapa depende do PR #1 (organização dos documentos e conferência do 0.5), que ainda estava aberto durante o trabalho.
-- **Próximo:** 0.7 — separar testes por área e acrescentar execução rápida por área; a suíte completa continua obrigatória antes de gravar. Etapa 0.7 não iniciada.
-- **Não publicar; o Nathan publica pelo Claude.** O diagnóstico anterior e a solução estão em docs/diagnostico-fase-0-6.md.
-
-## Conferência no Codex — 11/11/2026
-
-- Base consultada: `main` em `d00bb96` (documentos enviados pelo Nathan recebidos). O passo **0.5 já está implementado** no commit `b22df6b`, posterior ao `06f39bc` informado no pedido. Não foi refeito nem houve mudança no comportamento do programa nesta conferência.
-- Conferido no código: escolhas, rótulos e ordem do editor vêm do registro; cada frente/conteúdo declara sua aplicação; reconhecimento do conteúdo e desenhos do painel B consultam esse registro; modelos da tela ficam em `fonte/telas/`.
-- Criado `AGENTS.md` a partir de `CLAUDE.md`, com referências em `docs/` e a instrução: **não publicar; o Nathan publica pelo Claude**.
-- Os planos enviados pelo Nathan foram lidos e organizados: `planomestre.md` → `docs/plano-mestre.md`, `planoexecucao.md` → `docs/plano-execucao.md`, `arquitetura.md` → `docs/arquitetura.md`, `planoreestruturacao.md` → `docs/plano-reestruturacao.md`. O 0.5 foi marcado como implementado no commit existente `b22df6b`, com teste completo igual no Codex em 11/11/2026.
-- **Validação:** `npm run testar` terminou com **“Todos os casos iguais à referência.”**, código de saída 0, em 11/11/2026, usando Chromium 151.0.7922.34 no Windows. Nenhuma referência ou dependência do projeto foi alterada. Ferramentas portáteis foram preparadas em `.ferramentas-codex/` após autorização do Nathan; essa pasta está ignorada pelo Git.
-- **Compatibilidade dos testes:** a primeira execução, com Chromium 130.0.6723.31, falhou no caso PEÇAS LIVRES PELA TELA (1b), com erros de `replaceChildren` durante a troca de foco. A mesma suíte passou integralmente com Chromium 151, sem mudar o aplicativo ou as verificações. O mecanismo de busca de navegador alternativo em `testes/rodar.js` passou a reconhecer também `chrome-win64/chrome.exe` e `chrome-win/chrome.exe`; os caminhos Linux continuam disponíveis. A falha no navegador antigo não foi corrigida no aplicativo.
-- **Como repetir neste ambiente (PowerShell):** definir `$env:PLAYWRIGHT_BROWSERS_PATH = Join-Path $PWD '.ferramentas-codex/navegadores-atuais'` e executar `node .ferramentas-codex/package/bin/npm-cli.js run testar` (o comando npm portátil). Log local: `.ferramentas-codex/testar-atual.log`.
-- **Onde parou:** 0.5 conferido, documentos organizados e teste completo aprovado; alterações preparadas para revisão em PR. Nenhuma publicação ou mudança de comportamento do configurador.
-- **Próximo passo do plano:** 0.6 — formulários do Gabinete e do Armário montados pelo núcleo, retirando o gerador antigo somente se os testes continuarem iguais. Não iniciado nesta solicitação. Revisar o PR desta conferência antes de continuar. **Não publicar; o Nathan publica pelo Claude.**
-
+# Passagem — Configurador de Móveis — 16/11/2026 00:10
 
 ## Onde paramos
-- **Plano mestre aprovado:** `claude/plano-mestre.md` no projeto. É a revisão completa do programa contra o mercado (Mozaik, Promob, DinaBox, Polyboard, Cabinet Vision…), com 70 itens por área e blocos em ordem.
-  - O Nathan: "isso é o que vamos seguir de agora em diante, esse documento é muito importante".
-  - Render fica no Blender, fora do plano.
-- **Plano de execução aprovado:** `claude/plano-execucao.md` diz onde cada função mora no código, o custo de cada item (P/M/G/GG), as regras de cada tipo de arquivo e a **Fase 0**.
-- O programa publicado está no **artifact v62** (commit 72a9191). O último commit é 3dc1374 (só documentos).
+O item 29 (puxador por vão) está completo e publicado no link do Claude na **versão 64** (commit 4c16590; passagem em 88861a3). Cada vão pode ter modelo próprio, altura do puxador (em cima/meio/embaixo), "sem puxador · fecho toque" e o botão "Usar este puxador em todos os vãos". Faltam duas pendências curtas antes do bloco 1 (guarda-roupa).
 
-## Atualização — 10/11/2026 14:10 (Fase 0 em andamento)
-- **Feito:** 0.1 (montador: `@inclui-pasta` e `dados/<nome>/*.json`, commit 3aa04c6) · 0.2 (número do formato + conversor; nuvem guarda o original antes de gravar convertido; teste FORMATO DO PROJETO, commit 8b0fe6a) · 0.3a (núcleo dividido em `fonte/js/nucleo/`, só mudança de lugar, commit 6e9a4a9) · 0.3b parte 1 (registro: `nucleo/registro.js`, `nucleo/frentes/*.js`, `nucleo/conteudos/*.js`; o `vao()` do gerador só consulta o registro).
-- **Teste completo igual em todos os passos.** Nada publicado: artifact continua na v62 (o Nathan escolheu publicar uma vez depois do 0.4).
-- **0.3b parte 2 feita:** `porta` (frentes/giro.js), `portasCorrer`, `basculante`, `gavetaExterna` (frentes/), `prateleira` e `gavetasInternas` (conteudos/) saíram do gerador; recebem tudo pelo `ctx` (lista no fim do roteiro, antes de `percorrer`). O gerador ficou com 294 linhas (era 562). Teste igual.
-- **0.3c feita (0.3 concluído):** `gerar-modulo.js` virou só o roteiro (84 linhas): monta o `ctx` com as medidas, chama `fazerCaixa` (nucleo/caixa.js), `percorrerArvore`/`vaoDaArvore` (nucleo/arvore.js), `fazerFundoSobreposto` (nucleo/fundo.js), `fazerComplementos` (nucleo/complementos.js: fixação, ventilação, pés, enchimento, tampo), ajuste por peça, `fazerFuracao` (nucleo/ferragens/furacao-laterais.js), `avisarTransporte` (nucleo/validacoes.js), acabamento, volumes e colisão de portas. Teste igual.
-- **0.4 feito:** `tela.js` dividido em `fonte/js/tela/` (estado, formulario, ciclo, inicio; `3d/` cena, cotas, camera, selecao, medir, clique; `paineis/` barra-abas, arvore-pecas, listas + os antigos tela-modulo/ambiente/ajuste/loja/orcamento/revisao, painel-b e miniatura; `salvar/` exportar, abrir, drive, nuvem, eventos-projeto). Mesma ordem de antes no pagina.html (os trechos dependem da ordem). Teste igual.
-- **0.5 feito:** escolhas do painel do vão registradas (`registrarEscolha` em nucleo/registro.js; cada frente/conteúdo declara rótulo, ordem, desenho, `aplicar(no, m)` e, no conteúdo, `reconhece(no)` + prioridade). `FRENTES_EDITOR`/`CONTEUDOS_EDITOR`, `ED.definirFrente/definirConteudo/tipoConteudo` e os desenhos do painel B vêm do registro. Modelos `<template>` em `fonte/telas/` (editor, ambiente, ajuste, dialogos). Listas e desenhos conferidos iguais aos de antes; teste igual.
-- **Pedidos do Nathan fora da Fase 0 (10/11 noite), feitos:** (1) frente **"Abre p/ baixo"** (`nucleo/frentes/basculante-baixo.js`; `fazerBasculante` ganhou `sentido`, com dobradiças embaixo, pistão a gás inverso, puxador/perfil em cima, giro no 3D com `mov.sentido`); 5 pistões inversos na biblioteca (100 N visto à venda, Zamar; 60/80/120/140 N [Suposição]) — parte do item 29. (2) **Largura de cada espaço nas "Divisórias em pé"** (`ct.larguras`, campo por espaço no painel; vazio = automático) — parte do item 19. Referência atualizada com aprovação do Nathan (só ganhou os 2 resultados novos do caso nucleo-armario-misto).
-- **Publicação pendente:** o link do Claude está na v62. A publicação exige ler a versão publicada inteira (12 mil linhas): fazer numa conversa nova, primeira coisa.
-- **Próximo:** 0.6 — o formulário do Gabinete e do Armário monta o módulo pelo núcleo e `geradores.js` sai, só se o teste der igual (aprovado pelo Nathan). Depois 0.7 → 0.9.
-- **Entra no 0.8 (decisão do Nathan):** abrir um .json com o mesmo nome de um projeto da nuvem grava por cima da nuvem sem cópia (risco que já existia).
-- **Codex:** o Nathan pode continuar no Codex quando o limite do Claude acabar. Instruções num Claude Doc ("Continuar o Configurador no Codex"). Decisão: a pasta `docs/` do repositório vira a fonte oficial dos documentos (o Nathan copia os do projeto à mão); o Codex cria o `AGENTS.md` a partir do `CLAUDE.md`.
+## Próximo passo
+1. Perguntar ao Nathan, em múltipla escolha: (a) se a **1c-i** (ajuste por peça) está aprovada; (b) se ele conferiu o item 29 na v64 (celular e PC).
+2. Fechar o **0.9**: a skill configurador-moveis carregada em 15/11 já fala de testes por área e de `npm run pagina-publicar` [Provável: a proposta foi salva]. Conferir se falta o "cabeçalho curto em cada arquivo" pedido no 0.9 e marcar ✅ em `docs/plano-execucao.md`.
+3. Começar o **item 19** (bloco 1): prateleira de vidro, prateleira "invisível", divisória dupla — `nucleo/conteudos/prateleiras.js`, `divisorias.js`, vidro em `dados/materiais.json`. Pesquisar itens reais antes (suporte de prateleira de vidro, suporte invisível).
 
-## Próximo passo (de 10/11 13:05, já cumprido até o 0.3b parte 1)
-1. Ler `claude/plano-mestre.md` e `claude/plano-execucao.md`.
-2. **Começar a Fase 0, passo 0.1** (montador inclui pasta inteira e junta `dados/biblioteca/*.json`).
-   - Depois seguir 0.2 → 0.9, um passo por vez, com teste igual a cada passo e sem mudar nada que o Nathan veja.
-   - Exceção: o 0.8 corrige 3 defeitos e deve ser explicado ao Nathan.
-   - O 0.2 (versão do formato + conversor) **nunca** sobrescreve projeto salvo na nuvem, no Drive ou em .json.
-3. Depois da Fase 0:
-   - perguntar em múltipla escolha se a **1c-i** está aprovada;
-   - fazer o **item 29** (puxador por vão);
-   - fazer o **bloco 1, guarda-roupa** (itens 19, 13, 30, 25, 14), que fecha com um guarda-roupa real saindo completo.
-
-## Feito nesta conversa (09–10/11)
-- **Desenhos e barra de cima:**
-  - folhas A3 (padrão FreeCAD);
-  - Medidas em primeiro;
-  - menu Exportar na barra de cima;
-  - botão direito / toque longo no 3D.
-- **Painel do móvel:**
-  - mini desenho dos espaços; miniaturas das peças; painel visual B;
-  - largura e altura de cada vão;
-  - juntar com qualquer vizinho;
-  - divisórias em pé.
-- **Puxadores e portas:**
-  - "Puxador" com posição;
-  - Perfil G nas 4 bordas e em correr/basculante;
-  - portas que não se atravessam;
-  - correr e basculante animados;
-  - correr "libera o lado".
-- **Salvar:** aviso "Não salvo"; nuvem automática (Meus projetos + cópia de hora em hora no Drive).
-- **Correção (v62):** cópia velha de um aparelho nunca sobrescreve a nuvem; aviso "Sem nuvem" no arquivo aberto fora do Claude. Motivo: o Nathan achou que tinha perdido tudo, mas o trabalho estava na nuvem (11:13).
-- **Plano mestre:** revisão completa de recursos de mercado. O manual do DinaBox foi a fonte nova mais útil. A conferência no programa foi feita pelos dados e pela busca no código.
-- **Plano de execução:** estrutura de pastas alvo, regras de registro, Fase 0 em 9 passos, os 70 itens com arquivo e custo, e 35–45 conversas estimadas [Suposição].
-- **Documentos atualizados:**
-  - `plano-reestruturacao.md`;
-  - `proximas-alteracoes-tela.md` (encerrada);
-  - `CLAUDE.md` (aponta para os dois planos).
+## Feito nesta conversa
+- Item 29 concluído — era a pendência combinada antes do bloco 1.
+  - "Sem puxador · fecho toque": frente sem furo; 1 fecho por porta/gaveta/basculante nas compras; aviso por vão (porta: dobradiça sem amortecedor; gaveta: corrediça com abertura por toque; correr: continua com concha).
+  - Altura do puxador por vão (Automática / Em cima / No meio / Embaixo), só em porta de giro com puxador de furo; o puxador nunca sai da porta.
+  - "Usar este puxador em todos os vãos": copia modelo e altura; com "padrão do móvel" devolve todos ao padrão.
+- Teste novo em `testes/casos/interface.js` (altura, fecho em porta/gaveta/basculante, aviso, usar em todos). Teste completo igual à referência; nenhuma referência mudou.
+- Publicado v64; `codigo/configurador-moveis.html` e `claude/plano-mestre.md`, `plano-execucao.md`, `passagem-conversa.md` copiados para o projeto; arquivo sem internet enviado.
+- Passagens antigas movidas para `docs/HISTORICO.md` (a passagem agora guarda só a última conversa).
 
 ## Decisões tomadas
-- Plano mestre como guia daqui em diante; render no Blender — Nathan.
-- Ordem dos blocos — sugestão do Claude, aceita pelo Nathan ao aprovar o documento:
-  1. guarda-roupa;
-  2. cozinha (2a dentro do módulo, 2b forma do ambiente);
-  3. frentes;
-  4. acabamentos;
-  5. documentos;
-  6. obra/montagem;
-  7. comercial;
-  8. loja;
-  9. avançados.
-- **Fase 0 antes do bloco 1** — Nathan (opção recomendada).
-- **0.6 aprovado:** formulários do Gabinete e do Armário passam a montar pelo núcleo e o gerador antigo sai, se o teste der igual — Nathan.
-- Nuvem do próprio app para salvar sozinho; Drive como cópia — Nathan ("2c").
-- Painel visual B — Nathan.
+- Fecho toque como modelo genérico [Suposição], sem marca/código — sugestão do Claude (Nathan não opinou).
+- Dobradiça do kit não é trocada sozinha quando há fecho toque; só aviso — sugestão do Claude: falta uma dobradiça sem amortecedor real na biblioteca (Blum combina TIP-ON com CLIP top sem mola).
+- Porta de correr ignora o fecho toque e fica com concha, com aviso — sugestão do Claude.
+- Gavetas internas (atrás da porta) não seguem o puxador do vão — mantido como já era.
 
 ## Tentado e descartado
-- Abrir o site do Gabster para a pesquisa: o site bloqueou a leitura. Ficou só a descrição geral.
-- Publicar versões enquanto o Nathan editava: causou a perda de 09/11. Agora a nuvem salva sozinha, mas continua valendo pedir para salvar antes de publicar.
+- Conferência visual com o `configurador.html` normal na nuvem: não abre (bibliotecas da internet bloqueadas). Usar o `configurador-offline.html`.
+- Playwright avulso procura um Chromium que não existe; usar `/opt/pw-browsers/chromium-1243/chrome-linux*/chrome` (o `npm run testar` já acha sozinho).
 
 ## Sem testar / riscos
-- **No celular de verdade:** toque longo, toque na miniatura, nuvem. Para testar: abrir pelo link no celular, mudar uma medida, esperar 5 s e abrir no PC.
-- **Botão Salvar no Drive** dentro do app do Claude.
-- **Perfil G:** desconto de 20 mm suposto; conferir na peça.
-- **Juntar vãos de colunas diferentes:** sem caso no teste automático.
-- **Conferência de recursos do plano mestre:** feita pela busca no código, não usando cada função; algo pode ter escapado [Provável].
-- **Fase 0:** mexe em quase todos os arquivos. A garantia é o teste completo igual a cada passo.
+- v64 no celular e no PC do Nathan — abrir o link, tocar num vão com porta, trocar a altura (o puxador sobe/desce), escolher fecho toque (puxador some, aviso aparece), "Usar em todos".
+- Aparência do fecho no 3D (cilindro pequeno atrás da frente).
+- Posição do fecho na gaveta (atrás da traseira, 10 mm) e na porta (no lado do puxador) é simplificada [Suposição].
 
 ## Pendências
-- **Arquivo offline:** sugeri parar de enviá-lo a cada versão (confunde, porque não tem nuvem). Sem resposta.
-- **Do Nathan:**
-  - dados da empresa para o carimbo;
-  - perguntas às lojas;
-  - peça de teste;
-  - catálogos de gola e cava;
-  - texturas Guararapes / arquivos 3D Blum e Hettich.
-- 1c-i: aprovação.
+- 1c-i: aprovação do Nathan.
+- 0.9: confirmar skill salva e cabeçalhos dos arquivos.
+- Fecho toque real (marca/código) e dobradiça sem amortecedor na biblioteca.
+- Do Nathan: dados da empresa para o carimbo; perguntas às lojas; peça de teste; catálogos de gola e cava; texturas Guararapes / arquivos 3D Blum e Hettich.
+- Arquivo offline: sugestão de parar de enviar a cada versão continua sem resposta.
 
 ## Arquivos tocados
-- **Repositório:**
-  - `fonte/js`: tela, nucleo, editor-modulo, tela-modulo, painel-b (novo), miniatura (novo), regras, ambiente;
-  - `fonte/pagina.html` e os CSS;
-  - `dados/puxadores.json`, `dados/biblioteca.json`;
-  - `CLAUDE.md`, esta passagem.
-- **Projeto:**
-  - novos `claude/plano-mestre.md` e `claude/plano-execucao.md`;
-  - `claude/lacunas-especificacao.md` apagado (substituído);
-  - `claude/plano-reestruturacao.md`, `claude/proximas-alteracoes-tela.md` e `claude/biblioteca.md` atualizados;
-  - `codigo/configurador-moveis.html` (v62).
-- **Artifact:** v49 → v62.
-
-Validação do pedido 73 e das alterações locais anteriores: npm run testar terminou com Todos os casos iguais à referência., saída 0 (log .ferramentas-codex/testar-manrope.log). Fonte Manrope carregada com rede bloqueada, zero pedidos externos; interface conferida em 320/375/768 px. Referências intactas.
+- `fonte/js/nucleo/ferragens/fecho-toque.js` — novo (fecho e avisos).
+- `fonte/js/nucleo/arvore.js` — aplica o puxador e a altura do vão.
+- `fonte/js/nucleo/frentes/giro.js`, `gaveta.js`, `basculante.js` — sem furo e fecho quando é toque; altura cima/meio/baixo na porta.
+- `fonte/js/editor-modulo.js` — `ED.puxadorEmTodos`.
+- `fonte/js/tela/paineis/modulo.js`, `fonte/telas/editor.html` — opção, campo de altura e botão.
+- `dados/biblioteca.json` — item `fecho-toque`.
+- `testes/casos/interface.js` — casos novos.
+- `docs/plano-mestre.md`, `docs/plano-execucao.md` — item 29 ✅; `docs/PASSAGEM_CONVERSA.md`, `docs/HISTORICO.md` (novo).
