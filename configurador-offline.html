@@ -1,5 +1,6 @@
 <meta charset="utf-8">
 <!-- VERSÃO SEM INTERNET (bibliotecas embutidas) · ARQUIVO GERADO por ferramentas/montar.js — não editar aqui; edite fonte/ (pagina.html, estilos/, js/) e dados/*.json -->
+<!-- ESTRUTURA DA TELA: junta estilos, telas e scripts com /*@inclui*/; o montar gera o configurador.html a partir daqui -->
 <title>Configurador de Móveis</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
@@ -1087,6 +1088,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 </template>
 <template id="tplAjusteMedida"><label class="aj-linha"><span data-texto="rot"></span><input type="number" inputmode="decimal" data-aj-valor><select data-aj-fixo aria-label="O que fica no lugar"></select></label></template>
 <template id="tplAjusteItem"><li class="ed-ajuste"><span><strong data-texto="nome"></strong><span data-texto="desc"></span></span><button type="button" class="btn" data-acao="ajuste-voltar">Voltar à regra</button></li></template>
+<!-- DIÁLOGOS (janelas por cima da tela, como Abrir do Drive): só a estrutura; o JS preenche -->
 <dialog id="dlgDrive" class="dlg-drive" aria-label="Abrir do Google Drive">
   <div class="dlg-cab"><strong>Abrir do Drive</strong><button type="button" class="btn" data-acao="fechar-drive">Fechar</button></div>
   <p class="ed-nota" data-texto="nota"></p>
@@ -11591,6 +11593,7 @@ function apresentarFormulario(tipo, p, r) {
   ps.forEach(q => delete q.vaoFormulario);
   return ps;
 }
+// Formulário do Armário → módulo → peças do núcleo → listas e mensagens do formulário.
 function vaosFormulario(p) {
   return String(p.vaos).split(',').map(x => x.trim().toLowerCase().replace(/\s+/g,'')).filter(Boolean).map(x => x === 'botijao+gavetas' ? 'gavetas+botijao' : x);
 }

@@ -1,3 +1,4 @@
+// Formulário do Armário → módulo → peças do núcleo → listas e mensagens do formulário.
 function vaosFormulario(p) {
   return String(p.vaos).split(',').map(x => x.trim().toLowerCase().replace(/\s+/g,'')).filter(Boolean).map(x => x === 'botijao+gavetas' ? 'gavetas+botijao' : x);
 }

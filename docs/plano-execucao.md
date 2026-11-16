@@ -82,7 +82,7 @@ Fase 0 primeiro, depois o puxador por vão, a 1c-i e o bloco 1;
 0.6	✅ Feito 11/11/2026 — formulários do Gabinete e do Armário montam pelo núcleo; geradores.js removido. Adaptadores em formularios/ conservam listas, nomes, ordem e validações; contrato do núcleo preserva fundo, dobradiças, furação e puxadores. npm run testar: Todos os casos iguais à referência. Referências intactas. Sem publicação.	formularios/*.js, nucleo/*, tipos.js; geradores.js removido	M
 0.7	✅ Feito 11/11/2026 — testes separados em dez áreas, filtros por área e formulário, --listar; conferência parcial identificada. Teste completo obrigatório passou: Todos os casos iguais à referência. Referências intactas.	testes/**	P
 0.8 ✅ Implementado em 11/11/2026 — seleção preservada, cabeçalho responsivo e movimento da parede B.	Defeitos conhecidos: barra de cima do celular; vão escolhido volta ao Vão 1 ao dividir; correr e basculante da parede B sem animação	tela/**	P
-0.9 EM ANDAMENTO — arquitetura e instruções atualizadas; falta localizar a skill externa.	Atualizar arquitetura.md, CLAUDE.md e a skill com a estrutura nova; cabeçalho curto em cada arquivo dizendo o que ele faz	docs	P
+0.9 ✅ Feito 16/11/2026 — arquitetura, CLAUDE.md e skill configurador-moveis atualizados (testes por área, pagina-publicar); cabeçalho curto em todos os 89 arquivos da fonte. Teste completo igual.	Atualizar arquitetura.md, CLAUDE.md e a skill com a estrutura nova; cabeçalho curto em cada arquivo dizendo o que ele faz	docs	P
 
 Pendências curtas antes do bloco 1 (podem ir junto com a Fase 0):
 
