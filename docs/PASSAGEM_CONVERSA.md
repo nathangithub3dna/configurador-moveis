@@ -48,3 +48,8 @@ O item 29 (puxador por vão) está completo e publicado no link do Claude na **v
 - `dados/biblioteca.json` — item `fecho-toque`.
 - `testes/casos/interface.js` — casos novos.
 - `docs/plano-mestre.md`, `docs/plano-execucao.md` — item 29 ✅; `docs/PASSAGEM_CONVERSA.md`, `docs/HISTORICO.md` (novo).
+
+## Atualização 16/11/2026 (mesma conversa)
+- Item 19 feito (v65, a762f4f). Defeito de abertura com peça ajustada corrigido (v66, 89a25e0): EIXOS_TELA passou para tela/ajuste-nomes.js; teste novo em reabrir.
+- **Próximo passo: item 70 (cubo de navegação no 3D), antecipado pelo Nathan para antes do item 13.** Depois: 13, 25, 30, 14 (ordem do plano mestre).
+- Pendente com o Nathan: conferir v66 no celular, aprovar a 1c-i, conferir itens 29 e 19.

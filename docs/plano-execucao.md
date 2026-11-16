@@ -89,6 +89,7 @@ Pendências curtas antes do bloco 1 (podem ir junto com a Fase 0):
 aprovação da 1c-i;
 item 29 ✅ 15/11/2026 — modelo por vão, usar em todos, altura cima/meio/embaixo, sem puxador/fecho toque (nucleo/ferragens/fecho-toque.js + arvore.js + painel do vão).
 Blocos (ordem aprovada; dentro de cada bloco, do mais barato ao mais caro)
+Antes do bloco 1 (antecipado em 16/11/2026, pedido do Nathan): 70 cubo de navegação — tela/3d/camera.js — M. Cubo no canto do 3D: clicar em face, aresta ou canto gira a câmera; Perspectiva/Ortogonal junto. Feito do zero (o Granfinale não é tocado nem copiado).
 Bloco 1 — Guarda-roupa (≈ 3 conversas)
 Item	Onde	Custo
 19 ✅ 16/11/2026 (a762f4f, v65) prateleira de vidro, "invisível" (pino escondido), divisória dupla — conteudos/prateleiras.js (MODELOS_PRAT), arvore.js (no.dupla), fixacoes.js, modulo-livre.js	conteudos/prateleiras.js, divisorias.js; vidro em materiais.json	P
@@ -166,7 +167,7 @@ Item	Onde	Custo
 Bloco 9 — Avançados e tela (≈ 4–5 conversas)
 Item	Onde	Custo
 69 localizar peça pelo código	tela/paineis/listas.js	P
-70 cubo de navegação	tela/3d/camera.js	M
+70 cubo de navegação (antecipado para antes do bloco 1)	tela/3d/camera.js	M
 68 histórico de versões	tela/salvar/nuvem.js	M
 67 modelo 3D próprio na cena	tela/3d/cena.js, dados/	M
 66 importar do Blender, FreeCAD, Inventor	base/formato.js + importar/*.js	G

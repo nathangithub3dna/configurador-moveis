@@ -158,6 +158,7 @@ Antes do bloco 1: Fase 0 (separar o código em arquivos pequenos, sem mudar resu
 
 aprovar a 1c-i;
 item 29 (puxador por vão) ✅ 15/11/2026.
+Antecipado em 16/11/2026 (pedido do Nathan): item 70, cubo de navegação no 3D, antes do item 13. Era o próximo da fila da tela de 09/11 e foi para o fim por engano ao montar este plano.
 Guarda-roupa: 13, 25, 30, 14 (modelos prontos).
 Cozinha real:
 1c-ii/1c-iii (ilha);
