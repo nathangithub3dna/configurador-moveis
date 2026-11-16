@@ -101,7 +101,7 @@ tamburato (Promob).
 Painel fixo e frente falsa; fecho toque em porta e gaveta.
 Veio contínuo entre frentes vizinhas.
 Ajuste de dobradiça por porta: quantidade, posição, recuo (DinaBox).
-Puxador por vão: ✅ **feito em 15/11/2026** — modelo por vão (herda o do móvel), "usar em todos os vãos", altura em cima/meio/embaixo na porta de giro, "abre para baixo" e "sem puxador · fecho toque" (fecho na caixa, frente sem furo, aviso de dobradiça/corrediça sem amortecedor; correr fica com concha). Fecho genérico [Suposição]. Commit e versão do artifact: ver passagem.
+Puxador por vão: ✅ **feito em 15/11/2026** — modelo por vão (herda o do móvel), "usar em todos os vãos", altura em cima/meio/embaixo na porta de giro, "abre para baixo" e "sem puxador · fecho toque" (fecho na caixa, frente sem furo, aviso de dobradiça/corrediça sem amortecedor; correr fica com concha). Fecho genérico [Suposição]. Commit 4c16590, artifact v64.
 Corrediça oculta (undermount) e gaveta metálica tipo Tandembox (Mozaik, Promob).
 Junção confirmat; mão-francesa, cantoneira, suporte invisível na biblioteca.
 D. Construção
