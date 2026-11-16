@@ -91,7 +91,7 @@ item 29 ✅ 15/11/2026 — modelo por vão, usar em todos, altura cima/meio/emba
 Blocos (ordem aprovada; dentro de cada bloco, do mais barato ao mais caro)
 Bloco 1 — Guarda-roupa (≈ 3 conversas)
 Item	Onde	Custo
-19 prateleira de vidro, "invisível", divisória dupla	conteudos/prateleiras.js, divisorias.js; vidro em materiais.json	P
+19 ✅ 16/11/2026 (a762f4f, v65) prateleira de vidro, "invisível" (pino escondido), divisória dupla — conteudos/prateleiras.js (MODELOS_PRAT), arvore.js (no.dupla), fixacoes.js, modulo-livre.js	conteudos/prateleiras.js, divisorias.js; vidro em materiais.json	P
 13 cabideiro, maleiro, calceiro	conteudos/cabideiro.js, maleiro.js, calceiro.js; tubo oval e suportes em biblioteca/acessorios.json (pesquisar itens reais)	M
 30 corrediça oculta e gaveta metálica	ferragens/corredicas.js, frentes/gaveta.js, biblioteca/corredicas.json	M
 25 recobrimento total/parcial/embutido + dobradiça curva/supercurva + calço	frentes/giro.js, ferragens/dobradicas.js, biblioteca/dobradicas.json	M–G (a furação muda)

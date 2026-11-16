@@ -85,7 +85,7 @@ Medida mínima e máxima por módulo (Promob).
 Módulo com formato:
 chanfrado ou curvo;
 inclinado embaixo de escada ou de telhado (Polyboard, Mozaik).
-Prateleira de vidro; prateleira "invisível"; divisória dupla estrutural (DinaBox).
+Prateleira de vidro; prateleira "invisível"; divisória dupla estrutural (DinaBox). ✅ item 19 — 16/11/2026, commit a762f4f, artifact v65: tipo de prateleira (comum / vidro temperado 6 mm / pino escondido) e divisória dupla (2 chapas coladas) na divisão em pé.
 Agregados: aramado, cesto, lixeira, divisor de talheres, tulha, sapateira inclinada, rodízio, LED (Promob, DinaBox).
 ★ Eletro embutido: forno, micro-ondas, cooktop, coifa (nicho pela medida do aparelho; Promob, Mozaik).
 Cama de casal e de solteiro com gaveteiro (DinaBox).
