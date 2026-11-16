@@ -46,7 +46,7 @@ fonte/
     comercial/  orcamento.js · revisao.js · clientes.js · contrato.js · pagina-cliente.js
     producao/   acompanhamento.js
     tela/       inicio.js · estado.js · desfazer.js
-      3d/         cena.js · camera.js (cubo de navegação) · selecao.js · cotas-medir.js · animacao.js · menu-3d.js
+      3d/         cena.js · camera.js · cubo.js (cubo de navegação) · selecao.js · cotas-medir.js · animacao.js · menu-3d.js
       salvar/     local.js · arquivo-json.js · nuvem.js · drive.js · modelos.js (salvar como modelo pronto)
       paineis/    modulo.js · vao.js (gerado do registro) · ambiente.js · livres.js · ajuste.js · listas.js
                   orcamento.js · loja.js · revisao.js · exportar.js · painel-b.js · miniatura.js
@@ -89,7 +89,7 @@ Pendências curtas antes do bloco 1 (podem ir junto com a Fase 0):
 aprovação da 1c-i;
 item 29 ✅ 15/11/2026 — modelo por vão, usar em todos, altura cima/meio/embaixo, sem puxador/fecho toque (nucleo/ferragens/fecho-toque.js + arvore.js + painel do vão).
 Blocos (ordem aprovada; dentro de cada bloco, do mais barato ao mais caro)
-Antes do bloco 1 (antecipado em 16/11/2026, pedido do Nathan): 70 cubo de navegação — tela/3d/camera.js — M. Cubo no canto do 3D: clicar em face, aresta ou canto gira a câmera; Perspectiva/Ortogonal junto. Feito do zero (o Granfinale não é tocado nem copiado).
+Antes do bloco 1 (antecipado em 16/11/2026, pedido do Nathan): 70 ✅ 16/11/2026 (v67) cubo de navegação — tela/3d/cubo.js (+ enquadramento() em camera.js) — M. Cubo no canto do 3D: clicar em face, aresta ou canto gira a câmera; Perspectiva/Ortogonal junto. Feito do zero (o Granfinale não é tocado nem copiado).
 Bloco 1 — Guarda-roupa (≈ 3 conversas)
 Item	Onde	Custo
 19 ✅ 16/11/2026 (a762f4f, v65) prateleira de vidro, "invisível" (pino escondido), divisória dupla — conteudos/prateleiras.js (MODELOS_PRAT), arvore.js (no.dupla), fixacoes.js, modulo-livre.js	conteudos/prateleiras.js, divisorias.js; vidro em materiais.json	P

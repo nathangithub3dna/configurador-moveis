@@ -61,5 +61,20 @@ module.exports={id:'interface',descricao:'Cabeçalho móvel, animações e puxad
  assert.ok(await page.evaluate(()=>{const c=window.__configurador,m=c.estado.projeto.parametros;return c.ED.espacos(m.raiz).filter(e=>!e.divisao).every(e=>e.no.puxador===undefined);}));
  console.log('Altura do puxador, fecho toque e usar em todos os vãos OK: aviso '+(tq.aviso?'presente':'AUSENTE'));
 
+ // item 70: cubo de navegação — canto gira a câmera; casa volta; Orto liga o mesmo botão Ortogonal; some no esquema
+ if (await page.locator('#b3D').isVisible()) await page.click('#b3D');
+ const dirCam = ()=>page.evaluate(()=>{const {camera,controles}=window.__configurador.cam();return camera.position.clone().sub(controles.target).normalize().toArray();});
+ const clicarZona = async dir=>{const zs=page.locator(`.cubo-zona[data-dir="${dir}"]`);for(let i=0;i<await zs.count();i++){const b=await zs.nth(i).boundingBox();if(!b)continue;const x=b.x+b.width/2,y=b.y+b.height/2;if(await page.evaluate(([x,y,d])=>document.elementFromPoint(x,y)?.dataset?.dir===d,[x,y,dir])){await page.mouse.click(x,y);return true;}}return false;};
+ const perto = (alvo)=>page.waitForFunction(a=>{const {camera,controles}=window.__configurador.cam();const d=camera.position.clone().sub(controles.target).normalize();const n=Math.hypot(...a);return Math.abs(d.x-a[0]/n)+Math.abs(d.y-a[1]/n)+Math.abs(d.z-a[2]/n)<0.03;},alvo,{timeout:15000});
+ assert.equal(await page.locator('.cubo-zona').count(),54);
+ assert.ok(await clicarZona('0,0,1'),'face Frente do cubo não clicável'); await perto([0,0,1]);
+ assert.ok(await clicarZona('1,1,1'),'canto do cubo não clicável'); await perto([1,1,1]);
+ assert.equal(await page.inputValue('#selVista'),'livre');
+ await page.click('#cuboCasa'); await perto([0.85,0.6,1.2]);
+ await page.click('#cuboOrto');
+ assert.deepEqual(await page.evaluate(()=>[window.__configurador.estado.orto,document.querySelector('#bOrto').getAttribute('aria-pressed')]),[true,'true']);
+ await page.click('#cuboOrto');
+ console.log('Cubo de navegação OK: face, canto, casa e Orto');
+
  await page.close();return 0;
 }};

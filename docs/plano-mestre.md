@@ -149,7 +149,7 @@ Importar peças do Blender, FreeCAD ou Inventor (pedido nº 2 do Nathan).
 Inserir modelo 3D próprio (eletro, acessório) na cena (Mozaik, Promob).
 Histórico de versões do projeto, voltar a uma versão (Promob). A nuvem guarda só a última.
 Localizar peça pelo código (DinaBox).
-Cubo de navegação no 3D.
+Cubo de navegação no 3D. (item 70 ✅ 16/11/2026, v67)
 Ordem aprovada (10/11/2026)
 
 O Nathan aprovou este documento ("é o que vamos seguir de agora em diante"); a ordem é a sugerida pelo Claude, sem mudança pedida.
@@ -158,7 +158,7 @@ Antes do bloco 1: Fase 0 (separar o código em arquivos pequenos, sem mudar resu
 
 aprovar a 1c-i;
 item 29 (puxador por vão) ✅ 15/11/2026.
-Antecipado em 16/11/2026 (pedido do Nathan): item 70, cubo de navegação no 3D, antes do item 13. Era o próximo da fila da tela de 09/11 e foi para o fim por engano ao montar este plano.
+Antecipado em 16/11/2026 (pedido do Nathan): item 70, cubo de navegação no 3D, antes do item 13. ✅ Feito 16/11/2026 (v67): tela/3d/cubo.js — face, aresta e canto giram a câmera; casa volta à vista inicial; botão Orto; some no esquema; 56 px no PC e 42 px no celular (pedido do Nathan: não exagerado). Era o próximo da fila da tela de 09/11 e foi para o fim por engano ao montar este plano.
 Guarda-roupa: 13, 25, 30, 14 (modelos prontos).
 Cozinha real:
 1c-ii/1c-iii (ilha);

@@ -95,6 +95,7 @@
           <option value="frente">Frente</option>
           <option value="lateral">Lateral</option>
           <option value="topo">Topo</option>
+          <option value="livre" hidden>Vista do cubo</option>
         </select>
         <button class="btn" id="bOrto" aria-pressed="false" type="button">Ortogonal</button>
       </div>
@@ -129,6 +130,14 @@
     </div>
     <div class="palco" id="palco">
       <div class="esquema" id="esquema" hidden aria-label="Esquema do móvel visto de frente"></div>
+      <!-- cubo de navegação (item 70): js/tela/3d/cubo.js monta as faces e gira junto com a câmera -->
+      <div class="cubo" id="cubo" aria-label="Cubo de navegação: clique numa face, aresta ou canto para girar a vista">
+        <div class="cubo-cena"><div class="cubo-corpo" id="cuboCorpo"></div></div>
+        <div class="cubo-botoes">
+          <button class="btn" id="cuboCasa" type="button" title="Voltar à vista inicial" aria-label="Vista inicial">⌂</button>
+          <button class="btn" id="cuboOrto" type="button" aria-pressed="false" title="Ortogonal: sem perspectiva (linhas paralelas)">Orto</button>
+        </div>
+      </div>
       <div class="leg-fix" id="legFix" hidden>
         <span><i style="background:#e8772e"></i>Parafuso 4,0 × 50</span><span><i style="background:#c94f8a"></i>3,5 × 14 (fundo)</span>
         <span><i style="background:#8e5bd0"></i>3,5 × 25 (frente gaveta)</span><span><i style="background:#d9a21b"></i>4,0 × 30 (espaçador)</span>
@@ -336,6 +345,7 @@
 /*@inclui:js/tela/3d/cena.js*/
 /*@inclui:js/tela/3d/cotas.js*/
 /*@inclui:js/tela/3d/camera.js*/
+/*@inclui:js/tela/3d/cubo.js*/
 /*@inclui:js/tela/3d/selecao.js*/
 /*@inclui:js/tela/3d/medir.js*/
 /*@inclui:js/tela/3d/clique.js*/

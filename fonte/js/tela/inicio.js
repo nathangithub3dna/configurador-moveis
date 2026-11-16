@@ -19,7 +19,7 @@ function quadro() {
     if (m?.tipo === 'gaveta') { const alvo = estado.gavetas ? m.curso : 0; no.slide += (alvo - no.slide)*k; if (m.eixo === 'x') no.mover.position.x = no.slide; else no.mover.position.z = no.slide; }
     no.wrapper.position.copy(no.dirExp).multiplyScalar(expAtual*0.9);
   }
-  controles.update();
+  controles.update(); atualizarCubo();
   renderer.render(cena, cam); rotulos.render(cena, cam);
   requestAnimationFrame(quadro);
 }
