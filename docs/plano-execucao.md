@@ -87,7 +87,7 @@ Fase 0 primeiro, depois o puxador por vão, a 1c-i e o bloco 1;
 Pendências curtas antes do bloco 1 (podem ir junto com a Fase 0):
 
 aprovação da 1c-i;
-item 29 EM ANDAMENTO — escolha do modelo por vão implementada; faltam aplicar a todos, altura e sem puxador/fecho toque (puxador por vão: frentes/puxador.js + painel do vão), custo M.
+item 29 ✅ 15/11/2026 — modelo por vão, usar em todos, altura cima/meio/embaixo, sem puxador/fecho toque (nucleo/ferragens/fecho-toque.js + arvore.js + painel do vão).
 Blocos (ordem aprovada; dentro de cada bloco, do mais barato ao mais caro)
 Bloco 1 — Guarda-roupa (≈ 3 conversas)
 Item	Onde	Custo

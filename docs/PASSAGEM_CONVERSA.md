@@ -1,5 +1,14 @@
 # Passagem — Configurador de Móveis — 10/11/2026 13:05
 
+## Item 29 concluído — 15/11/2026 (noite)
+
+- **Feito:** no painel do vão, "Modelo do puxador neste vão" ganhou **Sem puxador · fecho toque**; campo novo **Altura do puxador** (Automática / Em cima / No meio / Embaixo, só em porta de giro com puxador de furo); botão **Usar este puxador em todos os vãos** (copia modelo e altura; com "padrão do móvel" devolve todos ao padrão).
+- **Fecho toque:** frente sem furo de puxador; 1 "Fecho toque" por porta/gaveta/basculante na lista de compras (`fecho-toque` na biblioteca, genérico [Suposição]); aviso por vão: dobradiça sem amortecedor (porta) ou corrediça com abertura por toque (gaveta). Porta de correr não abre por toque: fica a concha, com aviso. A dobradiça do kit **não** é trocada sozinha (falta uma dobradiça sem amortecedor real na biblioteca).
+- **Código:** `nucleo/ferragens/fecho-toque.js` (novo), `nucleo/arvore.js` (aplica o puxador do vão), `frentes/giro.js`, `gaveta.js`, `basculante.js`, `editor-modulo.js` (`ED.puxadorEmTodos`), `tela/paineis/modulo.js`, `telas/editor.html`, `dados/biblioteca.json`. Campos novos no vão: `puxador:'toque'` e `puxadorAltura`; formato continua 1 (campos opcionais).
+- **Teste:** completo igual à referência (nenhuma referência mudou); `testes/casos/interface.js` confere altura, fecho em porta/gaveta/basculante, aviso e "usar em todos".
+- **Sem verificar na tela real:** celular do Nathan; aparência do fecho no 3D.
+- **Próximo:** 0.9 (skill aguardando o Nathan salvar o cartão) e aprovação da 1c-i; depois item 19 (bloco 1).
+
 ## Volta ao Claude — 15/11/2026 (publicado)
 
 - **Publicado no link do Claude: versão 63** (id 1794751160-5c61), a partir do commit 6436345. Leva tudo desde a v62: Fase 0 (0.1 a 0.8), "Abre p/ baixo", largura dos espaços das divisórias, pedidos 71 (Sapateira e Botijão separados), 72 (Juntar/Dividir logo abaixo dos Espaços), 73 (fonte Manrope) e o modelo de puxador por vão. Nuvem, downloads e Drive preservados. Formato do projeto continua 1.

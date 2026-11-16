@@ -39,6 +39,27 @@ module.exports={id:'interface',descricao:'Cabeçalho móvel, animações e puxad
  await page.selectOption('#form [data-vao="puxador"]','');
  assert.equal(await page.evaluate(()=>window.__configurador.ED.no(window.__configurador.estado.projeto.parametros.raiz,'.0').puxador),undefined);
  console.log('Puxador por vão e retorno ao padrão OK');
+ // item 29: altura em cima/embaixo, sem puxador (fecho toque) e "usar em todos os vãos"
+ const yPux = ()=>page.evaluate(()=>{const b=window.__configurador.estado.res.pecas.find(p=>p.id==='porta-1-puxador')?.box;return b?(b[2]+b[3])/2:null;});
+ await page.selectOption('#form [data-vao="puxadorAltura"]','cima'); const yCima=await yPux();
+ await page.selectOption('#form [data-vao="puxadorAltura"]','baixo'); const yBaixo=await yPux();
+ assert.ok(yCima>yBaixo,'puxador em cima precisa ficar acima do embaixo');
+ await page.selectOption('#form [data-vao="puxadorAltura"]','');
+ await page.selectOption('#form [data-vao="puxador"]','toque');
+ const tq = await page.evaluate(()=>{const r=window.__configurador.estado.res,pcs=r.pecas,pt=pcs.find(p=>p.id==='porta-1');return {pux:!!pcs.find(p=>p.id==='porta-1-puxador'),fecho:pcs.find(p=>p.id==='porta-1-fecho-toque')?.ref,furos:(pt?.des?.furos||[]).filter(f=>f.tipo==='puxador').length,outro:!!pcs.find(p=>p.id==='porta-2-puxador'),aviso:(r.avisos||r.A||[]).some(a=>/fecho toque/.test(a)),altVisivel:!!document.querySelector('#form [data-vao="puxadorAltura"]')?.closest('label')?.offsetParent};});
+ assert.equal(tq.pux,false);assert.equal(tq.fecho,'fecho-toque');assert.equal(tq.furos,0);assert.equal(tq.outro,true);assert.equal(tq.altVisivel,false);
+ for (const [fr,id] of [['gaveta','gaveta-1-fecho-toque'],['basculante','porta-basculante-1-fecho-toque']]) {
+  await page.click(`#form [data-acao="frente"][data-valor="${fr}"]`);
+  const r = await page.evaluate(id=>{const pcs=window.__configurador.estado.res.pecas;return {fecho:!!pcs.find(p=>p.id===id),ids:pcs.filter(p=>/fecho|puxador/.test(p.id)).map(p=>p.id)};},id);
+  assert.ok(r.fecho,fr+' sem fecho toque: '+r.ids.join(','));
+ }
+ await page.click('#form [data-acao="puxador-todos"]');
+ const todos = await page.evaluate(()=>{const c=window.__configurador,m=c.estado.projeto.parametros;return c.ED.espacos(m.raiz).filter(e=>!e.divisao).map(e=>e.no.puxador);});
+ assert.ok(todos.length>1&&todos.every(x=>x==='toque'),'todos os vãos com fecho toque: '+todos);
+ await page.selectOption('#form [data-vao="puxador"]','');
+ await page.click('#form [data-acao="puxador-todos"]');
+ assert.ok(await page.evaluate(()=>{const c=window.__configurador,m=c.estado.projeto.parametros;return c.ED.espacos(m.raiz).filter(e=>!e.divisao).every(e=>e.no.puxador===undefined);}));
+ console.log('Altura do puxador, fecho toque e usar em todos os vãos OK: aviso '+(tq.aviso?'presente':'AUSENTE'));
 
  await page.close();return 0;
 }};

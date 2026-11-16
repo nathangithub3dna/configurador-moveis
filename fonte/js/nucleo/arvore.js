@@ -49,7 +49,10 @@ function vaoDaArvore(ctx, no, g) {
   const { cont } = ctx;
   const V = ++cont.vao, fr = no.frente || { tipo:'nenhuma' };
   const moduloOriginal = ctx.m;
-  if (no.puxador && PUXADORES[no.puxador]) { const px = PUXADORES[no.puxador]; ctx.m = { ...ctx.m, puxadorPorta:{ ...px, altura:ctx.m.puxadorPorta?.altura ?? 1050 }, puxadorGaveta:{ ...px } }; }
+  // puxador deste vão (item 29): modelo próprio, "sem puxador · fecho toque" e altura na porta (cima/meio/baixo); sem escolha = o do móvel
+  const pxV = no.puxador === 'toque' ? PUXADOR_TOQUE : PUXADORES[no.puxador], altV = ['cima', 'meio', 'baixo'].includes(no.puxadorAltura) ? no.puxadorAltura : null;
+  if (pxV || altV) ctx.m = { ...ctx.m, puxadorPorta:{ ...(pxV || ctx.m.puxadorPorta), altura:altV ?? ctx.m.puxadorPorta?.altura ?? 1050 }, ...(pxV ? { puxadorGaveta:{ ...pxV } } : {}) };
+  if (pxV === PUXADOR_TOQUE) avisoFechoToque(ctx, fr, V);
   try {
   // FRENTE e CONTEÚDO (de baixo para cima) vêm do registro: nucleo/frentes/*.js e nucleo/conteudos/*.js
   const ladoFrente = FRENTES[fr.tipo] ? FRENTES[fr.tipo].gerar(ctx, g, fr, V) || null : null;

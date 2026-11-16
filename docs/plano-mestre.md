@@ -101,7 +101,7 @@ tamburato (Promob).
 Painel fixo e frente falsa; fecho toque em porta e gaveta.
 Veio contínuo entre frentes vizinhas.
 Ajuste de dobradiça por porta: quantidade, posição, recuo (DinaBox).
-Puxador por vão: **em andamento (11/11): escolha de modelo por vão e herança do móvel implementadas.** Restante: modelo + posição juntos, "usar em todos os vãos", altura (em cima/meio/embaixo), "abre para baixo", "sem puxador (fecho toque)". Já combinado em 10/11.
+Puxador por vão: ✅ **feito em 15/11/2026** — modelo por vão (herda o do móvel), "usar em todos os vãos", altura em cima/meio/embaixo na porta de giro, "abre para baixo" e "sem puxador · fecho toque" (fecho na caixa, frente sem furo, aviso de dobradiça/corrediça sem amortecedor; correr fica com concha). Fecho genérico [Suposição]. Commit e versão do artifact: ver passagem.
 Corrediça oculta (undermount) e gaveta metálica tipo Tandembox (Mozaik, Promob).
 Junção confirmat; mão-francesa, cantoneira, suporte invisível na biblioteca.
 D. Construção
@@ -157,7 +157,7 @@ O Nathan aprovou este documento ("é o que vamos seguir de agora em diante"); a 
 Antes do bloco 1: Fase 0 (separar o código em arquivos pequenos, sem mudar resultado — ver plano-execucao.md) e duas pendências curtas:
 
 aprovar a 1c-i;
-fechar o item 29 (puxador por vão), que já estava combinado.
+item 29 (puxador por vão) ✅ 15/11/2026.
 Guarda-roupa: 13, 25, 30, 14 (modelos prontos).
 Cozinha real:
 1c-ii/1c-iii (ilha);

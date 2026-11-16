@@ -42,8 +42,9 @@ function montarEditorModulo() {
   });
 
   const selPuxador = ed.querySelector('[data-vao="puxador"]');
-  selPuxador.replaceChildren(el('option', {value:''}, 'Usar o padrão do móvel'), ...Object.entries(PUXADORES).map(([k,p]) => el('option', {value:k}, p.rot)));
+  selPuxador.replaceChildren(el('option', {value:''}, 'Usar o padrão do móvel'), ...Object.entries(PUXADORES).map(([k,p]) => el('option', {value:k}, p.rot)), el('option', {value:'toque'}, PUXADOR_TOQUE.rot));
   selPuxador.value = no.puxador || '';
+  ed.querySelector('[data-vao="puxadorAltura"]').value = no.puxadorAltura || '';
   // vão escolhido
   const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
   preencherModelo(ed, {
@@ -51,7 +52,8 @@ function montarEditorModulo() {
     medida: reg ? `${fmt(reg.x1 - reg.x0)} × ${fmt(reg.y1 - reg.y0)} mm (por dentro)` : '',
     rotLarg: 'Largura por dentro (mm ou auto)', rotAlt: 'Altura na frente (mm ou auto)',   // é assim que o núcleo lê cada uma (coluna: vão livre; faixa deitada: altura da frente)
     porta: no.frente?.tipo === 'porta', correr: no.frente?.tipo === 'correr',
-    perfil: (PUXADORES[no.puxador] || m.puxadorPorta)?.modelo === 'perfil' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
+    perfil: (PUXADORES[no.puxador] || m.puxadorPorta)?.modelo === 'perfil' && no.puxador !== 'toque' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
+    alturaPux: !['perfil'].includes((PUXADORES[no.puxador] || m.puxadorPorta)?.modelo) && no.puxador !== 'toque' && ['porta', '2portas', 'portas'].includes(no.frente?.tipo),   // altura só na porta de giro com puxador de furo
     divisorias: tipoCt === 'divisorias', nDiv: (no.conteudo || []).find(c => c.tipo === 'divisorias')?.n ?? 0,
     prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
@@ -152,6 +154,7 @@ $('form').addEventListener('click', e => {
   if (a === 'selecionar') { estado.vaoSel = b.dataset.cam; montarEditorModulo(); atualizarEsquema(); return; }
   mudarModulo(m => {
     if (a === 'frente') ED.definirFrente(m, cam, b.dataset.valor);
+    if (a === 'puxador-todos') { const n = ED.puxadorEmTodos(m, cam); toast(`Puxador aplicado em ${n} vão(s).`); }
     if (a === 'div-mais') ED.divisorias(m, cam, 1);
     if (a === 'div-menos') ED.divisorias(m, cam, -1);
     if (a === 'prat-mais') ED.prateleiras(m, cam, 1);
@@ -190,6 +193,7 @@ $('form').addEventListener('change', e => {
     const no = ED.no(m.raiz, cam);
     if (kv === 'larg' || kv === 'alt') ED.definirMedida(m, e.target.dataset.cam, v);
     if (kv === 'puxador') { if (v) no.puxador = v; else delete no.puxador; }
+    if (kv === 'puxadorAltura') { if (v) no.puxadorAltura = v; else delete no.puxadorAltura; }
     if (kv === 'lado') no.frente.lado = v;
     if (kv === 'perfil') { if (v === 'auto') delete no.frente.perfil; else no.frente.perfil = v; }
     if (kv === 'sistema') no.frente.sistema = v;

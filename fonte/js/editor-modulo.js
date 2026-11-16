@@ -29,6 +29,12 @@ const ED = {
     };
     ir(raiz, '', 0); return out;
   },
+  // item 29: copia o modelo e a altura do puxador do vão escolhido para todos os vãos (vazio = volta todos ao padrão do móvel)
+  puxadorEmTodos(m, cam) {
+    const ref = ED.no(m.raiz, cam), vaos = ED.espacos(m.raiz).filter(e => !e.divisao);
+    for (const { no } of vaos) for (const k of ['puxador', 'puxadorAltura']) { if (ref[k]) no[k] = ref[k]; else delete no[k]; }
+    return vaos.length;
+  },
   vaoNovo: () => ({ tipo: 'vao', frente: { tipo: 'porta', lado: 'auto' }, conteudo: [] }),
   // dividir: na mesma direção da divisão de fora, só ganha mais uma parte; senão vira uma divisão nova
   dividir(m, cam, dir) {

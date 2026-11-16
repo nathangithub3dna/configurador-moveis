@@ -634,5 +634,14 @@
     "emb": 3,
     "metro": true,
     "obs": "Cortado no tamanho de cada porta e gaveta; preço de referência R$ 273,73 o par de barras (Mark Ferragens, 11/2026)."
+  },
+  "fecho-toque": {
+    "grupo": "Ferragens",
+    "nome": "Fecho toque (abre ao empurrar) com batente",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "obs": "[Suposição] modelo genérico; conferir na loja. Porta: usar com dobradiça sem amortecedor (a Blum combina o TIP-ON com CLIP top sem mola). Gaveta: corrediça com abertura por toque."
   }
 }
