@@ -35,7 +35,7 @@ const FUNCOES_LIVRE = { 'painel':'Painel de parede', 'forro':'Forro', 'cortineir
 const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do próprio id quando existir
   ...Object.keys(FUNCOES_LIVRE).map(f => [new RegExp('^L\\d+-' + f + '$'), f]),
   [/^lateral-(esq|dir)$/, 'lateral'], [/^topo$/, 'topo'], [/^base$/, 'base'],
-  [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+$/, 'divisoria-vertical'], [/^divisoria-int-\d+-\d+$/, 'divisoria-vertical'],
+  [/^divisoria(-h-\d+)?$/, 'divisoria'], [/^divisoria-v-\d+(-2)?$/, 'divisoria-vertical'], [/^divisoria-int-\d+-\d+$/, 'divisoria-vertical'],
   [/^travessa-(frontal|traseira)$/, 'travessa'], [/^travessa-fixacao(-\d+)?$/, 'travessa-fixacao'],
   [/^rodape-(frontal|traseiro|encaixe)$/, 'rodape'], [/^fundo(-\d+)?$/, 'fundo'], [/^pe-regulavel-\d+$/, 'pe'], [/^perfil-h-fundo-\d+$/, 'emenda-fundo'], [/^ponto-\d+$/, 'ponto'], [/^peca-teste$/, 'teste'],
   [/^prateleira-\d+(-\d+)?$/, 'prateleira'], [/^prateleira-fixa-g?\d+$/, 'prateleira-fixa'],
@@ -64,7 +64,7 @@ const ORIENTACAO = {
 const chapasDe = (mat, esp) => Object.entries(BIBLIOTECA).filter(([,b]) => b.unid==='chapa' && b.mat===mat && b.esp===esp).map(([k]) => k);
 const chapaDe = (mat, esp) => chapasDe(mat, esp)[0] || null;
 
-const CATS = { caixa:'Caixa', enchimento:'Enchimento', frente:'Frentes', gaveta:'Caixa das gavetas', fundo:'Fundo', livre:'Peças livres', ferragem:'Ferragens', tampo:'Tampo', referencia:'Referência (não fabricar)' };
+const CATS = { caixa:'Caixa', enchimento:'Enchimento', frente:'Frentes', gaveta:'Caixa das gavetas', fundo:'Fundo', livre:'Peças livres', ferragem:'Ferragens', tampo:'Tampo', vidro:'Vidro (vidraçaria)', referencia:'Referência (não fabricar)' };
 
 const fmt = v => { const r = Math.round(v*10)/10; return Number.isInteger(r) ? String(r) : r.toFixed(1).replace('.', ','); };
 const fitaTxt = f => { const s = []; if (f[0]) s.push(f[0]+'C'); if (f[1]) s.push(f[1]+'L'); return s.length ? s.join(' ') : '—'; };

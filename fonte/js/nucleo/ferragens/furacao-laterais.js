@@ -43,7 +43,7 @@ function fazerFuracao(ctx) {
       }
       furo(z, y, 5, 10, 'pino');
     };
-    pecas.filter(q => q.papel === 'prateleira' && Math.abs((lado === 'esq' ? q.box[0] - R.folgaPrat : q.box[1] + R.folgaPrat) - xIn) < 0.6).forEach(s => [s.box[5]-40, s.box[4]+40].forEach(z => {
+    pecas.filter(q => q.papel === 'prateleira' && Math.abs((lado === 'esq' ? q.box[0] - (q.folga ?? R.folgaPrat) : q.box[1] + (q.folga ?? R.folgaPrat)) - xIn) < 0.6).forEach(s => [s.box[5]-40, s.box[4]+40].forEach(z => {
       const y0 = s.box[2] - 5;
       if (pf === '4-furos') pino(z, y0);
       else if (pf === 'faixa32') for (let k = -c.prateleira.faixa; k <= c.prateleira.faixa; k++) pino(z, y0 + 32*k);

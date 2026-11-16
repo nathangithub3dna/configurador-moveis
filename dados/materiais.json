@@ -34,5 +34,11 @@
     "cor": "#b08a5e",
     "veio": true,
     "obs": "Genérico para teste: o padrão real (fabricante, linha, código e textura) entra no catálogo de acabamentos."
+  },
+  "vidro-temperado": {
+    "nome": "Vidro temperado incolor",
+    "cor": "#cfe6ea",
+    "veio": false,
+    "obs": "Feito na vidraçaria (fora do plano de corte). Bordas lapidadas."
   }
 }

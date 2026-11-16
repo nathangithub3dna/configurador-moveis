@@ -59,7 +59,7 @@ const ED = {
   juntar(m, cam, lado, medidaAtual = () => null) {
     const p = ED.pai(cam); if (!p) return false;
     const div = ED.no(m.raiz, p.cam), j = p.i + lado; if (j < 0 || j >= div.partes.length) return false;
-    const a = div.partes[p.i], b = div.partes[j], t = div.sep === 'divisoria' ? (m.construcao?.espMDF ?? 18) : 0;
+    const a = div.partes[p.i], b = div.partes[j], t = div.sep === 'divisoria' ? (m.construcao?.espMDF ?? 18) * (div.dupla && div.dir === 'v' ? 2 : 1) : 0;   // divisória dupla (item 19): 2 chapas
     const outrosAuto = div.partes.some((x, k) => k !== p.i && k !== j && x.medida === 'auto');
     const ma = a.medida !== 'auto' ? a.medida : medidaAtual(`${p.cam}.${p.i}`), mb = b.medida !== 'auto' ? b.medida : medidaAtual(`${p.cam}.${j}`);
     a.medida = a.medida !== 'auto' && b.medida !== 'auto' ? a.medida + b.medida + t
@@ -100,7 +100,9 @@ const ED = {
         const gap = c => Math.min(...rs.filter(r => r.x0 >= c - 0.6).map(r => r.x0)) - c, sep = gap(xs[0]) > t / 2 ? 'divisoria' : 'nenhum';
         const cortes = xs.filter(c => (gap(c) > t / 2) === (sep === 'divisoria'));
         const grupos = []; cortes.concat([Infinity]).reduce((ini, c) => { grupos.push(rs.filter(r => r.x0 >= ini - 0.6 && r.x1 <= c + 0.6)); return c + 0.1; }, -Infinity);
-        return comMedidas('v', grupos.filter(g => g.length), sep);
+        const nv = comMedidas('v', grupos.filter(g => g.length), sep);
+        if (sep === 'divisoria' && gap(xs[0]) > 1.5 * t) nv.dupla = true;   // divisória dupla (item 19): espaço de 2 chapas
+        return nv;
       }
       // corte deitado: uma linha horizontal na frente que não atravessa nenhum vão
       const ys = [...new Set(rs.map(r => r.fy1))].sort((u, v) => u - v).slice(0, -1).filter(c => rs.every(r => r.fy1 <= c + 0.6 || r.fy0 >= c - 0.6));
@@ -163,7 +165,7 @@ const ED = {
     const fr = (FRENTES_EDITOR.find(f => f[0] === no.frente?.tipo) || ['', 'Nada'])[1];
     const t = ED.tipoConteudo(no), pr = (no.conteudo || []).find(x => x.tipo === 'prateleiras');
     const dv = (no.conteudo || []).find(x => x.tipo === 'divisorias');
-    const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}` : (ESCOLHAS.conteudo[t]?.rotulo || '').toLowerCase();
+    const ct = t === 'divisorias' ? `${dv.n} divisória${dv.n === 1 ? '' : 's'} em pé` : t === 'prateleiras' ? `${pr.n} prateleira${pr.n === 1 ? '' : 's'}${pr.modelo === 'vidro' ? ' de vidro' : pr.modelo === 'oculto' ? ' (pino escondido)' : ''}` : (ESCOLHAS.conteudo[t]?.rotulo || '').toLowerCase();
     return fr + ' · ' + ct;
   },
   resumoDivisao: no => `Dividido ${no.dir === 'v' ? 'em pé' : 'deitado'} em ${no.partes.length}`,

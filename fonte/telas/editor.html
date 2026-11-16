@@ -19,6 +19,7 @@
     <!-- mini desenho de frente: um botão por vão, na posição real (tela/paineis/modulo.js) -->
     <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
     <span class="ed-nota" data-texto="resumoVao"></span>
+    <label class="ed-linha" data-se="podeDupla">Divisória entre os vãos lado a lado<select data-vao="divDupla" title="Dupla: duas chapas coladas; cada lado recebe a sua furação de pino e de dobradiça"><option value="">Simples</option><option value="dupla">Dupla (2 chapas)</option></select></label>
     <div class="ed-sub" data-se="podeJuntar">Juntar com o vizinho</div>
     <div class="ed-grade2">
       <button type="button" class="btn ed-remover" data-acao="juntar-ant" data-se="podeAnt" data-texto="rotAnt"></button>
@@ -66,6 +67,8 @@
       <strong data-texto="nPrat"></strong>
       <button type="button" class="btn" data-acao="prat-mais" aria-label="Mais uma prateleira">+</button>
     </div>
+    <label class="ed-linha" data-se="prateleiras">Tipo de prateleira<select data-vao="modeloPrat" title="Vidro sai do plano de corte e vai para as compras (vidraçaria); pino escondido: suporte oculto no topo da prateleira"></select></label>
+    <span class="ed-nota" data-se="pratVidro">Vidro temperado 6 mm, pedido na vidraçaria (fica fora do plano de corte; a medida vai na lista de compras). 4 suportes de vidro por prateleira.</span>
     <div class="ed-bloco" data-se="prateleiras">
       <span class="ed-nota">Altura de cada prateleira: espaço livre do fundo do vão até ela, em mm. Vazio = automático.</span>
       <div class="ed-grade2" data-lista="alturasPrat"></div>

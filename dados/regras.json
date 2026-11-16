@@ -43,6 +43,8 @@
   "travessa": 100,
   "recuoPrat": 20,
   "folgaPrat": 1,
+  "folgaPratVidro": 2,
+  "espVidroPrat": 6,
   "folgaFundoPrat": 6,
   "folgaAltGaveta": 70,
   "folgaPisoGaveta": 12,

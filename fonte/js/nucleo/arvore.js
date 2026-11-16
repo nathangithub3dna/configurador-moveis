@@ -4,21 +4,25 @@ function percorrerArvore(ctx, no, g, nivel, cam = '') {
   const { Dc, E, add, colunas, cont, juntasFundo, regioes, t, vao, zFr, zf, percorrer } = ctx;
   if (no.tipo === 'dividir' && no.dir === 'v') {
     const n = no.partes.length, iw = g.ix1 - g.ix0, ns = no.sep === 'divisoria' ? n - 1 : 0;
+    const dupla = !!no.dupla && ns > 0, tS = dupla ? 2*t : t;   // divisória dupla (item 19): duas chapas coladas; cada vão fura a sua
     const fixas = no.partes.filter(p => p.medida !== 'auto').reduce((s,p) => s + p.medida, 0), nAuto = no.partes.filter(p => p.medida === 'auto').length;
-    const wAuto = nAuto ? (iw - ns*t - fixas) / nAuto : 0;
+    const wAuto = nAuto ? (iw - ns*tS - fixas) / nAuto : 0;
     if (nAuto && wAuto <= 0) { E.push('As medidas fixas dos vãos passam da largura disponível.'); return; }
     let x = g.ix0;
     no.partes.forEach((p, i) => {
       const w = p.medida === 'auto' ? wAuto : p.medida, x0 = x, x1 = x + w;
-      const fx0 = i === 0 ? g.fx0 : x0 - t/2, fx1 = i === n-1 ? g.fx1 : x1 + (ns ? t/2 : 0);
+      const fx0 = i === 0 ? g.fx0 : x0 - tS/2, fx1 = i === n-1 ? g.fx1 : x1 + (ns ? tS/2 : 0);
       const sub = { ...g, ix0:x0, ix1:x1, fx0, fx1, b:{ ...g.b, esq: i === 0 ? g.b.esq : 'interna', dir: i === n-1 ? g.b.dir : 'interna' } };
       if (nivel === 0) colunas.push([x0, x1]);
       percorrer(p.no, sub, nivel + 1, cam + '.' + i);
       x = x1;
       if (ns && i < n-1) {
-        const k = ++cont.divV; juntasFundo.push(x + t/2);
-        add({ id:`divisoria-v-${k}`, nome:`Divisória vertical ${k}`, nomeLista:'Divisória vertical', cat:'caixa', a:g.iy1-g.iy0, b:Dc, fita:[1,0], box:[x,x+t,g.iy0,g.iy1,zf,zFr], des:{ w:Dc, h:g.iy1-g.iy0, fita:['l'], frente:'l', vista:'Vista lateral (lado direito)' } });
-        x += t;
+        const k = ++cont.divV; juntasFundo.push(x + tS/2);
+        const chapa = (id, xa, nome, obs = '') => add({ id, nome, nomeLista: dupla ? 'Divisória vertical (dupla)' : 'Divisória vertical', cat:'caixa', a:g.iy1-g.iy0, b:Dc, fita:[1,0], obs, box:[xa,xa+t,g.iy0,g.iy1,zf,zFr], des:{ w:Dc, h:g.iy1-g.iy0, fita:['l'], frente:'l', vista:'Vista lateral (lado direito)' } });
+        if (!dupla) chapa(`divisoria-v-${k}`, x, `Divisória vertical ${k}`);
+        else { const obs = 'Divisória dupla: colar as duas chapas e unir com parafusos 3,5 × 25 antes de montar.';
+          chapa(`divisoria-v-${k}`, x, `Divisória vertical ${k} (chapa 1 de 2)`, obs); chapa(`divisoria-v-${k}-2`, x + t, `Divisória vertical ${k} (chapa 2 de 2)`, obs); }
+        x += tS;
       }
     });
     return;

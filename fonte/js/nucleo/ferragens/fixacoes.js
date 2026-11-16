@@ -34,6 +34,9 @@ function calcularFixacoes(pecas) {
         const [i, j] = o;
         if (B.cat === 'frente' && /-frente-interna$/.test(A.id)) {
           for (const u of linha(ov[i][0], ov[i][1], 60, 1e9)) for (const v of linha(ov[j][0], ov[j][1], 30, 1e9)) add('paraf-35x25', pt(xEntrada, { [i]:u, [j]:v }), dir, 25, 3.5, B.id);
+        } else if (A.papel === 'divisoria-vertical' && B.papel === 'divisoria-vertical' && A.id < B.id) {
+          // divisória dupla (item 19): as duas chapas coladas, unidas por parafusos curtos (não atravessam as duas)
+          for (const u of linha(ov[i][0], ov[i][1], 60, 300)) for (const v of linha(ov[j][0], ov[j][1], 60, 300)) add('paraf-35x25', pt(xEntrada, { [i]:u, [j]:v }), dir, 25, 3.5, B.id);
         } else if (A.papel === 'espacador' && B.cat !== 'frente') {
           for (const u of linha(ov[i][0], ov[i][1], 60, 300)) for (const v of linha(ov[j][0], ov[j][1], 50, 1e9)) add('paraf-40x30', pt(xEntrada, { [i]:u, [j]:v }), dir, 30, 4, B.id);
         }
@@ -47,10 +50,10 @@ function calcularFixacoes(pecas) {
   // parafusos de parede nas travessas
   for (const pc of pecas.filter(pc => pc.papel === 'travessa-fixacao')) for (const f of (pc.des?.furos || []).filter(f => f.tipo === 'parede'))
     add('paraf-50x60-bucha', [pc.box[0] + f.x, pc.box[2] + f.y, pc.box[5]], [0,0,-1], 60 + pc.box[5] - pc.box[4], 5, pc.id);
-  // pinos das prateleiras soltas (4 por prateleira, nas paredes do vão)
+  // pinos das prateleiras soltas (4 por prateleira, nas paredes do vão); o modelo do suporte vem do tipo da prateleira (item 19)
   for (const pc of pecas.filter(pc => pc.papel === 'prateleira')) {
-    const [x0,x1,y0,,z0,z1] = pc.box;
-    for (const [x, dx] of [[x0 - 1, 1], [x1 + 1, -1]]) for (const z of [z0 + 40, z1 - 40]) add('pino-5', [x - dx*8, y0 - 3, z], [dx,0,0], 18, 5, pc.id);
+    const [x0,x1,y0,,z0,z1] = pc.box, f = pc.folga ?? R.folgaPrat, tipo = MODELOS_PRAT[pc.apoio]?.suporte || 'pino-5';
+    for (const [x, dx] of [[x0 - f, 1], [x1 + f, -1]]) for (const z of [z0 + 40, z1 - 40]) add(tipo, [x - dx*8, y0 - 3, z], [dx,0,0], 18, 5, pc.id);
   }
   return F;
 }

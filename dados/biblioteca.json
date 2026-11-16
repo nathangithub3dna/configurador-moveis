@@ -246,6 +246,24 @@
     "unid": "un",
     "emb": 1
   },
+  "suporte-vidro-5": {
+    "grupo": "Ferragens",
+    "nome": "Suporte de prateleira de vidro, pino 5 mm com capa e trava (vidro até 6 mm)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "obs": "Genérico; exemplo real: Hettich 73615 (plástico incolor, carga 25 kg/m²)."
+  },
+  "pino-oculto": {
+    "grupo": "Ferragens",
+    "nome": "Suporte de prateleira oculto (pino escondido na prateleira)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "obs": "Genérico, sem marca/código ainda."
+  },
   "sapata": {
     "grupo": "Ferragens",
     "nome": "Sapata niveladora",
@@ -643,5 +661,13 @@
     "unid": "un",
     "emb": 1,
     "obs": "[Suposição] modelo genérico; conferir na loja. Porta: usar com dobradiça sem amortecedor (a Blum combina o TIP-ON com CLIP top sem mola). Gaveta: corrediça com abertura por toque."
+  },
+  "vidro-temperado-6": {
+    "grupo": "Vidros",
+    "nome": "Prateleira de vidro temperado incolor 6 mm, bordas lapidadas",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1
   }
 }

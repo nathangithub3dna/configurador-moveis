@@ -45,6 +45,10 @@ function montarEditorModulo() {
   selPuxador.replaceChildren(el('option', {value:''}, 'Usar o padrão do móvel'), ...Object.entries(PUXADORES).map(([k,p]) => el('option', {value:k}, p.rot)), el('option', {value:'toque'}, PUXADOR_TOQUE.rot));
   selPuxador.value = no.puxador || '';
   ed.querySelector('[data-vao="puxadorAltura"]').value = no.puxadorAltura || '';
+  const selPrat = ed.querySelector('[data-vao="modeloPrat"]'), ctPrat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');   // tipo da prateleira (item 19)
+  selPrat.replaceChildren(...Object.entries(MODELOS_PRAT).map(([k, v]) => el('option', { value:k }, v.rot)));
+  selPrat.value = MODELOS_PRAT[ctPrat?.modelo] ? ctPrat.modelo : 'comum';
+  ed.querySelector('[data-vao="divDupla"]').value = info?.divisao.dupla ? 'dupla' : '';   // divisória dupla da divisão em pé (item 19)
   // vão escolhido
   const tipoCt = ED.tipoConteudo(no), prat = (no.conteudo || []).find(c => c.tipo === 'prateleiras');
   preencherModelo(ed, {
@@ -55,7 +59,8 @@ function montarEditorModulo() {
     perfil: (PUXADORES[no.puxador] || m.puxadorPorta)?.modelo === 'perfil' && no.puxador !== 'toque' && ['porta', '2portas', 'portas', 'correr'].includes(no.frente?.tipo),   // campo "Perfil na borda" só com o perfil G
     alturaPux: !['perfil'].includes((PUXADORES[no.puxador] || m.puxadorPorta)?.modelo) && no.puxador !== 'toque' && ['porta', '2portas', 'portas'].includes(no.frente?.tipo),   // altura só na porta de giro com puxador de furo
     divisorias: tipoCt === 'divisorias', nDiv: (no.conteudo || []).find(c => c.tipo === 'divisorias')?.n ?? 0,
-    prateleiras: tipoCt === 'prateleiras', nPrat: prat ? prat.n : 0, podeRemover: false,
+    podeDupla: info?.divisao.dir === 'v' && info.divisao.sep === 'divisoria',
+    prateleiras: tipoCt === 'prateleiras', pratVidro: tipoCt === 'prateleiras' && prat?.modelo === 'vidro', nPrat: prat ? prat.n : 0, podeRemover: false,
     ...(() => { const pa = info ? ED.pai(sel.cam) : null, n = pa ? info.divisao.partes.length : 0, v = info?.divisao.dir === 'v';
       const podeAnt = !!pa && pa.i > 0, podeProx = !!pa && pa.i < n - 1;
       // vizinhos de outra coluna/faixa (a árvore é refeita ao juntar): só nas direções que o juntar comum não cobre
@@ -201,6 +206,8 @@ $('form').addEventListener('change', e => {
     if (kv === 'conteudo') ED.definirConteudo(m, cam, v);
     if (kv === 'largDiv') { const c = (no.conteudo || []).find(x => x.tipo === 'divisorias'); if (c) { c.larguras = [...(c.larguras || [])]; c.larguras[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
     if (kv === 'prat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { c.alturas = [...(c.alturas || [])]; c.alturas[Number(e.target.dataset.k)] = Number(v) > 0 ? Number(v) : null; } }
+    if (kv === 'divDupla') { const d = ED.parte(m, cam)?.divisao; if (d) { if (v) d.dupla = true; else delete d.dupla; } }
+    if (kv === 'modeloPrat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { if (v === 'comum') delete c.modelo; else c.modelo = v; } }
     if (kv === 'altGav') { const c = (no.conteudo || []).find(x => x.tipo === 'gavetas-internas'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'altBot') { const c = (no.conteudo || []).find(x => x.tipo === 'botijao'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'nivelSap') { const c = sapateiraDoVao(no); if (c && Number(v) > 0) c.nivel = Number(v); }

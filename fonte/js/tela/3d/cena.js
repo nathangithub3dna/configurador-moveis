@@ -31,6 +31,8 @@ const matFix = {
   'paraf-50x60-bucha': new THREE.MeshLambertMaterial({ color:0xd8322b, clippingPlanes:planos }),
   'cavilha-8x30': new THREE.MeshLambertMaterial({ color:0x2f9e6b, clippingPlanes:planos }),
   'pino-5': new THREE.MeshLambertMaterial({ color:0x3b82c4, clippingPlanes:planos }),
+  'suporte-vidro-5': new THREE.MeshLambertMaterial({ color:0x6cc3d5, clippingPlanes:planos }),
+  'pino-oculto': new THREE.MeshLambertMaterial({ color:0x1f4f80, clippingPlanes:planos }),
 };
 const matCor = {};
 const matDe = pc => pc.cor === undefined ? matCat[pc.cat] : (matCor[pc.cor] ||= new THREE.MeshLambertMaterial({ color:pc.cor, clippingPlanes:planos }));
@@ -43,6 +45,7 @@ function aplicarFix() {
   const leg = document.getElementById('legFix'); if (leg) leg.hidden = !on;
 }
 matCat.tampo.transparent = true; matCat.tampo.opacity = 0.5; matCat.tampo.depthWrite = false;
+matCat.vidro.transparent = true; matCat.vidro.opacity = 0.4; matCat.vidro.depthWrite = false;   // prateleira de vidro (item 19)
 const matSel = new THREE.MeshLambertMaterial({ clippingPlanes:planos, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1 });
 const matLinha = new THREE.LineBasicMaterial({ clippingPlanes:planos, transparent:true, opacity:0.7 });
 const matCota = new THREE.LineBasicMaterial({ depthTest:false, transparent:true });
