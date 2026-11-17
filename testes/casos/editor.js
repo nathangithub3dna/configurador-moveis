@@ -166,6 +166,47 @@ module.exports = { id:'editor', descricao:"Editor do móvel livre", async execut
     else console.log('Item 13: cabideiro, maleiro e calceiro OK  ' + JSON.stringify(info));
     await page.close();
   }
+  // item 74: esquema dos espaços preso no alto; categorias abrem/fecham e mudam de ordem (guardado no aparelho)
+  {
+    const page = await ctx.newPage(); const erros = [];
+    page.on('pageerror', e => erros.push(e.message));
+    await page.addInitScript(() => { try { if (!sessionStorage.getItem('jaAbriu')) { localStorage.clear(); sessionStorage.setItem('jaAbriu', '1'); } } catch (e) {} });
+    await page.route('**/*', route => {
+      const u = route.request().url();
+      if (u.startsWith('http://teste/')) return route.fulfill({ body: pagina, contentType: 'text/html' });
+      const m = u.match(/three@0\.160\.0\/(.*)$/);
+      if (m) return route.fulfill({ path: nm('three/' + m[1]), contentType: 'application/javascript' });
+      if (u.includes('jspdf')) return route.fulfill({ path: nm('jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript' });
+      if (u.includes('jszip')) return route.fulfill({ path: nm('jszip/dist/jszip.min.js'), contentType: 'application/javascript' });
+      if (u.includes('qrcode-generator')) return route.fulfill({ path: nm('qrcode-generator/qrcode.js'), contentType: 'application/javascript' });
+      if (u.includes('svg2pdf')) return route.fulfill({ path: nm('svg2pdf.js/dist/svg2pdf.umd.min.js'), contentType: 'application/javascript' });
+      return route.abort();
+    });
+    await page.setViewportSize({ width:1400, height:900 });
+    const abrir = async () => { await page.goto('http://teste/', { waitUntil:'commit' }); await page.waitForFunction(() => window.__configurador?.estado?.res);
+      await page.selectOption('#tipoMovel', 'modulo'); await page.waitForFunction(() => window.__configurador.estado.projeto.tipo === 'modulo'); };
+    const cats = () => page.evaluate(() => [...document.querySelectorAll('#form .ed-cat')].map(s => s.dataset.cat + (s.hasAttribute('data-fechada') ? '-' : '+')).join(' '));
+    await abrir();
+    const inicio = await cats();
+    await page.click('#form .ed-cat[data-cat="medidas"] .ed-cat-abrir');
+    const medidasEscondida = await page.evaluate(() => !document.querySelector('#form [data-modulo="largura"]').offsetParent);
+    await page.focus('#form .ed-cat[data-cat="conteudo"] .ed-cat-mover');
+    await page.keyboard.press('ArrowUp'); await page.keyboard.press('ArrowUp');
+    const movida = await cats();
+    await page.click('#form [data-acao="selecionar"][data-cam=".1"]');                 // remonta o editor
+    const remontada = await cats();
+    await page.evaluate(() => { document.querySelector('#painelParam').scrollTop = 900; });
+    await page.waitForFunction(() => { const f = document.querySelector('#form .ed-fixo'), p = document.querySelector('#painelParam'); return p.scrollTop > 100 && Math.abs(f.getBoundingClientRect().top - p.getBoundingClientRect().top) < 2; });
+    const preso = await page.evaluate(() => getComputedStyle(document.querySelector('#form .ed-fixo')).position);
+    await abrir();                                                                       // abre de novo: lembra a ordem e o que estava fechado
+    const reaberta = await cats();
+    const esperado = 'medidas- conteudo+ espacos+ vao+ construcao- ajustes-';
+    const ok = !erros.length && inicio === 'medidas+ espacos+ vao+ conteudo+ construcao- ajustes-' && medidasEscondida
+      && movida === esperado && remontada === esperado && reaberta === esperado && preso === 'sticky';
+    if (!ok) { falhas++; console.log('ITEM 74 (ESQUEMA PRESO E CATEGORIAS) ERRADO  ' + JSON.stringify({ inicio, medidasEscondida, movida, remontada, reaberta, preso, erros })); }
+    else console.log('Item 74: esquema preso e categorias OK  ' + JSON.stringify({ ordem:reaberta }));
+    await page.close();
+  }
 
   return falhas;
 } };

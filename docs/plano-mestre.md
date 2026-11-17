@@ -150,6 +150,7 @@ Inserir modelo 3D próprio (eletro, acessório) na cena (Mozaik, Promob).
 Histórico de versões do projeto, voltar a uma versão (Promob). A nuvem guarda só a última.
 Localizar peça pelo código (DinaBox).
 Cubo de navegação no 3D. (item 70 ✅ 16/11/2026, v67)
+74. ✅ 17/11/2026 (v69) — pedido do Nathan, fora da ordem: esquema dos Espaços preso no alto do painel ao rolar; painel do móvel em categorias (Medidas, Dividir e juntar, Vão, O que tem dentro, Construção, Peças ajustadas) que abrem e fecham no título e mudam de ordem arrastando ⠿ (ou setas ↑ ↓); ordem e abertas/fechadas guardadas no aparelho. tela/paineis/categorias.js.
 Ordem aprovada (10/11/2026)
 
 O Nathan aprovou este documento ("é o que vamos seguir de agora em diante"); a ordem é a sugerida pelo Claude, sem mudança pedida.

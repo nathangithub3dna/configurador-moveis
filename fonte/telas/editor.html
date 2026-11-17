@@ -4,113 +4,130 @@
     <button type="button" class="btn" data-acao="voltar-ambiente">← Voltar ao ambiente</button>
     <strong data-texto="nomeModulo"></strong>
   </div>
-  <fieldset class="ed-bloco">
-    <legend>Medidas do móvel</legend>
-    <div class="ed-grade2">
-      <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-modulo="largura"></label>
-      <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-modulo="altura"></label>
-      <label class="ed-campo">Profundidade<input type="number" inputmode="decimal" data-modulo="profundidade"></label>
-      <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
-    </div>
-  </fieldset>
-  <fieldset class="ed-bloco">
-    <legend>Espaços</legend>
+  <!-- esquema dos espaços: fica preso no alto do painel ao rolar (item 74); clicar num vão escolhe o vão -->
+  <div class="ed-fixo">
     <span class="ed-nota"><strong>Móvel inteiro</strong> · <span data-texto="resumoMovel"></span></span>
     <!-- mini desenho de frente: um botão por vão, na posição real (tela/paineis/modulo.js) -->
     <div class="mini-frente" data-lista="miniVaos" role="group" aria-label="Vãos do móvel: clique para escolher"></div>
     <span class="ed-nota" data-texto="resumoVao"></span>
-    <label class="ed-linha" data-se="podeDupla">Divisória entre os vãos lado a lado<select data-vao="divDupla" title="Dupla: duas chapas coladas; cada lado recebe a sua furação de pino e de dobradiça"><option value="">Simples</option><option value="dupla">Dupla (2 chapas)</option></select></label>
-    <div class="ed-sub" data-se="podeJuntar">Juntar com o vizinho</div>
-    <div class="ed-grade2">
-      <button type="button" class="btn ed-remover" data-acao="juntar-ant" data-se="podeAnt" data-texto="rotAnt"></button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-prox" data-se="podeProx" data-texto="rotProx"></button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="esq" data-se="geoEsq">← Esquerda</button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="dir" data-se="geoDir">Direita →</button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="baixo" data-se="geoBaixo">↓ De baixo</button>
-      <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="cima" data-se="geoCima">↑ De cima</button>
+  </div>
+  <!-- categorias (item 74): abrem e fecham no título; a ordem muda arrastando ⠿ e fica guardada no aparelho (tela/paineis/categorias.js) -->
+  <div class="ed-cats" data-lista="categorias">
+  <section class="ed-cat" data-cat="medidas">
+    <div class="ed-cat-topo"><button type="button" class="ed-cat-abrir" aria-expanded="true">Medidas do móvel</button><button type="button" class="ed-cat-mover" aria-label="Mover a categoria (arraste, ou use as setas ↑ ↓)" title="Arraste para mudar a ordem">⠿</button></div>
+    <div class="ed-cat-corpo">
+      <div class="ed-grade2">
+        <label class="ed-campo">Largura<input type="number" inputmode="decimal" data-modulo="largura"></label>
+        <label class="ed-campo">Altura<input type="number" inputmode="decimal" data-modulo="altura"></label>
+        <label class="ed-campo">Profundidade<input type="number" inputmode="decimal" data-modulo="profundidade"></label>
+        <label class="ed-campo">Beiral em cima<input type="number" inputmode="decimal" data-modulo="beiral"></label>
+      </div>
     </div>
-    <div class="ed-sub">Dividir em mais espaços</div>
-    <div class="ed-grade2">
-      <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
-      <button type="button" class="btn" data-acao="dividir-h">▤ Deitado</button>
+  </section>
+  <section class="ed-cat" data-cat="espacos">
+    <div class="ed-cat-topo"><button type="button" class="ed-cat-abrir" aria-expanded="true">Dividir e juntar</button><button type="button" class="ed-cat-mover" aria-label="Mover a categoria (arraste, ou use as setas ↑ ↓)" title="Arraste para mudar a ordem">⠿</button></div>
+    <div class="ed-cat-corpo">
+      <label class="ed-linha" data-se="podeDupla">Divisória entre os vãos lado a lado<select data-vao="divDupla" title="Dupla: duas chapas coladas; cada lado recebe a sua furação de pino e de dobradiça"><option value="">Simples</option><option value="dupla">Dupla (2 chapas)</option></select></label>
+      <div class="ed-sub" data-se="podeJuntar">Juntar com o vizinho</div>
+      <div class="ed-grade2">
+        <button type="button" class="btn ed-remover" data-acao="juntar-ant" data-se="podeAnt" data-texto="rotAnt"></button>
+        <button type="button" class="btn ed-remover" data-acao="juntar-prox" data-se="podeProx" data-texto="rotProx"></button>
+        <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="esq" data-se="geoEsq">← Esquerda</button>
+        <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="dir" data-se="geoDir">Direita →</button>
+        <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="baixo" data-se="geoBaixo">↓ De baixo</button>
+        <button type="button" class="btn ed-remover" data-acao="juntar-geo" data-lado="cima" data-se="geoCima">↑ De cima</button>
+      </div>
+      <div class="ed-sub">Dividir em mais espaços</div>
+      <div class="ed-grade2">
+        <button type="button" class="btn" data-acao="dividir-v">▥ Em pé</button>
+        <button type="button" class="btn" data-acao="dividir-h">▤ Deitado</button>
+      </div>
     </div>
-  </fieldset>
-  <fieldset class="ed-bloco ed-vao">
-    <legend data-texto="titulo"></legend>
-    <span class="ed-nota" data-texto="medida"></span>
-    <label class="ed-linha"><span data-texto="rotLarg"></span><input type="text" data-vao="larg" placeholder="auto"></label>
-    <label class="ed-linha"><span data-texto="rotAlt"></span><input type="text" data-vao="alt" placeholder="auto"></label>
-    <div class="ed-sub">O que fecha este espaço?</div>
-    <div class="ed-grade3" data-lista="frentes"></div>
-    <label class="ed-linha">Modelo do puxador neste vão<select data-vao="puxador"></select></label>
-    <label class="ed-linha" data-se="alturaPux">Altura do puxador<select data-vao="puxadorAltura" title="Onde fica o puxador na altura da porta"><option value="">Automática</option><option value="cima">Em cima</option><option value="meio">No meio</option><option value="baixo">Embaixo</option></select></label>
-    <button type="button" class="btn ed-remover" data-acao="puxador-todos" title="Copia o modelo e a altura do puxador deste vão para todos os vãos do móvel">Usar este puxador em todos os vãos</button>
-    <label class="ed-linha" data-se="porta">Posição do puxador<select data-vao="lado" title="A dobradiça fica sempre do lado oposto ao puxador"><option value="auto">Automático</option><option value="dir">À esquerda</option><option value="esq">À direita</option></select></label>
-    <label class="ed-linha" data-se="perfil">Perfil na borda<select data-vao="perfil" title="Onde vai o perfil G nesta porta; na lateral, fica do lado do puxador"><option value="auto">Automático</option><option value="cima">Em cima</option><option value="baixo">Embaixo</option><option value="lateral">Na lateral (lado do puxador)</option></select></label>
-    <label class="ed-linha" data-se="correr">Sistema<select data-vao="sistema"><option value="correr-rometal-dominus">Rometal Dominus (até 80 kg)</option><option value="correr-rometal-ro27">Rometal RO-27 (até 20 kg)</option></select></label>
-    <label class="ed-linha" data-se="correr">Ao abrir, libera o lado<select data-vao="abrirCorrer" title="Qual lado fica livre quando as portas de correr abrem no 3D"><option value="esq">Esquerdo (folha de trás corre para a direita)</option><option value="dir">Direito (folha da frente corre para a esquerda)</option></select></label>
-    <div class="ed-sub">O que tem dentro?</div>
-    <select class="ed-select" data-vao="conteudo" aria-label="Conteúdo do espaço"></select>
-    <div class="ed-contador" data-se="divisorias">
-      <span>Divisórias em pé</span>
-      <button type="button" class="btn" data-acao="div-menos" aria-label="Menos uma divisória">−</button>
-      <strong data-texto="nDiv"></strong>
-      <button type="button" class="btn" data-acao="div-mais" aria-label="Mais uma divisória">+</button>
+  </section>
+  <section class="ed-cat" data-cat="vao">
+    <div class="ed-cat-topo"><button type="button" class="ed-cat-abrir" aria-expanded="true"><span data-texto="titulo"></span> · tamanho e frente</button><button type="button" class="ed-cat-mover" aria-label="Mover a categoria (arraste, ou use as setas ↑ ↓)" title="Arraste para mudar a ordem">⠿</button></div>
+    <div class="ed-cat-corpo">
+      <span class="ed-nota" data-texto="medida"></span>
+      <label class="ed-linha"><span data-texto="rotLarg"></span><input type="text" data-vao="larg" placeholder="auto"></label>
+      <label class="ed-linha"><span data-texto="rotAlt"></span><input type="text" data-vao="alt" placeholder="auto"></label>
+      <div class="ed-sub">O que fecha este espaço?</div>
+      <div class="ed-grade3" data-lista="frentes"></div>
+      <label class="ed-linha">Modelo do puxador neste vão<select data-vao="puxador"></select></label>
+      <label class="ed-linha" data-se="alturaPux">Altura do puxador<select data-vao="puxadorAltura" title="Onde fica o puxador na altura da porta"><option value="">Automática</option><option value="cima">Em cima</option><option value="meio">No meio</option><option value="baixo">Embaixo</option></select></label>
+      <button type="button" class="btn ed-remover" data-acao="puxador-todos" title="Copia o modelo e a altura do puxador deste vão para todos os vãos do móvel">Usar este puxador em todos os vãos</button>
+      <label class="ed-linha" data-se="porta">Posição do puxador<select data-vao="lado" title="A dobradiça fica sempre do lado oposto ao puxador"><option value="auto">Automático</option><option value="dir">À esquerda</option><option value="esq">À direita</option></select></label>
+      <label class="ed-linha" data-se="perfil">Perfil na borda<select data-vao="perfil" title="Onde vai o perfil G nesta porta; na lateral, fica do lado do puxador"><option value="auto">Automático</option><option value="cima">Em cima</option><option value="baixo">Embaixo</option><option value="lateral">Na lateral (lado do puxador)</option></select></label>
+      <label class="ed-linha" data-se="correr">Sistema<select data-vao="sistema"><option value="correr-rometal-dominus">Rometal Dominus (até 80 kg)</option><option value="correr-rometal-ro27">Rometal RO-27 (até 20 kg)</option></select></label>
+      <label class="ed-linha" data-se="correr">Ao abrir, libera o lado<select data-vao="abrirCorrer" title="Qual lado fica livre quando as portas de correr abrem no 3D"><option value="esq">Esquerdo (folha de trás corre para a direita)</option><option value="dir">Direito (folha da frente corre para a esquerda)</option></select></label>
     </div>
-    <div class="ed-bloco" data-se="divisorias">
-      <span class="ed-nota">Largura de cada espaço, da esquerda para a direita, por dentro, em mm. Vazio = automático (reparte o que sobra).</span>
-      <div class="ed-grade2" data-lista="largDiv"></div>
+  </section>
+  <section class="ed-cat" data-cat="conteudo">
+    <div class="ed-cat-topo"><button type="button" class="ed-cat-abrir" aria-expanded="true">O que tem dentro</button><button type="button" class="ed-cat-mover" aria-label="Mover a categoria (arraste, ou use as setas ↑ ↓)" title="Arraste para mudar a ordem">⠿</button></div>
+    <div class="ed-cat-corpo">
+      <select class="ed-select" data-vao="conteudo" aria-label="Conteúdo do espaço"></select>
+      <div class="ed-contador" data-se="divisorias">
+        <span>Divisórias em pé</span>
+        <button type="button" class="btn" data-acao="div-menos" aria-label="Menos uma divisória">−</button>
+        <strong data-texto="nDiv"></strong>
+        <button type="button" class="btn" data-acao="div-mais" aria-label="Mais uma divisória">+</button>
+      </div>
+      <div class="ed-bloco" data-se="divisorias">
+        <span class="ed-nota">Largura de cada espaço, da esquerda para a direita, por dentro, em mm. Vazio = automático (reparte o que sobra).</span>
+        <div class="ed-grade2" data-lista="largDiv"></div>
+      </div>
+      <div class="ed-contador" data-se="prateleiras">
+        <span>Prateleiras</span>
+        <button type="button" class="btn" data-acao="prat-menos" aria-label="Menos uma prateleira">−</button>
+        <strong data-texto="nPrat"></strong>
+        <button type="button" class="btn" data-acao="prat-mais" aria-label="Mais uma prateleira">+</button>
+      </div>
+      <label class="ed-linha" data-se="prateleiras">Tipo de prateleira<select data-vao="modeloPrat" title="Vidro sai do plano de corte e vai para as compras (vidraçaria); pino escondido: suporte oculto no topo da prateleira"></select></label>
+      <span class="ed-nota" data-se="pratVidro">Vidro temperado 6 mm, pedido na vidraçaria (fica fora do plano de corte; a medida vai na lista de compras). 4 suportes de vidro por prateleira.</span>
+      <div class="ed-bloco" data-se="prateleiras">
+        <span class="ed-nota">Altura de cada prateleira: espaço livre do fundo do vão até ela, em mm. Vazio = automático.</span>
+        <div class="ed-grade2" data-lista="alturasPrat"></div>
+      </div>
+      <div class="ed-contador" data-se="gavetas">
+        <span>Gavetas internas</span>
+        <button type="button" class="btn" data-acao="gav-menos" aria-label="Menos uma gaveta">−</button>
+        <strong data-texto="nGav"></strong>
+        <button type="button" class="btn" data-acao="gav-mais" aria-label="Mais uma gaveta">+</button>
+      </div>
+      <label class="ed-linha" data-se="gavetas">Altura de cada gaveta (mm)<input type="number" inputmode="decimal" data-vao="altGav"></label>
+      <label class="ed-linha" data-se="botijao">Altura livre do botijão (mm)<input type="number" inputmode="decimal" data-vao="altBot"></label>
+      <div class="ed-contador" data-se="sapateira">
+        <span>Níveis da sapateira</span>
+        <button type="button" class="btn" data-acao="sap-menos" aria-label="Menos um nível">−</button>
+        <strong data-texto="nSap"></strong>
+        <button type="button" class="btn" data-acao="sap-mais" aria-label="Mais um nível">+</button>
+      </div>
+      <label class="ed-linha" data-se="sapateira">Altura de cada nível (mm)<input type="number" inputmode="decimal" data-vao="nivelSap"></label>
+      <label class="ed-linha" data-se="maleiro">Altura livre do maleiro (mm)<input type="number" inputmode="decimal" data-vao="altMaleiro"></label>
+      <span class="ed-nota" data-se="maleiro">Espaço de malas no alto do vão, fechado por uma prateleira. Mala média pede uns 400 mm; grande, uns 600.</span>
+      <label class="ed-linha" data-se="cabideiro">Tubo abaixo do teto (mm, até o centro)<input type="number" inputmode="decimal" data-vao="distCabideiro"></label>
+      <span class="ed-nota" data-se="cabideiro">Tubo oval 30 × 15 mm cromado, 2 suportes laterais (e 1 central acima de 1 m). Camisa pede uns 1000 mm livres embaixo; vestido longo, uns 1500.</span>
+      <span class="ed-nota" data-se="calceiro">Calceiro deslizante pronto (varetas e corrediça nas laterais), no alto do vão. Calça dobrada pede uns 600 mm livres embaixo. Vai nas compras com a medida do vão.</span>
+      <span class="ed-nota" data-se="conjuntoAntigo">Este vão mantém o conjunto já salvo. Escolher uma opção acima substitui o conteúdo deste vão.</span>
+      <span class="ed-nota" data-se="sapateiraSozinha">Níveis para sapatos, de baixo para cima. "máx" = quantos couberem no vão; ajuste a altura e a quantidade de níveis.</span>
+      <span class="ed-nota" data-se="sapateiraComVassoura">Sapateira embaixo, níveis de 220 mm; vassouras em pé sobre ela, com pelo menos 1,2 m livres até o teto do vão. "máx" = quantos couberem.</span>
+  
     </div>
-    <div class="ed-contador" data-se="prateleiras">
-      <span>Prateleiras</span>
-      <button type="button" class="btn" data-acao="prat-menos" aria-label="Menos uma prateleira">−</button>
-      <strong data-texto="nPrat"></strong>
-      <button type="button" class="btn" data-acao="prat-mais" aria-label="Mais uma prateleira">+</button>
+  </section>
+  <section class="ed-cat" data-cat="construcao" data-fechada>
+    <div class="ed-cat-topo"><button type="button" class="ed-cat-abrir" aria-expanded="true">Construção</button><button type="button" class="ed-cat-mover" aria-label="Mover a categoria (arraste, ou use as setas ↑ ↓)" title="Arraste para mudar a ordem">⠿</button></div>
+    <div class="ed-cat-corpo">
+      <label class="ed-linha">Método<select data-modulo="metodo"></select></label>
+      <label class="ed-linha">Entrega<select data-modulo="entrega"><option value="desmontado">Desmontado (volumes)</option><option value="montado">Montado</option></select></label>
+      <label class="ed-linha">Puxador das portas<select data-modulo="puxador"></select></label>
+      <label class="ed-linha">Material das frentes<select data-modulo="materialFrentes"></select></label>
     </div>
-    <label class="ed-linha" data-se="prateleiras">Tipo de prateleira<select data-vao="modeloPrat" title="Vidro sai do plano de corte e vai para as compras (vidraçaria); pino escondido: suporte oculto no topo da prateleira"></select></label>
-    <span class="ed-nota" data-se="pratVidro">Vidro temperado 6 mm, pedido na vidraçaria (fica fora do plano de corte; a medida vai na lista de compras). 4 suportes de vidro por prateleira.</span>
-    <div class="ed-bloco" data-se="prateleiras">
-      <span class="ed-nota">Altura de cada prateleira: espaço livre do fundo do vão até ela, em mm. Vazio = automático.</span>
-      <div class="ed-grade2" data-lista="alturasPrat"></div>
+  </section>
+  <section class="ed-cat" data-cat="ajustes" data-fechada>
+    <div class="ed-cat-topo"><button type="button" class="ed-cat-abrir" aria-expanded="true">Peças ajustadas</button><button type="button" class="ed-cat-mover" aria-label="Mover a categoria (arraste, ou use as setas ↑ ↓)" title="Arraste para mudar a ordem">⠿</button></div>
+    <div class="ed-cat-corpo">
+      <ul class="ed-ajustes" data-lista="ajustes"></ul>
+      <span class="ed-nota" data-texto="notaAjustes"></span>
     </div>
-    <div class="ed-contador" data-se="gavetas">
-      <span>Gavetas internas</span>
-      <button type="button" class="btn" data-acao="gav-menos" aria-label="Menos uma gaveta">−</button>
-      <strong data-texto="nGav"></strong>
-      <button type="button" class="btn" data-acao="gav-mais" aria-label="Mais uma gaveta">+</button>
-    </div>
-    <label class="ed-linha" data-se="gavetas">Altura de cada gaveta (mm)<input type="number" inputmode="decimal" data-vao="altGav"></label>
-    <label class="ed-linha" data-se="botijao">Altura livre do botijão (mm)<input type="number" inputmode="decimal" data-vao="altBot"></label>
-    <div class="ed-contador" data-se="sapateira">
-      <span>Níveis da sapateira</span>
-      <button type="button" class="btn" data-acao="sap-menos" aria-label="Menos um nível">−</button>
-      <strong data-texto="nSap"></strong>
-      <button type="button" class="btn" data-acao="sap-mais" aria-label="Mais um nível">+</button>
-    </div>
-    <label class="ed-linha" data-se="sapateira">Altura de cada nível (mm)<input type="number" inputmode="decimal" data-vao="nivelSap"></label>
-    <label class="ed-linha" data-se="maleiro">Altura livre do maleiro (mm)<input type="number" inputmode="decimal" data-vao="altMaleiro"></label>
-    <span class="ed-nota" data-se="maleiro">Espaço de malas no alto do vão, fechado por uma prateleira. Mala média pede uns 400 mm; grande, uns 600.</span>
-    <label class="ed-linha" data-se="cabideiro">Tubo abaixo do teto (mm, até o centro)<input type="number" inputmode="decimal" data-vao="distCabideiro"></label>
-    <span class="ed-nota" data-se="cabideiro">Tubo oval 30 × 15 mm cromado, 2 suportes laterais (e 1 central acima de 1 m). Camisa pede uns 1000 mm livres embaixo; vestido longo, uns 1500.</span>
-    <span class="ed-nota" data-se="calceiro">Calceiro deslizante pronto (varetas e corrediça nas laterais), no alto do vão. Calça dobrada pede uns 600 mm livres embaixo. Vai nas compras com a medida do vão.</span>
-    <span class="ed-nota" data-se="conjuntoAntigo">Este vão mantém o conjunto já salvo. Escolher uma opção acima substitui o conteúdo deste vão.</span>
-    <span class="ed-nota" data-se="sapateiraSozinha">Níveis para sapatos, de baixo para cima. "máx" = quantos couberem no vão; ajuste a altura e a quantidade de níveis.</span>
-    <span class="ed-nota" data-se="sapateiraComVassoura">Sapateira embaixo, níveis de 220 mm; vassouras em pé sobre ela, com pelo menos 1,2 m livres até o teto do vão. "máx" = quantos couberem.</span>
-
-  </fieldset>
-  <details class="ed-mais">
-    <summary>Construção e peças ajustadas</summary>
-  <fieldset class="ed-bloco">
-    <legend>Construção</legend>
-    <label class="ed-linha">Método<select data-modulo="metodo"></select></label>
-    <label class="ed-linha">Entrega<select data-modulo="entrega"><option value="desmontado">Desmontado (volumes)</option><option value="montado">Montado</option></select></label>
-    <label class="ed-linha">Puxador das portas<select data-modulo="puxador"></select></label>
-    <label class="ed-linha">Material das frentes<select data-modulo="materialFrentes"></select></label>
-  </fieldset>
-  <fieldset class="ed-bloco">
-    <legend>Peças ajustadas</legend>
-    <ul class="ed-ajustes" data-lista="ajustes"></ul>
-    <span class="ed-nota" data-texto="notaAjustes"></span>
-  </fieldset>
-  </details>
+  </section>
+  </div>
 </template>

@@ -142,10 +142,10 @@ function montarEditorModulo() {
     b.setAttribute('aria-pressed', String(no.frente?.tipo === v)); return b;
   }));
   aplicarPainelB(ed);                                                   // visual B: botões com desenho e − / + (tela/paineis/painel-b.js)
+  // "Construção" e "Peças ajustadas" começam fechadas; "Peças ajustadas" abre sozinha se há peça ajustada (o que você escolher depois fica valendo)
+  if (Object.keys(m.pecasAjuste || {}).length) ed.querySelector('.ed-cat[data-cat="ajustes"]')?.removeAttribute('data-fechada');
+  aplicarCategorias(ed);                                                // abrir/fechar e ordem das categorias (tela/paineis/categorias.js)
   preencherAjustesEditor(ed, m);                                       // peças ajustadas (tela/paineis/ajuste.js)
-  // "Construção e peças ajustadas" fica recolhido; abre sozinho se há peça ajustada e lembra se você abriu
-  const mais = ed.querySelector('.ed-mais');
-  if (mais) { mais.open = !!estado.edMaisAberto || Object.keys(m.pecasAjuste || {}).length > 0; mais.addEventListener('toggle', () => { estado.edMaisAberto = mais.open; }); }
   $('form').replaceChildren(ed);
 }
 
