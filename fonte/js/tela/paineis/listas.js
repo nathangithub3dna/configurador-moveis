@@ -1,7 +1,21 @@
 // TELA — alertas, status e listas (corte, compras, ferragens, desenhos) (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Alertas e status ---------- */
 function mostrarAlertas(res) {
-  $('alertas').replaceChildren(...res.erros.map(m => el('div', { class:'alerta erro', role:'alert', text:m })), ...res.avisos.map(m => el('div', { class:'alerta aviso', text:m })));
+  // avisos e erros num bloco que abre e fecha no título (pedido do Nathan 17/11); começa fechado e lembra a escolha neste aparelho
+  const nE = res.erros.length, nA = res.avisos.length, caixa = $('alertas');
+  if (!nE && !nA) { caixa.replaceChildren(); return fimAlertas(res); }
+  let aberto = false; try { aberto = localStorage.getItem('configurador.alertasAbertos') === '1'; } catch (e) {}
+  const plural = (n, s) => `${n} ${s}${n > 1 ? 's' : ''}`;
+  const titulo = el('button', { type:'button', class:'alertas-topo' + (nE ? ' com-erro' : ''), 'aria-expanded':String(aberto),
+    text:[nE && plural(nE, 'erro'), nA && plural(nA, 'aviso')].filter(Boolean).join(' · ') });
+  const corpo = el('div', { class:'alertas-corpo' }, ...res.erros.map(m => el('div', { class:'alerta erro', role:'alert', text:m })), ...res.avisos.map(m => el('div', { class:'alerta aviso', text:m })));
+  corpo.hidden = !aberto;
+  titulo.addEventListener('click', () => { const ab = corpo.hidden; corpo.hidden = !ab; titulo.setAttribute('aria-expanded', String(ab));
+    try { localStorage.setItem('configurador.alertasAbertos', ab ? '1' : '0'); } catch (e) {} });
+  caixa.replaceChildren(titulo, corpo);
+  fimAlertas(res);
+}
+function fimAlertas(res) {
   const ok = res.erros.length === 0;
   $('status').className = 'status ' + (ok ? 'ok' : 'erro');
   $('status').textContent = ok ? (res.avisos.length ? `Pronto · ${res.avisos.length} aviso${res.avisos.length>1?'s':''}` : 'Pronto para exportar') : `${res.erros.length} erro${res.erros.length>1?'s':''} · exportação bloqueada`;

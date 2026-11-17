@@ -260,6 +260,13 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .troca-vista{position:absolute;top:12px;left:12px;z-index:4;display:flex;gap:6px}
 .troca-vista .btn{padding:4px 10px;font-size:12px}
 @media (max-width:900px){ .troca-vista{top:6px;left:6px} .troca-vista .btn{padding:2px 8px;font-size:11px} }
+/* avisos e erros fechados num título que abre e fecha (17/11) */
+.alertas-topo{display:flex;align-items:center;gap:8px;width:100%;border:0;cursor:pointer;text-align:left;font:inherit;font-size:12.5px;font-weight:700;padding:8px 10px;border-radius:var(--raio-p);background:var(--warn-bg);color:var(--warn)}
+.alertas-topo.com-erro{background:var(--danger-bg);color:var(--danger)}
+.alertas-topo::before{content:'▾';transition:transform .15s}
+.alertas-topo[aria-expanded="false"]::before{transform:rotate(-90deg)}
+.alertas-corpo{display:flex;flex-direction:column;gap:6px}
+.alertas-corpo[hidden]{display:none}
 /* COMPONENTES — o formato de painéis, botões e campos (neomorfismo).
    As cores e sombras vêm de tema.css; aqui só se diz quem usa qual. */
 .lado,.vista,.cartao{border:0;border-radius:var(--raio);box-shadow:var(--sombra-fora)}
@@ -11481,7 +11488,21 @@ function montarArvore(pecas) {
 // TELA — alertas, status e listas (corte, compras, ferragens, desenhos) (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Alertas e status ---------- */
 function mostrarAlertas(res) {
-  $('alertas').replaceChildren(...res.erros.map(m => el('div', { class:'alerta erro', role:'alert', text:m })), ...res.avisos.map(m => el('div', { class:'alerta aviso', text:m })));
+  // avisos e erros num bloco que abre e fecha no título (pedido do Nathan 17/11); começa fechado e lembra a escolha neste aparelho
+  const nE = res.erros.length, nA = res.avisos.length, caixa = $('alertas');
+  if (!nE && !nA) { caixa.replaceChildren(); return fimAlertas(res); }
+  let aberto = false; try { aberto = localStorage.getItem('configurador.alertasAbertos') === '1'; } catch (e) {}
+  const plural = (n, s) => `${n} ${s}${n > 1 ? 's' : ''}`;
+  const titulo = el('button', { type:'button', class:'alertas-topo' + (nE ? ' com-erro' : ''), 'aria-expanded':String(aberto),
+    text:[nE && plural(nE, 'erro'), nA && plural(nA, 'aviso')].filter(Boolean).join(' · ') });
+  const corpo = el('div', { class:'alertas-corpo' }, ...res.erros.map(m => el('div', { class:'alerta erro', role:'alert', text:m })), ...res.avisos.map(m => el('div', { class:'alerta aviso', text:m })));
+  corpo.hidden = !aberto;
+  titulo.addEventListener('click', () => { const ab = corpo.hidden; corpo.hidden = !ab; titulo.setAttribute('aria-expanded', String(ab));
+    try { localStorage.setItem('configurador.alertasAbertos', ab ? '1' : '0'); } catch (e) {} });
+  caixa.replaceChildren(titulo, corpo);
+  fimAlertas(res);
+}
+function fimAlertas(res) {
   const ok = res.erros.length === 0;
   $('status').className = 'status ' + (ok ? 'ok' : 'erro');
   $('status').textContent = ok ? (res.avisos.length ? `Pronto · ${res.avisos.length} aviso${res.avisos.length>1?'s':''}` : 'Pronto para exportar') : `${res.erros.length} erro${res.erros.length>1?'s':''} · exportação bloqueada`;
