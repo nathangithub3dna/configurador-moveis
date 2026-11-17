@@ -93,7 +93,7 @@ Antes do bloco 1 (antecipado em 16/11/2026, pedido do Nathan): 70 ✅ 16/11/2026
 Bloco 1 — Guarda-roupa (≈ 3 conversas)
 Item	Onde	Custo
 19 ✅ 16/11/2026 (a762f4f, v65) prateleira de vidro, "invisível" (pino escondido), divisória dupla — conteudos/prateleiras.js (MODELOS_PRAT), arvore.js (no.dupla), fixacoes.js, modulo-livre.js	conteudos/prateleiras.js, divisorias.js; vidro em materiais.json	P
-13 cabideiro, maleiro, calceiro	conteudos/cabideiro.js, maleiro.js, calceiro.js; tubo oval e suportes em dados/biblioteca.json (ficou no arquivo único da biblioteca)	M — ✅ 17/11/2026 (v68); cabide basculante pendente
+13 cabideiro, maleiro, calceiro	conteudos/cabideiro.js, maleiro.js, calceiro.js; tubo oval e suportes em dados/biblioteca.json (ficou no arquivo único da biblioteca)	M — ✅ 17/11/2026 (v68); cabide basculante foi para o item 20 (bloco 3)
 30 corrediça oculta e gaveta metálica	ferragens/corredicas.js, frentes/gaveta.js, biblioteca/corredicas.json	M
 25 recobrimento total/parcial/embutido + dobradiça curva/supercurva + calço	frentes/giro.js, ferragens/dobradicas.js, biblioteca/dobradicas.json	M–G (a furação muda)
 14 modelos prontos + "salvar o meu como modelo" (nuvem)	dados/modelos/*.json, tela/salvar/modelos.js	M
@@ -122,7 +122,7 @@ Item	Onde	Custo
 28 ajuste de dobradiça por porta	ferragens/dobradicas.js + campo no vão	P–M
 31 confirmat, mão-francesa, cantoneira, suporte invisível	ferragens/juncoes.js, metodos-construcao.json, biblioteca	P–M (pesquisa de itens)
 23 gola e cava	frentes/estilos/gola.js, cava.js (reaproveita o Perfil G)	M (depende do catálogo)
-20 aramado, cesto, lixeira, divisor de talheres, tulha, sapateira inclinada, rodízio, LED	conteudos/aramados.js, lixeira.js…; biblioteca	M
+20 cabide basculante, aramado, cesto, lixeira, divisor de talheres, tulha, sapateira inclinada, rodízio, LED	conteudos/aramados.js, lixeira.js…; biblioteca	M
 27 veio contínuo entre frentes	saidas/plano-corte.js	M
 24 ripada, vidro/alumínio, espelho, tamburato · provençal/almofadada	frentes/estilos/*.js	M cada · provençal G (usinagem 3D)
 Bloco 4 — Construção, materiais e fita (≈ 4 conversas)

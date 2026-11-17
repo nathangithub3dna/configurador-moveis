@@ -62,5 +62,6 @@ O item 29 (puxador por vão) está completo e publicado no link do Claude na **v
   - Calceiro: peça comprada pronta, vai nas compras com a medida do vão; avisos de largura (400–900), profundidade (450) e livre embaixo (600).
   - Biblioteca: tubo-oval-30x15 (metro), suporte-tubo-oval-lateral, suporte-tubo-oval-central, calceiro-deslizante — todos genéricos [Suposição/Provável], sem marca.
   - 3D: tubo oval (cil eixo x). Teste novo em `testes/casos/editor.js`. Nenhuma referência mudou.
-- Falta do item 13: cabide basculante.
+- Cabide basculante: passou para o item 20 (bloco 3), decisão do Nathan.
+- Nathan ainda não conferiu v65–v68 nem aprovou a 1c-i.
 - Próximo: item 25, depois 30, 14.

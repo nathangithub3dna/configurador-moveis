@@ -77,7 +77,7 @@ Levantamento completo da obra (auditoria, passo 5).
 B. Módulos e conteúdos
 72. ✅ Feito 11/11/2026 — “Juntar com o vizinho” movido para logo abaixo da seleção dos Espaços, seguido de “Dividir em mais espaços”, antes dos campos do vão. Pedido de facilidade de uso do Nathan; funcionamento de juntar preservado.
 71. ✅ Feito 11/11/2026 — separar as escolhas do editor: Vassoura e aspirador, Sapateira e Botijão. Retirados os botões Vassoura + sapateira e Botijão + gavetas; projetos antigos conservam seus conjuntos. Pedido adicional do Nathan, antecipado durante a Fase 0; o próximo passo da Fase 0 continua sendo 0.7.
-★ Guarda-roupa: cabideiro (tubo + suportes), maleiro, calceiro, cabide basculante (Promob, DinaBox). Sem isso não sai guarda-roupa. (item 13 ✅ 17/11/2026, v68: cabideiro, maleiro, maleiro + cabideiro e calceiro; falta o cabide basculante)
+★ Guarda-roupa: cabideiro (tubo + suportes), maleiro, calceiro, cabide basculante (Promob, DinaBox). Sem isso não sai guarda-roupa. (item 13 ✅ 17/11/2026, v68: cabideiro, maleiro, maleiro + cabideiro e calceiro; cabide basculante passou para o bloco 3, junto do item 20 — decisão do Nathan em 17/11)
 ★ Modelos prontos por ambiente e "salvar o meu como modelo" (todos; DinaBox salva na nuvem por categoria). É o passo 3 do plano.
 Canto em L com dobradiça 165°; torre de canto 45° (Promob, DinaBox).
 Copiar e espelhar módulo; girar 90° (Mozaik, DinaBox).
@@ -86,7 +86,7 @@ Módulo com formato:
 chanfrado ou curvo;
 inclinado embaixo de escada ou de telhado (Polyboard, Mozaik).
 Prateleira de vidro; prateleira "invisível"; divisória dupla estrutural (DinaBox). ✅ item 19 — 16/11/2026, commit a762f4f, artifact v65: tipo de prateleira (comum / vidro temperado 6 mm / pino escondido) e divisória dupla (2 chapas coladas) na divisão em pé.
-Agregados: aramado, cesto, lixeira, divisor de talheres, tulha, sapateira inclinada, rodízio, LED (Promob, DinaBox).
+Agregados: cabide basculante (veio do item 13), aramado, cesto, lixeira, divisor de talheres, tulha, sapateira inclinada, rodízio, LED (Promob, DinaBox).
 ★ Eletro embutido: forno, micro-ondas, cooktop, coifa (nicho pela medida do aparelho; Promob, Mozaik).
 Cama de casal e de solteiro com gaveteiro (DinaBox).
 C. Frentes e ferragens
