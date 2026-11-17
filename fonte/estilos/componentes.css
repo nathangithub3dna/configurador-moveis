@@ -13,10 +13,6 @@
 .abas{gap:6px;padding:8px}
 .alerta{border-radius:var(--raio-p)}
 
-/* Abas das etapas (Montar, Lista de corte, Plano, Compras, Desenhos) */
-.etapas{display:flex;flex-wrap:wrap;gap:8px;width:100%}
-.etapas button{border:0;border-radius:var(--raio-p);padding:9px 14px;background:var(--surface);box-shadow:var(--sombra-fora-p);font-weight:700;cursor:pointer;white-space:nowrap}
-.etapas button[aria-current]{color:var(--accent);box-shadow:var(--sombra-dentro)}
 [data-secao][hidden]{display:none!important}
 .painel[hidden]{display:none}
 .palco.com-esquema .rotulos,.palco.com-esquema .dica{display:none}
@@ -41,10 +37,6 @@
 /* botão discreto: ação rara ou que apaga (ex.: Restaurar medidas padrão) */
 .btn.discreto{box-shadow:none;background:transparent;color:var(--muted);font-weight:600}
 .btn.discreto:hover{color:var(--danger)}
-/* Topo 2.0: etapas como abas (trilho afundado; a aba atual em relevo), para não parecerem os botões de arquivo */
-.topo .etapas{gap:4px;padding:4px;border-radius:var(--raio);box-shadow:var(--sombra-dentro)}
-.topo .etapas button{box-shadow:none;background:transparent}
-.topo .etapas button[aria-current]{box-shadow:var(--sombra-fora-p);background:var(--surface)}
 
 /* botões do juntar: texto quebra em vez de vazar */
 .ed-remover{white-space:normal;text-align:center}
@@ -65,6 +57,6 @@
 /* aviso "Não salvo" no topo: vermelho até salvar no Drive ou em .json */
 .btn.nao-salvo{color:var(--danger);background:var(--danger-bg);box-shadow:none;font-weight:800}
 .btn.nao-salvo:hover{color:var(--danger);filter:brightness(.97)}
-/* estado da nuvem no topo ("☁ Salvo 10/11 00:59") */
+/* estado da nuvem no topo ("Salvo 10/11 00:59", com ícone de nuvem) */
 .estado-nuvem{font-size:12px;font-weight:700;color:var(--ok);white-space:nowrap}
 .estado-nuvem.erro{color:var(--danger)}

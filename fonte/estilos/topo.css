@@ -1,0 +1,69 @@
+/* TOPO B (item 77, escolhido pelo Nathan em 17/11/2026)
+   Computador: etapas numa coluna fixa à esquerda (logo em cima); uma linha no alto com nome, tipo, situação e arquivo.
+   Celular (até 900 px): etapas numa barra fixa embaixo, perto do polegar; em cima, nome / tipo / situação / arquivo, um por linha.
+   Cores e sombras vêm de tema.css; ícones de icones.css. */
+
+/* ---------- computador ---------- */
+:root{--trilho:84px}
+body{padding-left:calc(var(--trilho) + 28px)}
+.topo{margin-bottom:12px}
+.topo-linha{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.marca{display:flex;align-items:baseline;gap:6px;font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-weight:500;color:var(--muted);font-size:12px}
+.topo-projeto{display:flex;align-items:center;gap:8px;flex:1 1 460px;min-width:0}
+#nomeProjeto{flex:1 1 220px;min-width:0;max-width:400px;height:40px;padding:0 12px;font-weight:700;font-size:15px}
+.tipo-caixa{--ic-tam:18px;display:flex;align-items:center;gap:8px;flex:0 1 280px;min-width:0;height:40px;padding:0 0 0 12px;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro);color:var(--muted)}
+.tipo-caixa #tipoMovel.sel-tipo{flex:1;min-width:0;height:100%;box-shadow:none;background:transparent;color:var(--fg);padding:0 8px 0 0}
+.topo-estado{display:flex;align-items:center;gap:6px 8px;min-width:0}
+.status,.estado-nuvem,.sit-rotulo{--ic-tam:15px;display:inline-flex;align-items:center;gap:5px}
+.topo .acoes{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn.ic{--ic-tam:18px}
+.btn.so-icone{width:40px;height:40px;padding:0;justify-content:center}
+.btn.so-icone::before{--ic-tam:20px}
+.menu-exportar>summary .seta{font-size:11px;color:var(--muted)}
+/* os menus do topo ficam à direita da tela: abrem alinhados pela direita */
+.menu-topo .menu-painel{left:auto;right:0}
+.menu-lista{display:flex;flex-direction:column;gap:8px;width:min(280px,calc(100vw - 32px))}
+.menu-lista .btn{width:100%;justify-content:flex-start}
+.menu-sep{height:1px;background:var(--line);margin:2px 0}
+
+/* coluna das etapas */
+.etapas{position:fixed;z-index:15;left:max(16px,env(safe-area-inset-left,0px));top:12px;bottom:12px;width:var(--trilho);
+  display:flex;flex-direction:column;gap:6px;padding:10px 6px;border-radius:var(--raio);background:var(--surface);box-shadow:var(--sombra-fora);overflow-y:auto}
+.etapas-logo{--ic-tam:28px;display:flex;justify-content:center;padding:4px 0 10px;color:var(--accent)}
+.etapas button{--ic-tam:22px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px;border:0;border-radius:var(--raio-p);
+  background:var(--surface);color:var(--muted);font-weight:700;font-size:11px;line-height:1.2;text-align:center;cursor:pointer;white-space:normal}
+.etapas button:hover{color:var(--fg)}
+.etapas button[aria-current]{color:var(--accent);box-shadow:var(--sombra-dentro)}
+.et-curto{display:none}
+
+/* ---------- celular e telas estreitas ---------- */
+@media (max-width:900px){
+  body{padding-left:max(16px,env(safe-area-inset-left,0px));padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  .topo-linha{flex-direction:column;align-items:stretch;gap:10px;min-width:0}
+  .topo-linha>*{min-width:0;max-width:100%}
+  .marca{display:none}                       /* o nome do programa já aparece na barra do app */
+  .topo-projeto{flex-wrap:wrap;flex:none}
+  #nomeProjeto{flex:1 1 100%;max-width:none;height:44px}
+  .tipo-caixa{flex:1 1 200px;height:44px}
+  .topo-estado{flex-wrap:wrap}                /* quebra linha em vez de esconder: todos os avisos ficam à vista */
+  .topo-estado .status,.topo-estado .situacao,.estado-nuvem{white-space:normal;overflow-wrap:anywhere;max-width:100%}
+  .topo .acoes{margin-left:0;width:100%}
+  #btnDriveSalvar{flex:1 1 auto;justify-content:center;min-width:0}
+  .topo .acoes .btn,.topo .acoes summary.btn{height:44px}
+  .btn.so-icone,#menuExportar>summary{width:44px;padding:0;justify-content:center}
+  #menuExportar>summary::before{--ic-tam:20px}
+  .so-pc{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  /* sem Salvar no Drive (fora do app do Claude), o Arquivo ocupa o espaço */
+  #btnDriveSalvar[hidden]+#menuArquivo{flex:1 1 auto}
+  #btnDriveSalvar[hidden]+#menuArquivo>summary{width:100%;justify-content:center}
+  .menu-topo .menu-painel{left:16px;right:16px;width:auto}
+
+  /* etapas: barra fixa embaixo */
+  .etapas{top:auto;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom,0px));width:auto;flex-direction:row;gap:4px;padding:6px;overflow:visible}
+  .etapas-logo{display:none}
+  .etapas button{flex:1 1 0;min-width:0;padding:8px 0 7px;font-size:11px;white-space:nowrap}
+  .et-longo{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}   /* continua para leitor de tela */
+  .et-curto{display:inline}
+  .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+}

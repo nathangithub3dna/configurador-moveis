@@ -69,3 +69,9 @@ O item 29 (puxador por vão) está completo e publicado no link do Claude na **v
 - Sem conferir em aparelho de verdade: arrastar com o dedo no celular.
 - Item 75 (v70): barra do 3D enxuta — saíram `#selVista` e `#bOrto` (o cubo cuida da vista e do Orto); `#grupoEsquema` (Esquema/3D) virou `.troca-vista` no canto de cima à esquerda do palco; `#bMedir` foi para `#menu3d`, desligado ao abrir. Teste do cubo em `testes/casos/interface.js` ajustado.
 - Item 76 (v71): `#alertas` virou título que abre/fecha (`.alertas-topo` + `.alertas-corpo`), fechado por padrão, localStorage `configurador.alertasAbertos`. O selo de status no alto continua mostrando erros/avisos.
+- Item 77 (v72, pedido novo do Nathan): topo B. Quadro com as 3 versões: https://claude.ai/artifact/GjA6JpH4zUKc82oPc9t876 (A faixas, B etapas embaixo — escolhida, C cartão).
+  - `#etapas` saiu do topo-linha: fixo embaixo (≤900 px) ou coluna à esquerda (`--trilho` 84 px; o body ganhou padding-left). Rótulos longo/curto (`.et-longo`/`.et-curto`).
+  - Menu novo `#menuArquivo` (details, mesma lógica do Exportar em `tela/salvar/exportar.js`, MENUS_TOPO). `#btnPadrao` está dentro dele.
+  - Ícones por máscara CSS (`.ic .ic-<nome>`), então o JS pode trocar o texto dos botões sem apagar o ícone. Saiu o "☁ " do texto da nuvem (vira ícone).
+  - Situação no celular quebra linha (não rola) para o teste do topo continuar valendo.
+  - Sem conferir no aparelho: barra de baixo dentro do app do Claude (área segura do iPhone/Android), Salvar no Drive visível só no app.

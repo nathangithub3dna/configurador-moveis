@@ -53,15 +53,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
-/* Barra do projeto */
-.topo{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:12px}
-.marca{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
-.marca small{font-weight:500;color:var(--muted);font-size:12px;margin-left:6px}
-#nomeProjeto{flex:1 1 220px;min-width:0;max-width:420px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-weight:600}
-.status{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap}
-.status.ok{background:var(--ok-bg);color:var(--ok)}
-.status.erro{background:var(--danger-bg);color:var(--danger)}
-.topo .acoes{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
 
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid var(--line);border-radius:6px;background:var(--surface);cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap}
 .btn:hover{border-color:var(--accent)}
@@ -70,7 +61,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 
 /* Área principal */
-.app{display:grid;grid-template-columns:minmax(290px,340px) minmax(0,1fr);gap:12px;height:calc(100dvh - 110px);min-height:560px}
+.app{display:grid;grid-template-columns:minmax(290px,340px) minmax(0,1fr);gap:12px;height:calc(100dvh - 92px);min-height:560px}
 .lado{display:flex;flex-direction:column;min-height:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .abas{display:flex;border-bottom:1px solid var(--line)}
 .abas button{flex:1;padding:10px;border:0;background:none;cursor:pointer;font-weight:600;font-size:13px;color:var(--muted);border-bottom:2px solid transparent}
@@ -199,16 +190,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .leg-fix[hidden] { display:none; }
 .leg-fix i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
 
-/* Topo 2.0 (desktop): duas linhas — projeto em cima; arquivo, etapas e restaurar embaixo */
-.topo{flex-direction:column;align-items:stretch;gap:10px}
-.topo-linha{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
-.topo-projeto{display:flex;flex-wrap:wrap;align-items:center;gap:8px;flex:1 1 440px;min-width:0}
-.topo-projeto #nomeProjeto{flex:1 1 220px}
-.topo-estado{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto}
-.topo .acoes{margin-left:0;align-items:center}
-.topo-sep{width:1px;height:24px;background:var(--line);margin:0 4px}
-.topo .etapas{width:auto;flex:1 1 auto;justify-content:center}
-.topo .btn.discreto{margin-left:auto}
 
 /* faixa do 3D desatualizado: acima das cotas e da ficha, para aparecer também no celular */
 .faixa-desat{z-index:5;font-size:13px;box-shadow:0 4px 14px rgb(0 0 0 / .18)}
@@ -233,18 +214,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .previa-peca{position:fixed;z-index:40;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 12px;max-width:220px;pointer-events:none;text-align:center;font-size:12.5px}
 .previa-peca .num{font-size:11.5px}
 
-/* Em telas estreitas, cada grupo do cabeçalho ocupa a largura disponível. */
-@media (max-width:900px){
-  .topo-linha{min-width:0;width:100%}
-  .topo-projeto{flex-basis:100%;width:100%}
-  .topo-projeto #nomeProjeto{width:100%;max-width:none;flex-basis:100%}
-  .topo-estado{margin-left:0;min-width:0;max-width:100%}
-  .topo-estado .situacao,.topo-estado .status{white-space:normal;overflow-wrap:anywhere;max-width:100%}
-  .topo .acoes{width:100%;min-width:0}
-  .topo .etapas{flex-basis:100%;min-width:0;justify-content:flex-start}
-  .topo .marca{white-space:normal}
-  .topo .marca small{display:block;margin-left:0}
-}
 /* cubo de navegação (item 70): canto de cima à direita do 3D; some quando o esquema 2D está aberto */
 .cubo{--cubo:56px;position:absolute;top:12px;right:12px;z-index:4;display:flex;flex-direction:column;align-items:center;gap:8px;user-select:none;-webkit-user-select:none}
 .esquema:not([hidden]) ~ .cubo{display:none}
@@ -282,10 +251,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .abas{gap:6px;padding:8px}
 .alerta{border-radius:var(--raio-p)}
 
-/* Abas das etapas (Montar, Lista de corte, Plano, Compras, Desenhos) */
-.etapas{display:flex;flex-wrap:wrap;gap:8px;width:100%}
-.etapas button{border:0;border-radius:var(--raio-p);padding:9px 14px;background:var(--surface);box-shadow:var(--sombra-fora-p);font-weight:700;cursor:pointer;white-space:nowrap}
-.etapas button[aria-current]{color:var(--accent);box-shadow:var(--sombra-dentro)}
 [data-secao][hidden]{display:none!important}
 .painel[hidden]{display:none}
 .palco.com-esquema .rotulos,.palco.com-esquema .dica{display:none}
@@ -310,10 +275,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 /* botão discreto: ação rara ou que apaga (ex.: Restaurar medidas padrão) */
 .btn.discreto{box-shadow:none;background:transparent;color:var(--muted);font-weight:600}
 .btn.discreto:hover{color:var(--danger)}
-/* Topo 2.0: etapas como abas (trilho afundado; a aba atual em relevo), para não parecerem os botões de arquivo */
-.topo .etapas{gap:4px;padding:4px;border-radius:var(--raio);box-shadow:var(--sombra-dentro)}
-.topo .etapas button{box-shadow:none;background:transparent}
-.topo .etapas button[aria-current]{box-shadow:var(--sombra-fora-p);background:var(--surface)}
 
 /* botões do juntar: texto quebra em vez de vazar */
 .ed-remover{white-space:normal;text-align:center}
@@ -334,7 +295,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 /* aviso "Não salvo" no topo: vermelho até salvar no Drive ou em .json */
 .btn.nao-salvo{color:var(--danger);background:var(--danger-bg);box-shadow:none;font-weight:800}
 .btn.nao-salvo:hover{color:var(--danger);filter:brightness(.97)}
-/* estado da nuvem no topo ("☁ Salvo 10/11 00:59") */
+/* estado da nuvem no topo ("Salvo 10/11 00:59", com ícone de nuvem) */
 .estado-nuvem{font-size:12px;font-weight:700;color:var(--ok);white-space:nowrap}
 .estado-nuvem.erro{color:var(--danger)}
 /* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
@@ -520,6 +481,104 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .ed-ajuste{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px}
 .ed-ajuste > span{display:flex;flex-direction:column;min-width:0}
 .ed-ajuste > span > span{color:var(--muted);font-size:11.5px}
+/* ÍCONES — desenhos de linha da interface (item 77, 17/11/2026). Cada classe .ic-<nome> guarda o desenho;
+   .ic põe o ícone antes do texto, na cor do texto (máscara), então funciona no tema claro e no escuro.
+   Para trocar um ícone, mude só o desenho aqui; o texto dos botões continua sendo trocado pelo programa. */
+.ic::before,.status::before{content:"";flex:none;display:inline-block;width:var(--ic-tam,18px);height:var(--ic-tam,18px);background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+.ic-logo{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='3' width='16' height='18' rx='1.5'/%3E%3Cpath d='M12 3v18M4 11h8M14.5 10.5v3'/%3E%3C/svg%3E")}
+.ic-tipo{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='1.5'/%3E%3Cpath d='M9 4v16M9 11h12M15 11v9'/%3E%3C/svg%3E")}
+.ic-desfazer{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 14 4 9l5-5'/%3E%3Cpath d='M4 9h10a6 6 0 0 1 0 12h-3'/%3E%3C/svg%3E")}
+.ic-projetos{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3Cpath d='M8 13h8M8 16h5'/%3E%3C/svg%3E")}
+.ic-drive-salvar{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18a4.5 4.5 0 1 1 .9-8.9A6 6 0 0 1 19 10a4 4 0 0 1-1 7.9'/%3E%3Cpath d='M12 12v8M9 15l3-3 3 3'/%3E%3C/svg%3E")}
+.ic-drive-abrir{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18a4.5 4.5 0 1 1 .9-8.9A6 6 0 0 1 19 10a4 4 0 0 1-1 7.9'/%3E%3Cpath d='M12 12v8M9 17l3 3 3-3'/%3E%3C/svg%3E")}
+.ic-abrir{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5M9 14h6M12 11l3 3-3 3'/%3E%3C/svg%3E")}
+.ic-exportar{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12M7 8l5-5 5 5'/%3E%3Cpath d='M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5'/%3E%3C/svg%3E")}
+.ic-restaurar{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 3-6.7L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E")}
+.ic-montar{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='3' width='16' height='18' rx='1.5'/%3E%3Cpath d='M4 9h16M4 15h16M11 6h2M11 12h2M11 18h2'/%3E%3C/svg%3E")}
+.ic-corte{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6h11M9 12h11M9 18h11'/%3E%3Crect x='3.5' y='4.5' width='3' height='3' rx='.5'/%3E%3Crect x='3.5' y='10.5' width='3' height='3' rx='.5'/%3E%3Crect x='3.5' y='16.5' width='3' height='3' rx='.5'/%3E%3C/svg%3E")}
+.ic-plano{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='1.5'/%3E%3Cpath d='M3 13h11M14 4v16M14 10h7M8 13v7'/%3E%3C/svg%3E")}
+.ic-compras{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4h2l2.4 11h10.2l2-8H6.2'/%3E%3Ccircle cx='9.5' cy='19.5' r='1.3'/%3E%3Ccircle cx='16.5' cy='19.5' r='1.3'/%3E%3C/svg%3E")}
+.ic-desenhos{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20V4l16 16z'/%3E%3Cpath d='M8 16v-4.5l4.5 4.5z'/%3E%3Cpath d='M4 8h2M4 12h2'/%3E%3C/svg%3E")}
+.ic-salvo{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18a4.5 4.5 0 1 1 .9-8.9A6 6 0 0 1 19 10a4 4 0 0 1-1 7.9'/%3E%3Cpath d='M9.5 15l2 2 3.5-3.5'/%3E%3C/svg%3E")}
+.ic-nuvem-erro{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18a4.5 4.5 0 1 1 .9-8.9A6 6 0 0 1 19 10a4 4 0 0 1-1 7.9'/%3E%3Cpath d='M12 12v3M12 18h.01'/%3E%3C/svg%3E")}
+.ic-ok{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 3 3 5-6'/%3E%3C/svg%3E")}
+.ic-aviso{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4 2.8 19.5h18.4z'/%3E%3Cpath d='M12 10v4M12 17h.01'/%3E%3C/svg%3E")}
+.ic-estudo{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20l4-1 11-11-3-3L5 16z'/%3E%3Cpath d='M14 7l3 3'/%3E%3C/svg%3E")}
+/* situação: o ícone acompanha o estado */
+.estado-nuvem.erro{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18a4.5 4.5 0 1 1 .9-8.9A6 6 0 0 1 19 10a4 4 0 0 1-1 7.9'/%3E%3Cpath d='M12 12v3M12 18h.01'/%3E%3C/svg%3E")}
+.status.ok{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 3 3 5-6'/%3E%3C/svg%3E")}
+.status.erro{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4 2.8 19.5h18.4z'/%3E%3Cpath d='M12 10v4M12 17h.01'/%3E%3C/svg%3E")}
+.sit-rotulo{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20l4-1 11-11-3-3L5 16z'/%3E%3Cpath d='M14 7l3 3'/%3E%3C/svg%3E")}
+.situacao[data-estado="aprovado"] .sit-rotulo,.situacao[data-estado="liberado"] .sit-rotulo{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 3 3 5-6'/%3E%3C/svg%3E")}
+/* TOPO B (item 77, escolhido pelo Nathan em 17/11/2026)
+   Computador: etapas numa coluna fixa à esquerda (logo em cima); uma linha no alto com nome, tipo, situação e arquivo.
+   Celular (até 900 px): etapas numa barra fixa embaixo, perto do polegar; em cima, nome / tipo / situação / arquivo, um por linha.
+   Cores e sombras vêm de tema.css; ícones de icones.css. */
+
+/* ---------- computador ---------- */
+:root{--trilho:84px}
+body{padding-left:calc(var(--trilho) + 28px)}
+.topo{margin-bottom:12px}
+.topo-linha{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.marca{display:flex;align-items:baseline;gap:6px;font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-weight:500;color:var(--muted);font-size:12px}
+.topo-projeto{display:flex;align-items:center;gap:8px;flex:1 1 460px;min-width:0}
+#nomeProjeto{flex:1 1 220px;min-width:0;max-width:400px;height:40px;padding:0 12px;font-weight:700;font-size:15px}
+.tipo-caixa{--ic-tam:18px;display:flex;align-items:center;gap:8px;flex:0 1 280px;min-width:0;height:40px;padding:0 0 0 12px;border-radius:var(--raio-p);box-shadow:var(--sombra-dentro);color:var(--muted)}
+.tipo-caixa #tipoMovel.sel-tipo{flex:1;min-width:0;height:100%;box-shadow:none;background:transparent;color:var(--fg);padding:0 8px 0 0}
+.topo-estado{display:flex;align-items:center;gap:6px 8px;min-width:0}
+.status,.estado-nuvem,.sit-rotulo{--ic-tam:15px;display:inline-flex;align-items:center;gap:5px}
+.topo .acoes{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn.ic{--ic-tam:18px}
+.btn.so-icone{width:40px;height:40px;padding:0;justify-content:center}
+.btn.so-icone::before{--ic-tam:20px}
+.menu-exportar>summary .seta{font-size:11px;color:var(--muted)}
+/* os menus do topo ficam à direita da tela: abrem alinhados pela direita */
+.menu-topo .menu-painel{left:auto;right:0}
+.menu-lista{display:flex;flex-direction:column;gap:8px;width:min(280px,calc(100vw - 32px))}
+.menu-lista .btn{width:100%;justify-content:flex-start}
+.menu-sep{height:1px;background:var(--line);margin:2px 0}
+
+/* coluna das etapas */
+.etapas{position:fixed;z-index:15;left:max(16px,env(safe-area-inset-left,0px));top:12px;bottom:12px;width:var(--trilho);
+  display:flex;flex-direction:column;gap:6px;padding:10px 6px;border-radius:var(--raio);background:var(--surface);box-shadow:var(--sombra-fora);overflow-y:auto}
+.etapas-logo{--ic-tam:28px;display:flex;justify-content:center;padding:4px 0 10px;color:var(--accent)}
+.etapas button{--ic-tam:22px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px;border:0;border-radius:var(--raio-p);
+  background:var(--surface);color:var(--muted);font-weight:700;font-size:11px;line-height:1.2;text-align:center;cursor:pointer;white-space:normal}
+.etapas button:hover{color:var(--fg)}
+.etapas button[aria-current]{color:var(--accent);box-shadow:var(--sombra-dentro)}
+.et-curto{display:none}
+
+/* ---------- celular e telas estreitas ---------- */
+@media (max-width:900px){
+  body{padding-left:max(16px,env(safe-area-inset-left,0px));padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  .topo-linha{flex-direction:column;align-items:stretch;gap:10px;min-width:0}
+  .topo-linha>*{min-width:0;max-width:100%}
+  .marca{display:none}                       /* o nome do programa já aparece na barra do app */
+  .topo-projeto{flex-wrap:wrap;flex:none}
+  #nomeProjeto{flex:1 1 100%;max-width:none;height:44px}
+  .tipo-caixa{flex:1 1 200px;height:44px}
+  .topo-estado{flex-wrap:wrap}                /* quebra linha em vez de esconder: todos os avisos ficam à vista */
+  .topo-estado .status,.topo-estado .situacao,.estado-nuvem{white-space:normal;overflow-wrap:anywhere;max-width:100%}
+  .topo .acoes{margin-left:0;width:100%}
+  #btnDriveSalvar{flex:1 1 auto;justify-content:center;min-width:0}
+  .topo .acoes .btn,.topo .acoes summary.btn{height:44px}
+  .btn.so-icone,#menuExportar>summary{width:44px;padding:0;justify-content:center}
+  #menuExportar>summary::before{--ic-tam:20px}
+  .so-pc{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  /* sem Salvar no Drive (fora do app do Claude), o Arquivo ocupa o espaço */
+  #btnDriveSalvar[hidden]+#menuArquivo{flex:1 1 auto}
+  #btnDriveSalvar[hidden]+#menuArquivo>summary{width:100%;justify-content:center}
+  .menu-topo .menu-painel{left:16px;right:16px;width:auto}
+
+  /* etapas: barra fixa embaixo */
+  .etapas{top:auto;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom,0px));width:auto;flex-direction:row;gap:4px;padding:6px;overflow:visible}
+  .etapas-logo{display:none}
+  .etapas button{flex:1 1 0;min-width:0;padding:8px 0 7px;font-size:11px;white-space:nowrap}
+  .et-longo{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}   /* continua para leitor de tela */
+  .et-curto{display:inline}
+  .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+}
 </style>
 <script>/* =====================================================================
    DIAGNÓSTICO DE CARREGAMENTO — script comum (não é módulo), roda antes de tudo.
@@ -561,34 +620,47 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 })();</script>
 
 <header class="topo">
-  <!-- Topo 2.0: linha 1 = o que é o projeto; linha 2 = arquivo à esquerda, etapas no meio, recomeçar à direita -->
+  <!-- Topo B (item 77, 17/11): etapas com ícones — barra fixa embaixo no celular, coluna à esquerda no computador;
+       em cima: nome, tipo, situação e o arquivo (Desfazer, Salvar no Drive, menu Arquivo, menu Exportar). Ícones em estilos/icones.css -->
+  <nav class="etapas" id="etapas" aria-label="Etapas">
+    <span class="etapas-logo ic ic-logo" aria-hidden="true"></span>
+    <button type="button" class="ic ic-montar" data-etapa="montar" aria-current="page">Montar</button>
+    <button type="button" class="ic ic-corte" data-etapa="corte"><span class="et-longo">Lista de corte</span><span class="et-curto" aria-hidden="true">Corte</span></button>
+    <button type="button" class="ic ic-plano" data-etapa="plano"><span class="et-longo">Plano de corte</span><span class="et-curto" aria-hidden="true">Plano</span></button>
+    <button type="button" class="ic ic-compras" data-etapa="compras"><span class="et-longo">Compras e orçamento</span><span class="et-curto" aria-hidden="true">Compras</span></button>
+    <button type="button" class="ic ic-desenhos" data-etapa="desenhos">Desenhos</button>
+  </nav>
   <div class="topo-linha">
     <span class="marca">Configurador de Móveis<small>Fase 1 · técnico</small></span>
     <div class="topo-projeto">
       <input id="nomeProjeto" aria-label="Nome do projeto" value="Gabinete do banheiro">
-      <select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select>
+      <span class="tipo-caixa ic ic-tipo"><select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select></span>
       <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
     </div>
     <div class="topo-estado">
-      <span class="estado-nuvem" id="estadoNuvem" hidden></span>
+      <span class="estado-nuvem ic ic-salvo" id="estadoNuvem" hidden></span>
       <button class="btn nao-salvo" id="naoSalvo" type="button" hidden title="Há mudanças que ainda não foram salvas no Drive nem em arquivo. Clique para salvar.">● Não salvo</button>
-      <span class="status ok" id="status">Pronto para exportar</span>
+      <span class="status ok ic" id="status">Pronto para exportar</span>
       <div class="situacao" id="situacao" role="status">
-        <span class="sit-rotulo" data-texto="rotulo"></span>
+        <span class="sit-rotulo ic" data-texto="rotulo"></span>
         <button type="button" class="btn" id="btnLiberar" data-se="podeLiberar">Liberar para corte</button>
       </div>
     </div>
-  </div>
-  <div class="topo-linha">
     <div class="acoes" role="group" aria-label="Arquivo">
-      <button class="btn" id="btnDesfazer" type="button" disabled title="Nada para desfazer">↶ Desfazer</button>
-      <span class="topo-sep" aria-hidden="true"></span>
-      <button class="btn" id="btnNuvem" type="button" hidden title="Projetos guardados no programa: os mesmos no computador e no celular">Meus projetos</button>
-      <button class="btn prim" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
-      <button class="btn" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
-      <button class="btn" id="btnAbrir" type="button" title="Abrir um arquivo .json do aparelho">Abrir projeto</button>
-      <details class="menu-exportar" id="menuExportar">
-        <summary class="btn">Exportar ▾</summary>
+      <button class="btn ic ic-desfazer so-icone" id="btnDesfazer" type="button" disabled title="Nada para desfazer" aria-label="Desfazer"></button>
+      <button class="btn prim ic ic-drive-salvar" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
+      <details class="menu-exportar menu-topo" id="menuArquivo">
+        <summary class="btn ic ic-projetos">Arquivo <span class="seta" aria-hidden="true">▾</span></summary>
+        <div class="menu-painel menu-lista" role="group" aria-label="Arquivo">
+          <button class="btn ic ic-projetos" id="btnNuvem" type="button" hidden title="Projetos guardados no programa: os mesmos no computador e no celular">Meus projetos</button>
+          <button class="btn ic ic-drive-abrir" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
+          <button class="btn ic ic-abrir" id="btnAbrir" type="button" title="Abrir um arquivo .json do aparelho">Abrir projeto (.json)</button>
+          <span class="menu-sep" aria-hidden="true"></span>
+          <button class="btn discreto ic ic-restaurar" id="btnPadrao" type="button" title="Apaga as mudanças deste móvel e volta às medidas padrão">Restaurar medidas padrão</button>
+        </div>
+      </details>
+      <details class="menu-exportar menu-topo" id="menuExportar">
+        <summary class="btn ic ic-exportar" aria-label="Exportar"><span class="so-pc">Exportar</span> <span class="seta so-pc" aria-hidden="true">▾</span></summary>
         <div class="export menu-painel" role="group" aria-label="Exportar">
           <div class="linha">
             <button class="btn prim" id="btnZip" type="button">Pacote para o Blender (.zip)</button>
@@ -603,14 +675,6 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       </details>
       <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
     </div>
-    <nav class="etapas" id="etapas" aria-label="Etapas">
-      <button type="button" data-etapa="montar" aria-current="page">Montar</button>
-      <button type="button" data-etapa="corte">Lista de corte</button>
-      <button type="button" data-etapa="plano">Plano de corte</button>
-      <button type="button" data-etapa="compras">Compras e orçamento</button>
-      <button type="button" data-etapa="desenhos">Desenhos</button>
-    </nav>
-    <button class="btn discreto" id="btnPadrao" type="button" title="Apaga as mudanças deste móvel e volta às medidas padrão">Restaurar medidas padrão</button>
   </div>
 </header>
 
@@ -11717,11 +11781,14 @@ async function salvarJson() { if (!estado.res) return; if (await salvar(slug() +
 $('btnJson').addEventListener('click', salvarJson);
 // clicar no aviso "Não salvo" salva: no Drive quando a ligação existe (app do Claude), senão baixa o .json
 $('naoSalvo').addEventListener('click', () => { if (nuvemPronta()) salvarNuvem(); else if (mcpDrive && !$('btnDriveSalvar').hidden) $('btnDriveSalvar').click(); else salvarJson(); });
-// menu Exportar da barra de cima: fecha ao clicar fora, com Esc e depois de escolher uma saída (o "Copiar iLogic" mantém aberto para mostrar o texto)
-document.addEventListener('click', e => { const m = $('menuExportar'); if (m.open && !m.contains(e.target)) m.open = false; });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') $('menuExportar').open = false; });
-$('menuExportar').addEventListener('toggle', e => { const m = e.currentTarget; if (m.open) m.style.setProperty('--exp-topo', Math.round(m.querySelector('summary').getBoundingClientRect().bottom + 8) + 'px'); });
-$('menuExportar').addEventListener('click', e => { const b = e.target.closest('button'); if (b && b.id !== 'copIlogic') setTimeout(() => { $('menuExportar').open = false; }, 0); });
+// menus Arquivo e Exportar da barra de cima: fecham ao clicar fora, com Esc e depois de escolher (o "Copiar iLogic" mantém aberto para mostrar o texto); abrir um fecha o outro
+const MENUS_TOPO = ['menuArquivo', 'menuExportar'].map(id => $(id));
+document.addEventListener('click', e => { MENUS_TOPO.forEach(m => { if (m.open && !m.contains(e.target)) m.open = false; }); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') MENUS_TOPO.forEach(m => { m.open = false; }); });
+MENUS_TOPO.forEach(m => {
+  m.addEventListener('toggle', () => { if (!m.open) return; MENUS_TOPO.forEach(o => { if (o !== m) o.open = false; }); m.style.setProperty('--exp-topo', Math.round(m.querySelector('summary').getBoundingClientRect().bottom + 8) + 'px'); });
+  m.addEventListener('click', e => { const b = e.target.closest('button'); if (b && b.id !== 'copIlogic') setTimeout(() => { m.open = false; }, 0); });
+});
 $('btnZip').addEventListener('click', async () => {
   if (estado.res.erros.length || !window.JSZip) return;
   $('btnZip').disabled = true; $('notaExport').textContent = 'Montando o pacote…';
@@ -11834,17 +11901,17 @@ async function salvarNuvem() {
   if (!nuvemPronta()) return;
   if (nuvemSalvando) { agendarNuvem(); return; }
   const atual = JSON.stringify(estado.projeto); if (atual === ultimoSalvo) return;
-  nuvemSalvando = true; estadoNuvem('☁ Salvando…');
+  nuvemSalvando = true; estadoNuvem('Salvando…');
   const id = idNuvem(), salvoEm = new Date().toISOString();
   try {
     const texto = JSON.stringify(JSON.parse(projetoJSON()));     // compacto: cada documento cabe até 256 KB
     if (formatoConvertidoDe) await guardarOriginalNuvem(id, formatoConvertidoDe);
     await colNuvem().doc(id).set({ nome: estado.projeto.nome || 'Projeto', tipo: estado.projeto.tipo, salvoEm, projeto: texto });
     ultimoSalvo = atual; try { localStorage.setItem(CHAVE_SALVO, atual); localStorage.setItem(CHAVE_NUVEM, JSON.stringify({ id, salvoEm })); } catch(e) {}
-    estadoNuvem('☁ Salvo ' + horaCurta(salvoEm)); mostrarNaoSalvo();
+    estadoNuvem('Salvo ' + horaCurta(salvoEm)); mostrarNaoSalvo();
     copiaDriveDeHoraEmHora();
   } catch (e) {
-    estadoNuvem(e?.code === 'invalid_argument' ? '☁ Projeto grande demais para a nuvem: salve no Drive' : e?.code === 'quota_exceeded' ? '☁ Nuvem cheia: apague projetos antigos' : '☁ Não salvou (sem conexão?)', true);
+    estadoNuvem(e?.code === 'invalid_argument' ? 'Projeto grande demais para a nuvem: salve no Drive' : e?.code === 'quota_exceeded' ? 'Nuvem cheia: apague projetos antigos' : 'Não salvou (sem conexão?)', true);
   }
   nuvemSalvando = false;
 }
@@ -11871,7 +11938,7 @@ async function copiaDriveDeHoraEmHora() {
 function abrirDaNuvem(doc, aviso) {
   if (!abrirProjetoTexto(doc.projeto)) return false;
   ultimoSalvo = JSON.stringify(estado.projeto); try { localStorage.setItem(CHAVE_SALVO, ultimoSalvo); localStorage.setItem(CHAVE_NUVEM, JSON.stringify({ id: idNuvem(), salvoEm: doc.salvoEm })); } catch(e) {}
-  clearTimeout(nuvemTimer); estadoNuvem('☁ Salvo ' + horaCurta(doc.salvoEm)); mostrarNaoSalvo(); if (aviso) toast(formatoConvertidoDe ? AVISO_CONVERTIDO : aviso);
+  clearTimeout(nuvemTimer); estadoNuvem('Salvo ' + horaCurta(doc.salvoEm)); mostrarNaoSalvo(); if (aviso) toast(formatoConvertidoDe ? AVISO_CONVERTIDO : aviso);
   return true;
 }
 (async () => {
@@ -11897,7 +11964,7 @@ function abrirDaNuvem(doc, aviso) {
     } else { const q = await colNuvem().orderBy('salvoEm', 'desc').limit(20).get(); alvo = q.docs.map(x => x.data()).find(x => !x.copia) || null; }   // aparelho novo: o mais recente (sem contar as cópias guardadas à parte)
     if (alvo && abrirDaNuvem(alvo, 'Abri a versão mais nova, salva na nuvem em ' + horaCurta(alvo.salvoEm) + '.')) return;
     if (!loc || loc.id !== idNuvem()) ultimoSalvo = null;        // este projeto ainda não está na nuvem: guarda já
-    else if (JSON.stringify(estado.projeto) === ultimoSalvo) estadoNuvem('☁ Salvo ' + horaCurta(loc.salvoEm));
+    else if (JSON.stringify(estado.projeto) === ultimoSalvo) estadoNuvem('Salvo ' + horaCurta(loc.salvoEm));
     mostrarNaoSalvo();                                            // mudança ainda não guardada: salva agora
   } catch (e) { nuvem = null; nuvemUid = null; estadoNuvem('Sem nuvem agora (sem conexão?): use Salvar no Drive ou .json', true); }
 })();

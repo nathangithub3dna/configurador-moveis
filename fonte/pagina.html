@@ -10,38 +10,53 @@
 /*@inclui:estilos/editor.css*/
 /*@inclui:estilos/ambiente.css*/
 /*@inclui:estilos/ajuste.css*/
+/*@inclui:estilos/icones.css*/
+/*@inclui:estilos/topo.css*/
 </style>
 <script>/*@inclui:js/diagnostico.js*/</script>
 
 <header class="topo">
-  <!-- Topo 2.0: linha 1 = o que é o projeto; linha 2 = arquivo à esquerda, etapas no meio, recomeçar à direita -->
+  <!-- Topo B (item 77, 17/11): etapas com ícones — barra fixa embaixo no celular, coluna à esquerda no computador;
+       em cima: nome, tipo, situação e o arquivo (Desfazer, Salvar no Drive, menu Arquivo, menu Exportar). Ícones em estilos/icones.css -->
+  <nav class="etapas" id="etapas" aria-label="Etapas">
+    <span class="etapas-logo ic ic-logo" aria-hidden="true"></span>
+    <button type="button" class="ic ic-montar" data-etapa="montar" aria-current="page">Montar</button>
+    <button type="button" class="ic ic-corte" data-etapa="corte"><span class="et-longo">Lista de corte</span><span class="et-curto" aria-hidden="true">Corte</span></button>
+    <button type="button" class="ic ic-plano" data-etapa="plano"><span class="et-longo">Plano de corte</span><span class="et-curto" aria-hidden="true">Plano</span></button>
+    <button type="button" class="ic ic-compras" data-etapa="compras"><span class="et-longo">Compras e orçamento</span><span class="et-curto" aria-hidden="true">Compras</span></button>
+    <button type="button" class="ic ic-desenhos" data-etapa="desenhos">Desenhos</button>
+  </nav>
   <div class="topo-linha">
     <span class="marca">Configurador de Móveis<small>Fase 1 · técnico</small></span>
     <div class="topo-projeto">
       <input id="nomeProjeto" aria-label="Nome do projeto" value="Gabinete do banheiro">
-      <select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select>
+      <span class="tipo-caixa ic ic-tipo"><select id="tipoMovel" class="sel-tipo" aria-label="Tipo de móvel" title="Tipo de móvel"></select></span>
       <button class="btn prim" id="btnParaLivre" type="button" hidden title="Converte este móvel para o Móvel livre, com as mesmas peças">Editar no esquema</button>
     </div>
     <div class="topo-estado">
-      <span class="estado-nuvem" id="estadoNuvem" hidden></span>
+      <span class="estado-nuvem ic ic-salvo" id="estadoNuvem" hidden></span>
       <button class="btn nao-salvo" id="naoSalvo" type="button" hidden title="Há mudanças que ainda não foram salvas no Drive nem em arquivo. Clique para salvar.">● Não salvo</button>
-      <span class="status ok" id="status">Pronto para exportar</span>
+      <span class="status ok ic" id="status">Pronto para exportar</span>
       <div class="situacao" id="situacao" role="status">
-        <span class="sit-rotulo" data-texto="rotulo"></span>
+        <span class="sit-rotulo ic" data-texto="rotulo"></span>
         <button type="button" class="btn" id="btnLiberar" data-se="podeLiberar">Liberar para corte</button>
       </div>
     </div>
-  </div>
-  <div class="topo-linha">
     <div class="acoes" role="group" aria-label="Arquivo">
-      <button class="btn" id="btnDesfazer" type="button" disabled title="Nada para desfazer">↶ Desfazer</button>
-      <span class="topo-sep" aria-hidden="true"></span>
-      <button class="btn" id="btnNuvem" type="button" hidden title="Projetos guardados no programa: os mesmos no computador e no celular">Meus projetos</button>
-      <button class="btn prim" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
-      <button class="btn" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
-      <button class="btn" id="btnAbrir" type="button" title="Abrir um arquivo .json do aparelho">Abrir projeto</button>
-      <details class="menu-exportar" id="menuExportar">
-        <summary class="btn">Exportar ▾</summary>
+      <button class="btn ic ic-desfazer so-icone" id="btnDesfazer" type="button" disabled title="Nada para desfazer" aria-label="Desfazer"></button>
+      <button class="btn prim ic ic-drive-salvar" id="btnDriveSalvar" type="button" hidden>Salvar no Drive</button>
+      <details class="menu-exportar menu-topo" id="menuArquivo">
+        <summary class="btn ic ic-projetos">Arquivo <span class="seta" aria-hidden="true">▾</span></summary>
+        <div class="menu-painel menu-lista" role="group" aria-label="Arquivo">
+          <button class="btn ic ic-projetos" id="btnNuvem" type="button" hidden title="Projetos guardados no programa: os mesmos no computador e no celular">Meus projetos</button>
+          <button class="btn ic ic-drive-abrir" id="btnDriveAbrir" type="button" hidden>Abrir do Drive</button>
+          <button class="btn ic ic-abrir" id="btnAbrir" type="button" title="Abrir um arquivo .json do aparelho">Abrir projeto (.json)</button>
+          <span class="menu-sep" aria-hidden="true"></span>
+          <button class="btn discreto ic ic-restaurar" id="btnPadrao" type="button" title="Apaga as mudanças deste móvel e volta às medidas padrão">Restaurar medidas padrão</button>
+        </div>
+      </details>
+      <details class="menu-exportar menu-topo" id="menuExportar">
+        <summary class="btn ic ic-exportar" aria-label="Exportar"><span class="so-pc">Exportar</span> <span class="seta so-pc" aria-hidden="true">▾</span></summary>
         <div class="export menu-painel" role="group" aria-label="Exportar">
           <div class="linha">
             <button class="btn prim" id="btnZip" type="button">Pacote para o Blender (.zip)</button>
@@ -56,14 +71,6 @@
       </details>
       <input type="file" id="arqProjeto" accept=".json,application/json" hidden>
     </div>
-    <nav class="etapas" id="etapas" aria-label="Etapas">
-      <button type="button" data-etapa="montar" aria-current="page">Montar</button>
-      <button type="button" data-etapa="corte">Lista de corte</button>
-      <button type="button" data-etapa="plano">Plano de corte</button>
-      <button type="button" data-etapa="compras">Compras e orçamento</button>
-      <button type="button" data-etapa="desenhos">Desenhos</button>
-    </nav>
-    <button class="btn discreto" id="btnPadrao" type="button" title="Apaga as mudanças deste móvel e volta às medidas padrão">Restaurar medidas padrão</button>
   </div>
 </header>
 

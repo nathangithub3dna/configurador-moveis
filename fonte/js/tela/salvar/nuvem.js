@@ -17,17 +17,17 @@ async function salvarNuvem() {
   if (!nuvemPronta()) return;
   if (nuvemSalvando) { agendarNuvem(); return; }
   const atual = JSON.stringify(estado.projeto); if (atual === ultimoSalvo) return;
-  nuvemSalvando = true; estadoNuvem('☁ Salvando…');
+  nuvemSalvando = true; estadoNuvem('Salvando…');
   const id = idNuvem(), salvoEm = new Date().toISOString();
   try {
     const texto = JSON.stringify(JSON.parse(projetoJSON()));     // compacto: cada documento cabe até 256 KB
     if (formatoConvertidoDe) await guardarOriginalNuvem(id, formatoConvertidoDe);
     await colNuvem().doc(id).set({ nome: estado.projeto.nome || 'Projeto', tipo: estado.projeto.tipo, salvoEm, projeto: texto });
     ultimoSalvo = atual; try { localStorage.setItem(CHAVE_SALVO, atual); localStorage.setItem(CHAVE_NUVEM, JSON.stringify({ id, salvoEm })); } catch(e) {}
-    estadoNuvem('☁ Salvo ' + horaCurta(salvoEm)); mostrarNaoSalvo();
+    estadoNuvem('Salvo ' + horaCurta(salvoEm)); mostrarNaoSalvo();
     copiaDriveDeHoraEmHora();
   } catch (e) {
-    estadoNuvem(e?.code === 'invalid_argument' ? '☁ Projeto grande demais para a nuvem: salve no Drive' : e?.code === 'quota_exceeded' ? '☁ Nuvem cheia: apague projetos antigos' : '☁ Não salvou (sem conexão?)', true);
+    estadoNuvem(e?.code === 'invalid_argument' ? 'Projeto grande demais para a nuvem: salve no Drive' : e?.code === 'quota_exceeded' ? 'Nuvem cheia: apague projetos antigos' : 'Não salvou (sem conexão?)', true);
   }
   nuvemSalvando = false;
 }
@@ -54,7 +54,7 @@ async function copiaDriveDeHoraEmHora() {
 function abrirDaNuvem(doc, aviso) {
   if (!abrirProjetoTexto(doc.projeto)) return false;
   ultimoSalvo = JSON.stringify(estado.projeto); try { localStorage.setItem(CHAVE_SALVO, ultimoSalvo); localStorage.setItem(CHAVE_NUVEM, JSON.stringify({ id: idNuvem(), salvoEm: doc.salvoEm })); } catch(e) {}
-  clearTimeout(nuvemTimer); estadoNuvem('☁ Salvo ' + horaCurta(doc.salvoEm)); mostrarNaoSalvo(); if (aviso) toast(formatoConvertidoDe ? AVISO_CONVERTIDO : aviso);
+  clearTimeout(nuvemTimer); estadoNuvem('Salvo ' + horaCurta(doc.salvoEm)); mostrarNaoSalvo(); if (aviso) toast(formatoConvertidoDe ? AVISO_CONVERTIDO : aviso);
   return true;
 }
 (async () => {
@@ -80,7 +80,7 @@ function abrirDaNuvem(doc, aviso) {
     } else { const q = await colNuvem().orderBy('salvoEm', 'desc').limit(20).get(); alvo = q.docs.map(x => x.data()).find(x => !x.copia) || null; }   // aparelho novo: o mais recente (sem contar as cópias guardadas à parte)
     if (alvo && abrirDaNuvem(alvo, 'Abri a versão mais nova, salva na nuvem em ' + horaCurta(alvo.salvoEm) + '.')) return;
     if (!loc || loc.id !== idNuvem()) ultimoSalvo = null;        // este projeto ainda não está na nuvem: guarda já
-    else if (JSON.stringify(estado.projeto) === ultimoSalvo) estadoNuvem('☁ Salvo ' + horaCurta(loc.salvoEm));
+    else if (JSON.stringify(estado.projeto) === ultimoSalvo) estadoNuvem('Salvo ' + horaCurta(loc.salvoEm));
     mostrarNaoSalvo();                                            // mudança ainda não guardada: salva agora
   } catch (e) { nuvem = null; nuvemUid = null; estadoNuvem('Sem nuvem agora (sem conexão?): use Salvar no Drive ou .json', true); }
 })();

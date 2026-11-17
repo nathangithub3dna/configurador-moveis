@@ -78,11 +78,14 @@ async function salvarJson() { if (!estado.res) return; if (await salvar(slug() +
 $('btnJson').addEventListener('click', salvarJson);
 // clicar no aviso "Não salvo" salva: no Drive quando a ligação existe (app do Claude), senão baixa o .json
 $('naoSalvo').addEventListener('click', () => { if (nuvemPronta()) salvarNuvem(); else if (mcpDrive && !$('btnDriveSalvar').hidden) $('btnDriveSalvar').click(); else salvarJson(); });
-// menu Exportar da barra de cima: fecha ao clicar fora, com Esc e depois de escolher uma saída (o "Copiar iLogic" mantém aberto para mostrar o texto)
-document.addEventListener('click', e => { const m = $('menuExportar'); if (m.open && !m.contains(e.target)) m.open = false; });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') $('menuExportar').open = false; });
-$('menuExportar').addEventListener('toggle', e => { const m = e.currentTarget; if (m.open) m.style.setProperty('--exp-topo', Math.round(m.querySelector('summary').getBoundingClientRect().bottom + 8) + 'px'); });
-$('menuExportar').addEventListener('click', e => { const b = e.target.closest('button'); if (b && b.id !== 'copIlogic') setTimeout(() => { $('menuExportar').open = false; }, 0); });
+// menus Arquivo e Exportar da barra de cima: fecham ao clicar fora, com Esc e depois de escolher (o "Copiar iLogic" mantém aberto para mostrar o texto); abrir um fecha o outro
+const MENUS_TOPO = ['menuArquivo', 'menuExportar'].map(id => $(id));
+document.addEventListener('click', e => { MENUS_TOPO.forEach(m => { if (m.open && !m.contains(e.target)) m.open = false; }); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') MENUS_TOPO.forEach(m => { m.open = false; }); });
+MENUS_TOPO.forEach(m => {
+  m.addEventListener('toggle', () => { if (!m.open) return; MENUS_TOPO.forEach(o => { if (o !== m) o.open = false; }); m.style.setProperty('--exp-topo', Math.round(m.querySelector('summary').getBoundingClientRect().bottom + 8) + 'px'); });
+  m.addEventListener('click', e => { const b = e.target.closest('button'); if (b && b.id !== 'copIlogic') setTimeout(() => { m.open = false; }, 0); });
+});
 $('btnZip').addEventListener('click', async () => {
   if (estado.res.erros.length || !window.JSZip) return;
   $('btnZip').disabled = true; $('notaExport').textContent = 'Montando o pacote…';
