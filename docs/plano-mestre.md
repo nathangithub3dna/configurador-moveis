@@ -179,7 +179,7 @@ Itens de Ambiente que dependem da caixa livre: 1c-ii (solta/afastada, 4 lados) e
 
 Defeitos conhecidos, que entram quando tocar na área:
 
-no celular, a barra de cima passa da largura da tela;
+no celular, a barra de cima passa da largura da tela; ✅ resolvido no item 77 (17/11/2026, v72);
 ao dividir, o vão escolhido volta para o Vão 1;
 correr e basculante da parede B não animam no 3D;
 Perfil G com desconto suposto de 20 mm (conferir na peça).
