@@ -70,6 +70,7 @@ function montarEditorModulo() {
       return { podeAnt, podeProx, podeJuntar: (!!pa && n > 1) || Object.values(geo).some(Boolean), rotAnt: v ? '← Esquerda' : '↓ De baixo', rotProx: v ? 'Direita →' : '↑ De cima', ...geo }; })(),
     gavetas: tipoCt === 'gavetas' || tipoCt === 'gavetas+botijao', botijao: tipoCt === 'botijao' || tipoCt === 'gavetas+botijao',
     nGav: (no.conteudo || []).find(c => c.tipo === 'gavetas-internas')?.n ?? 0,
+    maleiro: (no.conteudo || []).some(c => c.tipo === 'maleiro'), cabideiro: (no.conteudo || []).some(c => c.tipo === 'cabideiro'), calceiro: tipoCt === 'calceiro',   // item 13
     sapateira: !!sapateiraDoVao(no), sapateiraSozinha: tipoCt === 'sapateira', sapateiraComVassoura: tipoCt === 'vassoura+sapateira', conjuntoAntigo: !!ESCOLHAS.conteudo[tipoCt]?.legado, nSap: (() => { const s = sapateiraDoVao(no); return s?.max ? String(s.max) : 'máx'; })(),
     resumoMovel: espacos[0]?.divisao ? ED.resumoDivisao(espacos[0].no) : 'um vão só', resumoVao: `Vão ${sel.num}: ${ED.resumo(no)}`,
     dentroAmbiente: noAmbiente, nomeModulo: noAmbiente ? `M${estado.modAberto + 1} · ${estado.projeto.parametros.modulos[estado.modAberto].nome}` : '',
@@ -120,6 +121,9 @@ function montarEditorModulo() {
   const gavNo = (no.conteudo || []).find(c => c.tipo === 'gavetas-internas'), botNo = (no.conteudo || []).find(c => c.tipo === 'botijao');
   if (gavNo) ed.querySelector('[data-vao="altGav"]').value = gavNo.altura;
   if (botNo) ed.querySelector('[data-vao="altBot"]').value = botNo.altura;
+  const malNo = (no.conteudo || []).find(c => c.tipo === 'maleiro'), cabNo = (no.conteudo || []).find(c => c.tipo === 'cabideiro');
+  if (malNo) ed.querySelector('[data-vao="altMaleiro"]').value = malNo.altura ?? MALEIRO.altura;
+  if (cabNo) ed.querySelector('[data-vao="distCabideiro"]').value = cabNo.dist ?? CABIDEIRO.distTeto;
   const sapNo = sapateiraDoVao(no); if (sapNo) ed.querySelector('[data-vao="nivelSap"]').value = sapNo.nivel;
   // campo "Puxador": o valor guardado continua sendo o lado da dobradiça (puxador à esquerda = dobradiça à direita);
   // no automático, o texto diz para que lado o puxador ficou
@@ -210,6 +214,8 @@ $('form').addEventListener('change', e => {
     if (kv === 'modeloPrat') { const c = (no.conteudo || []).find(x => x.tipo === 'prateleiras'); if (c) { if (v === 'comum') delete c.modelo; else c.modelo = v; } }
     if (kv === 'altGav') { const c = (no.conteudo || []).find(x => x.tipo === 'gavetas-internas'); if (c && Number(v) > 0) c.altura = Number(v); }
     if (kv === 'altBot') { const c = (no.conteudo || []).find(x => x.tipo === 'botijao'); if (c && Number(v) > 0) c.altura = Number(v); }
+    if (kv === 'altMaleiro') { const c = (no.conteudo || []).find(x => x.tipo === 'maleiro'); if (c && Number(v) > 0) c.altura = Number(v); }
+    if (kv === 'distCabideiro') { const c = (no.conteudo || []).find(x => x.tipo === 'cabideiro'); if (c && Number(v) > 0) c.dist = Number(v); }
     if (kv === 'nivelSap') { const c = sapateiraDoVao(no); if (c && Number(v) > 0) c.nivel = Number(v); }
   });
 });

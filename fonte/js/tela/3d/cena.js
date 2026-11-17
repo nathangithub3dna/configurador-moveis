@@ -84,6 +84,9 @@ function geometriaDe(pc) {
     g = new THREE.ExtrudeGeometry(sh, { depth:w, bevelEnabled:false }); g.rotateY(-Math.PI/2); g.translate(x1, 0, 0);
   } else if (pc.forma?.tipo === 'cil' && pc.forma.eixo === 'y') {
     g = new THREE.CylinderGeometry(w/2, w/2, h, 40); g.translate(...c);
+  } else if (pc.forma?.tipo === 'cil' && pc.forma.eixo === 'x') {
+    // tubo deitado ao longo de x (cabideiro): seção oval com a altura e a profundidade da caixa (30 × 15)
+    g = new THREE.CylinderGeometry(1, 1, w, 28); g.rotateZ(Math.PI/2); g.scale(1, h/2, d/2); g.translate(...c);
   } else if (pc.forma?.tipo === 'cil') {
     g = new THREE.CylinderGeometry(w/2, w/2, d, 28); g.rotateX(Math.PI/2); g.translate(...c);
   } else if (pc.forma?.tipo === 'puxador') {

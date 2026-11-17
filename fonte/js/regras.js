@@ -46,7 +46,7 @@ const PAPEIS = [   // [expressão do id, papel] — o lado (esq/dir) vem do pró
   [/^gaveta-\d+-frente-interna$/, 'frente-interna-gaveta'], [/^gaveta-\d+-traseira$/, 'traseira-gaveta'],
   [/^gaveta-\d+-lateral-(esq|dir)$/, 'lateral-gaveta'], [/^gaveta-\d+-fundo$/, 'fundo-gaveta'],
   [/-dobradica-\d+$/, 'dobradica'], [/-puxador$/, 'puxador'], [/-corredica-(esq|dir)$/, 'corredica'],
-  [/-suporte-\d+$/, 'suporte-vassoura'], [/^minifix-/, 'minifix'], [/^cavilha-/, 'cavilha'], [/-gancho$/, 'gancho'], [/^botijao-/, 'botijao'], [/^tampo$/, 'tampo'],
+  [/-suporte-\d+$/, 'suporte-vassoura'], [/-tubo-cabideiro$/, 'tubo-cabideiro'], [/-suporte-cabideiro-(esq|dir|central)$/, 'suporte-cabideiro'], [/-calceiro$/, 'calceiro'], [/^minifix-/, 'minifix'], [/^cavilha-/, 'cavilha'], [/-gancho$/, 'gancho'], [/^botijao-/, 'botijao'], [/^tampo$/, 'tampo'],
 ];
 function papelDe(id) {
   for (const [re, papel] of PAPEIS) if (re.test(id)) { const m = id.match(/(?:^|-)(esq|dir)(?:-|$)/); return { papel, lado: m && papel !== 'porta' && papel !== 'dobradica' && papel !== 'puxador' ? m[1] : null }; }

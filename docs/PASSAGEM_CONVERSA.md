@@ -53,3 +53,14 @@ O item 29 (puxador por vão) está completo e publicado no link do Claude na **v
 - Item 19 feito (v65, a762f4f). Defeito de abertura com peça ajustada corrigido (v66, 89a25e0): EIXOS_TELA passou para tela/ajuste-nomes.js; teste novo em reabrir.
 - **Próximo passo: item 70 (cubo de navegação no 3D), antecipado pelo Nathan para antes do item 13.** Depois: 13, 25, 30, 14 (ordem do plano mestre).
 - Pendente com o Nathan: conferir v66 no celular, aprovar a 1c-i, conferir itens 29 e 19.
+
+## Atualização 17/11/2026 (conversa nova)
+- Item 70 (cubo) já estava feito (v67, 16f1396) quando esta conversa começou.
+- Item 13 feito (v68): conteúdos novos `nucleo/conteudos/cabideiro.js`, `maleiro.js`, `calceiro.js`; escolhas Cabideiro, Maleiro, Maleiro + cabideiro, Calceiro.
+  - Cabideiro: tubo oval 30 × 15 a 55 mm do teto do vão (campo para mudar), 2 suportes laterais, 1 central acima de 1 m; avisos de altura livre (camisa ~1000, longo ~1500) e profundidade (~500).
+  - Maleiro: prateleira que fecha o maleiro (altura livre padrão 500, campo); baixa o "teto" (est.yTeto) para o cabideiro ou calceiro abaixo.
+  - Calceiro: peça comprada pronta, vai nas compras com a medida do vão; avisos de largura (400–900), profundidade (450) e livre embaixo (600).
+  - Biblioteca: tubo-oval-30x15 (metro), suporte-tubo-oval-lateral, suporte-tubo-oval-central, calceiro-deslizante — todos genéricos [Suposição/Provável], sem marca.
+  - 3D: tubo oval (cil eixo x). Teste novo em `testes/casos/editor.js`. Nenhuma referência mudou.
+- Falta do item 13: cabide basculante.
+- Próximo: item 25, depois 30, 14.

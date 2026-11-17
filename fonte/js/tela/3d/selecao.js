@@ -10,7 +10,7 @@ function destacar() {
   if (!no) { if (!medida.pts.length) $('ficha').hidden = true; return; }
   const pc = no.pc;
   $('fNome').textContent = pc.nome;
-  if (pc.cat === 'ferragem') { $('fMed').textContent = pc.forma?.tipo==='cil' ? 'Ø 35 mm' : `${fmt(pc.box[1]-pc.box[0])} × ${fmt(pc.box[3]-pc.box[2])} × ${fmt(pc.box[5]-pc.box[4])} mm`; $('fDet').textContent = 'Ferragem · não entra na lista de corte'; }
+  if (pc.cat === 'ferragem') { $('fMed').textContent = pc.forma?.tipo==='cil' && pc.forma.eixo!=='x' ? 'Ø 35 mm' : `${fmt(pc.box[1]-pc.box[0])} × ${fmt(pc.box[3]-pc.box[2])} × ${fmt(pc.box[5]-pc.box[4])} mm`; $('fDet').textContent = 'Ferragem · não entra na lista de corte'; }
   else { $('fMed').textContent = `${fmt(pc.comp)} × ${fmt(pc.larg)} × ${fmt(pc.esp)} mm`; $('fDet').textContent = `${MATERIAIS[pc.mat].nome} · fita ${fitaTxt(pc.fita)}${pc.lista ? '' : ' · fora da lista de corte'}`; }
   $('fObs').textContent = pc.obs || '';
   $('fGlb').textContent = `${pc.cat}_${pc.mat}_${pc.id}`;

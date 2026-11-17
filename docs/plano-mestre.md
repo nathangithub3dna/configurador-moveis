@@ -77,7 +77,7 @@ Levantamento completo da obra (auditoria, passo 5).
 B. Módulos e conteúdos
 72. ✅ Feito 11/11/2026 — “Juntar com o vizinho” movido para logo abaixo da seleção dos Espaços, seguido de “Dividir em mais espaços”, antes dos campos do vão. Pedido de facilidade de uso do Nathan; funcionamento de juntar preservado.
 71. ✅ Feito 11/11/2026 — separar as escolhas do editor: Vassoura e aspirador, Sapateira e Botijão. Retirados os botões Vassoura + sapateira e Botijão + gavetas; projetos antigos conservam seus conjuntos. Pedido adicional do Nathan, antecipado durante a Fase 0; o próximo passo da Fase 0 continua sendo 0.7.
-★ Guarda-roupa: cabideiro (tubo + suportes), maleiro, calceiro, cabide basculante (Promob, DinaBox). Sem isso não sai guarda-roupa.
+★ Guarda-roupa: cabideiro (tubo + suportes), maleiro, calceiro, cabide basculante (Promob, DinaBox). Sem isso não sai guarda-roupa. (item 13 ✅ 17/11/2026, v68: cabideiro, maleiro, maleiro + cabideiro e calceiro; falta o cabide basculante)
 ★ Modelos prontos por ambiente e "salvar o meu como modelo" (todos; DinaBox salva na nuvem por categoria). É o passo 3 do plano.
 Canto em L com dobradiça 165°; torre de canto 45° (Promob, DinaBox).
 Copiar e espelhar módulo; girar 90° (Mozaik, DinaBox).

@@ -669,5 +669,42 @@
     "codigo": "",
     "unid": "un",
     "emb": 1
+  },
+  "tubo-oval-30x15": {
+    "grupo": "Ferragens",
+    "nome": "Tubo cabideiro oval (oblongo) 30 × 15 mm cromado",
+    "marca": "",
+    "codigo": "",
+    "unid": "m",
+    "emb": 1,
+    "metro": true,
+    "obs": "Genérico; vendido em barra (ex.: 3 m) ou em kit cortado com suportes. Cortar 3 mm menor que o vão por dentro."
+  },
+  "suporte-tubo-oval-lateral": {
+    "grupo": "Ferragens",
+    "nome": "Suporte lateral para tubo oval 30 × 15 (parafusado na lateral)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "obs": "Genérico; 2 por tubo, 2 parafusos 3,5 × 14 cada."
+  },
+  "suporte-tubo-oval-central": {
+    "grupo": "Ferragens",
+    "nome": "Suporte central para tubo oval 30 × 15 (preso no teto do vão)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "obs": "[Provável] usado em tubo acima de 1 m para não envergar com o peso."
+  },
+  "calceiro-deslizante": {
+    "grupo": "Ferragens",
+    "nome": "Calceiro deslizante cromado com corrediça telescópica (na medida do vão)",
+    "marca": "",
+    "codigo": "",
+    "unid": "un",
+    "emb": 1,
+    "obs": "[Suposição] genérico; exemplo real: Giosul 7 varetas (aço cromado, 44 mm de altura, para vão de 450 × 500 mm de fundo). Pedir pela largura e profundidade do vão."
   }
 }

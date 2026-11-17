@@ -93,7 +93,7 @@ Antes do bloco 1 (antecipado em 16/11/2026, pedido do Nathan): 70 ✅ 16/11/2026
 Bloco 1 — Guarda-roupa (≈ 3 conversas)
 Item	Onde	Custo
 19 ✅ 16/11/2026 (a762f4f, v65) prateleira de vidro, "invisível" (pino escondido), divisória dupla — conteudos/prateleiras.js (MODELOS_PRAT), arvore.js (no.dupla), fixacoes.js, modulo-livre.js	conteudos/prateleiras.js, divisorias.js; vidro em materiais.json	P
-13 cabideiro, maleiro, calceiro	conteudos/cabideiro.js, maleiro.js, calceiro.js; tubo oval e suportes em biblioteca/acessorios.json (pesquisar itens reais)	M
+13 cabideiro, maleiro, calceiro	conteudos/cabideiro.js, maleiro.js, calceiro.js; tubo oval e suportes em dados/biblioteca.json (ficou no arquivo único da biblioteca)	M — ✅ 17/11/2026 (v68); cabide basculante pendente
 30 corrediça oculta e gaveta metálica	ferragens/corredicas.js, frentes/gaveta.js, biblioteca/corredicas.json	M
 25 recobrimento total/parcial/embutido + dobradiça curva/supercurva + calço	frentes/giro.js, ferragens/dobradicas.js, biblioteca/dobradicas.json	M–G (a furação muda)
 14 modelos prontos + "salvar o meu como modelo" (nuvem)	dados/modelos/*.json, tela/salvar/modelos.js	M

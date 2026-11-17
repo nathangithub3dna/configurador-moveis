@@ -107,6 +107,65 @@ module.exports = { id:'editor', descricao:"Editor do móvel livre", async execut
     else console.log('Item 19: prateleira de vidro, pino escondido e divisória dupla OK  ' + JSON.stringify(info));
     await page.close();
   }
+  // item 13: cabideiro, maleiro + cabideiro e calceiro (pela tela)
+  {
+    const page = await ctx.newPage(); const erros = [];
+    page.on('pageerror', e => erros.push(e.message));
+    await page.addInitScript(() => { try { localStorage.clear(); } catch (e) {} });
+    await page.route('**/*', route => {
+      const u = route.request().url();
+      if (u.startsWith('http://teste/')) return route.fulfill({ body: pagina, contentType: 'text/html' });
+      const m = u.match(/three@0\.160\.0\/(.*)$/);
+      if (m) return route.fulfill({ path: nm('three/' + m[1]), contentType: 'application/javascript' });
+      if (u.includes('jspdf')) return route.fulfill({ path: nm('jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript' });
+      if (u.includes('jszip')) return route.fulfill({ path: nm('jszip/dist/jszip.min.js'), contentType: 'application/javascript' });
+      if (u.includes('qrcode-generator')) return route.fulfill({ path: nm('qrcode-generator/qrcode.js'), contentType: 'application/javascript' });
+      if (u.includes('svg2pdf')) return route.fulfill({ path: nm('svg2pdf.js/dist/svg2pdf.umd.min.js'), contentType: 'application/javascript' });
+      return route.abort();
+    });
+    await page.goto('http://teste/', { waitUntil:'commit' });
+    await page.waitForFunction(() => window.__configurador?.estado?.res);
+    await page.setViewportSize({ width:1400, height:900 });
+    await page.selectOption('#tipoMovel', 'modulo');
+    await page.waitForFunction(() => window.__configurador.estado.projeto.tipo === 'modulo');
+    await page.evaluate(() => { const c = window.__configurador, m = c.estado.projeto.parametros;
+      const vao = () => ({ tipo:'vao', frente:{ tipo:'2portas' }, conteudo:[] });
+      m.largura = 1800; m.altura = 2400; m.profundidade = 600;
+      m.raiz = { tipo:'dividir', dir:'v', sep:'divisoria', partes:[{ medida:1150, no:vao() }, { medida:'auto', no:vao() }] }; c.atualizar(); });
+    const estado = () => page.evaluate(() => { const c = window.__configurador, r = c.estado.res, pcs = r.pecas;
+      const lin = ref => r.ferragens.find(f => f.ref === ref), sel = re => pcs.filter(p => re.test(p.id));
+      return { erros:r.erros || [], avisos:(r.avisos || []).filter(a => /cabid|maleiro|calceiro|calça/i.test(a)),
+        semFuncao: pcs.filter(p => !p.papel).map(p => p.id),
+        tubo: sel(/-tubo-cabideiro$/).map(p => ({ id:p.id, comp:p.comp, papel:p.papel, y:p.box[3], lista:p.lista })),
+        sup: sel(/-suporte-cabideiro-/).map(p => p.id), mal: sel(/^prateleira-/).filter(p => p.nome === 'Prateleira do maleiro').map(p => ({ y:p.box[2], lista:p.lista })),
+        calc: sel(/-calceiro$/).map(p => ({ papel:p.papel, y1:p.box[3], obs:p.obs })),
+        mTubo: lin('tubo-oval-30x15')?.qtd ?? 0, sLat: lin('suporte-tubo-oval-lateral')?.qtd ?? 0, sCen: lin('suporte-tubo-oval-central')?.qtd ?? 0, nCalc: lin('calceiro-deslizante')?.qtd ?? 0,
+        vaos: (r.vaos || []).map(v => ({ y1:v.y1, w:v.x1 - v.x0 })),
+        notas: ['maleiro', 'cabideiro', 'calceiro'].filter(k => document.querySelector(`#form .ed-nota[data-se="${k}"]`)?.offsetParent) };
+    });
+    await page.click('#form [data-acao="selecionar"][data-cam=".0"]');
+    await page.click('#form [aria-label="Conteúdo do espaço"] button:has(span:text-is("Maleiro + cabideiro"))');
+    const a = await estado();
+    await page.fill('#form [data-vao="altMaleiro"]', '600'); await page.press('#form [data-vao="altMaleiro"]', 'Tab');
+    const b = await estado();
+    await page.click('#form [data-acao="selecionar"][data-cam=".1"]');
+    await page.click('#form [aria-label="Conteúdo do espaço"] button:has(span:text-is("Calceiro"))');
+    const d = await estado();
+    await page.click('#form [aria-label="Conteúdo do espaço"] button:has(span:text-is("Cabideiro"))');
+    const e = await estado();
+    const t = 18, v0 = a.vaos[0];
+    const ok = !erros.length && !a.erros.length && !a.semFuncao.length && !d.semFuncao.length && !e.erros.length
+      && a.mal.length === 1 && Math.abs(a.mal[0].y - (v0.y1 - 500 - t)) < 0.1 && a.mal[0].lista
+      && a.tubo.length === 1 && a.tubo[0].papel === 'tubo-cabideiro' && !a.tubo[0].lista && Math.abs(a.tubo[0].y - (a.mal[0].y - 55 + 15)) < 0.1
+      && a.sup.length === 3 && a.sLat === 2 && a.sCen === 1 && a.mTubo > 1 && a.notas.includes('maleiro') && a.notas.includes('cabideiro')
+      && Math.abs(b.mal[0].y - (v0.y1 - 600 - t)) < 0.1
+      && d.calc.length === 1 && d.calc[0].papel === 'calceiro' && /largura/.test(d.calc[0].obs) && d.nCalc === 1 && d.notas.includes('calceiro')
+      && e.calc.length === 0 && e.tubo.length === 2 && e.sLat === 4 && e.sCen === 1 && e.mTubo === 2 && !b.erros.length && !d.erros.length;
+    const info = { maleiro:a.mal[0], tubo:a.tubo[0], metros:e.mTubo, supLat:e.sLat, supCentral:e.sCen, calceiro:d.nCalc, avisos:e.avisos, erros:[...erros, ...a.erros, ...d.erros] };
+    if (!ok) { falhas++; console.log('ITEM 13 (CABIDEIRO, MALEIRO, CALCEIRO) ERRADO  ' + JSON.stringify({ a, b, d, e, erros })); }
+    else console.log('Item 13: cabideiro, maleiro e calceiro OK  ' + JSON.stringify(info));
+    await page.close();
+  }
 
   return falhas;
 } };
