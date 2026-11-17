@@ -257,6 +257,10 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .cubo-botoes{display:flex;gap:6px}
 .cubo-botoes .btn{padding:2px 7px;font-size:11px}
 @media (max-width:900px){ .cubo{--cubo:42px;top:6px;right:6px;gap:3px} .cubo-face{grid-template:20% 1fr 20% / 20% 1fr 20%} .cubo-zona{font-size:6.5px;letter-spacing:0} .cubo-botoes .btn{padding:1px 6px;font-size:10px} }
+/* Esquema / 3D no canto de cima à esquerda do desenho (saiu da barra em 17/11) */
+.troca-vista{position:absolute;top:12px;left:12px;z-index:4;display:flex;gap:6px}
+.troca-vista .btn{padding:4px 10px;font-size:12px}
+@media (max-width:900px){ .troca-vista{top:6px;left:6px} .troca-vista .btn{padding:2px 8px;font-size:11px} }
 /* COMPONENTES — o formato de painéis, botões e campos (neomorfismo).
    As cores e sombras vêm de tema.css; aqui só se diz quem usa qual. */
 .lado,.vista,.cartao{border:0;border-radius:var(--raio);box-shadow:var(--sombra-fora)}
@@ -622,28 +626,12 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 
   <section class="vista" aria-label="Visualização 3D">
     <div class="barra" role="toolbar" aria-label="Ferramentas do 3D">
-      <div class="grupo" id="grupoEsquema" hidden>
-        <button class="btn" id="bEsquema" aria-pressed="true" type="button" title="Desenho de frente: clique num vão para editar">Esquema</button>
-        <button class="btn" id="b3D" aria-pressed="false" type="button">3D</button>
-      </div>
-      <div class="grupo">
-        <select id="selVista" aria-label="Vista">
-          <option value="perspectiva">Perspectiva</option>
-          <option value="frente">Frente</option>
-          <option value="lateral">Lateral</option>
-          <option value="topo">Topo</option>
-          <option value="livre" hidden>Vista do cubo</option>
-        </select>
-        <button class="btn" id="bOrto" aria-pressed="false" type="button">Ortogonal</button>
-      </div>
-      <span class="sep"></span>
       <div class="grupo">
         <button class="btn" id="bFix" aria-pressed="false" type="button" title="Deixa o MDF transparente e mostra parafusos, cavilhas e pinos">Fixações</button>
       </div>
       <span class="sep"></span>
       <div class="grupo">
         <button class="btn" id="bCotas" aria-pressed="true" type="button">Cotas</button>
-        <button class="btn" id="bMedir" aria-pressed="false" type="button">Medir</button>
       </div>
       <span class="sep"></span>
       <div class="grupo">
@@ -667,6 +655,11 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
     </div>
     <div class="palco" id="palco">
       <div class="esquema" id="esquema" hidden aria-label="Esquema do móvel visto de frente"></div>
+      <!-- Esquema / 3D: saiu da barra (pedido do Nathan 17/11) e fica no canto de cima à esquerda do desenho; vista e ortogonal ficam no cubo -->
+      <div class="troca-vista" id="grupoEsquema" hidden>
+        <button class="btn" id="bEsquema" aria-pressed="true" type="button" title="Desenho de frente: clique num vão para editar">Esquema</button>
+        <button class="btn" id="b3D" aria-pressed="false" type="button">3D</button>
+      </div>
       <!-- cubo de navegação (item 70): js/tela/3d/cubo.js monta as faces e gira junto com a câmera -->
       <div class="cubo" id="cubo" aria-label="Cubo de navegação: clique numa face, aresta ou canto para girar a vista">
         <div class="cubo-cena"><div class="cubo-corpo" id="cuboCorpo"></div></div>
@@ -694,8 +687,9 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
       <div class="menu-3d" id="menu3d" role="menu" aria-label="Opções do 3D" hidden>
         <button class="btn" id="bPortas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir portas</button>
         <button class="btn" id="bGavetas" role="menuitemcheckbox" aria-pressed="false" type="button">Abrir gavetas</button>
+        <button class="btn" id="bMedir" role="menuitemcheckbox" aria-pressed="false" type="button" title="Toque em dois pontos para medir (começa desligado)">Medir</button>
       </div>
-      <span class="dica" id="dica">Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça · clique direito parado (ou toque longo): abrir portas e gavetas</span>
+      <span class="dica" id="dica">Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça · clique direito parado (ou toque longo): abrir portas e gavetas, medir</span>
     </div>
   </section>
 </main>
@@ -14072,14 +14066,14 @@ cuboCorpo.addEventListener('click', e => {
   if (cuboBaixo && (e.clientX - cuboBaixo[0])**2 + (e.clientY - cuboBaixo[1])**2 > 36) return;   // arrastou: não é clique
   const dir = z.dataset.dir.split(',').map(Number);
   const nomes = { '0,0,1':'frente', '1,0,0':'lateral', '0,1,0':'topo' };
-  if (nomes[dir.join(',')]) { estado.vista = nomes[dir.join(',')]; $('selVista').value = estado.vista; } else $('selVista').value = 'livre';
+  estado.vista = nomes[dir.join(',')] || 'livre';
   girarCameraPara(dir);
 });
 $('cuboCasa').addEventListener('click', () => {
-  estado.vista = 'perspectiva'; $('selVista').value = 'perspectiva';
+  estado.vista = 'perspectiva';
   girarCameraPara(VISTAS_DIR.perspectiva, true);
 });
-$('cuboOrto').addEventListener('click', () => $('bOrto').click());
+$('cuboOrto').addEventListener('click', () => { estado.orto = !estado.orto; $('cuboOrto').setAttribute('aria-pressed', estado.orto); trocarCamera(estado.orto); });   // o botão Ortogonal da barra saiu (17/11)
 // TELA — seleção de peça e ficha (parte do antigo tela.js, na mesma ordem: ver pagina.html)
 /* ---------- Seleção e ficha ---------- */
 function destacar() {
@@ -14179,14 +14173,12 @@ const alternar = (id, chave, depois) => $(id).addEventListener('click', () => {
 alternar('bPortas', 'portas', construirCotas);
 alternar('bGavetas', 'gavetas', construirCotas);
 alternar('bCotas', 'cotas', construirCotas);
-alternar('bMedir', 'medir', () => { limparMedida(); $('dica').textContent = estado.medir ? 'Medir: toque em dois pontos. Perto de um canto, o ponto gruda no canto.' : 'Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça · clique direito parado (ou toque longo): abrir portas e gavetas'; });
+alternar('bMedir', 'medir', () => { limparMedida(); $('dica').textContent = estado.medir ? 'Medir: toque em dois pontos. Perto de um canto, o ponto gruda no canto.' : 'Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça · clique direito parado (ou toque longo): abrir portas e gavetas, medir'; });
 alternar('bTampo', 'tampo', aplicarVisibilidade);
 alternar('bFix', 'fix', aplicarFix);
 alternar('bFundo', 'fundo', aplicarVisibilidade);
 alternar('bParedes', 'paredes', aplicarVisibilidade);
 alternar('bEsgoto', 'esgoto', aplicarVisibilidade);
-alternar('bOrto', 'orto', () => trocarCamera(estado.orto));
-$('selVista').addEventListener('change', e => { estado.vista = e.target.value; aplicarVista(estado.vista); });
 $('rExplodir').addEventListener('input', e => { estado.explode = Number(e.target.value)/100; });
 $('rExplodir').addEventListener('change', construirCotas);
 function aplicarCorte() {

@@ -67,3 +67,4 @@ O item 29 (puxador por vão) está completo e publicado no link do Claude na **v
 - Próximo: item 25, depois 30, 14.
 - Item 74 (pedido novo do Nathan, fora da ordem) feito na v69: esquema dos Espaços preso no alto (`.ed-fixo`, sticky; no celular `.lado` usa overflow:clip para o sticky funcionar), categorias em `fonte/telas/editor.html` (`section.ed-cat[data-cat]`), lógica em `tela/paineis/categorias.js` (localStorage `configurador.categoriasEditor`). O `<details class="ed-mais">` saiu; "Peças ajustadas" abre sozinha quando há peça ajustada. Teste novo em `testes/casos/editor.js`.
 - Sem conferir em aparelho de verdade: arrastar com o dedo no celular.
+- Item 75 (v70): barra do 3D enxuta — saíram `#selVista` e `#bOrto` (o cubo cuida da vista e do Orto); `#grupoEsquema` (Esquema/3D) virou `.troca-vista` no canto de cima à esquerda do palco; `#bMedir` foi para `#menu3d`, desligado ao abrir. Teste do cubo em `testes/casos/interface.js` ajustado.

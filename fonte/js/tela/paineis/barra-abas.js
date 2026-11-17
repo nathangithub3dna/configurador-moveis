@@ -6,14 +6,12 @@ const alternar = (id, chave, depois) => $(id).addEventListener('click', () => {
 alternar('bPortas', 'portas', construirCotas);
 alternar('bGavetas', 'gavetas', construirCotas);
 alternar('bCotas', 'cotas', construirCotas);
-alternar('bMedir', 'medir', () => { limparMedida(); $('dica').textContent = estado.medir ? 'Medir: toque em dois pontos. Perto de um canto, o ponto gruda no canto.' : 'Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça · clique direito parado (ou toque longo): abrir portas e gavetas'; });
+alternar('bMedir', 'medir', () => { limparMedida(); $('dica').textContent = estado.medir ? 'Medir: toque em dois pontos. Perto de um canto, o ponto gruda no canto.' : 'Arraste para girar · botão direito ou dois dedos para mover · roda ou pinça para zoom · toque numa peça · clique direito parado (ou toque longo): abrir portas e gavetas, medir'; });
 alternar('bTampo', 'tampo', aplicarVisibilidade);
 alternar('bFix', 'fix', aplicarFix);
 alternar('bFundo', 'fundo', aplicarVisibilidade);
 alternar('bParedes', 'paredes', aplicarVisibilidade);
 alternar('bEsgoto', 'esgoto', aplicarVisibilidade);
-alternar('bOrto', 'orto', () => trocarCamera(estado.orto));
-$('selVista').addEventListener('change', e => { estado.vista = e.target.value; aplicarVista(estado.vista); });
 $('rExplodir').addEventListener('input', e => { estado.explode = Number(e.target.value)/100; });
 $('rExplodir').addEventListener('change', construirCotas);
 function aplicarCorte() {

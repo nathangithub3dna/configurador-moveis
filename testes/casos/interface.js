@@ -69,12 +69,16 @@ module.exports={id:'interface',descricao:'Cabeçalho móvel, animações e puxad
  assert.equal(await page.locator('.cubo-zona').count(),54);
  assert.ok(await clicarZona('0,0,1'),'face Frente do cubo não clicável'); await perto([0,0,1]);
  assert.ok(await clicarZona('1,1,1'),'canto do cubo não clicável'); await perto([1,1,1]);
- assert.equal(await page.inputValue('#selVista'),'livre');
+ assert.equal(await page.evaluate(()=>window.__configurador.estado.vista),'livre');
  await page.click('#cuboCasa'); await perto([0.85,0.6,1.2]);
  await page.click('#cuboOrto');
- assert.deepEqual(await page.evaluate(()=>[window.__configurador.estado.orto,document.querySelector('#bOrto').getAttribute('aria-pressed')]),[true,'true']);
+ assert.deepEqual(await page.evaluate(()=>[window.__configurador.estado.orto,document.querySelector('#cuboOrto').getAttribute('aria-pressed')]),[true,'true']);
  await page.click('#cuboOrto');
- console.log('Cubo de navegação OK: face, canto, casa e Orto');
+ // 17/11: Esquema/3D, vista e Ortogonal saíram da barra; Medir foi para o menu do clique direito e começa desligado
+ assert.equal(await page.locator('.barra #selVista, .barra #bOrto, .barra #bEsquema, .barra #bMedir').count(),0);
+ assert.equal(await page.locator('#menu3d #bMedir').count(),1);
+ assert.deepEqual(await page.evaluate(()=>[window.__configurador.estado.medir,document.querySelector('#bMedir').getAttribute('aria-pressed')]),[false,'false']);
+ console.log('Cubo de navegação OK: face, canto, casa e Orto; barra sem vista/orto/esquema; Medir no menu');
 
  await page.close();return 0;
 }};

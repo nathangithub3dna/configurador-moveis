@@ -70,11 +70,11 @@ cuboCorpo.addEventListener('click', e => {
   if (cuboBaixo && (e.clientX - cuboBaixo[0])**2 + (e.clientY - cuboBaixo[1])**2 > 36) return;   // arrastou: não é clique
   const dir = z.dataset.dir.split(',').map(Number);
   const nomes = { '0,0,1':'frente', '1,0,0':'lateral', '0,1,0':'topo' };
-  if (nomes[dir.join(',')]) { estado.vista = nomes[dir.join(',')]; $('selVista').value = estado.vista; } else $('selVista').value = 'livre';
+  estado.vista = nomes[dir.join(',')] || 'livre';
   girarCameraPara(dir);
 });
 $('cuboCasa').addEventListener('click', () => {
-  estado.vista = 'perspectiva'; $('selVista').value = 'perspectiva';
+  estado.vista = 'perspectiva';
   girarCameraPara(VISTAS_DIR.perspectiva, true);
 });
-$('cuboOrto').addEventListener('click', () => $('bOrto').click());
+$('cuboOrto').addEventListener('click', () => { estado.orto = !estado.orto; $('cuboOrto').setAttribute('aria-pressed', estado.orto); trocarCamera(estado.orto); });   // o botão Ortogonal da barra saiu (17/11)

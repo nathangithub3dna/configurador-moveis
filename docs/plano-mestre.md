@@ -151,6 +151,7 @@ Histórico de versões do projeto, voltar a uma versão (Promob). A nuvem guarda
 Localizar peça pelo código (DinaBox).
 Cubo de navegação no 3D. (item 70 ✅ 16/11/2026, v67)
 74. ✅ 17/11/2026 (v69) — pedido do Nathan, fora da ordem: esquema dos Espaços preso no alto do painel ao rolar; painel do móvel em categorias (Medidas, Dividir e juntar, Vão, O que tem dentro, Construção, Peças ajustadas) que abrem e fecham no título e mudam de ordem arrastando ⠿ (ou setas ↑ ↓); ordem e abertas/fechadas guardadas no aparelho. tela/paineis/categorias.js.
+75. ✅ 17/11/2026 (v70) — pedido do Nathan: barra do 3D sem Esquema/3D, vista (Frente/Lateral/Topo) e Ortogonal; Esquema/3D foi para o canto de cima à esquerda do desenho, vista e Orto ficam no cubo; Medir foi para o menu do clique direito (com Abrir portas/gavetas) e começa desligado.
 Ordem aprovada (10/11/2026)
 
 O Nathan aprovou este documento ("é o que vamos seguir de agora em diante"); a ordem é a sugerida pelo Claude, sem mudança pedida.
