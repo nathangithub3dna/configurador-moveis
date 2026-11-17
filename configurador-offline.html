@@ -302,9 +302,9 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 /* EDITOR DO MÓVEL LIVRE (5a) e ESQUEMA DE FRENTE — aparência.
    Estrutura em pagina.html (modelos tplEditor, tplEspaco, tplOpcao); lógica em js/editor-modulo.js. */
 .ed-bloco{display:flex;flex-direction:column;gap:8px}
-.ed-grade2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ed-grade2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
 .ed-grade3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.ed-campo{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.ed-campo{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
 .ed-linha{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);align-items:center;gap:8px;font-size:13px}
 .ed-campo input,.ed-linha input,.ed-linha select,.ed-select{width:100%;min-width:0;height:36px;border:0;border-radius:var(--raio-p);padding:0 10px;background:var(--surface);box-shadow:var(--sombra-dentro);font-size:13px}
 .ed-campo input{font-family:var(--f-mono);text-align:right}
@@ -395,14 +395,24 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .ed-op-b[aria-pressed="true"] .ico-b{stroke:var(--accent)}
 .ed-linha-b{display:flex;flex-direction:column;align-items:stretch;gap:6px;font-size:13px;font-weight:800}
 .ed-linha-b .ed-grade-b{font-weight:400}
-.ed-passo{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;gap:6px;align-items:center}
-.ed-passo .btn{justify-content:center;padding:7px 0;font-size:15px}
-.ed-passo input{text-align:center!important}
+/* item 78 (17/11): cada medida numa cápsula só — botão −, número, botão + (antes eram 3 peças soltas); "mm" na linha do nome */
+.ed-passo{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;align-items:center;height:44px;padding:0 4px;border-radius:999px;background:var(--surface);box-shadow:var(--sombra-dentro)}
+.ed-passo .btn{width:34px;height:34px;min-width:0;padding:0;border-radius:50%;justify-content:center;font-size:18px;font-weight:600;line-height:1;color:var(--muted);box-shadow:var(--sombra-fora-p)}
+.ed-passo .btn:hover{color:var(--accent)}
+.ed-passo .btn:active{box-shadow:var(--sombra-dentro)}
+.ed-campo .ed-passo input{height:100%;box-shadow:none;background:transparent;text-align:center;font-size:15px;font-weight:700;color:var(--fg);padding:0 2px;font-variant-numeric:tabular-nums}
+.ed-campo:has(.ed-passo){position:relative}
+.ed-campo:has(.ed-passo)::after{content:"mm";position:absolute;top:0;right:6px;font-size:11px;font-weight:600;color:var(--muted)}
+@media (max-width:900px){  /* celular: botões menores para caber 4 dígitos */
+  .ed-passo{grid-template-columns:30px minmax(0,1fr) 30px;height:42px;padding:0 3px}
+  .ed-passo .btn{width:30px;height:30px;font-size:16px}
+  .ed-campo .ed-passo input{font-size:14px;padding:0}
+}
 /* item 74: esquema dos espaços preso no alto do painel; categorias que abrem, fecham e mudam de ordem */
 .ed-fixo{position:sticky;top:-12px;z-index:4;margin:-12px -14px 0;padding:12px 14px 8px;background:var(--surface);display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--line)}
 .ed-fixo .mini-frente{width:min(100%,calc(130px * var(--rw,1)));max-height:130px}
 .ed-cats{display:flex;flex-direction:column;gap:10px}
-.ed-cat{display:flex;flex-direction:column;gap:8px;border-radius:var(--raio-p);box-shadow:var(--sombra-fora-p);padding:4px 6px 10px;background:var(--surface)}
+.ed-cat{display:flex;flex-direction:column;gap:8px;border-radius:var(--raio-p);box-shadow:var(--sombra-fora-p);padding:6px 14px 14px;background:var(--surface)}  /* 14 px de respiro dos lados (item 78) */
 .ed-cat[data-fechada]{padding-bottom:6px}
 .ed-cat[data-fechada] .ed-cat-corpo{display:none}
 .ed-cat-topo{display:flex;align-items:center;gap:6px}
@@ -413,7 +423,7 @@ text.d-eixo,text.d-frente{fill:var(--muted);stroke:none;letter-spacing:.06em}
 .ed-cat-mover:hover,.ed-cat-mover:focus-visible{box-shadow:var(--sombra-fora-p)}
 .ed-cat.arrastando{opacity:.85;outline:2px dashed var(--muted)}
 .ed-cat.arrastando .ed-cat-mover{cursor:grabbing}
-.ed-cat-corpo{display:flex;flex-direction:column;gap:8px}
+.ed-cat-corpo{display:flex;flex-direction:column;gap:12px}
 @media (max-width:900px){ .lado{overflow:clip} .ed-fixo{top:0;margin-top:-12px} .ed-fixo .mini-frente{width:min(100%,calc(100px * var(--rw,1)));max-height:100px} }
 /* AMBIENTE (5b) — aparência do painel do ambiente e da planta vista de cima.
    Estrutura em pagina.html (tplAmbiente, tplParede, tplModuloAmb, tplPonto); lógica em js/ambiente.js. */

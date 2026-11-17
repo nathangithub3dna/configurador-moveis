@@ -154,6 +154,7 @@ Cubo de navegação no 3D. (item 70 ✅ 16/11/2026, v67)
 75. ✅ 17/11/2026 (v70) — pedido do Nathan: barra do 3D sem Esquema/3D, vista (Frente/Lateral/Topo) e Ortogonal; Esquema/3D foi para o canto de cima à esquerda do desenho, vista e Orto ficam no cubo; Medir foi para o menu do clique direito (com Abrir portas/gavetas) e começa desligado.
 76. ✅ 17/11/2026 (v71) — pedido do Nathan: avisos e erros do painel num título que abre e fecha ("4 erros · 2 avisos", vermelho quando há erro); começa fechado e lembra a escolha no aparelho. tela/paineis/listas.js.
 77. ✅ 17/11/2026 (v72) — pedido do Nathan: topo da tela reorganizado (versão B escolhida entre 3 no quadro de design). Etapas com ícones numa barra fixa embaixo no celular e numa coluna à esquerda no computador; em cima nome, tipo, situação e arquivo (Desfazer, Salvar no Drive, menu Arquivo com Meus projetos/Abrir do Drive/Abrir projeto/Restaurar medidas padrão, menu Exportar). Ícones de linha em `fonte/estilos/icones.css`; posições em `fonte/estilos/topo.css`.
+78. ✅ 17/11/2026 (v73) — pedido do Nathan ("isso está feio"): bloco Medidas do móvel — cada medida numa cápsula só (− número +), "mm" na linha do nome, 14 px de respiro dentro de todos os cartões do painel. fonte/estilos/editor.css.
 Ordem aprovada (10/11/2026)
 
 O Nathan aprovou este documento ("é o que vamos seguir de agora em diante"); a ordem é a sugerida pelo Claude, sem mudança pedida.

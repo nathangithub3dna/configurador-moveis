@@ -75,3 +75,4 @@ O item 29 (puxador por vão) está completo e publicado no link do Claude na **v
   - Ícones por máscara CSS (`.ic .ic-<nome>`), então o JS pode trocar o texto dos botões sem apagar o ícone. Saiu o "☁ " do texto da nuvem (vira ícone).
   - Situação no celular quebra linha (não rola) para o teste do topo continuar valendo.
   - Sem conferir no aparelho: barra de baixo dentro do app do Claude (área segura do iPhone/Android), Salvar no Drive visível só no app.
+- Item 78 (v73): `.ed-passo` virou cápsula única (fundo afundado, − e + redondos de 34 px; 30 px no celular); "mm" via `.ed-campo:has(.ed-passo)::after`; `.ed-cat` com padding 6/14/14 e corpo com gap 12.
